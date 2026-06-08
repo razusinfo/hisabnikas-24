@@ -1,0 +1,158 @@
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+
+type Lang = "en" | "bn";
+
+const dict = {
+  en: {
+    appName: "LedgerLux",
+    tagline: "Inventory & Accounting OS",
+    dashboard: "Dashboard",
+    pos: "POS",
+    sales: "Sales",
+    products: "Products",
+    customers: "Customers",
+    inventory: "Inventory",
+    reports: "Reports",
+    settings: "Settings",
+    signIn: "Sign in",
+    signUp: "Create account",
+    signOut: "Sign out",
+    email: "Email",
+    password: "Password",
+    fullName: "Full name",
+    companyName: "Company name",
+    continueGoogle: "Continue with Google",
+    salesToday: "Sales Today",
+    salesMonth: "Sales This Month",
+    salesYear: "Sales This Year",
+    totalCustomers: "Customers",
+    totalProducts: "Products",
+    lowStock: "Low Stock",
+    dueReceivable: "Due Receivable",
+    recentSales: "Recent Sales",
+    topProducts: "Top Selling Products",
+    addCustomer: "Add Customer",
+    addProduct: "Add Product",
+    newSale: "New Sale",
+    name: "Name",
+    phone: "Phone",
+    address: "Address",
+    due: "Due",
+    actions: "Actions",
+    sku: "SKU",
+    barcode: "Barcode",
+    stock: "Stock",
+    price: "Price",
+    cost: "Cost",
+    category: "Category",
+    cart: "Cart",
+    subtotal: "Subtotal",
+    discount: "Discount",
+    tax: "Tax",
+    total: "Total",
+    paid: "Paid",
+    cash: "Cash",
+    card: "Card",
+    completeSale: "Complete Sale",
+    search: "Search…",
+    invoice: "Invoice",
+    date: "Date",
+    customer: "Customer",
+    qty: "Qty",
+    noData: "Nothing here yet.",
+    save: "Save",
+    cancel: "Cancel",
+    delete: "Delete",
+    edit: "Edit",
+  },
+  bn: {
+    appName: "লেজারলাক্স",
+    tagline: "ইনভেন্টরি ও অ্যাকাউন্টিং",
+    dashboard: "ড্যাশবোর্ড",
+    pos: "পস",
+    sales: "বিক্রয়",
+    products: "পণ্য",
+    customers: "ক্রেতা",
+    inventory: "ইনভেন্টরি",
+    reports: "রিপোর্ট",
+    settings: "সেটিংস",
+    signIn: "সাইন ইন",
+    signUp: "অ্যাকাউন্ট তৈরি",
+    signOut: "সাইন আউট",
+    email: "ইমেইল",
+    password: "পাসওয়ার্ড",
+    fullName: "পুরো নাম",
+    companyName: "কোম্পানির নাম",
+    continueGoogle: "গুগল দিয়ে চালিয়ে যান",
+    salesToday: "আজকের বিক্রয়",
+    salesMonth: "এই মাসের বিক্রয়",
+    salesYear: "এই বছরের বিক্রয়",
+    totalCustomers: "ক্রেতা",
+    totalProducts: "পণ্য",
+    lowStock: "কম স্টক",
+    dueReceivable: "বাকি আদায়যোগ্য",
+    recentSales: "সাম্প্রতিক বিক্রয়",
+    topProducts: "শীর্ষ বিক্রিত পণ্য",
+    addCustomer: "ক্রেতা যোগ",
+    addProduct: "পণ্য যোগ",
+    newSale: "নতুন বিক্রয়",
+    name: "নাম",
+    phone: "ফোন",
+    address: "ঠিকানা",
+    due: "বাকি",
+    actions: "অ্যাকশন",
+    sku: "এসকিউ",
+    barcode: "বারকোড",
+    stock: "স্টক",
+    price: "মূল্য",
+    cost: "ক্রয়মূল্য",
+    category: "ক্যাটাগরি",
+    cart: "কার্ট",
+    subtotal: "সাব-টোটাল",
+    discount: "ছাড়",
+    tax: "ভ্যাট",
+    total: "মোট",
+    paid: "পরিশোধিত",
+    cash: "নগদ",
+    card: "কার্ড",
+    completeSale: "বিক্রয় সম্পন্ন",
+    search: "খুঁজুন…",
+    invoice: "চালান",
+    date: "তারিখ",
+    customer: "ক্রেতা",
+    qty: "পরিমাণ",
+    noData: "এখনও কিছু নেই।",
+    save: "সংরক্ষণ",
+    cancel: "বাতিল",
+    delete: "মুছুন",
+    edit: "সম্পাদনা",
+  },
+} as const;
+
+type Key = keyof typeof dict.en;
+
+const Ctx = createContext<{ lang: Lang; setLang: (l: Lang) => void; t: (k: Key) => string }>({
+  lang: "en",
+  setLang: () => {},
+  t: (k) => k,
+});
+
+export function I18nProvider({ children }: { children: ReactNode }) {
+  const [lang, setLangState] = useState<Lang>("en");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const saved = (localStorage.getItem("lang") as Lang | null) ?? "en";
+    setLangState(saved);
+  }, []);
+
+  const setLang = (l: Lang) => {
+    setLangState(l);
+    if (typeof window !== "undefined") localStorage.setItem("lang", l);
+  };
+
+  const t = (k: Key) => dict[lang][k] ?? dict.en[k];
+  return <Ctx.Provider value={{ lang, setLang, t }}>{children}</Ctx.Provider>;
+}
+
+export const useI18n = () => useContext(Ctx);
