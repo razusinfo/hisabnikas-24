@@ -60,7 +60,7 @@ function AuthPage() {
   };
 
   return (
-    <div className="dark min-h-screen flex bg-background text-foreground">
+    <div className="min-h-screen flex bg-background text-foreground">
       <div className="hidden lg:flex flex-col justify-between flex-1 p-12 relative overflow-hidden border-r border-border">
         <div className="absolute inset-0" style={{ background: "var(--gradient-glow)" }} />
         <div className="relative flex items-center gap-2.5">
