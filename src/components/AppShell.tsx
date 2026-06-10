@@ -37,7 +37,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className="dark min-h-screen flex bg-background text-foreground">
+    <div className="min-h-screen flex bg-background text-foreground">
       <aside className="w-64 shrink-0 bg-sidebar border-r border-sidebar-border flex flex-col">
         <div className="px-6 py-6">
           <Link to="/dashboard" className="flex items-center gap-2.5">
