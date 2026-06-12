@@ -99,8 +99,12 @@ function SalesPage() {
 
   function addLine(productId: string) {
     const p = (productsList as any[]).find((x) => x.id === productId);
+    setProductPickerKey((k) => k + 1);
     if (!p) return;
-    if (lines.some((l) => l.product_id === productId)) return;
+    if (lines.some((l) => l.product_id === productId)) {
+      setLines((ls) => ls.map((l) => l.product_id === productId ? { ...l, qty: l.qty + 1 } : l));
+      return;
+    }
     setLines((ls) => [...ls, { product_id: p.id, name: p.name, qty: 1, unit_price: Number(p.price || 0), stock: Number(p.stock || 0) }]);
   }
   function updateLine(idx: number, patch: Partial<{ qty: number; unit_price: number }>) {
