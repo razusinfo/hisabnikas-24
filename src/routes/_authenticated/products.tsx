@@ -300,6 +300,11 @@ function ProductsPage() {
               <div className="mt-4">
                 <div className="font-medium">{p.name}</div>
                 <div className="text-xs text-muted-foreground font-mono mt-0.5">{p.sku || p.barcode || "—"}</div>
+                {p.category_id && (
+                  <div className="inline-block mt-2 text-[10px] uppercase tracking-widest px-2 py-0.5 rounded bg-primary/10 text-primary">
+                    {categoryName(p.category_id)}
+                  </div>
+                )}
               </div>
               <div className="flex items-end justify-between mt-4">
                 <div>
