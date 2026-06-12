@@ -54,7 +54,10 @@ async function fetchCategories() {
 
 export const Route = createFileRoute("/_authenticated/products")({
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData({ queryKey: ["products"], queryFn: fetchProducts });
+    await Promise.all([
+      context.queryClient.ensureQueryData({ queryKey: ["products"], queryFn: fetchProducts }),
+      context.queryClient.ensureQueryData({ queryKey: ["categories"], queryFn: fetchCategories }),
+    ]);
   },
   component: ProductsPage,
   errorComponent: ({ error }) => <div className="p-8 text-destructive">{error.message}</div>,
@@ -65,15 +68,18 @@ function ProductsPage() {
   const { t, lang } = useI18n();
   const qc = useQueryClient();
   const { data } = useSuspenseQuery({ queryKey: ["products"], queryFn: fetchProducts });
+  const { data: categories } = useSuspenseQuery({ queryKey: ["categories"], queryFn: fetchCategories });
 
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"new" | "name" | "stock" | "price">("new");
   const [lowOnly, setLowOnly] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
   // Add / edit dialog
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState(emptyForm);
+  const [newCategoryName, setNewCategoryName] = useState("");
 
   // Stock adjust dialog
   const [stockTarget, setStockTarget] = useState<Product | null>(null);
@@ -93,9 +99,32 @@ function ProductsPage() {
       name: p.name, sku: p.sku ?? "", barcode: p.barcode ?? "", unit: p.unit,
       cost_price: String(p.cost_price), sell_price: String(p.sell_price),
       stock: String(p.stock), low_stock_threshold: String(p.low_stock_threshold),
+      category_id: p.category_id ?? "",
     });
     setOpen(true);
   };
+
+  const addCategory = useMutation({
+    mutationFn: async (name: string) => {
+      const trimmed = name.trim();
+      if (!trimmed) throw new Error(t("name"));
+      const { data: u } = await supabase.auth.getUser();
+      const { data: row, error } = await supabase
+        .from("categories")
+        .insert({ name: trimmed, owner_id: u.user!.id })
+        .select("id,name")
+        .single();
+      if (error) throw error;
+      return row as Category;
+    },
+    onSuccess: (row) => {
+      toast.success(t("categoryCreated"));
+      setNewCategoryName("");
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      setForm((f) => ({ ...f, category_id: row.id }));
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
   const save = useMutation({
     mutationFn: async () => {
@@ -108,6 +137,7 @@ function ProductsPage() {
         sell_price: Number(form.sell_price) || 0,
         stock: Number(form.stock) || 0,
         low_stock_threshold: Number(form.low_stock_threshold) || 0,
+        category_id: form.category_id || null,
       };
       if (editing) {
         const { error } = await supabase.from("products").update(payload).eq("id", editing.id);
