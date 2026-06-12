@@ -340,6 +340,31 @@ function ProductsPage() {
               <div className="space-y-1.5"><Label>{t("unit")}</Label><Input value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} /></div>
               <div className="space-y-1.5"><Label>{t("lowStockAlert")}</Label><Input type="number" min="0" value={form.low_stock_threshold} onChange={(e) => setForm({ ...form, low_stock_threshold: e.target.value })} /></div>
             </div>
+            <div className="space-y-1.5">
+              <Label>{t("category")}</Label>
+              <Select value={form.category_id || "none"} onValueChange={(v) => setForm({ ...form, category_id: v === "none" ? "" : v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">{t("noCategory")}</SelectItem>
+                  {categories.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className="flex gap-2 pt-1">
+                <Input
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  placeholder={t("newCategory")}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") { e.preventDefault(); addCategory.mutate(newCategoryName); }
+                  }}
+                />
+                <Button type="button" variant="outline" disabled={addCategory.isPending || !newCategoryName.trim()} onClick={() => addCategory.mutate(newCategoryName)}>
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
             <DialogFooter className="gap-2">
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>{t("cancel")}</Button>
               <Button type="submit" disabled={save.isPending}>{t("save")}</Button>
