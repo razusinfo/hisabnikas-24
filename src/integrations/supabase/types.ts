@@ -163,6 +163,105 @@ export type Database = {
         }
         Relationships: []
       }
+      purchase_items: {
+        Row: {
+          id: string
+          line_total: number
+          owner_id: string
+          product_id: string | null
+          product_name: string
+          purchase_id: string
+          qty: number
+          unit_cost: number
+        }
+        Insert: {
+          id?: string
+          line_total: number
+          owner_id: string
+          product_id?: string | null
+          product_name: string
+          purchase_id: string
+          qty: number
+          unit_cost: number
+        }
+        Update: {
+          id?: string
+          line_total?: number
+          owner_id?: string
+          product_id?: string | null
+          product_name?: string
+          purchase_id?: string
+          qty?: number
+          unit_cost?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_items_purchase_id_fkey"
+            columns: ["purchase_id"]
+            isOneToOne: false
+            referencedRelation: "purchases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      purchases: {
+        Row: {
+          created_at: string
+          discount: number
+          due: number
+          id: string
+          invoice_no: string
+          note: string | null
+          owner_id: string
+          paid: number
+          payment_method: string
+          status: string
+          subtotal: number
+          supplier_name: string | null
+          tax: number
+          total: number
+        }
+        Insert: {
+          created_at?: string
+          discount?: number
+          due?: number
+          id?: string
+          invoice_no: string
+          note?: string | null
+          owner_id: string
+          paid?: number
+          payment_method?: string
+          status?: string
+          subtotal?: number
+          supplier_name?: string | null
+          tax?: number
+          total?: number
+        }
+        Update: {
+          created_at?: string
+          discount?: number
+          due?: number
+          id?: string
+          invoice_no?: string
+          note?: string | null
+          owner_id?: string
+          paid?: number
+          payment_method?: string
+          status?: string
+          subtotal?: number
+          supplier_name?: string | null
+          tax?: number
+          total?: number
+        }
+        Relationships: []
+      }
       sale_items: {
         Row: {
           id: string
