@@ -10,7 +10,7 @@ const dict = {
     pos: "POS",
     sales: "Sales",
     products: "Products",
-    expenses: "Expenses",
+    expenses: "Dues",
     expensesSubtitle: "Track every outgoing payment and operating cost.",
     newExpense: "New Expense",
     editExpense: "Edit Expense",
