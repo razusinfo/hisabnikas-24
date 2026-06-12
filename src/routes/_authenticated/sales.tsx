@@ -127,7 +127,7 @@ function SalesPage() {
         .update({ subtotal, total, due, status: due <= 0 ? "paid" : paid > 0 ? "partial" : "due" })
         .eq("id", viewSale.id);
       if (e2) throw e2;
-      toast.success(t("saved"));
+      toast.success(t("save"));
       setEditing(false);
       setViewSale({ ...viewSale, subtotal, total, due });
       qc.invalidateQueries({ queryKey: ["sales"] });
