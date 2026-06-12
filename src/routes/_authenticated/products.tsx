@@ -45,7 +45,7 @@ async function fetchProducts() {
   return data;
 }
 
-async function fetchCategories() {
+export async function fetchCategories() {
   const { data, error } = await supabase
     .from("categories").select("id,name").order("name", { ascending: true });
   if (error) throw error;
