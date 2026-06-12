@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,7 +12,8 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Eye, CreditCard, Printer, Trash2, Search } from "lucide-react";
+import { Eye, CreditCard, Printer, Trash2, Search, Plus } from "lucide-react";
+
 
 export const Route = createFileRoute("/_authenticated/sales")({
   loader: async ({ context }) => {
@@ -178,7 +179,15 @@ function SalesPage() {
 
   return (
     <div className="p-8 max-w-[1400px] mx-auto">
-      <PageHeader title={t("sales")} subtitle={t("salesSubtitle")} />
+      <PageHeader
+        title={t("sales")}
+        subtitle={t("salesSubtitle")}
+        actions={
+          <Button asChild>
+            <Link to="/pos"><Plus className="h-4 w-4 mr-2" />{t("newSale")}</Link>
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <StatCard label={t("transactions")} value={lang === "bn" ? stats.count.toLocaleString("bn-BD") : String(stats.count)} />
