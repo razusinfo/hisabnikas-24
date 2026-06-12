@@ -78,6 +78,19 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="px-3 py-4 border-t border-sidebar-border space-y-1">
+          <Link
+            to="/settings"
+            className={cn(
+              "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
+              loc.pathname === "/settings" || loc.pathname.startsWith("/settings/")
+                ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
+                : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60",
+            )}
+          >
+            <Settings className={cn("h-4 w-4", loc.pathname === "/settings" || loc.pathname.startsWith("/settings/") ? "text-primary" : "")} />
+            <span>{t("settings")}</span>
+            {(loc.pathname === "/settings" || loc.pathname.startsWith("/settings/")) && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />}
+          </Link>
           <button
             onClick={() => setLang(lang === "en" ? "bn" : "en")}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60"
