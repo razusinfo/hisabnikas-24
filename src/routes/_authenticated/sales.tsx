@@ -61,6 +61,108 @@ function SalesPage() {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  // New sale dialog state
+  const [openNew, setOpenNew] = useState(false);
+  const [customerId, setCustomerId] = useState<string>("walkin");
+  const [newMethod, setNewMethod] = useState("cash");
+  const [newDiscount, setNewDiscount] = useState("0");
+  const [newTax, setNewTax] = useState("0");
+  const [newPaid, setNewPaid] = useState<string>("");
+  const [newNote, setNewNote] = useState("");
+  const [lines, setLines] = useState<{ product_id: string; name: string; qty: number; unit_price: number; stock: number }[]>([]);
+  const [creating, setCreating] = useState(false);
+
+  const { data: productsList = [] } = useQuery({
+    queryKey: ["products-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("products").select("id,name,sku,price,stock").order("name");
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: openNew,
+  });
+  const { data: customersList = [] } = useQuery({
+    queryKey: ["customers-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("customers").select("id,name,phone").order("name");
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: openNew,
+  });
+
+  const newSubtotal = lines.reduce((a, l) => a + l.qty * l.unit_price, 0);
+  const newTotal = Math.max(0, newSubtotal - Number(newDiscount || 0) + Number(newTax || 0));
+  const newPaidAmt = newPaid === "" ? newTotal : Number(newPaid);
+  const newDue = Math.max(0, newTotal - newPaidAmt);
+
+  function addLine(productId: string) {
+    const p = (productsList as any[]).find((x) => x.id === productId);
+    if (!p) return;
+    if (lines.some((l) => l.product_id === productId)) return;
+    setLines((ls) => [...ls, { product_id: p.id, name: p.name, qty: 1, unit_price: Number(p.price || 0), stock: Number(p.stock || 0) }]);
+  }
+  function updateLine(idx: number, patch: Partial<{ qty: number; unit_price: number }>) {
+    setLines((ls) => ls.map((l, i) => (i === idx ? { ...l, ...patch } : l)));
+  }
+  function removeLine(idx: number) {
+    setLines((ls) => ls.filter((_, i) => i !== idx));
+  }
+  function resetNew() {
+    setCustomerId("walkin"); setNewMethod("cash"); setNewDiscount("0"); setNewTax("0"); setNewPaid(""); setNewNote(""); setLines([]);
+  }
+
+  async function createSale() {
+    if (lines.length === 0) return toast.error(t("cartEmpty"));
+    for (const l of lines) {
+      if (l.qty > l.stock) return toast.error(`${l.name}: ${t("insufficientStock")}`);
+    }
+    setCreating(true);
+    try {
+      const { data: u } = await supabase.auth.getUser();
+      const invoice_no = "INV-" + Date.now().toString().slice(-8);
+      const status = newDue <= 0 ? "paid" : newPaidAmt > 0 ? "partial" : "due";
+      const { data: sale, error } = await supabase.from("sales").insert({
+        owner_id: u.user!.id,
+        customer_id: customerId === "walkin" ? null : customerId,
+        invoice_no,
+        subtotal: newSubtotal,
+        discount: Number(newDiscount || 0),
+        tax: Number(newTax || 0),
+        total: newTotal,
+        paid: newPaidAmt,
+        due: newDue,
+        payment_method: newMethod,
+        status,
+        note: newNote || null,
+      }).select().single();
+      if (error) throw error;
+      const rows = lines.map((l) => ({
+        sale_id: sale.id,
+        owner_id: u.user!.id,
+        product_id: l.product_id,
+        product_name: l.name,
+        qty: l.qty,
+        unit_price: l.unit_price,
+        line_total: l.qty * l.unit_price,
+      }));
+      const { error: e2 } = await supabase.from("sale_items").insert(rows);
+      if (e2) throw e2;
+      toast.success(t("saleRecorded"));
+      setOpenNew(false);
+      resetNew();
+      qc.invalidateQueries({ queryKey: ["sales"] });
+      qc.invalidateQueries({ queryKey: ["products"] });
+      qc.invalidateQueries({ queryKey: ["products-list"] });
+      qc.invalidateQueries({ queryKey: ["dashboard"] });
+      qc.invalidateQueries({ queryKey: ["customers"] });
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setCreating(false);
+    }
+  }
+
   const methodLabel = (m: string) => {
     const key = `method${m ? m.charAt(0).toUpperCase() + m.slice(1) : ""}` as any;
     const v = (t as any)(key);
