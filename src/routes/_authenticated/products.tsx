@@ -27,11 +27,15 @@ type Product = {
   sell_price: number;
   stock: number;
   low_stock_threshold: number;
+  category_id: string | null;
 };
+
+type Category = { id: string; name: string };
 
 const emptyForm = {
   name: "", sku: "", barcode: "", unit: "pcs",
   cost_price: "0", sell_price: "0", stock: "0", low_stock_threshold: "5",
+  category_id: "",
 };
 
 async function fetchProducts() {
@@ -41,9 +45,19 @@ async function fetchProducts() {
   return data;
 }
 
+async function fetchCategories() {
+  const { data, error } = await supabase
+    .from("categories").select("id,name").order("name", { ascending: true });
+  if (error) throw error;
+  return data as Category[];
+}
+
 export const Route = createFileRoute("/_authenticated/products")({
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData({ queryKey: ["products"], queryFn: fetchProducts });
+    await Promise.all([
+      context.queryClient.ensureQueryData({ queryKey: ["products"], queryFn: fetchProducts }),
+      context.queryClient.ensureQueryData({ queryKey: ["categories"], queryFn: fetchCategories }),
+    ]);
   },
   component: ProductsPage,
   errorComponent: ({ error }) => <div className="p-8 text-destructive">{error.message}</div>,
@@ -54,15 +68,18 @@ function ProductsPage() {
   const { t, lang } = useI18n();
   const qc = useQueryClient();
   const { data } = useSuspenseQuery({ queryKey: ["products"], queryFn: fetchProducts });
+  const { data: categories } = useSuspenseQuery({ queryKey: ["categories"], queryFn: fetchCategories });
 
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"new" | "name" | "stock" | "price">("new");
   const [lowOnly, setLowOnly] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
   // Add / edit dialog
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState(emptyForm);
+  const [newCategoryName, setNewCategoryName] = useState("");
 
   // Stock adjust dialog
   const [stockTarget, setStockTarget] = useState<Product | null>(null);
@@ -82,9 +99,32 @@ function ProductsPage() {
       name: p.name, sku: p.sku ?? "", barcode: p.barcode ?? "", unit: p.unit,
       cost_price: String(p.cost_price), sell_price: String(p.sell_price),
       stock: String(p.stock), low_stock_threshold: String(p.low_stock_threshold),
+      category_id: p.category_id ?? "",
     });
     setOpen(true);
   };
+
+  const addCategory = useMutation({
+    mutationFn: async (name: string) => {
+      const trimmed = name.trim();
+      if (!trimmed) throw new Error(t("name"));
+      const { data: u } = await supabase.auth.getUser();
+      const { data: row, error } = await supabase
+        .from("categories")
+        .insert({ name: trimmed, owner_id: u.user!.id })
+        .select("id,name")
+        .single();
+      if (error) throw error;
+      return row as Category;
+    },
+    onSuccess: (row) => {
+      toast.success(t("categoryCreated"));
+      setNewCategoryName("");
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      setForm((f) => ({ ...f, category_id: row.id }));
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
   const save = useMutation({
     mutationFn: async () => {
@@ -97,6 +137,7 @@ function ProductsPage() {
         sell_price: Number(form.sell_price) || 0,
         stock: Number(form.stock) || 0,
         low_stock_threshold: Number(form.low_stock_threshold) || 0,
+        category_id: form.category_id || null,
       };
       if (editing) {
         const { error } = await supabase.from("products").update(payload).eq("id", editing.id);
@@ -147,19 +188,23 @@ function ProductsPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const categoryName = (id: string | null) =>
+    id ? (categories.find((c) => c.id === id)?.name ?? "—") : "";
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
     let arr = data.filter((p) => {
       const matches = !q || [p.name, p.sku, p.barcode].some((v) => v?.toLowerCase().includes(q));
       const low = Number(p.stock) <= Number(p.low_stock_threshold);
-      return matches && (!lowOnly || low);
+      const catOk = categoryFilter === "all" || p.category_id === categoryFilter;
+      return matches && (!lowOnly || low) && catOk;
     });
     arr = [...arr];
     if (sort === "name") arr.sort((a, b) => a.name.localeCompare(b.name));
     if (sort === "stock") arr.sort((a, b) => Number(a.stock) - Number(b.stock));
     if (sort === "price") arr.sort((a, b) => Number(b.sell_price) - Number(a.sell_price));
     return arr;
-  }, [data, search, lowOnly, sort]);
+  }, [data, search, lowOnly, sort, categoryFilter]);
 
   const totalCount = data.length;
   const lowCount = data.filter((p) => Number(p.stock) <= Number(p.low_stock_threshold)).length;
@@ -206,6 +251,15 @@ function ProductsPage() {
           <Search className="h-4 w-4 text-muted-foreground ml-2" />
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("search")} className="border-0 bg-transparent focus-visible:ring-0" />
         </div>
+        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("allCategories")}</SelectItem>
+            {categories.map((c) => (
+              <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Select value={lowOnly ? "low" : "all"} onValueChange={(v) => setLowOnly(v === "low")}>
           <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
@@ -246,6 +300,11 @@ function ProductsPage() {
               <div className="mt-4">
                 <div className="font-medium">{p.name}</div>
                 <div className="text-xs text-muted-foreground font-mono mt-0.5">{p.sku || p.barcode || "—"}</div>
+                {p.category_id && (
+                  <div className="inline-block mt-2 text-[10px] uppercase tracking-widest px-2 py-0.5 rounded bg-primary/10 text-primary">
+                    {categoryName(p.category_id)}
+                  </div>
+                )}
               </div>
               <div className="flex items-end justify-between mt-4">
                 <div>
@@ -280,6 +339,31 @@ function ProductsPage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5"><Label>{t("unit")}</Label><Input value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} /></div>
               <div className="space-y-1.5"><Label>{t("lowStockAlert")}</Label><Input type="number" min="0" value={form.low_stock_threshold} onChange={(e) => setForm({ ...form, low_stock_threshold: e.target.value })} /></div>
+            </div>
+            <div className="space-y-1.5">
+              <Label>{t("category")}</Label>
+              <Select value={form.category_id || "none"} onValueChange={(v) => setForm({ ...form, category_id: v === "none" ? "" : v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">{t("noCategory")}</SelectItem>
+                  {categories.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className="flex gap-2 pt-1">
+                <Input
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  placeholder={t("newCategory")}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") { e.preventDefault(); addCategory.mutate(newCategoryName); }
+                  }}
+                />
+                <Button type="button" variant="outline" disabled={addCategory.isPending || !newCategoryName.trim()} onClick={() => addCategory.mutate(newCategoryName)}>
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
             <DialogFooter className="gap-2">
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>{t("cancel")}</Button>
