@@ -76,33 +76,45 @@ export type Database = {
           amount: number
           created_at: string
           description: string
+          due_date: string | null
           expense_date: string
           id: string
           method: string
           note: string | null
           owner_id: string
+          paid_amount: number
+          party_name: string
+          party_type: string
           updated_at: string
         }
         Insert: {
           amount?: number
           created_at?: string
           description: string
+          due_date?: string | null
           expense_date?: string
           id?: string
           method?: string
           note?: string | null
           owner_id: string
+          paid_amount?: number
+          party_name?: string
+          party_type?: string
           updated_at?: string
         }
         Update: {
           amount?: number
           created_at?: string
           description?: string
+          due_date?: string | null
           expense_date?: string
           id?: string
           method?: string
           note?: string | null
           owner_id?: string
+          paid_amount?: number
+          party_name?: string
+          party_type?: string
           updated_at?: string
         }
         Relationships: []
