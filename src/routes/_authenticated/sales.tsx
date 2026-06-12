@@ -71,6 +71,7 @@ function SalesPage() {
   const [newNote, setNewNote] = useState("");
   const [lines, setLines] = useState<{ product_id: string; name: string; qty: number; unit_price: number; stock: number }[]>([]);
   const [creating, setCreating] = useState(false);
+  const [productPickerKey, setProductPickerKey] = useState(0);
 
   const { data: productsList = [] } = useQuery({
     queryKey: ["products-list"],
