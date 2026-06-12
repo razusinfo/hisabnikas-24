@@ -12,6 +12,7 @@ import {
   Wallet,
   Settings,
   HelpCircle,
+  MessageSquare,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -91,6 +92,19 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Settings className={cn("h-4 w-4", loc.pathname === "/settings" || loc.pathname.startsWith("/settings/") ? "text-primary" : "")} />
             <span>{t("settings")}</span>
             {(loc.pathname === "/settings" || loc.pathname.startsWith("/settings/")) && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />}
+          </Link>
+          <Link
+            to="/buy-messages"
+            className={cn(
+              "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
+              loc.pathname === "/buy-messages" || loc.pathname.startsWith("/buy-messages/")
+                ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
+                : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60",
+            )}
+          >
+            <MessageSquare className={cn("h-4 w-4", loc.pathname === "/buy-messages" || loc.pathname.startsWith("/buy-messages/") ? "text-primary" : "")} />
+            <span>{t("buyMessages")}</span>
+            {(loc.pathname === "/buy-messages" || loc.pathname.startsWith("/buy-messages/")) && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />}
           </Link>
           <Link
             to="/help"
