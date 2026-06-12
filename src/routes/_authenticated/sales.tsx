@@ -73,6 +73,32 @@ function SalesPage() {
   const [creating, setCreating] = useState(false);
   const [productSearch, setProductSearch] = useState("");
 
+  const { data: profile } = useQuery({
+    queryKey: ["profile", "me"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return null;
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, company_name, currency, logo_url, invoice_settings")
+        .eq("id", u.user.id)
+        .single();
+      return data;
+    },
+  });
+
+  const { data: logoUrl } = useQuery({
+    queryKey: ["logo-signed", profile?.logo_url],
+    enabled: !!profile?.logo_url,
+    queryFn: async () => {
+      const { data, error } = await supabase.storage
+        .from("business-logos")
+        .createSignedUrl(profile!.logo_url!, 3600);
+      if (error) return null;
+      return data.signedUrl;
+    },
+  });
+
   const { data: productsList = [] } = useQuery({
     queryKey: ["products-list"],
     queryFn: async () => {
