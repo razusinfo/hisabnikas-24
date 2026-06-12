@@ -71,6 +71,7 @@ function SalesPage() {
   const [newNote, setNewNote] = useState("");
   const [lines, setLines] = useState<{ product_id: string; name: string; qty: number; unit_price: number; stock: number }[]>([]);
   const [creating, setCreating] = useState(false);
+  const [productPickerKey, setProductPickerKey] = useState(0);
 
   const { data: productsList = [] } = useQuery({
     queryKey: ["products-list"],
@@ -98,8 +99,12 @@ function SalesPage() {
 
   function addLine(productId: string) {
     const p = (productsList as any[]).find((x) => x.id === productId);
+    setProductPickerKey((k) => k + 1);
     if (!p) return;
-    if (lines.some((l) => l.product_id === productId)) return;
+    if (lines.some((l) => l.product_id === productId)) {
+      setLines((ls) => ls.map((l) => l.product_id === productId ? { ...l, qty: l.qty + 1 } : l));
+      return;
+    }
     setLines((ls) => [...ls, { product_id: p.id, name: p.name, qty: 1, unit_price: Number(p.price || 0), stock: Number(p.stock || 0) }]);
   }
   function updateLine(idx: number, patch: Partial<{ qty: number; unit_price: number }>) {
@@ -546,9 +551,12 @@ function SalesPage() {
 
             <div>
               <label className="text-xs text-muted-foreground">{t("addItem")}</label>
-              <Select value="" onValueChange={addLine}>
+              <Select key={productPickerKey} onValueChange={addLine}>
                 <SelectTrigger><SelectValue placeholder={t("selectProduct")} /></SelectTrigger>
                 <SelectContent>
+                  {(productsList as any[]).length === 0 && (
+                    <div className="px-2 py-3 text-sm text-muted-foreground">{t("noData")}</div>
+                  )}
                   {(productsList as any[]).map((p) => (
                     <SelectItem key={p.id} value={p.id}>{p.name}{p.sku ? ` · ${p.sku}` : ""} · {t("stock")}: {p.stock}</SelectItem>
                   ))}
