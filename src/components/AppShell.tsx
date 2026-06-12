@@ -136,6 +136,19 @@ export function AppShell({ children }: { children: ReactNode }) {
             <LogOut className="h-4 w-4" />
             <span>{t("signOut")}</span>
           </button>
+          <Link
+            to="/current-package"
+            className={cn(
+              "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
+              loc.pathname === "/current-package" || loc.pathname.startsWith("/current-package/")
+                ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
+                : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60",
+            )}
+          >
+            <Sparkles className={cn("h-4 w-4", loc.pathname === "/current-package" || loc.pathname.startsWith("/current-package/") ? "text-primary" : "")} />
+            <span>{t("currentPackage")}</span>
+            {(loc.pathname === "/current-package" || loc.pathname.startsWith("/current-package/")) && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />}
+          </Link>
         </div>
       </aside>
 
