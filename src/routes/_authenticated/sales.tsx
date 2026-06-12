@@ -228,9 +228,7 @@ function SalesPage() {
         title={t("sales")}
         subtitle={t("salesSubtitle")}
         actions={
-          <Button asChild>
-            <Link to="/pos"><Plus className="h-4 w-4 mr-2" />{t("newSale")}</Link>
-          </Button>
+          <Button onClick={() => setOpenNew(true)}><Plus className="h-4 w-4 mr-2" />{t("newSale")}</Button>
         }
       />
 
