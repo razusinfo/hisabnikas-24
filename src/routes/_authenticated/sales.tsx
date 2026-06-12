@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Eye, CreditCard, Printer, Trash2, Search, Plus } from "lucide-react";
+import { Eye, CreditCard, Printer, Trash2, Search, Plus, Pencil, Save as SaveIcon } from "lucide-react";
 
 
 export const Route = createFileRoute("/_authenticated/sales")({
