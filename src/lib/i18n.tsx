@@ -120,7 +120,7 @@ const dict = {
     dashboard: "ড্যাশবোর্ড",
     pos: "পস",
     sales: "বিক্রয় সমূহ",
-    products: "পণ্য",
+    products: "পণ্য সমূহ",
     customers: "ক্রেতা",
     purchases: "ক্রয় সমূহ",
     inventory: "ইনভেন্টরি",
