@@ -29,7 +29,7 @@ const nav = [
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { t, lang, setLang } = useI18n();
+  const { t } = useI18n();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const loc = useLocation();
