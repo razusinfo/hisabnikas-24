@@ -80,6 +80,10 @@ function SettingsPage() {
   const [companyName, setCompanyName] = useState("");
   const [currency, setCurrency] = useState("BDT");
   const [language, setLanguage] = useState<"en" | "bn">("en");
+  const [invoice, setInvoice] = useState<InvoiceSettings>({});
+
+  const setInv = <K extends keyof InvoiceSettings>(k: K, v: InvoiceSettings[K]) =>
+    setInvoice((prev) => ({ ...prev, [k]: v }));
 
   useEffect(() => {
     if (profileQuery.data) {
@@ -87,6 +91,7 @@ function SettingsPage() {
       setCompanyName(profileQuery.data.company_name ?? "");
       setCurrency(profileQuery.data.currency ?? "BDT");
       setLanguage((profileQuery.data.language as "en" | "bn") ?? "en");
+      setInvoice(profileQuery.data.invoice_settings ?? {});
     }
   }, [profileQuery.data]);
 
@@ -100,6 +105,7 @@ function SettingsPage() {
           company_name: companyName.trim() || null,
           currency,
           language,
+          invoice_settings: invoice as never,
         })
         .eq("id", profileQuery.data.id);
       if (error) throw error;
