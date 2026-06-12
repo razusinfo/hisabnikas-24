@@ -188,19 +188,23 @@ function ProductsPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const categoryName = (id: string | null) =>
+    id ? (categories.find((c) => c.id === id)?.name ?? "—") : "";
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
     let arr = data.filter((p) => {
       const matches = !q || [p.name, p.sku, p.barcode].some((v) => v?.toLowerCase().includes(q));
       const low = Number(p.stock) <= Number(p.low_stock_threshold);
-      return matches && (!lowOnly || low);
+      const catOk = categoryFilter === "all" || p.category_id === categoryFilter;
+      return matches && (!lowOnly || low) && catOk;
     });
     arr = [...arr];
     if (sort === "name") arr.sort((a, b) => a.name.localeCompare(b.name));
     if (sort === "stock") arr.sort((a, b) => Number(a.stock) - Number(b.stock));
     if (sort === "price") arr.sort((a, b) => Number(b.sell_price) - Number(a.sell_price));
     return arr;
-  }, [data, search, lowOnly, sort]);
+  }, [data, search, lowOnly, sort, categoryFilter]);
 
   const totalCount = data.length;
   const lowCount = data.filter((p) => Number(p.stock) <= Number(p.low_stock_threshold)).length;
