@@ -551,17 +551,43 @@ function SalesPage() {
 
             <div>
               <label className="text-xs text-muted-foreground">{t("addItem")}</label>
-              <Select key={productPickerKey} onValueChange={addLine}>
-                <SelectTrigger><SelectValue placeholder={t("selectProduct")} /></SelectTrigger>
-                <SelectContent>
-                  {(productsList as any[]).length === 0 && (
-                    <div className="px-2 py-3 text-sm text-muted-foreground">{t("noData")}</div>
-                  )}
-                  {(productsList as any[]).map((p) => (
-                    <SelectItem key={p.id} value={p.id}>{p.name}{p.sku ? ` · ${p.sku}` : ""} · {t("stock")}: {p.stock}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={productSearch}
+                  onChange={(e) => setProductSearch(e.target.value)}
+                  placeholder={t("selectProduct")}
+                  className="pl-9"
+                />
+              </div>
+              {(() => {
+                const list = (productsList as any[]);
+                if (list.length === 0) {
+                  return <div className="mt-2 text-sm text-muted-foreground px-2">{t("noData")}</div>;
+                }
+                const q2 = productSearch.trim().toLowerCase();
+                const filteredP = q2
+                  ? list.filter((p) => `${p.name} ${p.sku ?? ""}`.toLowerCase().includes(q2))
+                  : list;
+                return (
+                  <div className="mt-2 max-h-56 overflow-y-auto border rounded-md divide-y">
+                    {filteredP.slice(0, 50).map((p) => (
+                      <button
+                        type="button"
+                        key={p.id}
+                        onClick={() => addLine(p.id)}
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-accent flex items-center justify-between gap-3"
+                      >
+                        <span className="truncate">{p.name}{p.sku ? ` · ${p.sku}` : ""}</span>
+                        <span className="text-xs text-muted-foreground shrink-0">{t("stock")}: {p.stock} · {fmtMoney(p.price, lang)}</span>
+                      </button>
+                    ))}
+                    {filteredP.length === 0 && (
+                      <div className="px-3 py-2 text-sm text-muted-foreground">{t("noData")}</div>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
 
             {lines.length > 0 && (
