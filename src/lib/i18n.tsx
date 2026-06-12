@@ -7,7 +7,6 @@ const dict = {
     appName: "হিসাব নিকাশ-২৪",
     tagline: "Inventory & Accounting OS",
     dashboard: "Dashboard",
-    pos: "POS",
     sales: "Sales",
     products: "Products",
     expenses: "Dues",
