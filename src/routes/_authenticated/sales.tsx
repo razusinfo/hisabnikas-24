@@ -179,7 +179,15 @@ function SalesPage() {
 
   return (
     <div className="p-8 max-w-[1400px] mx-auto">
-      <PageHeader title={t("sales")} subtitle={t("salesSubtitle")} />
+      <PageHeader
+        title={t("sales")}
+        subtitle={t("salesSubtitle")}
+        actions={
+          <Button asChild>
+            <Link to="/pos"><Plus className="h-4 w-4 mr-2" />{t("newSale")}</Link>
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <StatCard label={t("transactions")} value={lang === "bn" ? stats.count.toLocaleString("bn-BD") : String(stats.count)} />
