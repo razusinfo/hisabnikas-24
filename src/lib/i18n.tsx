@@ -70,7 +70,7 @@ const dict = {
     tagline: "ইনভেন্টরি ও অ্যাকাউন্টিং",
     dashboard: "ড্যাশবোর্ড",
     pos: "পস",
-    sales: "বিক্রয়",
+    sales: "বিক্রয় সমূহ",
     products: "পণ্য",
     customers: "ক্রেতা",
     inventory: "ইনভেন্টরি",
