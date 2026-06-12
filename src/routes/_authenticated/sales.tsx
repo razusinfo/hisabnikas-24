@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Eye, CreditCard, Printer, Trash2, Search, Plus } from "lucide-react";
+import { Eye, CreditCard, Printer, Trash2, Search, Plus, Pencil, Save as SaveIcon } from "lucide-react";
 
 
 export const Route = createFileRoute("/_authenticated/sales")({
@@ -58,6 +58,8 @@ function SalesPage() {
   const [delSale, setDelSale] = useState<any | null>(null);
   const [payAmount, setPayAmount] = useState("");
   const [items, setItems] = useState<any[] | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const methodLabel = (m: string) => {
     const key = `method${m ? m.charAt(0).toUpperCase() + m.slice(1) : ""}` as any;
@@ -89,8 +91,51 @@ function SalesPage() {
   async function openView(s: any) {
     setViewSale(s);
     setItems(null);
+    setEditing(false);
     const list = await fetchSaleItems(s.id);
     setItems(list);
+  }
+
+  function updateItem(id: string, patch: { qty?: number; unit_price?: number }) {
+    setItems((prev) => prev?.map((i) => {
+      if (i.id !== id) return i;
+      const next = { ...i, ...patch };
+      next.line_total = Number(next.qty || 0) * Number(next.unit_price || 0);
+      return next;
+    }) ?? null);
+  }
+
+  async function saveEdits() {
+    if (!viewSale || !items) return;
+    setSaving(true);
+    try {
+      for (const i of items) {
+        const { error } = await supabase
+          .from("sale_items")
+          .update({ qty: Number(i.qty), unit_price: Number(i.unit_price), line_total: Number(i.qty) * Number(i.unit_price) })
+          .eq("id", i.id);
+        if (error) throw error;
+      }
+      const subtotal = items.reduce((s, i) => s + Number(i.qty) * Number(i.unit_price), 0);
+      const discount = Number(viewSale.discount || 0);
+      const tax = Number(viewSale.tax || 0);
+      const total = Math.max(0, subtotal - discount + tax);
+      const paid = Number(viewSale.paid || 0);
+      const due = Math.max(0, total - paid);
+      const { error: e2 } = await supabase
+        .from("sales")
+        .update({ subtotal, total, due, status: due <= 0 ? "paid" : paid > 0 ? "partial" : "due" })
+        .eq("id", viewSale.id);
+      if (e2) throw e2;
+      toast.success(t("save"));
+      setEditing(false);
+      setViewSale({ ...viewSale, subtotal, total, due });
+      qc.invalidateQueries({ queryKey: ["sales"] });
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function recordPayment() {
@@ -286,8 +331,16 @@ function SalesPage() {
                     {items?.map((i) => (
                       <tr key={i.id} className="border-t border-border/40">
                         <td className="p-2">{i.product_name}</td>
-                        <td className="p-2 text-right font-mono">{lang === "bn" ? Number(i.qty).toLocaleString("bn-BD") : i.qty}</td>
-                        <td className="p-2 text-right font-mono">{fmtMoney(i.unit_price, lang)}</td>
+                        <td className="p-2 text-right font-mono">
+                          {editing ? (
+                            <Input type="number" step="0.01" value={i.qty} onChange={(e) => updateItem(i.id, { qty: Number(e.target.value) })} className="h-7 w-20 ml-auto text-right" />
+                          ) : (lang === "bn" ? Number(i.qty).toLocaleString("bn-BD") : i.qty)}
+                        </td>
+                        <td className="p-2 text-right font-mono">
+                          {editing ? (
+                            <Input type="number" step="0.01" value={i.unit_price} onChange={(e) => updateItem(i.id, { unit_price: Number(e.target.value) })} className="h-7 w-24 ml-auto text-right" />
+                          ) : fmtMoney(i.unit_price, lang)}
+                        </td>
                         <td className="p-2 text-right font-mono">{fmtMoney(i.line_total, lang)}</td>
                       </tr>
                     ))}
@@ -307,7 +360,17 @@ function SalesPage() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => viewSale && items && printInvoice(viewSale, items)}><Printer className="h-4 w-4 mr-2" />{t("print")}</Button>
-            <Button onClick={() => setViewSale(null)}>{t("close")}</Button>
+            {editing ? (
+              <>
+                <Button variant="ghost" onClick={async () => { setEditing(false); if (viewSale) setItems(await fetchSaleItems(viewSale.id)); }}>{t("cancel")}</Button>
+                <Button onClick={saveEdits} disabled={saving}><SaveIcon className="h-4 w-4 mr-2" />{t("save")}</Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" onClick={() => setEditing(true)} disabled={!items}><Pencil className="h-4 w-4 mr-2" />{t("edit")}</Button>
+                <Button onClick={() => setViewSale(null)}>{t("close")}</Button>
+              </>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

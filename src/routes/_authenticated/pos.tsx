@@ -67,6 +67,9 @@ function POSPage() {
     if (q <= 0) return setCart((c) => c.filter((l) => l.product_id !== id));
     setCart((c) => c.map((l) => l.product_id === id ? { ...l, qty: q } : l));
   };
+  const updatePrice = (id: string, price: number) => {
+    setCart((c) => c.map((l) => l.product_id === id ? { ...l, unit_price: isNaN(price) ? 0 : price } : l));
+  };
 
   const subtotal = cart.reduce((s, l) => s + l.qty * l.unit_price, 0);
   const total = Math.max(0, subtotal - Number(discount || 0) + Number(tax || 0));
@@ -166,7 +169,17 @@ function POSPage() {
             <div key={l.product_id} className="flex items-center gap-2 p-2 rounded-lg bg-muted/40">
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium truncate">{l.name}</div>
-                <div className="text-xs text-muted-foreground font-mono">{fmtMoney(l.unit_price)}</div>
+                <div className="mt-1 flex items-center gap-1">
+                  <span className="text-xs text-muted-foreground">৳</span>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={l.unit_price}
+                    onChange={(e) => updatePrice(l.product_id, Number(e.target.value))}
+                    className="h-6 w-20 px-1 text-xs font-mono"
+                  />
+                  <span className="text-xs text-muted-foreground ml-auto font-mono">= {fmtMoney(l.qty * l.unit_price)}</span>
+                </div>
               </div>
               <div className="flex items-center gap-1">
                 <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => updateQty(l.product_id, l.qty - 1)}><Minus className="h-3 w-3" /></Button>
