@@ -7,7 +7,7 @@ import {
   Package,
   Users,
   LogOut,
-  Languages,
+  
   Sparkles,
   Wallet,
   Settings,
