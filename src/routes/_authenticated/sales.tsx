@@ -551,9 +551,12 @@ function SalesPage() {
 
             <div>
               <label className="text-xs text-muted-foreground">{t("addItem")}</label>
-              <Select value="" onValueChange={addLine}>
+              <Select key={productPickerKey} onValueChange={addLine}>
                 <SelectTrigger><SelectValue placeholder={t("selectProduct")} /></SelectTrigger>
                 <SelectContent>
+                  {(productsList as any[]).length === 0 && (
+                    <div className="px-2 py-3 text-sm text-muted-foreground">{t("noData")}</div>
+                  )}
                   {(productsList as any[]).map((p) => (
                     <SelectItem key={p.id} value={p.id}>{p.name}{p.sku ? ` · ${p.sku}` : ""} · {t("stock")}: {p.stock}</SelectItem>
                   ))}
