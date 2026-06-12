@@ -431,6 +431,8 @@ const dict = {
     purchaseDeleted: "ক্রয় মুছে ফেলা হয়েছে",
     cartEmpty: "অন্তত একটি পণ্য যোগ করুন",
     insufficientStock: "মুছতে স্টক পর্যাপ্ত নয়",
+    saleRecorded: "বিক্রয় লিপিবদ্ধ হয়েছে",
+    selectCustomer: "ক্রেতা নির্বাচন করুন (ঐচ্ছিক)",
     productsSubtitle: "আপনার পণ্য তালিকা, স্টক ও মূল্য — এক জায়গায়।",
     editProduct: "পণ্য সম্পাদনা",
     deleteProductTitle: "পণ্য মুছবেন",
