@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { useSuspenseQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Eye, CreditCard, Printer, Trash2, Search, Plus, Pencil, Save as SaveIcon } from "lucide-react";
+import { Eye, CreditCard, Printer, Trash2, Search, Plus, Pencil, Save as SaveIcon, X } from "lucide-react";
 
 
 export const Route = createFileRoute("/_authenticated/sales")({
@@ -60,6 +60,108 @@ function SalesPage() {
   const [items, setItems] = useState<any[] | null>(null);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  // New sale dialog state
+  const [openNew, setOpenNew] = useState(false);
+  const [customerId, setCustomerId] = useState<string>("walkin");
+  const [newMethod, setNewMethod] = useState("cash");
+  const [newDiscount, setNewDiscount] = useState("0");
+  const [newTax, setNewTax] = useState("0");
+  const [newPaid, setNewPaid] = useState<string>("");
+  const [newNote, setNewNote] = useState("");
+  const [lines, setLines] = useState<{ product_id: string; name: string; qty: number; unit_price: number; stock: number }[]>([]);
+  const [creating, setCreating] = useState(false);
+
+  const { data: productsList = [] } = useQuery({
+    queryKey: ["products-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("products").select("id,name,sku,price,stock").order("name");
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: openNew,
+  });
+  const { data: customersList = [] } = useQuery({
+    queryKey: ["customers-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("customers").select("id,name,phone").order("name");
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: openNew,
+  });
+
+  const newSubtotal = lines.reduce((a, l) => a + l.qty * l.unit_price, 0);
+  const newTotal = Math.max(0, newSubtotal - Number(newDiscount || 0) + Number(newTax || 0));
+  const newPaidAmt = newPaid === "" ? newTotal : Number(newPaid);
+  const newDue = Math.max(0, newTotal - newPaidAmt);
+
+  function addLine(productId: string) {
+    const p = (productsList as any[]).find((x) => x.id === productId);
+    if (!p) return;
+    if (lines.some((l) => l.product_id === productId)) return;
+    setLines((ls) => [...ls, { product_id: p.id, name: p.name, qty: 1, unit_price: Number(p.price || 0), stock: Number(p.stock || 0) }]);
+  }
+  function updateLine(idx: number, patch: Partial<{ qty: number; unit_price: number }>) {
+    setLines((ls) => ls.map((l, i) => (i === idx ? { ...l, ...patch } : l)));
+  }
+  function removeLine(idx: number) {
+    setLines((ls) => ls.filter((_, i) => i !== idx));
+  }
+  function resetNew() {
+    setCustomerId("walkin"); setNewMethod("cash"); setNewDiscount("0"); setNewTax("0"); setNewPaid(""); setNewNote(""); setLines([]);
+  }
+
+  async function createSale() {
+    if (lines.length === 0) return toast.error(t("cartEmpty"));
+    for (const l of lines) {
+      if (l.qty > l.stock) return toast.error(`${l.name}: ${t("insufficientStock")}`);
+    }
+    setCreating(true);
+    try {
+      const { data: u } = await supabase.auth.getUser();
+      const invoice_no = "INV-" + Date.now().toString().slice(-8);
+      const status = newDue <= 0 ? "paid" : newPaidAmt > 0 ? "partial" : "due";
+      const { data: sale, error } = await supabase.from("sales").insert({
+        owner_id: u.user!.id,
+        customer_id: customerId === "walkin" ? null : customerId,
+        invoice_no,
+        subtotal: newSubtotal,
+        discount: Number(newDiscount || 0),
+        tax: Number(newTax || 0),
+        total: newTotal,
+        paid: newPaidAmt,
+        due: newDue,
+        payment_method: newMethod,
+        status,
+        note: newNote || null,
+      }).select().single();
+      if (error) throw error;
+      const rows = lines.map((l) => ({
+        sale_id: sale.id,
+        owner_id: u.user!.id,
+        product_id: l.product_id,
+        product_name: l.name,
+        qty: l.qty,
+        unit_price: l.unit_price,
+        line_total: l.qty * l.unit_price,
+      }));
+      const { error: e2 } = await supabase.from("sale_items").insert(rows);
+      if (e2) throw e2;
+      toast.success(t("saleRecorded"));
+      setOpenNew(false);
+      resetNew();
+      qc.invalidateQueries({ queryKey: ["sales"] });
+      qc.invalidateQueries({ queryKey: ["products"] });
+      qc.invalidateQueries({ queryKey: ["products-list"] });
+      qc.invalidateQueries({ queryKey: ["dashboard"] });
+      qc.invalidateQueries({ queryKey: ["customers"] });
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setCreating(false);
+    }
+  }
 
   const methodLabel = (m: string) => {
     const key = `method${m ? m.charAt(0).toUpperCase() + m.slice(1) : ""}` as any;
@@ -228,9 +330,7 @@ function SalesPage() {
         title={t("sales")}
         subtitle={t("salesSubtitle")}
         actions={
-          <Button asChild>
-            <Link to="/pos"><Plus className="h-4 w-4 mr-2" />{t("newSale")}</Link>
-          </Button>
+          <Button onClick={() => setOpenNew(true)}><Plus className="h-4 w-4 mr-2" />{t("newSale")}</Button>
         }
       />
 
@@ -410,6 +510,111 @@ function SalesPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* New Sale */}
+      <Dialog open={openNew} onOpenChange={(o) => { if (!o) { setOpenNew(false); resetNew(); } }}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader><DialogTitle>{t("newSale")}</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-muted-foreground">{t("customer")}</label>
+                <Select value={customerId} onValueChange={setCustomerId}>
+                  <SelectTrigger><SelectValue placeholder={t("selectCustomer")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="walkin">{t("walkIn")}</SelectItem>
+                    {(customersList as any[]).map((c) => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}{c.phone ? ` · ${c.phone}` : ""}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{t("method")}</label>
+                <Select value={newMethod} onValueChange={setNewMethod}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cash">{t("methodCash")}</SelectItem>
+                    <SelectItem value="card">{t("methodCard")}</SelectItem>
+                    <SelectItem value="mobile">{t("methodMobile")}</SelectItem>
+                    <SelectItem value="bank">{t("methodBank")}</SelectItem>
+                    <SelectItem value="due">{t("methodDue")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs text-muted-foreground">{t("addItem")}</label>
+              <Select value="" onValueChange={addLine}>
+                <SelectTrigger><SelectValue placeholder={t("selectProduct")} /></SelectTrigger>
+                <SelectContent>
+                  {(productsList as any[]).map((p) => (
+                    <SelectItem key={p.id} value={p.id}>{p.name}{p.sku ? ` · ${p.sku}` : ""} · {t("stock")}: {p.stock}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {lines.length > 0 && (
+              <div className="border rounded-md overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/30 text-xs uppercase">
+                    <tr>
+                      <th className="text-left p-2">{t("product")}</th>
+                      <th className="text-right p-2 w-24">{t("qty")}</th>
+                      <th className="text-right p-2 w-32">{t("price")}</th>
+                      <th className="text-right p-2 w-28">{t("total")}</th>
+                      <th className="w-10"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {lines.map((l, idx) => (
+                      <tr key={idx} className="border-t border-border/40">
+                        <td className="p-2">{l.name}</td>
+                        <td className="p-2"><Input type="number" min="0" step="0.01" className="h-8 text-right" value={l.qty} onChange={(e) => updateLine(idx, { qty: Number(e.target.value) })} /></td>
+                        <td className="p-2"><Input type="number" min="0" step="0.01" className="h-8 text-right" value={l.unit_price} onChange={(e) => updateLine(idx, { unit_price: Number(e.target.value) })} /></td>
+                        <td className="p-2 text-right font-mono">{fmtMoney(l.qty * l.unit_price, lang)}</td>
+                        <td className="p-2"><Button size="icon" variant="ghost" onClick={() => removeLine(idx)}><X className="h-4 w-4" /></Button></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-muted-foreground">{t("discount")}</label>
+                <Input type="number" step="0.01" value={newDiscount} onChange={(e) => setNewDiscount(e.target.value)} />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{t("tax")}</label>
+                <Input type="number" step="0.01" value={newTax} onChange={(e) => setNewTax(e.target.value)} />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{t("paid")}</label>
+                <Input type="number" step="0.01" value={newPaid} onChange={(e) => setNewPaid(e.target.value)} placeholder={String(newTotal)} />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{t("note")}</label>
+                <Input value={newNote} onChange={(e) => setNewNote(e.target.value)} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 text-sm border-t pt-3">
+              <div className="text-muted-foreground">{t("subtotal")}</div><div className="text-right font-mono">{fmtMoney(newSubtotal, lang)}</div>
+              <div className="font-medium">{t("total")}</div><div className="text-right font-mono font-medium">{fmtMoney(newTotal, lang)}</div>
+              <div className="text-success">{t("paid")}</div><div className="text-right font-mono text-success">{fmtMoney(newPaidAmt, lang)}</div>
+              <div className="text-warning">{t("due")}</div><div className="text-right font-mono text-warning">{fmtMoney(newDue, lang)}</div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => { setOpenNew(false); resetNew(); }}>{t("cancel")}</Button>
+            <Button onClick={createSale} disabled={creating}>{t("save")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
