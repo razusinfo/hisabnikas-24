@@ -4,7 +4,7 @@ type Lang = "en" | "bn";
 
 const dict = {
   en: {
-    appName: "ব্যবসার হিসাব নিকাশ",
+    appName: "হিসাব নিকাশ-২৪",
     tagline: "Inventory & Accounting OS",
     dashboard: "Dashboard",
     pos: "POS",
@@ -66,7 +66,7 @@ const dict = {
     edit: "Edit",
   },
   bn: {
-    appName: "ব্যবসার হিসাব নিকাশ",
+    appName: "হিসাব নিকাশ-২৪",
     tagline: "ইনভেন্টরি ও অ্যাকাউন্টিং",
     dashboard: "ড্যাশবোর্ড",
     pos: "পস",
