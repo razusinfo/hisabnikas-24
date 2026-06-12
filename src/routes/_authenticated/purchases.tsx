@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_authenticated/purchases")({
 });
 
 async function fetchPurchases() {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from("purchases")
     .select("id,invoice_no,total,paid,due,payment_method,status,created_at,supplier_name")
     .order("created_at", { ascending: false })
