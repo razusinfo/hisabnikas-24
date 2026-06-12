@@ -188,6 +188,7 @@ export type Database = {
           currency: string
           full_name: string | null
           id: string
+          invoice_settings: Json
           language: string
           logo_url: string | null
           updated_at: string
@@ -198,6 +199,7 @@ export type Database = {
           currency?: string
           full_name?: string | null
           id: string
+          invoice_settings?: Json
           language?: string
           logo_url?: string | null
           updated_at?: string
@@ -208,6 +210,7 @@ export type Database = {
           currency?: string
           full_name?: string | null
           id?: string
+          invoice_settings?: Json
           language?: string
           logo_url?: string | null
           updated_at?: string

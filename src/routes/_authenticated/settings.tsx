@@ -9,12 +9,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Hash, Percent, FileText, CreditCard } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
 });
+
+type InvoiceSettings = {
+  prefix?: string;
+  nextNumber?: number;
+  defaultTax?: number;
+  defaultDiscount?: number;
+  footer?: string;
+  terms?: string;
+  notes?: string;
+  bankDetails?: string;
+  paymentInstructions?: string;
+};
 
 type Profile = {
   id: string;
@@ -23,6 +36,7 @@ type Profile = {
   language: string;
   currency: string;
   logo_url: string | null;
+  invoice_settings: InvoiceSettings | null;
 };
 
 const CURRENCIES = [
@@ -46,11 +60,11 @@ function SettingsPage() {
       if (!u.user) throw new Error("Not signed in");
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, company_name, language, currency, logo_url")
+        .select("id, full_name, company_name, language, currency, logo_url, invoice_settings")
         .eq("id", u.user.id)
         .single();
       if (error) throw error;
-      return data as Profile;
+      return data as unknown as Profile;
     },
   });
 
@@ -66,6 +80,10 @@ function SettingsPage() {
   const [companyName, setCompanyName] = useState("");
   const [currency, setCurrency] = useState("BDT");
   const [language, setLanguage] = useState<"en" | "bn">("en");
+  const [invoice, setInvoice] = useState<InvoiceSettings>({});
+
+  const setInv = <K extends keyof InvoiceSettings>(k: K, v: InvoiceSettings[K]) =>
+    setInvoice((prev) => ({ ...prev, [k]: v }));
 
   useEffect(() => {
     if (profileQuery.data) {
@@ -73,6 +91,7 @@ function SettingsPage() {
       setCompanyName(profileQuery.data.company_name ?? "");
       setCurrency(profileQuery.data.currency ?? "BDT");
       setLanguage((profileQuery.data.language as "en" | "bn") ?? "en");
+      setInvoice(profileQuery.data.invoice_settings ?? {});
     }
   }, [profileQuery.data]);
 
@@ -86,6 +105,7 @@ function SettingsPage() {
           company_name: companyName.trim() || null,
           currency,
           language,
+          invoice_settings: invoice as never,
         })
         .eq("id", profileQuery.data.id);
       if (error) throw error;
@@ -272,6 +292,122 @@ function SettingsPage() {
             </div>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("invoiceSettings")}</CardTitle>
+            <CardDescription>{t("invoiceSettingsDesc")}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <Hash className="h-4 w-4 text-muted-foreground" /> {t("invoiceNumbering")}
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-2">
+                  <Label>{t("invoicePrefix")}</Label>
+                  <Input
+                    value={invoice.prefix ?? ""}
+                    onChange={(e) => setInv("prefix", e.target.value)}
+                    placeholder="INV-"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>{t("invoiceNextNumber")}</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={invoice.nextNumber ?? ""}
+                    onChange={(e) => setInv("nextNumber", e.target.value === "" ? undefined : Number(e.target.value))}
+                    placeholder="1001"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <Percent className="h-4 w-4 text-muted-foreground" /> {t("invoiceTaxCharges")}
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-2">
+                  <Label>{t("invoiceDefaultTax")}</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={invoice.defaultTax ?? ""}
+                    onChange={(e) => setInv("defaultTax", e.target.value === "" ? undefined : Number(e.target.value))}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>{t("invoiceDefaultDiscount")}</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={invoice.defaultDiscount ?? ""}
+                    onChange={(e) => setInv("defaultDiscount", e.target.value === "" ? undefined : Number(e.target.value))}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <FileText className="h-4 w-4 text-muted-foreground" /> {t("invoiceAppearance")}
+              </div>
+              <div className="grid gap-2">
+                <Label>{t("invoiceFooter")}</Label>
+                <Input
+                  value={invoice.footer ?? ""}
+                  onChange={(e) => setInv("footer", e.target.value)}
+                  placeholder="Thank you for your business!"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>{t("invoiceTerms")}</Label>
+                <Textarea
+                  rows={3}
+                  value={invoice.terms ?? ""}
+                  onChange={(e) => setInv("terms", e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>{t("invoiceNotes")}</Label>
+                <Textarea
+                  rows={2}
+                  value={invoice.notes ?? ""}
+                  onChange={(e) => setInv("notes", e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <CreditCard className="h-4 w-4 text-muted-foreground" /> {t("invoicePayment")}
+              </div>
+              <div className="grid gap-2">
+                <Label>{t("invoiceBankDetails")}</Label>
+                <Textarea
+                  rows={3}
+                  value={invoice.bankDetails ?? ""}
+                  onChange={(e) => setInv("bankDetails", e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>{t("invoicePaymentInstructions")}</Label>
+                <Textarea
+                  rows={2}
+                  value={invoice.paymentInstructions ?? ""}
+                  onChange={(e) => setInv("paymentInstructions", e.target.value)}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+
 
         <div className="flex justify-end">
           <Button onClick={() => saveProfile.mutate()} disabled={saveProfile.isPending}>
