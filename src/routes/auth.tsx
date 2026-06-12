@@ -89,7 +89,7 @@ function AuthPage() {
             ))}
           </div>
         </div>
-        <div className="relative text-xs text-muted-foreground">© LedgerLux</div>
+        <div className="relative text-xs text-muted-foreground">© ব্যবসার হিসাব নিকাশ</div>
       </div>
 
       <div className="flex-1 flex items-center justify-center p-6">
