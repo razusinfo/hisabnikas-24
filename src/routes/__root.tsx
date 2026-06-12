@@ -70,7 +70,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "LedgerLux — Inventory & Accounting OS" },
+      { title: "ব্যবসার হিসাব নিকাশ — Inventory & Accounting OS" },
       { name: "description", content: "Modern inventory management & accounting for retail, wholesale, and online business." },
       { name: "theme-color", content: "#0A0A0A" },
     ],
