@@ -2,7 +2,6 @@ import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard,
-  ScanBarcode,
   Receipt,
   ShoppingCart,
   Package,
@@ -23,7 +22,6 @@ const nav = [
   { to: "/purchases", icon: ShoppingCart, key: "purchases" as const },
   { to: "/products", icon: Package, key: "products" as const },
   { to: "/expenses", icon: Wallet, key: "expenses" as const },
-  { to: "/pos", icon: ScanBarcode, key: "pos" as const },
   { to: "/customers", icon: Users, key: "customers" as const },
 ];
 
