@@ -98,6 +98,60 @@ function SettingsPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const logoUrlQuery = useQuery({
+    queryKey: ["logo-signed", profileQuery.data?.logo_url],
+    enabled: !!profileQuery.data?.logo_url,
+    queryFn: async () => {
+      const path = profileQuery.data!.logo_url!;
+      const { data, error } = await supabase.storage
+        .from("business-logos")
+        .createSignedUrl(path, 3600);
+      if (error) throw error;
+      return data.signedUrl;
+    },
+  });
+
+  const uploadLogo = useMutation({
+    mutationFn: async (file: File) => {
+      if (!profileQuery.data) throw new Error("No profile");
+      const ext = file.name.split(".").pop() || "png";
+      const path = `${profileQuery.data.id}/logo-${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("business-logos")
+        .upload(path, file, { upsert: true, contentType: file.type });
+      if (upErr) throw upErr;
+      if (profileQuery.data.logo_url) {
+        await supabase.storage.from("business-logos").remove([profileQuery.data.logo_url]);
+      }
+      const { error } = await supabase
+        .from("profiles")
+        .update({ logo_url: path })
+        .eq("id", profileQuery.data.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success(t("settingsSaved"));
+      qc.invalidateQueries({ queryKey: ["profile", "me"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const removeLogo = useMutation({
+    mutationFn: async () => {
+      if (!profileQuery.data?.logo_url) return;
+      await supabase.storage.from("business-logos").remove([profileQuery.data.logo_url]);
+      const { error } = await supabase
+        .from("profiles")
+        .update({ logo_url: null })
+        .eq("id", profileQuery.data.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["profile", "me"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
