@@ -293,6 +293,122 @@ function SettingsPage() {
           </CardContent>
         </Card>
 
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("invoiceSettings")}</CardTitle>
+            <CardDescription>{t("invoiceSettingsDesc")}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <Hash className="h-4 w-4 text-muted-foreground" /> {t("invoiceNumbering")}
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-2">
+                  <Label>{t("invoicePrefix")}</Label>
+                  <Input
+                    value={invoice.prefix ?? ""}
+                    onChange={(e) => setInv("prefix", e.target.value)}
+                    placeholder="INV-"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>{t("invoiceNextNumber")}</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={invoice.nextNumber ?? ""}
+                    onChange={(e) => setInv("nextNumber", e.target.value === "" ? undefined : Number(e.target.value))}
+                    placeholder="1001"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <Percent className="h-4 w-4 text-muted-foreground" /> {t("invoiceTaxCharges")}
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-2">
+                  <Label>{t("invoiceDefaultTax")}</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={invoice.defaultTax ?? ""}
+                    onChange={(e) => setInv("defaultTax", e.target.value === "" ? undefined : Number(e.target.value))}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>{t("invoiceDefaultDiscount")}</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={invoice.defaultDiscount ?? ""}
+                    onChange={(e) => setInv("defaultDiscount", e.target.value === "" ? undefined : Number(e.target.value))}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <FileText className="h-4 w-4 text-muted-foreground" /> {t("invoiceAppearance")}
+              </div>
+              <div className="grid gap-2">
+                <Label>{t("invoiceFooter")}</Label>
+                <Input
+                  value={invoice.footer ?? ""}
+                  onChange={(e) => setInv("footer", e.target.value)}
+                  placeholder="Thank you for your business!"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>{t("invoiceTerms")}</Label>
+                <Textarea
+                  rows={3}
+                  value={invoice.terms ?? ""}
+                  onChange={(e) => setInv("terms", e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>{t("invoiceNotes")}</Label>
+                <Textarea
+                  rows={2}
+                  value={invoice.notes ?? ""}
+                  onChange={(e) => setInv("notes", e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <CreditCard className="h-4 w-4 text-muted-foreground" /> {t("invoicePayment")}
+              </div>
+              <div className="grid gap-2">
+                <Label>{t("invoiceBankDetails")}</Label>
+                <Textarea
+                  rows={3}
+                  value={invoice.bankDetails ?? ""}
+                  onChange={(e) => setInv("bankDetails", e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>{t("invoicePaymentInstructions")}</Label>
+                <Textarea
+                  rows={2}
+                  value={invoice.paymentInstructions ?? ""}
+                  onChange={(e) => setInv("paymentInstructions", e.target.value)}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+
+
         <div className="flex justify-end">
           <Button onClick={() => saveProfile.mutate()} disabled={saveProfile.isPending}>
             {saveProfile.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
