@@ -221,9 +221,25 @@ function ExpensesPage() {
     const remaining = Number(payFor.amount) - Number(payFor.paid_amount || 0);
     if (!add || add <= 0) return toast.error(t("enterValidAmount"));
     if (add > remaining) return toast.error(t("amountExceedsDue"));
-    const newPaid = Number(payFor.paid_amount || 0) + add;
-    const { error } = await (supabase as any).from("expenses").update({ paid_amount: newPaid }).eq("id", payFor.id);
-    if (error) return toast.error(error.message);
+    if (payFor.source === "sale" && payFor.sale_id) {
+      const newPaid = Number(payFor.paid_amount || 0) + add;
+      const newDue = Math.max(0, Number(payFor.amount) - newPaid);
+      const { error } = await (supabase as any)
+        .from("sales")
+        .update({ paid: newPaid, due: newDue, status: newDue <= 0 ? "paid" : "partial" })
+        .eq("id", payFor.sale_id);
+      if (error) return toast.error(error.message);
+      if (payFor.customer_id) {
+        const { data: c } = await (supabase as any).from("customers").select("due_balance").eq("id", payFor.customer_id).single();
+        if (c) await (supabase as any).from("customers").update({ due_balance: Math.max(0, Number(c.due_balance || 0) - add) }).eq("id", payFor.customer_id);
+      }
+      qc.invalidateQueries({ queryKey: ["sales"] });
+      qc.invalidateQueries({ queryKey: ["customers"] });
+    } else {
+      const newPaid = Number(payFor.paid_amount || 0) + add;
+      const { error } = await (supabase as any).from("expenses").update({ paid_amount: newPaid }).eq("id", payFor.id);
+      if (error) return toast.error(error.message);
+    }
     toast.success(t("duePaymentRecorded"));
     setPayFor(null);
     setPayAmt("");
