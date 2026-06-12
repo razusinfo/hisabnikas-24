@@ -20,6 +20,7 @@ import { Route as AuthenticatedHelpRouteImport } from './routes/_authenticated/h
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
+import { Route as AuthenticatedCurrentPackageRouteImport } from './routes/_authenticated/current-package'
 import { Route as AuthenticatedBuyMessagesRouteImport } from './routes/_authenticated/buy-messages'
 
 const AuthRoute = AuthRouteImport.update({
@@ -76,6 +77,12 @@ const AuthenticatedCustomersRoute = AuthenticatedCustomersRouteImport.update({
   path: '/customers',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCurrentPackageRoute =
+  AuthenticatedCurrentPackageRouteImport.update({
+    id: '/current-package',
+    path: '/current-package',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedBuyMessagesRoute =
   AuthenticatedBuyMessagesRouteImport.update({
     id: '/buy-messages',
@@ -87,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/buy-messages': typeof AuthenticatedBuyMessagesRoute
+  '/current-package': typeof AuthenticatedCurrentPackageRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/expenses': typeof AuthenticatedExpensesRoute
@@ -100,6 +108,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/buy-messages': typeof AuthenticatedBuyMessagesRoute
+  '/current-package': typeof AuthenticatedCurrentPackageRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/expenses': typeof AuthenticatedExpensesRoute
@@ -115,6 +124,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/buy-messages': typeof AuthenticatedBuyMessagesRoute
+  '/_authenticated/current-package': typeof AuthenticatedCurrentPackageRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/expenses': typeof AuthenticatedExpensesRoute
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/buy-messages'
+    | '/current-package'
     | '/customers'
     | '/dashboard'
     | '/expenses'
@@ -143,6 +154,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/buy-messages'
+    | '/current-package'
     | '/customers'
     | '/dashboard'
     | '/expenses'
@@ -157,6 +169,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/buy-messages'
+    | '/_authenticated/current-package'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
     | '/_authenticated/expenses'
@@ -252,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCustomersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/current-package': {
+      id: '/_authenticated/current-package'
+      path: '/current-package'
+      fullPath: '/current-package'
+      preLoaderRoute: typeof AuthenticatedCurrentPackageRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/buy-messages': {
       id: '/_authenticated/buy-messages'
       path: '/buy-messages'
@@ -264,6 +284,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedBuyMessagesRoute: typeof AuthenticatedBuyMessagesRoute
+  AuthenticatedCurrentPackageRoute: typeof AuthenticatedCurrentPackageRoute
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRoute
@@ -276,6 +297,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBuyMessagesRoute: AuthenticatedBuyMessagesRoute,
+  AuthenticatedCurrentPackageRoute: AuthenticatedCurrentPackageRoute,
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedExpensesRoute: AuthenticatedExpensesRoute,
