@@ -99,7 +99,7 @@ function SalesPage() {
 
   function addLine(productId: string) {
     const p = (productsList as any[]).find((x) => x.id === productId);
-    setProductPickerKey((k) => k + 1);
+    setProductSearch("");
     if (!p) return;
     if (lines.some((l) => l.product_id === productId)) {
       setLines((ls) => ls.map((l) => l.product_id === productId ? { ...l, qty: l.qty + 1 } : l));
