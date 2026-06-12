@@ -149,6 +149,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span>{t("currentPackage")}</span>
             {(loc.pathname === "/current-package" || loc.pathname.startsWith("/current-package/")) && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />}
           </Link>
+          <div className="px-3 pt-1 pb-0.5 text-center">
+            <span className="text-[10px] text-muted-foreground tracking-wide">
+              {t("appName")} <span className="opacity-60">|</span> {t("version")}
+            </span>
+          </div>
         </div>
       </aside>
 

@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/customers")({
   component: CustomersPage,
 });
 
-async function fetchCustomers() {
+export async function fetchCustomers() {
   const { data, error } = await supabase.from("customers").select("*").order("created_at", { ascending: false });
   if (error) throw error;
   return data;
