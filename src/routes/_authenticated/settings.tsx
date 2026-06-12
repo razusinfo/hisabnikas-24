@@ -46,7 +46,7 @@ function SettingsPage() {
       if (!u.user) throw new Error("Not signed in");
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, company_name, language, currency")
+        .select("id, full_name, company_name, language, currency, logo_url")
         .eq("id", u.user.id)
         .single();
       if (error) throw error;
