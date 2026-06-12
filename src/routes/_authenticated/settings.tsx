@@ -60,11 +60,11 @@ function SettingsPage() {
       if (!u.user) throw new Error("Not signed in");
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, company_name, language, currency, logo_url")
+        .select("id, full_name, company_name, language, currency, logo_url, invoice_settings")
         .eq("id", u.user.id)
         .single();
       if (error) throw error;
-      return data as Profile;
+      return data as unknown as Profile;
     },
   });
 
