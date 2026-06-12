@@ -50,6 +50,7 @@ const dict = {
     inventory: "Inventory",
     reports: "Reports",
     settings: "Settings",
+    buyMessages: "Buy Messages",
     helpSupport: "Help & Support",
     signIn: "Sign in",
     signUp: "Create account",
