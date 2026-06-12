@@ -27,11 +27,15 @@ type Product = {
   sell_price: number;
   stock: number;
   low_stock_threshold: number;
+  category_id: string | null;
 };
+
+type Category = { id: string; name: string };
 
 const emptyForm = {
   name: "", sku: "", barcode: "", unit: "pcs",
   cost_price: "0", sell_price: "0", stock: "0", low_stock_threshold: "5",
+  category_id: "",
 };
 
 async function fetchProducts() {
@@ -39,6 +43,13 @@ async function fetchProducts() {
     .from("products").select("*").order("created_at", { ascending: false });
   if (error) throw error;
   return data;
+}
+
+async function fetchCategories() {
+  const { data, error } = await supabase
+    .from("categories").select("id,name").order("name", { ascending: true });
+  if (error) throw error;
+  return data as Category[];
 }
 
 export const Route = createFileRoute("/_authenticated/products")({
