@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/purchases")({
   notFoundComponent: () => <div className="p-8">Not found</div>,
 });
 
-async function fetchPurchases() {
+export async function fetchPurchases() {
   const { data, error } = await (supabase as any)
     .from("purchases")
     .select("id,invoice_no,subtotal,discount,tax,total,paid,due,payment_method,status,note,created_at,supplier_name")

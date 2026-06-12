@@ -11,6 +11,7 @@ import {
   Sparkles,
   Wallet,
   Settings,
+  HelpCircle,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -90,6 +91,19 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Settings className={cn("h-4 w-4", loc.pathname === "/settings" || loc.pathname.startsWith("/settings/") ? "text-primary" : "")} />
             <span>{t("settings")}</span>
             {(loc.pathname === "/settings" || loc.pathname.startsWith("/settings/")) && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />}
+          </Link>
+          <Link
+            to="/help"
+            className={cn(
+              "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
+              loc.pathname === "/help" || loc.pathname.startsWith("/help/")
+                ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
+                : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60",
+            )}
+          >
+            <HelpCircle className={cn("h-4 w-4", loc.pathname === "/help" || loc.pathname.startsWith("/help/") ? "text-primary" : "")} />
+            <span>{t("helpSupport")}</span>
+            {(loc.pathname === "/help" || loc.pathname.startsWith("/help/")) && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />}
           </Link>
           <button
             onClick={() => setLang(lang === "en" ? "bn" : "en")}
