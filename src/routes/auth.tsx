@@ -67,7 +67,7 @@ function AuthPage() {
           <div className="h-9 w-9 rounded-xl flex items-center justify-center bg-primary/15 ring-1 ring-primary/30">
             <Sparkles className="h-4 w-4 text-primary" />
           </div>
-          <span className="font-display font-semibold">LedgerLux</span>
+          <span className="font-display font-semibold">ব্যবসার হিসাব নিকাশ</span>
         </div>
         <div className="relative max-w-md space-y-6">
           <h1 className="text-5xl font-display font-semibold leading-[1.05] tracking-tight">
