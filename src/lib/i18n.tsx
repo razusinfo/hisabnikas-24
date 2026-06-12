@@ -52,6 +52,8 @@ const dict = {
     settings: "Settings",
     buyMessages: "Buy Messages",
     helpSupport: "Help & Support",
+    currentPackage: "Current Package",
+    subscribe: "Subscribe",
     signIn: "Sign in",
     signUp: "Create account",
     signOut: "Sign out",
