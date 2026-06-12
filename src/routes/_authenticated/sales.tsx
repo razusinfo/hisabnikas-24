@@ -331,8 +331,16 @@ function SalesPage() {
                     {items?.map((i) => (
                       <tr key={i.id} className="border-t border-border/40">
                         <td className="p-2">{i.product_name}</td>
-                        <td className="p-2 text-right font-mono">{lang === "bn" ? Number(i.qty).toLocaleString("bn-BD") : i.qty}</td>
-                        <td className="p-2 text-right font-mono">{fmtMoney(i.unit_price, lang)}</td>
+                        <td className="p-2 text-right font-mono">
+                          {editing ? (
+                            <Input type="number" step="0.01" value={i.qty} onChange={(e) => updateItem(i.id, { qty: Number(e.target.value) })} className="h-7 w-20 ml-auto text-right" />
+                          ) : (lang === "bn" ? Number(i.qty).toLocaleString("bn-BD") : i.qty)}
+                        </td>
+                        <td className="p-2 text-right font-mono">
+                          {editing ? (
+                            <Input type="number" step="0.01" value={i.unit_price} onChange={(e) => updateItem(i.id, { unit_price: Number(e.target.value) })} className="h-7 w-24 ml-auto text-right" />
+                          ) : fmtMoney(i.unit_price, lang)}
+                        </td>
                         <td className="p-2 text-right font-mono">{fmtMoney(i.line_total, lang)}</td>
                       </tr>
                     ))}
