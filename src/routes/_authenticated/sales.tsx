@@ -58,6 +58,8 @@ function SalesPage() {
   const [delSale, setDelSale] = useState<any | null>(null);
   const [payAmount, setPayAmount] = useState("");
   const [items, setItems] = useState<any[] | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const methodLabel = (m: string) => {
     const key = `method${m ? m.charAt(0).toUpperCase() + m.slice(1) : ""}` as any;
