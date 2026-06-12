@@ -318,28 +318,115 @@ function SalesPage() {
     qc.invalidateQueries({ queryKey: ["sales"] });
   }
 
-  function printInvoice(s: any, lines: any[]) {
-    const w = window.open("", "_blank", "width=720,height=900");
+  function printInvoice(s: any, lineItems: any[]) {
+    const w = window.open("", "_blank", "width=820,height=1000");
     if (!w) return;
-    const rows = lines.map(l => `<tr><td>${l.product_name}</td><td style="text-align:right">${fmtMoney(l.qty, lang).replace("৳ ","")}</td><td style="text-align:right">${fmtMoney(l.unit_price, lang)}</td><td style="text-align:right">${fmtMoney(l.line_total, lang)}</td></tr>`).join("");
-    w.document.write(`<html><head><title>${s.invoice_no}</title>
-      <style>body{font-family:system-ui;padding:24px;color:#111}h1{font-size:20px;margin:0 0 4px}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{padding:8px;border-bottom:1px solid #eee;font-size:13px;text-align:left}tfoot td{border:0;padding:4px 8px}</style>
-      </head><body>
-      <h1>${t("invoice")} ${s.invoice_no}</h1>
-      <div style="color:#666;font-size:13px">${fmtDateTime(s.created_at, lang)}</div>
-      <div style="margin-top:8px;font-size:13px">${t("customer")}: <b>${s.customers?.name ?? t("walkIn")}</b>${s.customers?.phone ? ` · ${s.customers.phone}`:""}</div>
-      <table><thead><tr><th>${t("item")}</th><th style="text-align:right">${t("qty")}</th><th style="text-align:right">${t("price")}</th><th style="text-align:right">${t("total")}</th></tr></thead>
-      <tbody>${rows}</tbody>
-      <tfoot>
-        <tr><td colspan="3" style="text-align:right">${t("subtotal")}</td><td style="text-align:right">${fmtMoney(s.subtotal, lang)}</td></tr>
-        <tr><td colspan="3" style="text-align:right">${t("discount")}</td><td style="text-align:right">${fmtMoney(s.discount, lang)}</td></tr>
-        <tr><td colspan="3" style="text-align:right">${t("tax")}</td><td style="text-align:right">${fmtMoney(s.tax, lang)}</td></tr>
-        <tr><td colspan="3" style="text-align:right"><b>${t("total")}</b></td><td style="text-align:right"><b>${fmtMoney(s.total, lang)}</b></td></tr>
-        <tr><td colspan="3" style="text-align:right">${t("paid")}</td><td style="text-align:right">${fmtMoney(s.paid, lang)}</td></tr>
-        <tr><td colspan="3" style="text-align:right">${t("due")}</td><td style="text-align:right">${fmtMoney(s.due, lang)}</td></tr>
-      </tfoot></table>
-      <script>window.onload=()=>{window.print();}</script>
-      </body></html>`);
+    const inv = (profile?.invoice_settings ?? {}) as any;
+    const biz = profile?.company_name || "";
+    const owner = profile?.full_name || "";
+    const esc = (v: any) => String(v ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c] as string));
+    const rows = lineItems.map((l, i) => `<tr>
+      <td class="num">${i + 1}</td>
+      <td>${esc(l.product_name)}</td>
+      <td class="num">${lang === "bn" ? Number(l.qty).toLocaleString("bn-BD") : l.qty}</td>
+      <td class="right">${fmtMoney(l.unit_price, lang)}</td>
+      <td class="right">${fmtMoney(l.line_total, lang)}</td>
+    </tr>`).join("");
+    const dueBadge = Number(s.due) > 0
+      ? `<span class="badge badge-due">${esc(t(Number(s.paid) > 0 ? "statusPartial" : "statusDue"))}</span>`
+      : `<span class="badge badge-paid">${esc(t("statusPaid"))}</span>`;
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(s.invoice_no)}</title>
+      <style>
+        *{box-sizing:border-box}
+        body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#0f172a;margin:0;padding:32px;background:#fff}
+        .sheet{max-width:780px;margin:0 auto}
+        .top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;padding-bottom:20px;border-bottom:3px solid #0f172a}
+        .brand{display:flex;gap:14px;align-items:center}
+        .brand img{height:56px;width:56px;object-fit:contain;border-radius:8px;border:1px solid #e2e8f0;background:#fff}
+        .brand .biz{font-size:22px;font-weight:700;letter-spacing:-0.01em}
+        .brand .owner{font-size:12px;color:#64748b;margin-top:2px}
+        .meta{text-align:right}
+        .meta h1{font-size:26px;margin:0;letter-spacing:0.08em;color:#0f172a;font-weight:800}
+        .meta .no{font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#334155;margin-top:4px}
+        .meta .date{font-size:12px;color:#64748b;margin-top:2px}
+        .row{display:flex;justify-content:space-between;gap:24px;margin-top:20px}
+        .card{flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px}
+        .card .lbl{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:4px}
+        .card .val{font-size:14px;font-weight:600}
+        .card .sub{font-size:12px;color:#64748b;margin-top:2px}
+        table.items{width:100%;border-collapse:collapse;margin-top:22px;font-size:13px}
+        table.items thead th{background:#0f172a;color:#fff;text-align:left;padding:10px 12px;font-weight:600;font-size:11px;letter-spacing:0.06em;text-transform:uppercase}
+        table.items thead th.right{text-align:right}
+        table.items tbody td{padding:10px 12px;border-bottom:1px solid #e2e8f0}
+        table.items tbody tr:nth-child(even) td{background:#f8fafc}
+        .right{text-align:right}.num{font-family:ui-monospace,Menlo,monospace}
+        .totals{margin-top:18px;margin-left:auto;width:320px;font-size:13px}
+        .totals .line{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #e2e8f0}
+        .totals .line.grand{border-top:2px solid #0f172a;border-bottom:2px solid #0f172a;margin-top:6px;padding:10px 0;font-size:15px;font-weight:700}
+        .totals .line.paid{color:#16a34a}
+        .totals .line.due{color:#dc2626;font-weight:600}
+        .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:0.04em}
+        .badge-paid{background:#dcfce7;color:#15803d}
+        .badge-due{background:#fee2e2;color:#b91c1c}
+        .footer{margin-top:36px;padding-top:18px;border-top:1px solid #e2e8f0;font-size:12px;color:#475569;display:grid;gap:10px}
+        .footer h4{margin:0 0 4px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#0f172a}
+        .footer p{margin:0;white-space:pre-wrap;line-height:1.5}
+        .thanks{margin-top:24px;text-align:center;font-size:13px;color:#0f172a;font-weight:600}
+        @media print{body{padding:0}.sheet{max-width:none}}
+      </style></head><body><div class="sheet">
+      <div class="top">
+        <div class="brand">
+          ${logoUrl ? `<img src="${esc(logoUrl)}" alt="">` : ""}
+          <div>
+            <div class="biz">${esc(biz || t("invoice"))}</div>
+            ${owner ? `<div class="owner">${esc(owner)}</div>` : ""}
+          </div>
+        </div>
+        <div class="meta">
+          <h1>${esc(t("invoice")).toUpperCase()}</h1>
+          <div class="no">${esc(s.invoice_no)}</div>
+          <div class="date">${esc(fmtDateTime(s.created_at, lang))}</div>
+          <div style="margin-top:6px">${dueBadge}</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="card">
+          <div class="lbl">${esc(t("customer"))}</div>
+          <div class="val">${esc(s.customers?.name ?? t("walkIn"))}</div>
+          ${s.customers?.phone ? `<div class="sub">${esc(s.customers.phone)}</div>` : ""}
+        </div>
+        <div class="card">
+          <div class="lbl">${esc(t("method"))}</div>
+          <div class="val">${esc(methodLabel(s.payment_method))}</div>
+        </div>
+      </div>
+      <table class="items">
+        <thead><tr>
+          <th style="width:32px">#</th>
+          <th>${esc(t("item"))}</th>
+          <th class="right" style="width:70px">${esc(t("qty"))}</th>
+          <th class="right" style="width:110px">${esc(t("price"))}</th>
+          <th class="right" style="width:130px">${esc(t("total"))}</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="totals">
+        <div class="line"><span>${esc(t("subtotal"))}</span><span class="num">${fmtMoney(s.subtotal, lang)}</span></div>
+        <div class="line"><span>${esc(t("discount"))}</span><span class="num">- ${fmtMoney(s.discount, lang)}</span></div>
+        <div class="line"><span>${esc(t("tax"))}</span><span class="num">${fmtMoney(s.tax, lang)}</span></div>
+        <div class="line grand"><span>${esc(t("total"))}</span><span class="num">${fmtMoney(s.total, lang)}</span></div>
+        <div class="line paid"><span>${esc(t("paid"))}</span><span class="num">${fmtMoney(s.paid, lang)}</span></div>
+        <div class="line due"><span>${esc(t("due"))}</span><span class="num">${fmtMoney(s.due, lang)}</span></div>
+      </div>
+      ${s.note ? `<div class="footer"><div><h4>${esc(t("note"))}</h4><p>${esc(s.note)}</p></div></div>` : ""}
+      <div class="footer">
+        ${inv.bankDetails ? `<div><h4>${esc(t("invoiceBankDetails"))}</h4><p>${esc(inv.bankDetails)}</p></div>` : ""}
+        ${inv.paymentInstructions ? `<div><h4>${esc(t("invoicePaymentInstructions"))}</h4><p>${esc(inv.paymentInstructions)}</p></div>` : ""}
+        ${inv.terms ? `<div><h4>${esc(t("invoiceTerms"))}</h4><p>${esc(inv.terms)}</p></div>` : ""}
+        ${inv.notes ? `<div><h4>${esc(t("invoiceNotes"))}</h4><p>${esc(inv.notes)}</p></div>` : ""}
+      </div>
+      ${inv.footer ? `<div class="thanks">${esc(inv.footer)}</div>` : ""}
+      </div><script>window.onload=()=>setTimeout(()=>window.print(),200)</script></body></html>`);
     w.document.close();
   }
 
@@ -347,6 +434,7 @@ function SalesPage() {
     const lines = await fetchSaleItems(s.id);
     printInvoice(s, lines);
   }
+
 
   const statusBadge = (s: any) => {
     if (Number(s.due) > 0) {
