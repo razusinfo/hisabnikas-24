@@ -67,6 +67,9 @@ function POSPage() {
     if (q <= 0) return setCart((c) => c.filter((l) => l.product_id !== id));
     setCart((c) => c.map((l) => l.product_id === id ? { ...l, qty: q } : l));
   };
+  const updatePrice = (id: string, price: number) => {
+    setCart((c) => c.map((l) => l.product_id === id ? { ...l, unit_price: isNaN(price) ? 0 : price } : l));
+  };
 
   const subtotal = cart.reduce((s, l) => s + l.qty * l.unit_price, 0);
   const total = Math.max(0, subtotal - Number(discount || 0) + Number(tax || 0));
