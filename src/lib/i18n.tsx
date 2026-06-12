@@ -222,7 +222,7 @@ const dict = {
     open: "অপরিশোধিত",
     partial: "আংশিক",
     pay: "পরিশোধ",
-    customers: "ক্রেতা",
+    customers: "কাষ্টমার সমূহ",
     purchases: "ক্রয় সমূহ",
     inventory: "ইনভেন্টরি",
     reports: "রিপোর্ট",
