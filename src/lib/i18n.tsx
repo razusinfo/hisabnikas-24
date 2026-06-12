@@ -235,6 +235,7 @@ const dict = {
     buyMessages: "মেসেজ কিনি",
     helpSupport: "হেল্প এন্ড সাপোর্ট",
     currentPackage: "বর্তমান পেকেজ",
+    version: "ভার্শন ১.০১",
     subscribe: "সাবস্ক্রাইব",
     signIn: "সাইন ইন",
     signUp: "অ্যাকাউন্ট তৈরি",
