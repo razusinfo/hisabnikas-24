@@ -510,6 +510,111 @@ function SalesPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* New Sale */}
+      <Dialog open={openNew} onOpenChange={(o) => { if (!o) { setOpenNew(false); resetNew(); } }}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader><DialogTitle>{t("newSale")}</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-muted-foreground">{t("customer")}</label>
+                <Select value={customerId} onValueChange={setCustomerId}>
+                  <SelectTrigger><SelectValue placeholder={t("selectCustomer")} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="walkin">{t("walkIn")}</SelectItem>
+                    {(customersList as any[]).map((c) => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}{c.phone ? ` · ${c.phone}` : ""}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{t("method")}</label>
+                <Select value={newMethod} onValueChange={setNewMethod}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cash">{t("methodCash")}</SelectItem>
+                    <SelectItem value="card">{t("methodCard")}</SelectItem>
+                    <SelectItem value="mobile">{t("methodMobile")}</SelectItem>
+                    <SelectItem value="bank">{t("methodBank")}</SelectItem>
+                    <SelectItem value="due">{t("methodDue")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs text-muted-foreground">{t("addItem")}</label>
+              <Select value="" onValueChange={addLine}>
+                <SelectTrigger><SelectValue placeholder={t("selectProduct")} /></SelectTrigger>
+                <SelectContent>
+                  {(productsList as any[]).map((p) => (
+                    <SelectItem key={p.id} value={p.id}>{p.name}{p.sku ? ` · ${p.sku}` : ""} · {t("stock")}: {p.stock}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {lines.length > 0 && (
+              <div className="border rounded-md overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/30 text-xs uppercase">
+                    <tr>
+                      <th className="text-left p-2">{t("product")}</th>
+                      <th className="text-right p-2 w-24">{t("qty")}</th>
+                      <th className="text-right p-2 w-32">{t("price")}</th>
+                      <th className="text-right p-2 w-28">{t("total")}</th>
+                      <th className="w-10"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {lines.map((l, idx) => (
+                      <tr key={idx} className="border-t border-border/40">
+                        <td className="p-2">{l.name}</td>
+                        <td className="p-2"><Input type="number" min="0" step="0.01" className="h-8 text-right" value={l.qty} onChange={(e) => updateLine(idx, { qty: Number(e.target.value) })} /></td>
+                        <td className="p-2"><Input type="number" min="0" step="0.01" className="h-8 text-right" value={l.unit_price} onChange={(e) => updateLine(idx, { unit_price: Number(e.target.value) })} /></td>
+                        <td className="p-2 text-right font-mono">{fmtMoney(l.qty * l.unit_price, lang)}</td>
+                        <td className="p-2"><Button size="icon" variant="ghost" onClick={() => removeLine(idx)}><X className="h-4 w-4" /></Button></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-muted-foreground">{t("discount")}</label>
+                <Input type="number" step="0.01" value={newDiscount} onChange={(e) => setNewDiscount(e.target.value)} />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{t("tax")}</label>
+                <Input type="number" step="0.01" value={newTax} onChange={(e) => setNewTax(e.target.value)} />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{t("paid")}</label>
+                <Input type="number" step="0.01" value={newPaid} onChange={(e) => setNewPaid(e.target.value)} placeholder={String(newTotal)} />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{t("note")}</label>
+                <Input value={newNote} onChange={(e) => setNewNote(e.target.value)} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 text-sm border-t pt-3">
+              <div className="text-muted-foreground">{t("subtotal")}</div><div className="text-right font-mono">{fmtMoney(newSubtotal, lang)}</div>
+              <div className="font-medium">{t("total")}</div><div className="text-right font-mono font-medium">{fmtMoney(newTotal, lang)}</div>
+              <div className="text-success">{t("paid")}</div><div className="text-right font-mono text-success">{fmtMoney(newPaidAmt, lang)}</div>
+              <div className="text-warning">{t("due")}</div><div className="text-right font-mono text-warning">{fmtMoney(newDue, lang)}</div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => { setOpenNew(false); resetNew(); }}>{t("cancel")}</Button>
+            <Button onClick={createSale} disabled={creating}>{t("save")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
