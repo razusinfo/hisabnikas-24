@@ -71,6 +71,42 @@ export type Database = {
         }
         Relationships: []
       }
+      expenses: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string
+          expense_date: string
+          id: string
+          method: string
+          note: string | null
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          description: string
+          expense_date?: string
+          id?: string
+          method?: string
+          note?: string | null
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string
+          expense_date?: string
+          id?: string
+          method?: string
+          note?: string | null
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           barcode: string | null
