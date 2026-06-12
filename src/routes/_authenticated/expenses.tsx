@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Pencil, Trash2, Search, Plus } from "lucide-react";
+import { Pencil, Trash2, Search, Plus, Wallet } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/expenses")({
   loader: async ({ context }) => {
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_authenticated/expenses")({
 async function fetchExpenses() {
   const { data, error } = await (supabase as any)
     .from("expenses")
-    .select("id,expense_date,description,amount,method,note,created_at")
+    .select("id,expense_date,description,amount,paid_amount,method,note,party_name,party_type,due_date,created_at")
     .order("expense_date", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(500);
@@ -34,18 +34,30 @@ async function fetchExpenses() {
   return data ?? [];
 }
 
-type Expense = {
+type DueRow = {
   id: string;
   expense_date: string;
   description: string;
   amount: number;
+  paid_amount: number;
   method: string;
   note: string | null;
+  party_name: string;
+  party_type: string;
+  due_date: string | null;
   created_at: string;
 };
 
 function todayStr() {
   return new Date().toISOString().slice(0, 10);
+}
+
+function statusOf(r: DueRow): "settled" | "partial" | "open" {
+  const a = Number(r.amount || 0);
+  const p = Number(r.paid_amount || 0);
+  if (p >= a && a > 0) return "settled";
+  if (p > 0) return "partial";
+  return "open";
 }
 
 function ExpensesPage() {
@@ -54,17 +66,24 @@ function ExpensesPage() {
   const { data } = useSuspenseQuery({ queryKey: ["expenses"], queryFn: fetchExpenses });
 
   const [q, setQ] = useState("");
-  const [method, setMethodFilter] = useState("all");
+  const [pType, setPType] = useState("all");
+  const [pStatus, setPStatus] = useState("all");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
 
   const [openForm, setOpenForm] = useState(false);
-  const [edit, setEdit] = useState<Expense | null>(null);
-  const [del, setDel] = useState<Expense | null>(null);
+  const [edit, setEdit] = useState<DueRow | null>(null);
+  const [del, setDel] = useState<DueRow | null>(null);
+  const [payFor, setPayFor] = useState<DueRow | null>(null);
+  const [payAmt, setPayAmt] = useState("");
 
   const [fDate, setFDate] = useState(todayStr());
+  const [fDueDate, setFDueDate] = useState("");
+  const [fParty, setFParty] = useState("");
+  const [fPartyType, setFPartyType] = useState("customer");
   const [fDesc, setFDesc] = useState("");
   const [fAmt, setFAmt] = useState("");
+  const [fPaid, setFPaid] = useState("");
   const [fMethod, setFMethod] = useState("cash");
   const [fNote, setFNote] = useState("");
 
@@ -74,41 +93,52 @@ function ExpensesPage() {
     return v && v !== key ? v : m;
   };
 
-  const filtered = useMemo(() => (data as Expense[]).filter((e) => {
+  const filtered = useMemo(() => (data as DueRow[]).filter((e) => {
     if (q) {
-      const hay = `${e.description ?? ""} ${e.note ?? ""}`.toLowerCase();
+      const hay = `${e.party_name ?? ""} ${e.description ?? ""} ${e.note ?? ""}`.toLowerCase();
       if (!hay.includes(q.toLowerCase())) return false;
     }
-    if (method !== "all" && e.method !== method) return false;
+    if (pType !== "all" && e.party_type !== pType) return false;
+    if (pStatus !== "all" && statusOf(e) !== pStatus) return false;
     if (from && e.expense_date < from) return false;
     if (to && e.expense_date > to) return false;
     return true;
-  }), [data, q, method, from, to]);
+  }), [data, q, pType, pStatus, from, to]);
 
   const stats = useMemo(() => {
-    const today = todayStr();
-    const monthStart = today.slice(0, 7) + "-01";
-    const all = data as Expense[];
-    const total = filtered.reduce((a, e) => a + Number(e.amount || 0), 0);
-    const tToday = all.filter(e => e.expense_date === today).reduce((a, e) => a + Number(e.amount || 0), 0);
-    const tMonth = all.filter(e => e.expense_date >= monthStart).reduce((a, e) => a + Number(e.amount || 0), 0);
-    return { count: filtered.length, total, today: tToday, month: tMonth };
-  }, [data, filtered]);
+    const rows = filtered;
+    let receivable = 0, payable = 0, settled = 0;
+    for (const r of rows) {
+      const remaining = Math.max(0, Number(r.amount || 0) - Number(r.paid_amount || 0));
+      if (statusOf(r) === "settled") settled += Number(r.amount || 0);
+      if (r.party_type === "customer") receivable += remaining;
+      else if (r.party_type === "supplier") payable += remaining;
+    }
+    return { count: rows.length, receivable, payable, settled };
+  }, [filtered]);
 
   function resetForm() {
     setEdit(null);
     setFDate(todayStr());
+    setFDueDate("");
+    setFParty("");
+    setFPartyType("customer");
     setFDesc("");
     setFAmt("");
+    setFPaid("");
     setFMethod("cash");
     setFNote("");
   }
 
-  function openEdit(e: Expense) {
+  function openEdit(e: DueRow) {
     setEdit(e);
     setFDate(e.expense_date);
+    setFDueDate(e.due_date ?? "");
+    setFParty(e.party_name ?? "");
+    setFPartyType(e.party_type || "customer");
     setFDesc(e.description);
     setFAmt(String(e.amount));
+    setFPaid(String(e.paid_amount || 0));
     setFMethod(e.method);
     setFNote(e.note ?? "");
     setOpenForm(true);
@@ -116,12 +146,19 @@ function ExpensesPage() {
 
   async function save() {
     const amount = Number(fAmt);
+    const paid = Number(fPaid || 0);
+    if (!fParty.trim()) return toast.error(t("partyName") + " *");
     if (!fDesc.trim()) return toast.error(t("description") + " *");
     if (!amount || amount <= 0) return toast.error(t("enterValidAmount"));
+    if (paid < 0 || paid > amount) return toast.error(t("amountExceedsDue"));
     const payload = {
       expense_date: fDate || todayStr(),
+      due_date: fDueDate || null,
+      party_name: fParty.trim(),
+      party_type: fPartyType,
       description: fDesc.trim(),
       amount,
+      paid_amount: paid,
       method: fMethod,
       note: fNote.trim() || null,
     };
@@ -149,6 +186,36 @@ function ExpensesPage() {
     qc.invalidateQueries({ queryKey: ["expenses"] });
   }
 
+  async function recordPayment() {
+    if (!payFor) return;
+    const add = Number(payAmt);
+    const remaining = Number(payFor.amount) - Number(payFor.paid_amount || 0);
+    if (!add || add <= 0) return toast.error(t("enterValidAmount"));
+    if (add > remaining) return toast.error(t("amountExceedsDue"));
+    const newPaid = Number(payFor.paid_amount || 0) + add;
+    const { error } = await (supabase as any).from("expenses").update({ paid_amount: newPaid }).eq("id", payFor.id);
+    if (error) return toast.error(error.message);
+    toast.success(t("duePaymentRecorded"));
+    setPayFor(null);
+    setPayAmt("");
+    qc.invalidateQueries({ queryKey: ["expenses"] });
+  }
+
+  const statusBadge = (s: ReturnType<typeof statusOf>) => {
+    const cls =
+      s === "settled" ? "bg-success/15 text-success" :
+      s === "partial" ? "bg-warning/15 text-warning" :
+      "bg-destructive/15 text-destructive";
+    return <span className={`inline-flex px-2 py-0.5 rounded-md text-xs font-medium ${cls}`}>{t(s)}</span>;
+  };
+
+  const partyBadge = (pt: string) => {
+    const isCust = pt === "customer";
+    const label = isCust ? t("receivable") : pt === "supplier" ? t("payable") : t("partyOther");
+    const cls = isCust ? "text-info" : pt === "supplier" ? "text-warning" : "text-muted-foreground";
+    return <span className={`text-xs font-medium ${cls}`}>{label}</span>;
+  };
+
   return (
     <div className="p-8 max-w-[1400px] mx-auto">
       <PageHeader
@@ -159,9 +226,9 @@ function ExpensesPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <StatCard label={t("transactions")} value={lang === "bn" ? stats.count.toLocaleString("bn-BD") : String(stats.count)} />
-        <StatCard label={t("totalExpenses")} value={fmtMoney(stats.total, lang)} tone="warning" />
-        <StatCard label={t("expensesToday")} value={fmtMoney(stats.today, lang)} />
-        <StatCard label={t("expensesMonth")} value={fmtMoney(stats.month, lang)} />
+        <StatCard label={t("receivable")} value={fmtMoney(stats.receivable, lang)} tone="info" />
+        <StatCard label={t("payable")} value={fmtMoney(stats.payable, lang)} tone="warning" />
+        <StatCard label={t("settled")} value={fmtMoney(stats.settled, lang)} tone="success" />
       </div>
 
       <div className="card-premium p-4 mb-4 flex flex-wrap gap-3 items-end">
@@ -169,20 +236,28 @@ function ExpensesPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("searchExpensesPlaceholder")} className="pl-9" />
         </div>
-        <Select value={method} onValueChange={setMethodFilter}>
+        <Select value={pType} onValueChange={setPType}>
+          <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("allParties")}</SelectItem>
+            <SelectItem value="customer">{t("partyCustomer")}</SelectItem>
+            <SelectItem value="supplier">{t("partySupplier")}</SelectItem>
+            <SelectItem value="other">{t("partyOther")}</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={pStatus} onValueChange={setPStatus}>
           <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("allStatus")}</SelectItem>
-            <SelectItem value="cash">{t("methodCash")}</SelectItem>
-            <SelectItem value="card">{t("methodCard")}</SelectItem>
-            <SelectItem value="mobile">{t("methodMobile")}</SelectItem>
-            <SelectItem value="bank">{t("methodBank")}</SelectItem>
+            <SelectItem value="open">{t("open")}</SelectItem>
+            <SelectItem value="partial">{t("partial")}</SelectItem>
+            <SelectItem value="settled">{t("settled")}</SelectItem>
           </SelectContent>
         </Select>
         <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-[160px]" />
         <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-[160px]" />
-        {(q || method !== "all" || from || to) && (
-          <Button variant="ghost" onClick={() => { setQ(""); setMethodFilter("all"); setFrom(""); setTo(""); }}>{t("clear")}</Button>
+        {(q || pType !== "all" || pStatus !== "all" || from || to) && (
+          <Button variant="ghost" onClick={() => { setQ(""); setPType("all"); setPStatus("all"); setFrom(""); setTo(""); }}>{t("clear")}</Button>
         )}
       </div>
 
@@ -192,32 +267,57 @@ function ExpensesPage() {
             <thead className="text-xs uppercase tracking-wider text-muted-foreground bg-muted/30">
               <tr className="text-left">
                 <th className="py-3 px-4">{t("date")}</th>
+                <th className="py-3 px-4">{t("partyName")}</th>
                 <th className="py-3 px-4">{t("description")}</th>
-                <th className="py-3 px-4">{t("method")}</th>
-                <th className="py-3 px-4">{t("note")}</th>
+                <th className="py-3 px-4">{t("dueDate")}</th>
                 <th className="py-3 px-4 text-right">{t("amount")}</th>
+                <th className="py-3 px-4 text-right">{t("paidAmount")}</th>
+                <th className="py-3 px-4 text-right">{t("remaining")}</th>
+                <th className="py-3 px-4">{t("status")}</th>
                 <th className="py-3 px-4 text-right">{t("actions")}</th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 && (
-                <tr><td colSpan={6} className="py-10 text-center text-muted-foreground">{t("noData")}</td></tr>
+                <tr><td colSpan={9} className="py-10 text-center text-muted-foreground">{t("noData")}</td></tr>
               )}
-              {filtered.map((e) => (
-                <tr key={e.id} className="border-t border-border/40 hover:bg-muted/30">
-                  <td className="py-3 px-4 text-muted-foreground whitespace-nowrap">{fmtDate(e.expense_date, lang)}</td>
-                  <td className="py-3 px-4 font-medium">{e.description}</td>
-                  <td className="py-3 px-4">{methodLabel(e.method)}</td>
-                  <td className="py-3 px-4 text-muted-foreground max-w-[260px] truncate">{e.note || "—"}</td>
-                  <td className="py-3 px-4 text-right font-mono text-warning">{fmtMoney(e.amount, lang)}</td>
-                  <td className="py-3 px-4">
-                    <div className="flex justify-end gap-1">
-                      <Button size="icon" variant="ghost" onClick={() => openEdit(e)} title={t("edit")}><Pencil className="h-4 w-4" /></Button>
-                      <Button size="icon" variant="ghost" onClick={() => setDel(e)} title={t("delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {filtered.map((e) => {
+                const remaining = Math.max(0, Number(e.amount) - Number(e.paid_amount || 0));
+                const s = statusOf(e);
+                const overdue = e.due_date && s !== "settled" && e.due_date < todayStr();
+                return (
+                  <tr key={e.id} className="border-t border-border/40 hover:bg-muted/30">
+                    <td className="py-3 px-4 text-muted-foreground whitespace-nowrap">{fmtDate(e.expense_date, lang)}</td>
+                    <td className="py-3 px-4">
+                      <div className="font-medium">{e.party_name || "—"}</div>
+                      {partyBadge(e.party_type)}
+                    </td>
+                    <td className="py-3 px-4 text-muted-foreground max-w-[260px] truncate">{e.description}</td>
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      {e.due_date ? (
+                        <span className={overdue ? "text-destructive font-medium" : "text-muted-foreground"}>
+                          {fmtDate(e.due_date, lang)}{overdue ? ` · ${t("overdue")}` : ""}
+                        </span>
+                      ) : "—"}
+                    </td>
+                    <td className="py-3 px-4 text-right font-mono">{fmtMoney(e.amount, lang)}</td>
+                    <td className="py-3 px-4 text-right font-mono text-success">{fmtMoney(e.paid_amount || 0, lang)}</td>
+                    <td className="py-3 px-4 text-right font-mono text-warning">{fmtMoney(remaining, lang)}</td>
+                    <td className="py-3 px-4">{statusBadge(s)}</td>
+                    <td className="py-3 px-4">
+                      <div className="flex justify-end gap-1">
+                        {s !== "settled" && (
+                          <Button size="icon" variant="ghost" onClick={() => { setPayFor(e); setPayAmt(""); }} title={t("recordDuePayment")}>
+                            <Wallet className="h-4 w-4 text-success" />
+                          </Button>
+                        )}
+                        <Button size="icon" variant="ghost" onClick={() => openEdit(e)} title={t("edit")}><Pencil className="h-4 w-4" /></Button>
+                        <Button size="icon" variant="ghost" onClick={() => setDel(e)} title={t("delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -233,13 +333,40 @@ function ExpensesPage() {
                 <Input type="date" value={fDate} onChange={(e) => setFDate(e.target.value)} />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground">{t("amount")}</label>
-                <Input type="number" min="0" step="0.01" value={fAmt} onChange={(e) => setFAmt(e.target.value)} />
+                <label className="text-xs text-muted-foreground">{t("dueDate")}</label>
+                <Input type="date" value={fDueDate} onChange={(e) => setFDueDate(e.target.value)} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-muted-foreground">{t("partyName")}</label>
+                <Input value={fParty} onChange={(e) => setFParty(e.target.value)} placeholder={t("partyNamePlaceholder")} />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{t("partyType")}</label>
+                <Select value={fPartyType} onValueChange={setFPartyType}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="customer">{t("partyCustomer")}</SelectItem>
+                    <SelectItem value="supplier">{t("partySupplier")}</SelectItem>
+                    <SelectItem value="other">{t("partyOther")}</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div>
               <label className="text-xs text-muted-foreground">{t("description")}</label>
               <Input value={fDesc} onChange={(e) => setFDesc(e.target.value)} placeholder={t("descriptionPlaceholder")} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-muted-foreground">{t("amount")}</label>
+                <Input type="number" min="0" step="0.01" value={fAmt} onChange={(e) => setFAmt(e.target.value)} />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{t("paidAmount")}</label>
+                <Input type="number" min="0" step="0.01" value={fPaid} onChange={(e) => setFPaid(e.target.value)} />
+              </div>
             </div>
             <div>
               <label className="text-xs text-muted-foreground">{t("method")}</label>
@@ -265,6 +392,40 @@ function ExpensesPage() {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={!!payFor} onOpenChange={(o) => { if (!o) { setPayFor(null); setPayAmt(""); } }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle>{t("recordDuePayment")}</DialogTitle></DialogHeader>
+          {payFor && (
+            <div className="space-y-3">
+              <div className="text-sm">
+                <div className="font-medium">{payFor.party_name}</div>
+                <div className="text-muted-foreground">{payFor.description}</div>
+              </div>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="card-premium p-3">
+                  <div className="text-xs text-muted-foreground">{t("amount")}</div>
+                  <div className="font-mono">{fmtMoney(payFor.amount, lang)}</div>
+                </div>
+                <div className="card-premium p-3">
+                  <div className="text-xs text-muted-foreground">{t("remaining")}</div>
+                  <div className="font-mono text-warning">
+                    {fmtMoney(Math.max(0, Number(payFor.amount) - Number(payFor.paid_amount || 0)), lang)}
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{t("amountToPay")}</label>
+                <Input type="number" min="0" step="0.01" value={payAmt} onChange={(e) => setPayAmt(e.target.value)} autoFocus />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => { setPayFor(null); setPayAmt(""); }}>{t("cancel")}</Button>
+            <Button onClick={recordPayment}>{t("save")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <AlertDialog open={!!del} onOpenChange={(o) => !o && setDel(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -281,8 +442,11 @@ function ExpensesPage() {
   );
 }
 
-function StatCard({ label, value, tone }: { label: string; value: string; tone?: "success" | "warning" }) {
-  const cls = tone === "success" ? "text-success" : tone === "warning" ? "text-warning" : "";
+function StatCard({ label, value, tone }: { label: string; value: string; tone?: "success" | "warning" | "info" }) {
+  const cls =
+    tone === "success" ? "text-success" :
+    tone === "warning" ? "text-warning" :
+    tone === "info" ? "text-info" : "";
   return (
     <div className="card-premium p-4">
       <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
