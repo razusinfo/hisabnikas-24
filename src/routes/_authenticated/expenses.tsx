@@ -356,8 +356,8 @@ function ExpensesPage() {
                             <Wallet className="h-4 w-4 text-success" />
                           </Button>
                         )}
-                        <Button size="icon" variant="ghost" onClick={() => openEdit(e)} title={t("edit")}><Pencil className="h-4 w-4" /></Button>
-                        <Button size="icon" variant="ghost" onClick={() => setDel(e)} title={t("delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                        {e.source !== "sale" && <Button size="icon" variant="ghost" onClick={() => openEdit(e)} title={t("edit")}><Pencil className="h-4 w-4" /></Button>}
+                        {e.source !== "sale" && <Button size="icon" variant="ghost" onClick={() => setDel(e)} title={t("delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>}
                       </div>
                     </td>
                   </tr>
