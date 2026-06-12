@@ -24,18 +24,47 @@ export const Route = createFileRoute("/_authenticated/expenses")({
 });
 
 async function fetchExpenses() {
-  const { data, error } = await (supabase as any)
-    .from("expenses")
-    .select("id,expense_date,description,amount,paid_amount,method,note,party_name,party_type,due_date,created_at")
-    .order("expense_date", { ascending: false })
-    .order("created_at", { ascending: false })
-    .limit(500);
-  if (error) throw error;
-  return data ?? [];
+  const [exp, sales] = await Promise.all([
+    (supabase as any)
+      .from("expenses")
+      .select("id,expense_date,description,amount,paid_amount,method,note,party_name,party_type,due_date,created_at")
+      .order("expense_date", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(500),
+    (supabase as any)
+      .from("sales")
+      .select("id,invoice_no,total,paid,due,payment_method,created_at,customer_id,customers(name)")
+      .gt("due", 0)
+      .order("created_at", { ascending: false })
+      .limit(500),
+  ]);
+  if (exp.error) throw exp.error;
+  if (sales.error) throw sales.error;
+  const expRows: DueRow[] = (exp.data ?? []).map((r: any) => ({ ...r, source: "expense" }));
+  const saleRows: DueRow[] = (sales.data ?? []).map((s: any) => ({
+    id: `sale:${s.id}`,
+    source: "sale",
+    sale_id: s.id,
+    customer_id: s.customer_id,
+    expense_date: (s.created_at as string).slice(0, 10),
+    description: `বিক্রয় #${s.invoice_no}`,
+    amount: Number(s.total || 0),
+    paid_amount: Number(s.paid || 0),
+    method: s.payment_method || "cash",
+    note: null,
+    party_name: s.customers?.name || "Walk-in",
+    party_type: "customer",
+    due_date: null,
+    created_at: s.created_at,
+  }));
+  return [...saleRows, ...expRows];
 }
 
 type DueRow = {
   id: string;
+  source?: "expense" | "sale";
+  sale_id?: string;
+  customer_id?: string | null;
   expense_date: string;
   description: string;
   amount: number;
