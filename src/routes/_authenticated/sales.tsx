@@ -91,8 +91,51 @@ function SalesPage() {
   async function openView(s: any) {
     setViewSale(s);
     setItems(null);
+    setEditing(false);
     const list = await fetchSaleItems(s.id);
     setItems(list);
+  }
+
+  function updateItem(id: string, patch: { qty?: number; unit_price?: number }) {
+    setItems((prev) => prev?.map((i) => {
+      if (i.id !== id) return i;
+      const next = { ...i, ...patch };
+      next.line_total = Number(next.qty || 0) * Number(next.unit_price || 0);
+      return next;
+    }) ?? null);
+  }
+
+  async function saveEdits() {
+    if (!viewSale || !items) return;
+    setSaving(true);
+    try {
+      for (const i of items) {
+        const { error } = await supabase
+          .from("sale_items")
+          .update({ qty: Number(i.qty), unit_price: Number(i.unit_price), line_total: Number(i.qty) * Number(i.unit_price) })
+          .eq("id", i.id);
+        if (error) throw error;
+      }
+      const subtotal = items.reduce((s, i) => s + Number(i.qty) * Number(i.unit_price), 0);
+      const discount = Number(viewSale.discount || 0);
+      const tax = Number(viewSale.tax || 0);
+      const total = Math.max(0, subtotal - discount + tax);
+      const paid = Number(viewSale.paid || 0);
+      const due = Math.max(0, total - paid);
+      const { error: e2 } = await supabase
+        .from("sales")
+        .update({ subtotal, total, due, status: due <= 0 ? "paid" : paid > 0 ? "partial" : "due" })
+        .eq("id", viewSale.id);
+      if (e2) throw e2;
+      toast.success(t("saved"));
+      setEditing(false);
+      setViewSale({ ...viewSale, subtotal, total, due });
+      qc.invalidateQueries({ queryKey: ["sales"] });
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function recordPayment() {
