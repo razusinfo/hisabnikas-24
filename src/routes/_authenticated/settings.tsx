@@ -22,6 +22,7 @@ type Profile = {
   company_name: string | null;
   language: string;
   currency: string;
+  logo_url: string | null;
 };
 
 const CURRENCIES = [
