@@ -22,6 +22,7 @@ type Profile = {
   company_name: string | null;
   language: string;
   currency: string;
+  logo_url: string | null;
 };
 
 const CURRENCIES = [
@@ -45,7 +46,7 @@ function SettingsPage() {
       if (!u.user) throw new Error("Not signed in");
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, company_name, language, currency")
+        .select("id, full_name, company_name, language, currency, logo_url")
         .eq("id", u.user.id)
         .single();
       if (error) throw error;
@@ -92,6 +93,60 @@ function SettingsPage() {
     onSuccess: () => {
       toast.success(t("settingsSaved"));
       setLang(language);
+      qc.invalidateQueries({ queryKey: ["profile", "me"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const logoUrlQuery = useQuery({
+    queryKey: ["logo-signed", profileQuery.data?.logo_url],
+    enabled: !!profileQuery.data?.logo_url,
+    queryFn: async () => {
+      const path = profileQuery.data!.logo_url!;
+      const { data, error } = await supabase.storage
+        .from("business-logos")
+        .createSignedUrl(path, 3600);
+      if (error) throw error;
+      return data.signedUrl;
+    },
+  });
+
+  const uploadLogo = useMutation({
+    mutationFn: async (file: File) => {
+      if (!profileQuery.data) throw new Error("No profile");
+      const ext = file.name.split(".").pop() || "png";
+      const path = `${profileQuery.data.id}/logo-${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("business-logos")
+        .upload(path, file, { upsert: true, contentType: file.type });
+      if (upErr) throw upErr;
+      if (profileQuery.data.logo_url) {
+        await supabase.storage.from("business-logos").remove([profileQuery.data.logo_url]);
+      }
+      const { error } = await supabase
+        .from("profiles")
+        .update({ logo_url: path })
+        .eq("id", profileQuery.data.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success(t("settingsSaved"));
+      qc.invalidateQueries({ queryKey: ["profile", "me"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const removeLogo = useMutation({
+    mutationFn: async () => {
+      if (!profileQuery.data?.logo_url) return;
+      await supabase.storage.from("business-logos").remove([profileQuery.data.logo_url]);
+      const { error } = await supabase
+        .from("profiles")
+        .update({ logo_url: null })
+        .eq("id", profileQuery.data.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["profile", "me"] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -147,6 +202,43 @@ function SettingsPage() {
             <div className="grid gap-2">
               <Label>{t("companyName")}</Label>
               <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
+            </div>
+            <div className="grid gap-2">
+              <Label>{t("businessLogo")}</Label>
+              <div className="flex items-center gap-4">
+                {logoUrlQuery.data ? (
+                  <img
+                    src={logoUrlQuery.data}
+                    alt="logo"
+                    className="h-16 w-16 rounded-md object-cover border"
+                  />
+                ) : (
+                  <div className="h-16 w-16 rounded-md border border-dashed flex items-center justify-center text-xs text-muted-foreground">
+                    —
+                  </div>
+                )}
+                <Input
+                  type="file"
+                  accept="image/*"
+                  className="max-w-xs"
+                  disabled={uploadLogo.isPending}
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) uploadLogo.mutate(f);
+                    e.target.value = "";
+                  }}
+                />
+                {profileQuery.data?.logo_url && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeLogo.mutate()}
+                    disabled={removeLogo.isPending}
+                  >
+                    {t("removeLogo")}
+                  </Button>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
