@@ -251,6 +251,15 @@ function ProductsPage() {
           <Search className="h-4 w-4 text-muted-foreground ml-2" />
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("search")} className="border-0 bg-transparent focus-visible:ring-0" />
         </div>
+        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("allCategories")}</SelectItem>
+            {categories.map((c) => (
+              <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Select value={lowOnly ? "low" : "all"} onValueChange={(v) => setLowOnly(v === "low")}>
           <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
