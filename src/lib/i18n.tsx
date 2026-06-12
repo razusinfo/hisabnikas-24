@@ -4,7 +4,7 @@ type Lang = "en" | "bn";
 
 const dict = {
   en: {
-    appName: "LedgerLux",
+    appName: "ব্যবসার হিসাব নিকাশ",
     tagline: "Inventory & Accounting OS",
     dashboard: "Dashboard",
     pos: "POS",
