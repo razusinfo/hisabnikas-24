@@ -9,12 +9,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Hash, Percent, FileText, CreditCard } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
 });
+
+type InvoiceSettings = {
+  prefix?: string;
+  nextNumber?: number;
+  defaultTax?: number;
+  defaultDiscount?: number;
+  footer?: string;
+  terms?: string;
+  notes?: string;
+  bankDetails?: string;
+  paymentInstructions?: string;
+};
 
 type Profile = {
   id: string;
@@ -23,6 +36,7 @@ type Profile = {
   language: string;
   currency: string;
   logo_url: string | null;
+  invoice_settings: InvoiceSettings | null;
 };
 
 const CURRENCIES = [
