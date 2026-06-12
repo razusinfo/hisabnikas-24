@@ -360,7 +360,17 @@ function SalesPage() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => viewSale && items && printInvoice(viewSale, items)}><Printer className="h-4 w-4 mr-2" />{t("print")}</Button>
-            <Button onClick={() => setViewSale(null)}>{t("close")}</Button>
+            {editing ? (
+              <>
+                <Button variant="ghost" onClick={async () => { setEditing(false); if (viewSale) setItems(await fetchSaleItems(viewSale.id)); }}>{t("cancel")}</Button>
+                <Button onClick={saveEdits} disabled={saving}><SaveIcon className="h-4 w-4 mr-2" />{t("save")}</Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" onClick={() => setEditing(true)} disabled={!items}><Pencil className="h-4 w-4 mr-2" />{t("edit")}</Button>
+                <Button onClick={() => setViewSale(null)}>{t("close")}</Button>
+              </>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
