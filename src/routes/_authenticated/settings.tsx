@@ -203,6 +203,43 @@ function SettingsPage() {
               <Label>{t("companyName")}</Label>
               <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
             </div>
+            <div className="grid gap-2">
+              <Label>{t("businessLogo")}</Label>
+              <div className="flex items-center gap-4">
+                {logoUrlQuery.data ? (
+                  <img
+                    src={logoUrlQuery.data}
+                    alt="logo"
+                    className="h-16 w-16 rounded-md object-cover border"
+                  />
+                ) : (
+                  <div className="h-16 w-16 rounded-md border border-dashed flex items-center justify-center text-xs text-muted-foreground">
+                    —
+                  </div>
+                )}
+                <Input
+                  type="file"
+                  accept="image/*"
+                  className="max-w-xs"
+                  disabled={uploadLogo.isPending}
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) uploadLogo.mutate(f);
+                    e.target.value = "";
+                  }}
+                />
+                {profileQuery.data?.logo_url && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeLogo.mutate()}
+                    disabled={removeLogo.isPending}
+                  >
+                    {t("removeLogo")}
+                  </Button>
+                )}
+              </div>
+            </div>
           </CardContent>
         </Card>
 
