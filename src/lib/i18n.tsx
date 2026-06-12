@@ -229,6 +229,7 @@ const dict = {
     inventory: "ইনভেন্টরি",
     reports: "রিপোর্ট",
     settings: "সেটিংস",
+    buyMessages: "মেসেজ কিনি",
     helpSupport: "হেল্প এন্ড সাপোর্ট",
     signIn: "সাইন ইন",
     signUp: "অ্যাকাউন্ট তৈরি",
