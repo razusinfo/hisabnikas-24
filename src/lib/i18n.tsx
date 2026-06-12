@@ -184,7 +184,6 @@ const dict = {
     appName: "হিসাব নিকাশ-২৪",
     tagline: "ইনভেন্টরি ও অ্যাকাউন্টিং",
     dashboard: "ড্যাশবোর্ড",
-    pos: "পস",
     sales: "বিক্রয় সমূহ",
     products: "পণ্য সমূহ",
     expenses: "বাকির হিসাব",
