@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney } from "@/lib/format";
-import { Plus, Search, Trash2 } from "lucide-react";
+import { Plus, Search, Trash2, Wallet } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/customers")({
@@ -32,6 +32,8 @@ function CustomersPage() {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", email: "", address: "" });
+  const [collectFor, setCollectFor] = useState<{ id: string; name: string; due: number } | null>(null);
+  const [collectAmount, setCollectAmount] = useState("");
 
   const create = useMutation({
     mutationFn: async () => {
@@ -59,6 +61,27 @@ function CustomersPage() {
       qc.invalidateQueries({ queryKey: ["customers"] });
     },
   });
+
+  const collect = useMutation({
+    mutationFn: async () => {
+      if (!collectFor) throw new Error("No customer");
+      const amount = Number(collectAmount);
+      if (!amount || amount <= 0) throw new Error("Invalid amount");
+      if (amount > collectFor.due) throw new Error("পরিমাণ বাকির চেয়ে বেশি");
+      const newDue = collectFor.due - amount;
+      const { error } = await supabase.from("customers").update({ due_balance: newDue }).eq("id", collectFor.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("পরিশোধ রেকর্ড হয়েছে");
+      setCollectFor(null);
+      setCollectAmount("");
+      qc.invalidateQueries({ queryKey: ["customers"] });
+      qc.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
 
   const filtered = data.filter((c) =>
     [c.name, c.phone, c.email].some((v) => v?.toLowerCase().includes(search.toLowerCase())),
@@ -117,13 +140,49 @@ function CustomersPage() {
                 <td className="py-3 px-4 text-muted-foreground">{c.email || "—"}</td>
                 <td className="py-3 px-4 text-right font-mono">{Number(c.due_balance) > 0 ? <span className="text-warning">{fmtMoney(c.due_balance)}</span> : "—"}</td>
                 <td className="py-3 px-4 text-right">
-                  <Button size="icon" variant="ghost" onClick={() => del.mutate(c.id)}><Trash2 className="h-4 w-4" /></Button>
+                  <div className="flex justify-end gap-1">
+                    {Number(c.due_balance) > 0 && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => { setCollectFor({ id: c.id, name: c.name, due: Number(c.due_balance) }); setCollectAmount(""); }}
+                      >
+                        <Wallet className="h-4 w-4" /> {"বাকি আদায়"}
+                      </Button>
+                    )}
+                    <Button size="icon" variant="ghost" onClick={() => del.mutate(c.id)}><Trash2 className="h-4 w-4" /></Button>
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      <Dialog open={!!collectFor} onOpenChange={(o) => !o && setCollectFor(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>{"বাকি আদায়"} — {collectFor?.name}</DialogTitle></DialogHeader>
+          <form onSubmit={(e) => { e.preventDefault(); collect.mutate(); }} className="space-y-3">
+            <div className="text-sm text-muted-foreground">
+              {t("due")}: <span className="font-mono text-warning">{fmtMoney(collectFor?.due ?? 0)}</span>
+            </div>
+            <div className="space-y-1.5">
+              <Label>{"পরিমাণ"}</Label>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                max={collectFor?.due}
+                required
+                value={collectAmount}
+                onChange={(e) => setCollectAmount(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <Button disabled={collect.isPending} className="w-full">{t("save")}</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
