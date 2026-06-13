@@ -67,13 +67,13 @@ function CustomersPage() {
       if (!collectFor) throw new Error("No customer");
       const amount = Number(collectAmount);
       if (!amount || amount <= 0) throw new Error("Invalid amount");
-      if (amount > collectFor.due) throw new Error(t("amountExceedsDue") || "Amount exceeds due");
+      if (amount > collectFor.due) throw new Error("পরিমাণ বাকির চেয়ে বেশি");
       const newDue = collectFor.due - amount;
       const { error } = await supabase.from("customers").update({ due_balance: newDue }).eq("id", collectFor.id);
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success(t("duePaymentRecorded") || "Payment recorded");
+      toast.success("পরিশোধ রেকর্ড হয়েছে");
       setCollectFor(null);
       setCollectAmount("");
       qc.invalidateQueries({ queryKey: ["customers"] });
