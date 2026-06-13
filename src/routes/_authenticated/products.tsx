@@ -383,6 +383,40 @@ function ProductsPage() {
         <DialogContent className="max-w-lg">
           <DialogHeader><DialogTitle>{editing ? t("editProduct") : t("addProduct")}</DialogTitle></DialogHeader>
           <form onSubmit={(e) => { e.preventDefault(); save.mutate(); }} className="space-y-3">
+            <div className="space-y-1.5">
+              <Label>ছবি / Image</Label>
+              <div className="flex items-center gap-3">
+                <div className="h-16 w-16 rounded-md border bg-muted/30 flex items-center justify-center overflow-hidden shrink-0">
+                  {formImageQuery.data ? (
+                    <img src={formImageQuery.data} alt="preview" className="h-full w-full object-cover" />
+                  ) : (
+                    <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                  )}
+                </div>
+                <div className="flex gap-2 flex-1">
+                  <label className="inline-flex">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) handleImageUpload(f);
+                        e.target.value = "";
+                      }}
+                    />
+                    <Button type="button" variant="outline" size="sm" disabled={uploading} asChild>
+                      <span><Upload className="h-3.5 w-3.5 mr-1.5" />{uploading ? "..." : "Upload"}</span>
+                    </Button>
+                  </label>
+                  {form.image_url && (
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setForm((f) => ({ ...f, image_url: "" }))}>
+                      <X className="h-3.5 w-3.5 mr-1.5" />Remove
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
             <div className="space-y-1.5"><Label>{t("name")}</Label><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5"><Label>{t("sku")}</Label><Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} /></div>
