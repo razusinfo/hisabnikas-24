@@ -28,6 +28,7 @@ type Product = {
   stock: number;
   low_stock_threshold: number;
   category_id: string | null;
+  image_url: string | null;
 };
 
 type Category = { id: string; name: string };
@@ -35,7 +36,7 @@ type Category = { id: string; name: string };
 const emptyForm = {
   name: "", sku: "", barcode: "", unit: "pcs",
   cost_price: "0", sell_price: "0", stock: "0", low_stock_threshold: "5",
-  category_id: "",
+  category_id: "", image_url: "" as string,
 };
 
 async function fetchProducts() {
