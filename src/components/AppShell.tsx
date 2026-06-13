@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard,
   Receipt,
@@ -41,20 +41,49 @@ export function AppShell({ children }: { children: ReactNode }) {
     navigate({ to: "/auth", replace: true });
   };
 
+  const brandQuery = useQuery({
+    queryKey: ["app-brand"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return { name: null as string | null, logoUrl: null as string | null };
+      const { data: p } = await supabase
+        .from("profiles")
+        .select("company_name, logo_url")
+        .eq("id", u.user.id)
+        .maybeSingle();
+      let logoUrl: string | null = null;
+      if (p?.logo_url) {
+        const { data: signed } = await supabase.storage
+          .from("business-logos")
+          .createSignedUrl(p.logo_url, 60 * 60);
+        logoUrl = signed?.signedUrl ?? null;
+      }
+      return { name: p?.company_name ?? null, logoUrl };
+    },
+  });
+
+  const brandName = brandQuery.data?.name || t("appName");
+  const brandLogo = brandQuery.data?.logoUrl;
+
   return (
     <div className="min-h-screen flex bg-background text-foreground">
       <aside className="w-64 shrink-0 bg-sidebar border-r border-sidebar-border flex flex-col">
         <div className="px-6 py-6">
           <Link to="/dashboard" className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl flex items-center justify-center bg-primary/15 ring-1 ring-primary/30">
-              <Sparkles className="h-4 w-4 text-primary" />
+            <div className="h-9 w-9 rounded-xl flex items-center justify-center bg-primary/15 ring-1 ring-primary/30 overflow-hidden">
+              {brandLogo ? (
+                <img src={brandLogo} alt="logo" className="h-full w-full object-cover" />
+              ) : (
+                <Sparkles className="h-4 w-4 text-primary" />
+              )}
             </div>
             <div className="leading-tight">
-              <div className="font-display text-base font-semibold tracking-tight">{t("appName")}</div>
+              <div className="font-display text-base font-semibold tracking-tight">{brandName}</div>
               <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{t("tagline")}</div>
             </div>
           </Link>
         </div>
+
 
         <nav className="flex-1 px-3 space-y-0.5">
           {nav.map((item) => {
