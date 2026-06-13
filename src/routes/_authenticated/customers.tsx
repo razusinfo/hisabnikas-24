@@ -140,13 +140,49 @@ function CustomersPage() {
                 <td className="py-3 px-4 text-muted-foreground">{c.email || "—"}</td>
                 <td className="py-3 px-4 text-right font-mono">{Number(c.due_balance) > 0 ? <span className="text-warning">{fmtMoney(c.due_balance)}</span> : "—"}</td>
                 <td className="py-3 px-4 text-right">
-                  <Button size="icon" variant="ghost" onClick={() => del.mutate(c.id)}><Trash2 className="h-4 w-4" /></Button>
+                  <div className="flex justify-end gap-1">
+                    {Number(c.due_balance) > 0 && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => { setCollectFor({ id: c.id, name: c.name, due: Number(c.due_balance) }); setCollectAmount(""); }}
+                      >
+                        <Wallet className="h-4 w-4" /> {t("collectDue") || "বাকি আদায়"}
+                      </Button>
+                    )}
+                    <Button size="icon" variant="ghost" onClick={() => del.mutate(c.id)}><Trash2 className="h-4 w-4" /></Button>
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      <Dialog open={!!collectFor} onOpenChange={(o) => !o && setCollectFor(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>{t("collectDue") || "বাকি আদায়"} — {collectFor?.name}</DialogTitle></DialogHeader>
+          <form onSubmit={(e) => { e.preventDefault(); collect.mutate(); }} className="space-y-3">
+            <div className="text-sm text-muted-foreground">
+              {t("due")}: <span className="font-mono text-warning">{fmtMoney(collectFor?.due ?? 0)}</span>
+            </div>
+            <div className="space-y-1.5">
+              <Label>{t("amount") || "পরিমাণ"}</Label>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                max={collectFor?.due}
+                required
+                value={collectAmount}
+                onChange={(e) => setCollectAmount(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <Button disabled={collect.isPending} className="w-full">{t("save")}</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
