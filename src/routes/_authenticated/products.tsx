@@ -89,6 +89,57 @@ function ProductsPage() {
   // Delete
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
 
+  // Image upload
+  const [uploading, setUploading] = useState(false);
+  const handleImageUpload = async (file: File) => {
+    try {
+      setUploading(true);
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) throw new Error("Not signed in");
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `${u.user.id}/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("product-images").upload(path, file, { upsert: false });
+      if (error) throw error;
+      setForm((f) => ({ ...f, image_url: path }));
+      toast.success("✓");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Signed URLs for product images (private bucket)
+  const imagePaths = useMemo(
+    () => Array.from(new Set(data.map((p) => p.image_url).filter(Boolean) as string[])),
+    [data],
+  );
+  const signedQuery = useQuery({
+    queryKey: ["product-image-urls", imagePaths],
+    enabled: imagePaths.length > 0,
+    queryFn: async () => {
+      const map: Record<string, string> = {};
+      await Promise.all(
+        imagePaths.map(async (p) => {
+          const { data } = await supabase.storage.from("product-images").createSignedUrl(p, 60 * 60);
+          if (data?.signedUrl) map[p] = data.signedUrl;
+        }),
+      );
+      return map;
+    },
+  });
+  const signedMap = signedQuery.data ?? {};
+
+  // Signed URL for current form preview
+  const formImageQuery = useQuery({
+    queryKey: ["product-image-form", form.image_url],
+    enabled: !!form.image_url,
+    queryFn: async () => {
+      const { data } = await supabase.storage.from("product-images").createSignedUrl(form.image_url, 60 * 60);
+      return data?.signedUrl ?? null;
+    },
+  });
+
   const openCreate = () => {
     setEditing(null);
     setForm(emptyForm);
