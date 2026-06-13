@@ -338,42 +338,44 @@ function SalesPage() {
       : `<span class="badge badge-paid">${esc(t("statusPaid"))}</span>`;
     w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(s.invoice_no)}</title>
       <style>
+        @page{size:8in 6in landscape;margin:0.25in}
         *{box-sizing:border-box}
-        body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#0f172a;margin:0;padding:32px;background:#fff}
-        .sheet{max-width:780px;margin:0 auto}
-        .top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;padding-bottom:20px;border-bottom:3px solid #0f172a}
-        .brand{display:flex;gap:14px;align-items:center}
-        .brand img{height:56px;width:56px;object-fit:contain;border-radius:8px;border:1px solid #e2e8f0;background:#fff}
-        .brand .biz{font-size:22px;font-weight:700;letter-spacing:-0.01em}
-        .brand .owner{font-size:12px;color:#64748b;margin-top:2px}
+        html,body{width:8in}
+        body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#0f172a;margin:0;padding:0.25in;background:#fff;font-size:11px}
+        .sheet{width:100%;max-width:7.5in;margin:0 auto}
+        .top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding-bottom:10px;border-bottom:2px solid #0f172a}
+        .brand{display:flex;gap:10px;align-items:center}
+        .brand img{height:42px;width:42px;object-fit:contain;border-radius:6px;border:1px solid #e2e8f0;background:#fff}
+        .brand .biz{font-size:16px;font-weight:700;letter-spacing:-0.01em}
+        .brand .owner{font-size:10px;color:#64748b;margin-top:1px}
         .meta{text-align:right}
-        .meta h1{font-size:26px;margin:0;letter-spacing:0.08em;color:#0f172a;font-weight:800}
-        .meta .no{font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#334155;margin-top:4px}
-        .meta .date{font-size:12px;color:#64748b;margin-top:2px}
-        .row{display:flex;justify-content:space-between;gap:24px;margin-top:20px}
-        .card{flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px}
-        .card .lbl{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:4px}
-        .card .val{font-size:14px;font-weight:600}
-        .card .sub{font-size:12px;color:#64748b;margin-top:2px}
-        table.items{width:100%;border-collapse:collapse;margin-top:22px;font-size:13px}
-        table.items thead th{background:#0f172a;color:#fff;text-align:left;padding:10px 12px;font-weight:600;font-size:11px;letter-spacing:0.06em;text-transform:uppercase}
+        .meta h1{font-size:18px;margin:0;letter-spacing:0.08em;color:#0f172a;font-weight:800}
+        .meta .no{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#334155;margin-top:2px}
+        .meta .date{font-size:10px;color:#64748b;margin-top:1px}
+        .row{display:flex;justify-content:space-between;gap:12px;margin-top:10px}
+        .card{flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px}
+        .card .lbl{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:2px}
+        .card .val{font-size:12px;font-weight:600}
+        .card .sub{font-size:10px;color:#64748b;margin-top:1px}
+        table.items{width:100%;border-collapse:collapse;margin-top:10px;font-size:11px}
+        table.items thead th{background:#0f172a;color:#fff;text-align:left;padding:5px 8px;font-weight:600;font-size:10px;letter-spacing:0.05em;text-transform:uppercase}
         table.items thead th.right{text-align:right}
-        table.items tbody td{padding:10px 12px;border-bottom:1px solid #e2e8f0}
+        table.items tbody td{padding:5px 8px;border-bottom:1px solid #e2e8f0}
         table.items tbody tr:nth-child(even) td{background:#f8fafc}
         .right{text-align:right}.num{font-family:ui-monospace,Menlo,monospace}
-        .totals{margin-top:18px;margin-left:auto;width:320px;font-size:13px}
-        .totals .line{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #e2e8f0}
-        .totals .line.grand{border-top:2px solid #0f172a;border-bottom:2px solid #0f172a;margin-top:6px;padding:10px 0;font-size:15px;font-weight:700}
+        .totals{margin-top:8px;margin-left:auto;width:260px;font-size:11px}
+        .totals .line{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px dashed #e2e8f0}
+        .totals .line.grand{border-top:2px solid #0f172a;border-bottom:2px solid #0f172a;margin-top:3px;padding:5px 0;font-size:13px;font-weight:700}
         .totals .line.paid{color:#16a34a}
         .totals .line.due{color:#dc2626;font-weight:600}
-        .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:0.04em}
+        .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;letter-spacing:0.04em}
         .badge-paid{background:#dcfce7;color:#15803d}
         .badge-due{background:#fee2e2;color:#b91c1c}
-        .footer{margin-top:36px;padding-top:18px;border-top:1px solid #e2e8f0;font-size:12px;color:#475569;display:grid;gap:10px}
-        .footer h4{margin:0 0 4px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#0f172a}
-        .footer p{margin:0;white-space:pre-wrap;line-height:1.5}
-        .thanks{margin-top:24px;text-align:center;font-size:13px;color:#0f172a;font-weight:600}
-        @media print{body{padding:0}.sheet{max-width:none}}
+        .footer{margin-top:14px;padding-top:8px;border-top:1px solid #e2e8f0;font-size:10px;color:#475569;display:grid;gap:6px}
+        .footer h4{margin:0 0 2px;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:#0f172a}
+        .footer p{margin:0;white-space:pre-wrap;line-height:1.4}
+        .thanks{margin-top:10px;text-align:center;font-size:11px;color:#0f172a;font-weight:600}
+        @media print{body{padding:0.2in}.sheet{max-width:none}}
       </style></head><body><div class="sheet">
       <div class="top">
         <div class="brand">
