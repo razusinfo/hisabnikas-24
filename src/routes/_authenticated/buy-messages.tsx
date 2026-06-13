@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AppShell, PageHeader } from "@/components/AppShell";
+import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/buy-messages")({
@@ -9,11 +9,9 @@ export const Route = createFileRoute("/_authenticated/buy-messages")({
 function BuyMessagesPage() {
   const { t } = useI18n();
   return (
-    <AppShell>
-      <div className="p-8">
-        <PageHeader title={t("buyMessages")} />
-        <p className="text-muted-foreground">{t("noData")}</p>
-      </div>
-    </AppShell>
+    <div className="p-8">
+      <PageHeader title={t("buyMessages")} />
+      <p className="text-muted-foreground">{t("noData")}</p>
+    </div>
   );
 }

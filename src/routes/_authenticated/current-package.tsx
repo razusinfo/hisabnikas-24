@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AppShell, PageHeader } from "@/components/AppShell";
+import { PageHeader } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -127,8 +127,7 @@ function CurrentPackagePage() {
   ];
 
   return (
-    <AppShell>
-      <div className="p-8 max-w-6xl">
+    <div className="p-8 max-w-6xl">
         <PageHeader title={t("currentPackage")} subtitle={t("packageSubtitle")} />
 
         {sub.isLoading ? (
@@ -217,7 +216,6 @@ function CurrentPackagePage() {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-    </AppShell>
   );
 }
 
