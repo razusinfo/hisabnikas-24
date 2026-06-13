@@ -450,6 +450,6 @@ function SettingsPage() {
           </CardContent>
         </Card>
       </div>
-    </AppShell>
   );
+}
 }
