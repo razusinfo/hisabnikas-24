@@ -62,6 +62,27 @@ function CustomersPage() {
     },
   });
 
+  const collect = useMutation({
+    mutationFn: async () => {
+      if (!collectFor) throw new Error("No customer");
+      const amount = Number(collectAmount);
+      if (!amount || amount <= 0) throw new Error("Invalid amount");
+      if (amount > collectFor.due) throw new Error(t("amountExceedsDue") || "Amount exceeds due");
+      const newDue = collectFor.due - amount;
+      const { error } = await supabase.from("customers").update({ due_balance: newDue }).eq("id", collectFor.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success(t("duePaymentRecorded") || "Payment recorded");
+      setCollectFor(null);
+      setCollectAmount("");
+      qc.invalidateQueries({ queryKey: ["customers"] });
+      qc.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+
   const filtered = data.filter((c) =>
     [c.name, c.phone, c.email].some((v) => v?.toLowerCase().includes(search.toLowerCase())),
   );
