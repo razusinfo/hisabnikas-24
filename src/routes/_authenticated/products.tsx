@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney, fmtNum } from "@/lib/format";
-import { Plus, Search, Trash2, Package, Pencil, Boxes, AlertTriangle } from "lucide-react";
+import { Plus, Search, Trash2, Package, Pencil, Boxes, AlertTriangle, Image as ImageIcon, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 
 type Product = {
