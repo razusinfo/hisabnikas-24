@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSuspenseQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney, fmtNum } from "@/lib/format";
-import { Plus, Search, Trash2, Package, Pencil, Boxes, AlertTriangle } from "lucide-react";
+import { Plus, Search, Trash2, Package, Pencil, Boxes, AlertTriangle, Image as ImageIcon, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 
 type Product = {
@@ -28,6 +28,7 @@ type Product = {
   stock: number;
   low_stock_threshold: number;
   category_id: string | null;
+  image_url: string | null;
 };
 
 type Category = { id: string; name: string };
@@ -35,7 +36,7 @@ type Category = { id: string; name: string };
 const emptyForm = {
   name: "", sku: "", barcode: "", unit: "pcs",
   cost_price: "0", sell_price: "0", stock: "0", low_stock_threshold: "5",
-  category_id: "",
+  category_id: "", image_url: "" as string,
 };
 
 async function fetchProducts() {
@@ -88,6 +89,57 @@ function ProductsPage() {
   // Delete
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
 
+  // Image upload
+  const [uploading, setUploading] = useState(false);
+  const handleImageUpload = async (file: File) => {
+    try {
+      setUploading(true);
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) throw new Error("Not signed in");
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `${u.user.id}/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("product-images").upload(path, file, { upsert: false });
+      if (error) throw error;
+      setForm((f) => ({ ...f, image_url: path }));
+      toast.success("✓");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Signed URLs for product images (private bucket)
+  const imagePaths = useMemo(
+    () => Array.from(new Set(data.map((p) => p.image_url).filter(Boolean) as string[])),
+    [data],
+  );
+  const signedQuery = useQuery({
+    queryKey: ["product-image-urls", imagePaths],
+    enabled: imagePaths.length > 0,
+    queryFn: async () => {
+      const map: Record<string, string> = {};
+      await Promise.all(
+        imagePaths.map(async (p) => {
+          const { data } = await supabase.storage.from("product-images").createSignedUrl(p, 60 * 60);
+          if (data?.signedUrl) map[p] = data.signedUrl;
+        }),
+      );
+      return map;
+    },
+  });
+  const signedMap = signedQuery.data ?? {};
+
+  // Signed URL for current form preview
+  const formImageQuery = useQuery({
+    queryKey: ["product-image-form", form.image_url],
+    enabled: !!form.image_url,
+    queryFn: async () => {
+      const { data } = await supabase.storage.from("product-images").createSignedUrl(form.image_url, 60 * 60);
+      return data?.signedUrl ?? null;
+    },
+  });
+
   const openCreate = () => {
     setEditing(null);
     setForm(emptyForm);
@@ -99,7 +151,7 @@ function ProductsPage() {
       name: p.name, sku: p.sku ?? "", barcode: p.barcode ?? "", unit: p.unit,
       cost_price: String(p.cost_price), sell_price: String(p.sell_price),
       stock: String(p.stock), low_stock_threshold: String(p.low_stock_threshold),
-      category_id: p.category_id ?? "",
+      category_id: p.category_id ?? "", image_url: p.image_url ?? "",
     });
     setOpen(true);
   };
@@ -138,6 +190,7 @@ function ProductsPage() {
         stock: Number(form.stock) || 0,
         low_stock_threshold: Number(form.low_stock_threshold) || 0,
         category_id: form.category_id || null,
+        image_url: form.image_url || null,
       };
       if (editing) {
         const { error } = await supabase.from("products").update(payload).eq("id", editing.id);
@@ -288,8 +341,12 @@ function ProductsPage() {
           return (
             <div key={p.id} className="card-premium p-2.5 group">
               <div className="flex items-start justify-between">
-                <div className="h-7 w-7 rounded-md bg-primary/10 flex items-center justify-center">
-                  <Package className="h-3.5 w-3.5 text-primary" />
+                <div className="h-12 w-12 rounded-md bg-primary/10 flex items-center justify-center overflow-hidden">
+                  {p.image_url && signedMap[p.image_url] ? (
+                    <img src={signedMap[p.image_url]} alt={p.name} className="h-full w-full object-cover" />
+                  ) : (
+                    <Package className="h-4 w-4 text-primary" />
+                  )}
                 </div>
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
                   <Button size="icon" variant="ghost" className="h-6 w-6" title={t("adjustStock")} onClick={() => { setStockTarget(p); setStockVal(String(p.stock)); }}><Boxes className="h-3 w-3" /></Button>
@@ -326,6 +383,40 @@ function ProductsPage() {
         <DialogContent className="max-w-lg">
           <DialogHeader><DialogTitle>{editing ? t("editProduct") : t("addProduct")}</DialogTitle></DialogHeader>
           <form onSubmit={(e) => { e.preventDefault(); save.mutate(); }} className="space-y-3">
+            <div className="space-y-1.5">
+              <Label>ছবি / Image</Label>
+              <div className="flex items-center gap-3">
+                <div className="h-16 w-16 rounded-md border bg-muted/30 flex items-center justify-center overflow-hidden shrink-0">
+                  {formImageQuery.data ? (
+                    <img src={formImageQuery.data} alt="preview" className="h-full w-full object-cover" />
+                  ) : (
+                    <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                  )}
+                </div>
+                <div className="flex gap-2 flex-1">
+                  <label className="inline-flex">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) handleImageUpload(f);
+                        e.target.value = "";
+                      }}
+                    />
+                    <Button type="button" variant="outline" size="sm" disabled={uploading} asChild>
+                      <span><Upload className="h-3.5 w-3.5 mr-1.5" />{uploading ? "..." : "Upload"}</span>
+                    </Button>
+                  </label>
+                  {form.image_url && (
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setForm((f) => ({ ...f, image_url: "" }))}>
+                      <X className="h-3.5 w-3.5 mr-1.5" />Remove
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
             <div className="space-y-1.5"><Label>{t("name")}</Label><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5"><Label>{t("sku")}</Label><Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} /></div>
