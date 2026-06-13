@@ -216,7 +216,6 @@ function CurrentPackagePage() {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-    </AppShell>
   );
 }
 
