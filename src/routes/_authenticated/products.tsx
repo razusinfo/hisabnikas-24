@@ -139,6 +139,7 @@ function ProductsPage() {
         stock: Number(form.stock) || 0,
         low_stock_threshold: Number(form.low_stock_threshold) || 0,
         category_id: form.category_id || null,
+        image_url: form.image_url || null,
       };
       if (editing) {
         const { error } = await supabase.from("products").update(payload).eq("id", editing.id);
