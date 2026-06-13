@@ -106,7 +106,6 @@ function SalesPage() {
       if (error) throw error;
       return (data ?? []).map((p: any) => ({ ...p, price: p.sell_price }));
       if (error) throw error;
-      return data ?? [];
     },
     enabled: openNew,
   });
