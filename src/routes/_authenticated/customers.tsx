@@ -147,7 +147,7 @@ function CustomersPage() {
                         variant="outline"
                         onClick={() => { setCollectFor({ id: c.id, name: c.name, due: Number(c.due_balance) }); setCollectAmount(""); }}
                       >
-                        <Wallet className="h-4 w-4" /> {t("collectDue") || "বাকি আদায়"}
+                        <Wallet className="h-4 w-4" /> {"বাকি আদায়"}
                       </Button>
                     )}
                     <Button size="icon" variant="ghost" onClick={() => del.mutate(c.id)}><Trash2 className="h-4 w-4" /></Button>
@@ -161,13 +161,13 @@ function CustomersPage() {
 
       <Dialog open={!!collectFor} onOpenChange={(o) => !o && setCollectFor(null)}>
         <DialogContent>
-          <DialogHeader><DialogTitle>{t("collectDue") || "বাকি আদায়"} — {collectFor?.name}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{"বাকি আদায়"} — {collectFor?.name}</DialogTitle></DialogHeader>
           <form onSubmit={(e) => { e.preventDefault(); collect.mutate(); }} className="space-y-3">
             <div className="text-sm text-muted-foreground">
               {t("due")}: <span className="font-mono text-warning">{fmtMoney(collectFor?.due ?? 0)}</span>
             </div>
             <div className="space-y-1.5">
-              <Label>{t("amount") || "পরিমাণ"}</Label>
+              <Label>{"পরিমাণ"}</Label>
               <Input
                 type="number"
                 step="0.01"
