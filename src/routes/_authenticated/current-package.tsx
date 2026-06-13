@@ -127,8 +127,7 @@ function CurrentPackagePage() {
   ];
 
   return (
-    <AppShell>
-      <div className="p-8 max-w-6xl">
+    <div className="p-8 max-w-6xl">
         <PageHeader title={t("currentPackage")} subtitle={t("packageSubtitle")} />
 
         {sub.isLoading ? (
