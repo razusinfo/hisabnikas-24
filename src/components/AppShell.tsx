@@ -58,13 +58,6 @@ function LangToggle({ compact = false }: { compact?: boolean }) {
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
-type NavItem = {
-  to: string;
-  icon: typeof LayoutDashboard;
-  key: string;
-  color: string;
-};
-
 const colorStyles: Record<string, { activeBg: string; activeText: string; activeRing: string; inactiveText: string; inactiveHoverText: string; inactiveHoverBg: string; dot: string }> = {
   blue: { activeBg: "bg-sky-100", activeText: "text-sky-700", activeRing: "ring-sky-200", inactiveText: "text-sky-500", inactiveHoverText: "hover:text-sky-700", inactiveHoverBg: "hover:bg-sky-50", dot: "bg-sky-500" },
   emerald: { activeBg: "bg-emerald-100", activeText: "text-emerald-700", activeRing: "ring-emerald-200", inactiveText: "text-emerald-500", inactiveHoverText: "hover:text-emerald-700", inactiveHoverBg: "hover:bg-emerald-50", dot: "bg-emerald-500" },
@@ -79,20 +72,20 @@ const colorStyles: Record<string, { activeBg: string; activeText: string; active
   red: { activeBg: "bg-red-100", activeText: "text-red-700", activeRing: "ring-red-200", inactiveText: "text-red-500", inactiveHoverText: "hover:text-red-700", inactiveHoverBg: "hover:bg-red-50", dot: "bg-red-500" },
 };
 
-const nav: NavItem[] = [
-  { to: "/dashboard", icon: LayoutDashboard, key: "dashboard", color: "blue" },
-  { to: "/sales", icon: Receipt, key: "sales", color: "emerald" },
-  { to: "/purchases", icon: ShoppingCart, key: "purchases", color: "amber" },
-  { to: "/products", icon: Package, key: "products", color: "violet" },
-  { to: "/expenses", icon: Wallet, key: "expenses", color: "rose" },
-  { to: "/customers", icon: Users, key: "customers", color: "cyan" },
+const nav = [
+  { to: "/dashboard", icon: LayoutDashboard, key: "dashboard" as const, color: "blue" },
+  { to: "/sales", icon: Receipt, key: "sales" as const, color: "emerald" },
+  { to: "/purchases", icon: ShoppingCart, key: "purchases" as const, color: "amber" },
+  { to: "/products", icon: Package, key: "products" as const, color: "violet" },
+  { to: "/expenses", icon: Wallet, key: "expenses" as const, color: "rose" },
+  { to: "/customers", icon: Users, key: "customers" as const, color: "cyan" },
 ];
 
-const footerNav: NavItem[] = [
-  { to: "/settings", icon: Settings, key: "settings", color: "slate" },
-  { to: "/buy-messages", icon: MessageSquare, key: "buyMessages", color: "teal" },
-  { to: "/help", icon: HelpCircle, key: "helpSupport", color: "orange" },
-  { to: "/current-package", icon: Sparkles, key: "currentPackage", color: "indigo" },
+const footerNav = [
+  { to: "/settings", icon: Settings, key: "settings" as const, color: "slate" },
+  { to: "/buy-messages", icon: MessageSquare, key: "buyMessages" as const, color: "teal" },
+  { to: "/help", icon: HelpCircle, key: "helpSupport" as const, color: "orange" },
+  { to: "/current-package", icon: Sparkles, key: "currentPackage" as const, color: "indigo" },
 ];
 
 function SidebarContent({
