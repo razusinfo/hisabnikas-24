@@ -221,8 +221,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             brandName={brandName}
             brandLogo={brandLogo}
             searchSlot={
-              <div className="px-6 pb-3">
+              <div className="px-6 pb-3 space-y-2">
                 <SearchTrigger className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm text-sidebar-foreground/70 bg-sidebar-accent/40 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors" />
+                <LangToggle />
               </div>
             }
           />
