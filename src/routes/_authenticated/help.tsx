@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_authenticated/help")({
 function HelpPage() {
   const { t } = useI18n();
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <PageHeader title={t("helpSupport")} />
       <p className="text-muted-foreground">{t("noData")}</p>
     </div>
