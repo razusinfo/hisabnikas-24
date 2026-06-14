@@ -19,6 +19,41 @@ import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { SearchProvider, SearchTrigger, SearchIconButton } from "@/components/GlobalSearch";
+
+function LangToggle({ compact = false }: { compact?: boolean }) {
+  const { lang, setLang } = useI18n();
+  const base =
+    "rounded-md text-xs font-semibold transition-colors " +
+    (compact ? "px-2 py-1.5 h-8" : "px-3 py-2 h-9");
+  return (
+    <div className={cn("inline-flex items-center gap-1", compact ? "" : "w-full")}>
+      <button
+        onClick={() => setLang("en")}
+        className={cn(
+          base,
+          lang === "en"
+            ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
+            : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
+        )}
+        aria-pressed={lang === "en"}
+      >
+        EN
+      </button>
+      <button
+        onClick={() => setLang("bn")}
+        className={cn(
+          base,
+          lang === "bn"
+            ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
+            : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
+        )}
+        aria-pressed={lang === "bn"}
+      >
+        বাং
+      </button>
+    </div>
+  );
+}
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
