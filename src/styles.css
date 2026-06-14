@@ -48,6 +48,21 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
+  --color-card-blue: var(--card-blue);
+  --color-card-blue-fg: var(--card-blue-fg);
+  --color-card-green: var(--card-green);
+  --color-card-green-fg: var(--card-green-fg);
+  --color-card-purple: var(--card-purple);
+  --color-card-purple-fg: var(--card-purple-fg);
+  --color-card-amber: var(--card-amber);
+  --color-card-amber-fg: var(--card-amber-fg);
+  --color-card-teal: var(--card-teal);
+  --color-card-teal-fg: var(--card-teal-fg);
+  --color-card-indigo: var(--card-indigo);
+  --color-card-indigo-fg: var(--card-indigo-fg);
+  --color-card-rose: var(--card-rose);
+  --color-card-rose-fg: var(--card-rose-fg);
+
   --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk", "Plus Jakarta Sans", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
