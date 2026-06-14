@@ -49,19 +49,14 @@ function CurrentPackagePage() {
     mutationFn: async (plan: PlanId) => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) throw new Error("Not authenticated");
-      const now = new Date();
-      const expires = plan === "free" ? null : new Date(now.getTime() + 30 * 24 * 3600 * 1000).toISOString();
-      const { error } = await supabase.from("subscriptions").upsert(
-        {
-          user_id: u.user.id,
-          plan,
-          status: "active",
-          started_at: now.toISOString(),
-          expires_at: expires,
-        },
-        { onConflict: "user_id" },
-      );
-      if (error) throw error;
+      if (plan === "free") {
+        const { error } = await (supabase as any).rpc("activate_free_plan");
+        if (error) throw error;
+        return;
+      }
+      // Paid plans must be activated server-side after payment verification.
+      // Client-side upgrades are intentionally blocked to prevent bypassing payment.
+      throw new Error("Paid plans require payment. Please contact support to upgrade.");
     },
     onSuccess: () => {
       toast.success(t("activated"));
@@ -73,6 +68,7 @@ function CurrentPackagePage() {
       setPending(null);
     },
   });
+
 
   const currentPlan = (sub.data?.plan ?? "free") as PlanId;
 
