@@ -43,11 +43,13 @@ function SidebarContent({
   onSignOut,
   brandName,
   brandLogo,
+  searchSlot,
 }: {
   onNavigate?: () => void;
   onSignOut: () => void;
   brandName: string;
   brandLogo: string | null | undefined;
+  searchSlot?: ReactNode;
 }) {
   const { t } = useI18n();
   const loc = useLocation();
