@@ -139,7 +139,7 @@ function SidebarContent({
         </Link>
       </div>
       {searchSlot}
-      <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto">
+      <nav className="flex-1 px-3 space-y-1.5 overflow-y-auto">
         {nav.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
@@ -149,15 +149,14 @@ function SidebarContent({
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
-                active
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
-                  : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60",
+                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+                colorClass[item.color],
+                active && "ring-2 ring-primary/40 shadow-sm",
               )}
             >
-              <Icon className={cn("h-4 w-4 shrink-0", active ? "text-primary" : "")} />
+              <Icon className="h-4 w-4 shrink-0" />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary shrink-0" />}
+              {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-current shrink-0" />}
             </Link>
           );
         })}
