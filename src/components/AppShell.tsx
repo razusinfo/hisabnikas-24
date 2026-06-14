@@ -59,20 +59,30 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { Button } from "@/components/ui/button";
 
 const nav = [
-  { to: "/dashboard", icon: LayoutDashboard, key: "dashboard" as const },
-  { to: "/sales", icon: Receipt, key: "sales" as const },
-  { to: "/purchases", icon: ShoppingCart, key: "purchases" as const },
-  { to: "/products", icon: Package, key: "products" as const },
-  { to: "/expenses", icon: Wallet, key: "expenses" as const },
-  { to: "/customers", icon: Users, key: "customers" as const },
+  { to: "/dashboard", icon: LayoutDashboard, key: "dashboard" as const, color: "blue" },
+  { to: "/sales", icon: Receipt, key: "sales" as const, color: "green" },
+  { to: "/purchases", icon: ShoppingCart, key: "purchases" as const, color: "purple" },
+  { to: "/products", icon: Package, key: "products" as const, color: "amber" },
+  { to: "/expenses", icon: Wallet, key: "expenses" as const, color: "rose" },
+  { to: "/customers", icon: Users, key: "customers" as const, color: "teal" },
 ];
 
 const footerNav = [
-  { to: "/settings", icon: Settings, key: "settings" as const },
-  { to: "/buy-messages", icon: MessageSquare, key: "buyMessages" as const },
-  { to: "/help", icon: HelpCircle, key: "helpSupport" as const },
-  { to: "/current-package", icon: Sparkles, key: "currentPackage" as const },
+  { to: "/settings", icon: Settings, key: "settings" as const, color: "indigo" },
+  { to: "/buy-messages", icon: MessageSquare, key: "buyMessages" as const, color: "blue" },
+  { to: "/help", icon: HelpCircle, key: "helpSupport" as const, color: "teal" },
+  { to: "/current-package", icon: Sparkles, key: "currentPackage" as const, color: "amber" },
 ];
+
+const colorClass: Record<string, string> = {
+  blue: "bg-card-blue text-card-blue-fg hover:bg-card-blue/80",
+  green: "bg-card-green text-card-green-fg hover:bg-card-green/80",
+  purple: "bg-card-purple text-card-purple-fg hover:bg-card-purple/80",
+  amber: "bg-card-amber text-card-amber-fg hover:bg-card-amber/80",
+  rose: "bg-card-rose text-card-rose-fg hover:bg-card-rose/80",
+  teal: "bg-card-teal text-card-teal-fg hover:bg-card-teal/80",
+  indigo: "bg-card-indigo text-card-indigo-fg hover:bg-card-indigo/80",
+};
 
 function SidebarContent({
   onNavigate,
@@ -107,7 +117,7 @@ function SidebarContent({
   const effectiveFooter = superAdminQ.data
     ? [
         ...footerNav,
-        { to: "/admin-payments", icon: ShieldCheck, key: "adminPayments" as const },
+        { to: "/admin-payments", icon: ShieldCheck, key: "adminPayments" as const, color: "purple" },
       ]
     : footerNav;
 
@@ -129,7 +139,7 @@ function SidebarContent({
         </Link>
       </div>
       {searchSlot}
-      <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto">
+      <nav className="flex-1 px-3 space-y-1.5 overflow-y-auto">
         {nav.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
@@ -139,15 +149,14 @@ function SidebarContent({
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
-                active
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
-                  : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60",
+                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+                colorClass[item.color],
+                active && "ring-2 ring-primary/40 shadow-sm",
               )}
             >
-              <Icon className={cn("h-4 w-4 shrink-0", active ? "text-primary" : "")} />
+              <Icon className="h-4 w-4 shrink-0" />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary shrink-0" />}
+              {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-current shrink-0" />}
             </Link>
           );
         })}
@@ -163,15 +172,14 @@ function SidebarContent({
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
-                active
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
-                  : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60",
+                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+                colorClass[item.color],
+                active && "ring-2 ring-primary/40 shadow-sm",
               )}
             >
-              <Icon className={cn("h-4 w-4 shrink-0", active ? "text-primary" : "")} />
+              <Icon className="h-4 w-4 shrink-0" />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary shrink-0" />}
+              {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-current shrink-0" />}
             </Link>
           );
         })}
@@ -180,7 +188,7 @@ function SidebarContent({
             onNavigate?.();
             onSignOut();
           }}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-card-rose text-card-rose-fg hover:bg-card-rose/80 transition-all"
         >
           <LogOut className="h-4 w-4 shrink-0" />
           <span className="truncate">{t("signOut")}</span>
