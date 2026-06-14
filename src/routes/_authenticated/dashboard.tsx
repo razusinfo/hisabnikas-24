@@ -112,14 +112,14 @@ function Dashboard() {
     <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto">
       <PageHeader title={t("dashboard")} subtitle="Real-time pulse of your business." />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Stat icon={CalendarDays} label={t("salesToday")} value={fmtMoney(d.salesToday)} cardBg="bg-card-blue" cardFg="text-card-blue-fg" accent="bg-card-blue-fg/15 text-card-blue-fg" />
         <Stat icon={CalendarRange} label={t("salesMonth")} value={fmtMoney(d.salesMonth)} cardBg="bg-card-green" cardFg="text-card-green-fg" accent="bg-card-green-fg/15 text-card-green-fg" />
         <Stat icon={TrendingUp} label={t("salesYear")} value={fmtMoney(d.salesYear)} cardBg="bg-card-purple" cardFg="text-card-purple-fg" accent="bg-card-purple-fg/15 text-card-purple-fg" />
         <Stat icon={Wallet} label={t("dueReceivable")} value={fmtMoney(d.dueReceivable)} cardBg="bg-card-amber" cardFg="text-card-amber-fg" accent="bg-card-amber-fg/15 text-card-amber-fg" />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
         <Stat icon={Package} label={t("totalProducts")} value={String(d.productCount)} cardBg="bg-card-teal" cardFg="text-card-teal-fg" accent="bg-card-teal-fg/15 text-card-teal-fg" />
         <Stat icon={Users} label={t("totalCustomers")} value={String(d.customerCount)} cardBg="bg-card-indigo" cardFg="text-card-indigo-fg" accent="bg-card-indigo-fg/15 text-card-indigo-fg" />
         <Stat icon={AlertTriangle} label={t("lowStock")} value={String(d.lowStockCount)} cardBg="bg-card-rose" cardFg="text-card-rose-fg" accent="bg-card-rose-fg/15 text-card-rose-fg" />
