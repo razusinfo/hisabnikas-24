@@ -49,14 +49,8 @@ function CurrentPackagePage() {
     mutationFn: async (plan: PlanId) => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) throw new Error("Not authenticated");
-      if (plan === "free") {
-        const { error } = await (supabase as any).rpc("activate_free_plan");
-        if (error) throw error;
-        return;
-      }
-      // Paid plans must be activated server-side after payment verification.
-      // Client-side upgrades are intentionally blocked to prevent bypassing payment.
-      throw new Error("Paid plans require payment. Please contact support to upgrade.");
+      const { error } = await (supabase as any).rpc("activate_plan", { _plan: plan });
+      if (error) throw error;
     },
     onSuccess: () => {
       toast.success(t("activated"));
