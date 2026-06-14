@@ -18,6 +18,7 @@ import { useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { SearchProvider, SearchTrigger, SearchIconButton } from "@/components/GlobalSearch";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
@@ -42,11 +43,13 @@ function SidebarContent({
   onSignOut,
   brandName,
   brandLogo,
+  searchSlot,
 }: {
   onNavigate?: () => void;
   onSignOut: () => void;
   brandName: string;
   brandLogo: string | null | undefined;
+  searchSlot?: ReactNode;
 }) {
   const { t } = useI18n();
   const loc = useLocation();
@@ -69,7 +72,7 @@ function SidebarContent({
           </div>
         </Link>
       </div>
-
+      {searchSlot}
       <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto">
         {nav.map((item) => {
           const active = isActive(item.to);
@@ -174,46 +177,59 @@ export function AppShell({ children }: { children: ReactNode }) {
   const brandLogo = brandQuery.data?.logoUrl;
 
   return (
-    <div className="min-h-screen flex bg-background text-foreground">
-      {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-64 shrink-0 bg-sidebar border-r border-sidebar-border flex-col">
-        <SidebarContent onSignOut={handleSignOut} brandName={brandName} brandLogo={brandLogo} />
-      </aside>
+    <SearchProvider>
+      <div className="min-h-screen flex bg-background text-foreground">
+        {/* Desktop sidebar */}
+        <aside className="hidden md:flex w-64 shrink-0 bg-sidebar border-r border-sidebar-border flex-col">
+          <SidebarContent
+            onSignOut={handleSignOut}
+            brandName={brandName}
+            brandLogo={brandLogo}
+            searchSlot={
+              <div className="px-6 pb-3">
+                <SearchTrigger className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm text-sidebar-foreground/70 bg-sidebar-accent/40 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors" />
+              </div>
+            }
+          />
+        </aside>
 
-      <div className="flex-1 min-w-0 flex flex-col">
-        {/* Mobile top bar */}
-        <header className="md:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-3 bg-sidebar/95 backdrop-blur border-b border-sidebar-border">
-          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Open menu" className="min-h-11 min-w-11">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="p-0 w-72 bg-sidebar">
-              <SheetTitle className="sr-only">Menu</SheetTitle>
-              <SidebarContent
-                onNavigate={() => setMobileOpen(false)}
-                onSignOut={handleSignOut}
-                brandName={brandName}
-                brandLogo={brandLogo}
-              />
-            </SheetContent>
-          </Sheet>
-          <Link to="/dashboard" className="flex items-center gap-2 min-w-0">
-            <div className="h-8 w-8 shrink-0 rounded-lg flex items-center justify-center bg-primary/15 ring-1 ring-primary/30 overflow-hidden">
-              {brandLogo ? (
-                <img src={brandLogo} alt="logo" className="h-full w-full object-cover" />
-              ) : (
-                <Sparkles className="h-4 w-4 text-primary" />
-              )}
-            </div>
-            <span className="font-display text-sm font-semibold tracking-tight truncate">{brandName}</span>
-          </Link>
-        </header>
+        <div className="flex-1 min-w-0 flex flex-col">
+          {/* Mobile top bar */}
+          <header className="md:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-3 bg-sidebar/95 backdrop-blur border-b border-sidebar-border">
+            <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" aria-label="Open menu" className="min-h-11 min-w-11">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 w-72 bg-sidebar">
+                <SheetTitle className="sr-only">Menu</SheetTitle>
+                <SidebarContent
+                  onNavigate={() => setMobileOpen(false)}
+                  onSignOut={handleSignOut}
+                  brandName={brandName}
+                  brandLogo={brandLogo}
+                />
+              </SheetContent>
+            </Sheet>
+            <Link to="/dashboard" className="flex items-center gap-2 min-w-0">
+              <div className="h-8 w-8 shrink-0 rounded-lg flex items-center justify-center bg-primary/15 ring-1 ring-primary/30 overflow-hidden">
+                {brandLogo ? (
+                  <img src={brandLogo} alt="logo" className="h-full w-full object-cover" />
+                ) : (
+                  <Sparkles className="h-4 w-4 text-primary" />
+                )}
+              </div>
+              <span className="font-display text-sm font-semibold tracking-tight truncate">{brandName}</span>
+            </Link>
+            <div className="flex-1" />
+            <SearchIconButton className="min-h-11 min-w-11" />
+          </header>
 
-        <main className="flex-1 min-w-0 overflow-x-hidden">{children}</main>
+          <main className="flex-1 min-w-0 overflow-x-hidden">{children}</main>
+        </div>
       </div>
-    </div>
+    </SearchProvider>
   );
 }
 
