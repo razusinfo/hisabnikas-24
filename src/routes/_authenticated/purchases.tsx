@@ -219,27 +219,35 @@ function PurchasesPage() {
   function printDoc(p: any, ls: any[]) {
     const w = window.open("", "_blank", "width=720,height=900");
     if (!w) return;
-    const rows = ls.map(l => `<tr><td>${l.product_name}</td><td style="text-align:right">${lang === "bn" ? Number(l.qty).toLocaleString("bn-BD") : l.qty}</td><td style="text-align:right">${fmtMoney(l.unit_cost, lang)}</td><td style="text-align:right">${fmtMoney(l.line_total, lang)}</td></tr>`).join("");
-    w.document.write(`<html><head><title>${p.invoice_no}</title>
+    const esc = (v: unknown) =>
+      String(v ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    const rows = ls.map(l => `<tr><td>${esc(l.product_name)}</td><td style="text-align:right">${esc(lang === "bn" ? Number(l.qty).toLocaleString("bn-BD") : l.qty)}</td><td style="text-align:right">${esc(fmtMoney(l.unit_cost, lang))}</td><td style="text-align:right">${esc(fmtMoney(l.line_total, lang))}</td></tr>`).join("");
+    w.document.write(`<html><head><title>${esc(p.invoice_no)}</title>
       <style>body{font-family:system-ui;padding:24px;color:#111}h1{font-size:20px;margin:0 0 4px}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{padding:8px;border-bottom:1px solid #eee;font-size:13px;text-align:left}tfoot td{border:0;padding:4px 8px}</style>
       </head><body>
-      <h1>${t("invoice")} ${p.invoice_no}</h1>
-      <div style="color:#666;font-size:13px">${fmtDateTime(p.created_at, lang)}</div>
-      <div style="margin-top:8px;font-size:13px">${t("supplier")}: <b>${p.supplier_name ?? "—"}</b></div>
-      <table><thead><tr><th>${t("item")}</th><th style="text-align:right">${t("qty")}</th><th style="text-align:right">${t("unitCost")}</th><th style="text-align:right">${t("total")}</th></tr></thead>
+      <h1>${esc(t("invoice"))} ${esc(p.invoice_no)}</h1>
+      <div style="color:#666;font-size:13px">${esc(fmtDateTime(p.created_at, lang))}</div>
+      <div style="margin-top:8px;font-size:13px">${esc(t("supplier"))}: <b>${esc(p.supplier_name ?? "—")}</b></div>
+      <table><thead><tr><th>${esc(t("item"))}</th><th style="text-align:right">${esc(t("qty"))}</th><th style="text-align:right">${esc(t("unitCost"))}</th><th style="text-align:right">${esc(t("total"))}</th></tr></thead>
       <tbody>${rows}</tbody>
       <tfoot>
-        <tr><td colspan="3" style="text-align:right">${t("subtotal")}</td><td style="text-align:right">${fmtMoney(p.subtotal, lang)}</td></tr>
-        <tr><td colspan="3" style="text-align:right">${t("discount")}</td><td style="text-align:right">${fmtMoney(p.discount, lang)}</td></tr>
-        <tr><td colspan="3" style="text-align:right">${t("tax")}</td><td style="text-align:right">${fmtMoney(p.tax, lang)}</td></tr>
-        <tr><td colspan="3" style="text-align:right"><b>${t("total")}</b></td><td style="text-align:right"><b>${fmtMoney(p.total, lang)}</b></td></tr>
-        <tr><td colspan="3" style="text-align:right">${t("paid")}</td><td style="text-align:right">${fmtMoney(p.paid, lang)}</td></tr>
-        <tr><td colspan="3" style="text-align:right">${t("due")}</td><td style="text-align:right">${fmtMoney(p.due, lang)}</td></tr>
+        <tr><td colspan="3" style="text-align:right">${esc(t("subtotal"))}</td><td style="text-align:right">${esc(fmtMoney(p.subtotal, lang))}</td></tr>
+        <tr><td colspan="3" style="text-align:right">${esc(t("discount"))}</td><td style="text-align:right">${esc(fmtMoney(p.discount, lang))}</td></tr>
+        <tr><td colspan="3" style="text-align:right">${esc(t("tax"))}</td><td style="text-align:right">${esc(fmtMoney(p.tax, lang))}</td></tr>
+        <tr><td colspan="3" style="text-align:right"><b>${esc(t("total"))}</b></td><td style="text-align:right"><b>${esc(fmtMoney(p.total, lang))}</b></td></tr>
+        <tr><td colspan="3" style="text-align:right">${esc(t("paid"))}</td><td style="text-align:right">${esc(fmtMoney(p.paid, lang))}</td></tr>
+        <tr><td colspan="3" style="text-align:right">${esc(t("due"))}</td><td style="text-align:right">${esc(fmtMoney(p.due, lang))}</td></tr>
       </tfoot></table>
       <script>window.onload=()=>{window.print();}</script>
       </body></html>`);
     w.document.close();
   }
+
 
   async function handlePrint(p: any) {
     printDoc(p, await fetchItems(p.id));
