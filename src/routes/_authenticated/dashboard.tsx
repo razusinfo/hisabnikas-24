@@ -173,21 +173,21 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="card-premium p-7 mt-5">
+      <div className="rounded-xl border border-border shadow-[var(--shadow-card)] p-7 mt-5 bg-card-purple">
         <div className="flex items-center justify-between mb-5">
-          <div className="font-display text-xl font-semibold flex items-center gap-2">
-            <Receipt className="h-5 w-5 text-primary" /> {t("recentSales")}
+          <div className="font-display text-xl font-semibold flex items-center gap-2 text-card-purple-fg">
+            <Receipt className="h-5 w-5 text-card-purple-fg" /> {t("recentSales")}
           </div>
         </div>
         {d.recent.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t("noData")}</p>
+          <p className="text-sm text-card-purple-fg/70">{t("noData")}</p>
         ) : (
           <>
             {/* Desktop table */}
             <div className="overflow-x-auto hidden md:block">
-              <table className="w-full text-sm">
-                <thead className="text-xs uppercase tracking-wider text-muted-foreground">
-                  <tr className="text-left border-b border-border">
+              <table className="w-full text-sm text-card-purple-fg">
+                <thead className="text-xs uppercase tracking-wider text-card-purple-fg/60">
+                  <tr className="text-left border-b border-card-purple-fg/15">
                     <th className="py-2 pr-4">{t("invoice")}</th>
                     <th className="py-2 pr-4">{t("date")}</th>
                     <th className="py-2 pr-4">Method</th>
@@ -197,12 +197,12 @@ function Dashboard() {
                 </thead>
                 <tbody>
                   {d.recent.map((s) => (
-                    <tr key={s.id} className="border-b border-border/40">
+                    <tr key={s.id} className="border-b border-card-purple-fg/10">
                       <td className="py-3 pr-4 font-mono">{s.invoice_no}</td>
-                      <td className="py-3 pr-4 text-muted-foreground">{fmtDateTime(s.created_at)}</td>
+                      <td className="py-3 pr-4 text-card-purple-fg/70">{fmtDateTime(s.created_at)}</td>
                       <td className="py-3 pr-4 capitalize">{s.payment_method}</td>
                       <td className="py-3 pr-4 text-right font-mono">{fmtMoney(s.total)}</td>
-                      <td className="py-3 text-right font-mono text-warning">{Number(s.due) > 0 ? fmtMoney(s.due) : "—"}</td>
+                      <td className="py-3 text-right font-mono text-card-amber-fg">{Number(s.due) > 0 ? fmtMoney(s.due) : "—"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -211,14 +211,14 @@ function Dashboard() {
             {/* Mobile cards */}
             <ul className="md:hidden space-y-2">
               {d.recent.map((s) => (
-                <li key={s.id} className="border border-border/40 rounded-lg p-3 space-y-1.5">
-                  <div className="flex items-center justify-between gap-2">
+                <li key={s.id} className="border border-card-purple-fg/15 rounded-lg p-3 space-y-1.5 bg-white/40">
+                  <div className="flex items-center justify-between gap-2 text-card-purple-fg">
                     <span className="font-mono text-sm font-medium truncate">{s.invoice_no}</span>
                     <span className="font-mono text-sm font-semibold">{fmtMoney(s.total)}</span>
                   </div>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <div className="flex items-center justify-between text-xs text-card-purple-fg/70">
                     <span className="truncate">{fmtDateTime(s.created_at)} · {s.payment_method}</span>
-                    {Number(s.due) > 0 && <span className="text-warning shrink-0">{t("due")}: {fmtMoney(s.due)}</span>}
+                    {Number(s.due) > 0 && <span className="text-card-amber-fg shrink-0">{t("due")}: {fmtMoney(s.due)}</span>}
                   </div>
                 </li>
               ))}
