@@ -196,9 +196,9 @@ function SidebarContent({
             onNavigate?.();
             onSignOut();
           }}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10"
+          className="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-[15px] font-medium text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10 transition-all"
         >
-          <LogOut className="h-4 w-4 shrink-0" />
+          <LogOut className="h-5 w-5 shrink-0" />
           <span className="truncate">{t("signOut")}</span>
         </button>
         <div className="px-3 pt-1 pb-0.5 text-center">
