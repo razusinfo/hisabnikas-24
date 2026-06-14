@@ -125,15 +125,15 @@ function Dashboard() {
         <Stat icon={AlertTriangle} label={t("lowStock")} value={String(d.lowStockCount)} cardBg="bg-card-rose" cardFg="text-card-rose-fg" accent="bg-card-rose-fg/15 text-card-rose-fg" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div className="rounded-xl border border-border shadow-[var(--shadow-card)] p-7 lg:col-span-2 bg-card-blue">
-          <div className="flex items-center justify-between mb-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="rounded-xl border border-border shadow-[var(--shadow-card)] p-8 lg:col-span-2 bg-card-blue">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <div className="text-sm uppercase tracking-widest text-card-blue-fg/70">Last 14 days</div>
-              <div className="font-display text-xl font-semibold text-card-blue-fg">Sales trend</div>
+              <div className="text-base uppercase tracking-widest text-card-blue-fg/70">Last 14 days</div>
+              <div className="font-display text-2xl font-semibold text-card-blue-fg">Sales trend</div>
             </div>
           </div>
-          <div className="h-80">
+          <div className="h-96">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={d.chart} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
                 <defs>
@@ -143,8 +143,8 @@ function Dashboard() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.55 0.08 230 / 20%)" />
-                <XAxis dataKey="day" stroke="oklch(0.55 0.08 230 / 60%)" fontSize={11} />
-                <YAxis stroke="oklch(0.55 0.08 230 / 60%)" fontSize={11} />
+                <XAxis dataKey="day" stroke="oklch(0.55 0.08 230 / 60%)" fontSize={12} />
+                <YAxis stroke="oklch(0.55 0.08 230 / 60%)" fontSize={12} />
                 <Tooltip
                   contentStyle={{ background: "oklch(0.98 0.01 230)", border: "1px solid oklch(0.85 0.05 230)", borderRadius: 8 }}
                   labelStyle={{ color: "oklch(0.4 0.1 230)" }}
