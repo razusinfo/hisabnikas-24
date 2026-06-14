@@ -156,14 +156,14 @@ function Dashboard() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-border shadow-[var(--shadow-card)] p-7 bg-card-rose">
-          <div className="font-display text-xl font-semibold mb-5 text-card-rose-fg">{t("lowStock")}</div>
+        <div className="rounded-xl border border-border shadow-[var(--shadow-card)] p-8 bg-card-rose">
+          <div className="font-display text-2xl font-semibold mb-6 text-card-rose-fg">{t("lowStock")}</div>
           {d.lowStock.length === 0 ? (
-            <p className="text-sm text-card-rose-fg/70">All good. Nothing low.</p>
+            <p className="text-base text-card-rose-fg/70">All good. Nothing low.</p>
           ) : (
-            <ul className="space-y-3">
+            <ul className="space-y-4">
               {d.lowStock.map((p) => (
-                <li key={p.id} className="flex justify-between items-center text-sm text-card-rose-fg">
+                <li key={p.id} className="flex justify-between items-center text-base text-card-rose-fg">
                   <span className="truncate">{p.name}</span>
                   <span className="text-card-rose-fg font-mono font-semibold">{Number(p.stock)}</span>
                 </li>
