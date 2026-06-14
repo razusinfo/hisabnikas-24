@@ -104,6 +104,32 @@ function Stat({
   );
 }
 
+function ColorLegend() {
+  const { t } = useI18n();
+  const items = [
+    { label: t("legendSalesToday") + " / " + t("legendSalesTrend"), bg: "bg-card-blue", fg: "text-card-blue-fg" },
+    { label: t("legendSalesMonth"), bg: "bg-card-green", fg: "text-card-green-fg" },
+    { label: t("legendSalesYear") + " / " + t("legendRecentSales"), bg: "bg-card-purple", fg: "text-card-purple-fg" },
+    { label: t("legendDueReceivable"), bg: "bg-card-amber", fg: "text-card-amber-fg" },
+    { label: t("legendProducts"), bg: "bg-card-teal", fg: "text-card-teal-fg" },
+    { label: t("legendCustomers"), bg: "bg-card-indigo", fg: "text-card-indigo-fg" },
+    { label: t("legendLowStock"), bg: "bg-card-rose", fg: "text-card-rose-fg" },
+  ];
+  return (
+    <div className="rounded-xl border border-border shadow-[var(--shadow-card)] p-6 mb-6 bg-background">
+      <div className="text-base font-display font-semibold mb-4">{t("colorLegend")}</div>
+      <div className="flex flex-wrap gap-3">
+        {items.map((it) => (
+          <div key={it.label} className={`flex items-center gap-2 px-3 py-2 rounded-lg border border-border ${it.bg} ${it.fg}`}>
+            <span className={`inline-block h-3 w-3 rounded-full ${it.bg.replace("bg-", "bg-") === it.bg ? it.bg : ""}`} style={{ backgroundColor: "currentColor" }} />
+            <span className="text-sm font-medium">{it.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Dashboard() {
   const { t } = useI18n();
   const { data: d } = useSuspenseQuery({ queryKey: ["dashboard"], queryFn: fetchDashboard });
