@@ -305,7 +305,7 @@ function ProductsPage() {
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("search")} className="border-0 bg-transparent focus-visible:ring-0" />
         </div>
         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-48"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("allCategories")}</SelectItem>
             {categories.map((c) => (
@@ -314,14 +314,14 @@ function ProductsPage() {
           </SelectContent>
         </Select>
         <Select value={lowOnly ? "low" : "all"} onValueChange={(v) => setLowOnly(v === "low")}>
-          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("all")}</SelectItem>
             <SelectItem value="low">{t("lowStockOnly")}</SelectItem>
           </SelectContent>
         </Select>
         <Select value={sort} onValueChange={(v) => setSort(v as typeof sort)}>
-          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-48"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="new">{t("sortNewest")}</SelectItem>
             <SelectItem value="name">{t("sortNameAZ")}</SelectItem>
@@ -332,7 +332,7 @@ function ProductsPage() {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
         {filtered.length === 0 && (
           <div className="col-span-full card-premium p-12 text-center text-muted-foreground">{t("noData")}</div>
         )}
@@ -348,7 +348,7 @@ function ProductsPage() {
                     <Package className="h-4 w-4 text-primary" />
                   )}
                 </div>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
+                <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 md:transition">
                   <Button size="icon" variant="ghost" className="h-6 w-6" title={t("adjustStock")} onClick={() => { setStockTarget(p); setStockVal(String(p.stock)); }}><Boxes className="h-3 w-3" /></Button>
                   <Button size="icon" variant="ghost" className="h-6 w-6" title={t("edit")} onClick={() => openEdit(p)}><Pencil className="h-3 w-3" /></Button>
                   <Button size="icon" variant="ghost" className="h-6 w-6" title={t("delete")} onClick={() => setDeleteTarget(p)}><Trash2 className="h-3 w-3" /></Button>

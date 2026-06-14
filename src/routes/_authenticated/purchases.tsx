@@ -278,21 +278,22 @@ function PurchasesPage() {
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("searchPurchasesPlaceholder")} className="pl-9" />
         </div>
         <Select value={status} onValueChange={setStatus}>
-          <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-[160px]"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("allStatus")}</SelectItem>
             <SelectItem value="paid">{t("statusPaid")}</SelectItem>
             <SelectItem value="due">{t("statusDue")}</SelectItem>
           </SelectContent>
         </Select>
-        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-[160px]" />
-        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-[160px]" />
+        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full sm:w-[160px]" />
+        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-full sm:w-[160px]" />
         {(q || status !== "all" || from || to) && (
           <Button variant="ghost" onClick={() => { setQ(""); setStatus("all"); setFrom(""); setTo(""); }}>{t("clear")}</Button>
         )}
       </div>
 
-      <div className="card-premium overflow-hidden">
+      {/* Desktop table */}
+      <div className="card-premium overflow-hidden hidden md:block">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="text-xs uppercase tracking-wider text-muted-foreground bg-muted/30">
@@ -324,12 +325,12 @@ function PurchasesPage() {
                   <td className="py-3 px-4 text-right font-mono">{Number(p.due) > 0 ? <span className="text-warning">{fmtMoney(p.due, lang)}</span> : "—"}</td>
                   <td className="py-3 px-4">
                     <div className="flex justify-end gap-1">
-                      <Button size="icon" variant="ghost" onClick={() => openView(p)} title={t("view")}><Eye className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => openView(p)} title={t("view")} aria-label={t("view")}><Eye className="h-4 w-4" /></Button>
                       {Number(p.due) > 0 && (
-                        <Button size="icon" variant="ghost" onClick={() => { setPayP(p); setPayAmt(String(p.due)); }} title={t("recordPayment")}><CreditCard className="h-4 w-4" /></Button>
+                        <Button size="icon" variant="ghost" onClick={() => { setPayP(p); setPayAmt(String(p.due)); }} title={t("recordPayment")} aria-label={t("recordPayment")}><CreditCard className="h-4 w-4" /></Button>
                       )}
-                      <Button size="icon" variant="ghost" onClick={() => handlePrint(p)} title={t("print")}><Printer className="h-4 w-4" /></Button>
-                      <Button size="icon" variant="ghost" onClick={() => setDelP(p)} title={t("delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => handlePrint(p)} title={t("print")} aria-label={t("print")}><Printer className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => setDelP(p)} title={t("delete")} aria-label={t("delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                     </div>
                   </td>
                 </tr>
@@ -338,6 +339,51 @@ function PurchasesPage() {
           </table>
         </div>
       </div>
+
+      {/* Mobile cards */}
+      <div className="md:hidden space-y-3">
+        {filtered.length === 0 && (
+          <div className="card-premium p-8 text-center text-muted-foreground text-sm">{t("noData")}</div>
+        )}
+        {filtered.map((p: any) => (
+          <div key={p.id} className="card-premium p-4 space-y-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="font-mono text-sm font-medium truncate">{p.invoice_no}</div>
+                <div className="text-xs text-muted-foreground mt-0.5">{fmtDateTime(p.created_at, lang)}</div>
+              </div>
+              {statusBadge(p)}
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="min-w-0">
+                <div className="text-muted-foreground">{t("supplier")}</div>
+                <div className="truncate">{p.supplier_name || "—"}</div>
+              </div>
+              <div className="min-w-0">
+                <div className="text-muted-foreground">{t("method")}</div>
+                <div className="truncate">{methodLabel(p.payment_method)}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground">{t("total")}</div>
+                <div className="font-mono font-medium">{fmtMoney(p.total, lang)}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground">{t("due")}</div>
+                <div className={`font-mono ${Number(p.due) > 0 ? "text-warning" : ""}`}>{Number(p.due) > 0 ? fmtMoney(p.due, lang) : "—"}</div>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 pt-1 border-t">
+              <Button size="sm" variant="ghost" className="min-h-11 flex-1" onClick={() => openView(p)}><Eye className="h-4 w-4 mr-1" />{t("view")}</Button>
+              {Number(p.due) > 0 && (
+                <Button size="sm" variant="ghost" className="min-h-11 flex-1" onClick={() => { setPayP(p); setPayAmt(String(p.due)); }}><CreditCard className="h-4 w-4 mr-1" />{t("recordPayment")}</Button>
+              )}
+              <Button size="sm" variant="ghost" className="min-h-11" onClick={() => handlePrint(p)} aria-label={t("print")}><Printer className="h-4 w-4" /></Button>
+              <Button size="sm" variant="ghost" className="min-h-11" onClick={() => setDelP(p)} aria-label={t("delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+            </div>
+          </div>
+        ))}
+      </div>
+
 
       {/* New purchase */}
       <Dialog open={openNew} onOpenChange={(o) => { if (!o) { setOpenNew(false); resetNew(); } }}>
@@ -377,7 +423,7 @@ function PurchasesPage() {
             </div>
 
             {lines.length > 0 && (
-              <div className="border rounded-md overflow-hidden">
+              <div className="border rounded-md overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/30 text-xs uppercase">
                     <tr>
@@ -448,7 +494,7 @@ function PurchasesPage() {
                 <div><div className="text-muted-foreground text-xs">{t("method")}</div>{methodLabel(viewP.payment_method)}</div>
                 <div><div className="text-muted-foreground text-xs">{t("status")}</div>{statusBadge(viewP)}</div>
               </div>
-              <div className="border rounded-md overflow-hidden">
+              <div className="border rounded-md overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/30 text-xs uppercase">
                     <tr><th className="text-left p-2">{t("item")}</th><th className="text-right p-2">{t("qty")}</th><th className="text-right p-2">{t("unitCost")}</th><th className="text-right p-2">{t("total")}</th></tr>

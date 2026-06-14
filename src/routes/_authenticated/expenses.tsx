@@ -282,7 +282,7 @@ function ExpensesPage() {
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("searchExpensesPlaceholder")} className="pl-9" />
         </div>
         <Select value={pType} onValueChange={setPType}>
-          <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-[180px]"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("allParties")}</SelectItem>
             <SelectItem value="customer">{t("partyCustomer")}</SelectItem>
@@ -291,7 +291,7 @@ function ExpensesPage() {
           </SelectContent>
         </Select>
         <Select value={pStatus} onValueChange={setPStatus}>
-          <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-[160px]"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("allStatus")}</SelectItem>
             <SelectItem value="open">{t("open")}</SelectItem>
@@ -299,14 +299,15 @@ function ExpensesPage() {
             <SelectItem value="settled">{t("settled")}</SelectItem>
           </SelectContent>
         </Select>
-        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-[160px]" />
-        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-[160px]" />
+        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full sm:w-[160px]" />
+        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-full sm:w-[160px]" />
         {(q || pType !== "all" || pStatus !== "all" || from || to) && (
           <Button variant="ghost" onClick={() => { setQ(""); setPType("all"); setPStatus("all"); setFrom(""); setTo(""); }}>{t("clear")}</Button>
         )}
       </div>
 
-      <div className="card-premium overflow-hidden">
+      {/* Desktop table */}
+      <div className="card-premium overflow-hidden hidden md:block">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="text-xs uppercase tracking-wider text-muted-foreground bg-muted/30">
@@ -352,12 +353,12 @@ function ExpensesPage() {
                     <td className="py-3 px-4">
                       <div className="flex justify-end gap-1">
                         {s !== "settled" && (
-                          <Button size="icon" variant="ghost" onClick={() => { setPayFor(e); setPayAmt(""); }} title={t("recordDuePayment")}>
+                          <Button size="icon" variant="ghost" onClick={() => { setPayFor(e); setPayAmt(""); }} title={t("recordDuePayment")} aria-label={t("recordDuePayment")}>
                             <Wallet className="h-4 w-4 text-success" />
                           </Button>
                         )}
-                        {e.source !== "sale" && <Button size="icon" variant="ghost" onClick={() => openEdit(e)} title={t("edit")}><Pencil className="h-4 w-4" /></Button>}
-                        {e.source !== "sale" && <Button size="icon" variant="ghost" onClick={() => setDel(e)} title={t("delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>}
+                        {e.source !== "sale" && <Button size="icon" variant="ghost" onClick={() => openEdit(e)} title={t("edit")} aria-label={t("edit")}><Pencil className="h-4 w-4" /></Button>}
+                        {e.source !== "sale" && <Button size="icon" variant="ghost" onClick={() => setDel(e)} title={t("delete")} aria-label={t("delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>}
                       </div>
                     </td>
                   </tr>
@@ -367,6 +368,64 @@ function ExpensesPage() {
           </table>
         </div>
       </div>
+
+      {/* Mobile cards */}
+      <div className="md:hidden space-y-3">
+        {filtered.length === 0 && (
+          <div className="card-premium p-8 text-center text-muted-foreground text-sm">{t("noData")}</div>
+        )}
+        {filtered.map((e) => {
+          const remaining = Math.max(0, Number(e.amount) - Number(e.paid_amount || 0));
+          const s = statusOf(e);
+          const overdue = e.due_date && s !== "settled" && e.due_date < todayStr();
+          return (
+            <div key={e.id} className="card-premium p-4 space-y-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="font-medium truncate">{e.party_name || "—"}</div>
+                  <div className="mt-0.5">{partyBadge(e.party_type)}</div>
+                  <div className="text-xs text-muted-foreground mt-1 line-clamp-2">{e.description}</div>
+                </div>
+                <div className="shrink-0">{statusBadge(s)}</div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <div className="text-muted-foreground">{t("date")}</div>
+                  <div>{fmtDate(e.expense_date, lang)}</div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">{t("dueDate")}</div>
+                  <div className={overdue ? "text-destructive font-medium" : ""}>
+                    {e.due_date ? fmtDate(e.due_date, lang) : "—"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">{t("amount")}</div>
+                  <div className="font-mono font-medium">{fmtMoney(e.amount, lang)}</div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">{t("remaining")}</div>
+                  <div className="font-mono text-warning">{fmtMoney(remaining, lang)}</div>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 pt-1 border-t">
+                {s !== "settled" && (
+                  <Button size="sm" variant="ghost" className="min-h-11 flex-1" onClick={() => { setPayFor(e); setPayAmt(""); }}>
+                    <Wallet className="h-4 w-4 mr-1 text-success" />{t("recordDuePayment")}
+                  </Button>
+                )}
+                {e.source !== "sale" && (
+                  <Button size="sm" variant="ghost" className="min-h-11" onClick={() => openEdit(e)} aria-label={t("edit")}><Pencil className="h-4 w-4" /></Button>
+                )}
+                {e.source !== "sale" && (
+                  <Button size="sm" variant="ghost" className="min-h-11" onClick={() => setDel(e)} aria-label={t("delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
 
       <Dialog open={openForm} onOpenChange={(o) => { if (!o) { setOpenForm(false); resetForm(); } }}>
         <DialogContent className="max-w-lg">
