@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { AppShell, PageHeader } from "@/components/AppShell";
+import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -222,22 +222,22 @@ function SettingsPage() {
             </div>
             <div className="grid gap-2">
               <Label>{t("businessLogo")}</Label>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 {logoUrlQuery.data ? (
                   <img
                     src={logoUrlQuery.data}
                     alt="logo"
-                    className="h-16 w-16 rounded-md object-cover border"
+                    className="h-16 w-16 rounded-md object-cover border shrink-0"
                   />
                 ) : (
-                  <div className="h-16 w-16 rounded-md border border-dashed flex items-center justify-center text-xs text-muted-foreground">
+                  <div className="h-16 w-16 rounded-md border border-dashed flex items-center justify-center text-xs text-muted-foreground shrink-0">
                     —
                   </div>
                 )}
                 <Input
                   type="file"
                   accept="image/*"
-                  className="max-w-xs"
+                  className="w-full sm:max-w-xs"
                   disabled={uploadLogo.isPending}
                   onChange={(e) => {
                     const f = e.target.files?.[0];
@@ -249,6 +249,7 @@ function SettingsPage() {
                   <Button
                     variant="ghost"
                     size="sm"
+                    className="min-h-11 w-full sm:w-auto"
                     onClick={() => removeLogo.mutate()}
                     disabled={removeLogo.isPending}
                   >
@@ -257,6 +258,7 @@ function SettingsPage() {
                 )}
               </div>
             </div>
+
           </CardContent>
         </Card>
 
