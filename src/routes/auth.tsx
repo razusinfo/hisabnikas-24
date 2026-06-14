@@ -65,7 +65,7 @@ function AuthPage() {
       <div className="hidden lg:flex flex-col justify-between flex-1 p-12 relative overflow-hidden border-r border-border">
         <div className="absolute inset-0" style={{ background: "var(--gradient-glow)" }} />
         <div className="relative flex items-center">
-          <img src={appLogo.url} alt="হিসাব নিকাশ-২৪" className="h-14 w-auto" />
+          <img src={appLogo.url} alt="হিসাব নিকাশ-২৪" className="h-20 w-auto" />
         </div>
         <div className="relative max-w-md space-y-6">
           <h1 className="text-5xl font-display font-semibold leading-[1.05] tracking-tight">
