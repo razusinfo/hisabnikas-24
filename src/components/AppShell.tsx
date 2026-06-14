@@ -130,7 +130,7 @@ function SidebarContent({
     <div className="flex h-full flex-col">
       <div className="px-6 py-5">
         <Link to="/dashboard" onClick={onNavigate} className="flex items-center">
-          <img src={appLogo.url} alt="হিসাব নিকাশ-২৪" className="h-20 w-auto" />
+          <img src={appLogo.url} alt="হিসাব নিকাশ-২৪" className="h-24 w-auto" />
         </Link>
       </div>
       {searchSlot}
@@ -277,7 +277,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </SheetContent>
             </Sheet>
             <Link to="/dashboard" className="flex items-center min-w-0">
-              <img src={appLogo.url} alt="হিসাব নিকাশ-২৪" className="h-14 w-auto" />
+              <img src={appLogo.url} alt="হিসাব নিকাশ-২৪" className="h-16 w-auto" />
             </Link>
             <div className="flex-1" />
             <LangToggle compact />
