@@ -128,19 +128,9 @@ function SidebarContent({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="px-6 py-6">
-        <Link to="/dashboard" onClick={onNavigate} className="flex items-center gap-2.5">
-          <div className="h-9 w-9 shrink-0 rounded-xl flex items-center justify-center bg-primary/15 ring-1 ring-primary/30 overflow-hidden">
-            {brandLogo ? (
-              <img src={brandLogo} alt="logo" className="h-full w-full object-cover" />
-            ) : (
-              <Sparkles className="h-4 w-4 text-primary" />
-            )}
-          </div>
-          <div className="leading-tight min-w-0">
-            <div className="font-display text-base font-semibold tracking-tight truncate">{brandName}</div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{t("tagline")}</div>
-          </div>
+      <div className="px-6 py-5">
+        <Link to="/dashboard" onClick={onNavigate} className="flex items-center">
+          <img src={appLogo.url} alt="হিসাব নিকাশ-২৪" className="h-14 w-auto" />
         </Link>
       </div>
       {searchSlot}
