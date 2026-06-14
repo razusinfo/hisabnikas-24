@@ -83,17 +83,28 @@ export async function fetchDashboard() {
   };
 }
 
+const cardThemes = [
+  { bg: "bg-sky-50", border: "border-sky-200", iconBg: "bg-sky-100", iconText: "text-sky-600" },
+  { bg: "bg-emerald-50", border: "border-emerald-200", iconBg: "bg-emerald-100", iconText: "text-emerald-600" },
+  { bg: "bg-violet-50", border: "border-violet-200", iconBg: "bg-violet-100", iconText: "text-violet-600" },
+  { bg: "bg-amber-50", border: "border-amber-200", iconBg: "bg-amber-100", iconText: "text-amber-600" },
+  { bg: "bg-rose-50", border: "border-rose-200", iconBg: "bg-rose-100", iconText: "text-rose-600" },
+  { bg: "bg-cyan-50", border: "border-cyan-200", iconBg: "bg-cyan-100", iconText: "text-cyan-600" },
+  { bg: "bg-orange-50", border: "border-orange-200", iconBg: "bg-orange-100", iconText: "text-orange-600" },
+];
+
 function Stat({
-  icon: Icon, label, value, accent,
-}: { icon: any; label: string; value: string; accent?: string }) {
+  icon: Icon, label, value, themeIndex,
+}: { icon: any; label: string; value: string; themeIndex: number }) {
+  const t = cardThemes[themeIndex % cardThemes.length];
   return (
-    <div className="card-premium p-6">
+    <div className={`${t.bg} border ${t.border} rounded-xl shadow-sm p-6`}>
       <div className="flex items-start justify-between">
         <div>
           <div className="text-sm uppercase tracking-widest text-muted-foreground">{label}</div>
           <div className="text-3xl font-display font-semibold mt-3">{value}</div>
         </div>
-        <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${accent ?? "bg-primary/15 text-primary"}`}>
+        <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${t.iconBg} ${t.iconText}`}>
           <Icon className="h-5 w-5" />
         </div>
       </div>
@@ -110,16 +121,16 @@ function Dashboard() {
       <PageHeader title={t("dashboard")} subtitle="Real-time pulse of your business." />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
-        <Stat icon={CalendarDays} label={t("salesToday")} value={fmtMoney(d.salesToday)} />
-        <Stat icon={CalendarRange} label={t("salesMonth")} value={fmtMoney(d.salesMonth)} accent="bg-success/15 text-success" />
-        <Stat icon={TrendingUp} label={t("salesYear")} value={fmtMoney(d.salesYear)} accent="bg-chart-4/15 text-chart-4" />
-        <Stat icon={Wallet} label={t("dueReceivable")} value={fmtMoney(d.dueReceivable)} accent="bg-warning/15 text-warning" />
+        <Stat icon={CalendarDays} label={t("salesToday")} value={fmtMoney(d.salesToday)} themeIndex={0} />
+        <Stat icon={CalendarRange} label={t("salesMonth")} value={fmtMoney(d.salesMonth)} themeIndex={1} />
+        <Stat icon={TrendingUp} label={t("salesYear")} value={fmtMoney(d.salesYear)} themeIndex={2} />
+        <Stat icon={Wallet} label={t("dueReceivable")} value={fmtMoney(d.dueReceivable)} themeIndex={3} />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
-        <Stat icon={Package} label={t("totalProducts")} value={String(d.productCount)} />
-        <Stat icon={Users} label={t("totalCustomers")} value={String(d.customerCount)} />
-        <Stat icon={AlertTriangle} label={t("lowStock")} value={String(d.lowStockCount)} accent="bg-destructive/15 text-destructive" />
+        <Stat icon={Package} label={t("totalProducts")} value={String(d.productCount)} themeIndex={4} />
+        <Stat icon={Users} label={t("totalCustomers")} value={String(d.customerCount)} themeIndex={5} />
+        <Stat icon={AlertTriangle} label={t("lowStock")} value={String(d.lowStockCount)} themeIndex={6} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
