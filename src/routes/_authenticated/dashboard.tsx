@@ -138,6 +138,8 @@ function Dashboard() {
     <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto">
       <PageHeader title={t("dashboard")} subtitle="Real-time pulse of your business." />
 
+      <ColorLegend />
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Stat icon={CalendarDays} label={t("salesToday")} value={fmtMoney(d.salesToday)} cardBg="bg-card-blue" cardFg="text-card-blue-fg" accent="bg-card-blue-fg/15 text-card-blue-fg" />
         <Stat icon={CalendarRange} label={t("salesMonth")} value={fmtMoney(d.salesMonth)} cardBg="bg-card-green" cardFg="text-card-green-fg" accent="bg-card-green-fg/15 text-card-green-fg" />
