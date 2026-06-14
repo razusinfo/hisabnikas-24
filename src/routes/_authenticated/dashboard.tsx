@@ -109,14 +109,14 @@ function Dashboard() {
     <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto">
       <PageHeader title={t("dashboard")} subtitle="Real-time pulse of your business." />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
         <Stat icon={CalendarDays} label={t("salesToday")} value={fmtMoney(d.salesToday)} />
         <Stat icon={CalendarRange} label={t("salesMonth")} value={fmtMoney(d.salesMonth)} accent="bg-success/15 text-success" />
         <Stat icon={TrendingUp} label={t("salesYear")} value={fmtMoney(d.salesYear)} accent="bg-chart-4/15 text-chart-4" />
         <Stat icon={Wallet} label={t("dueReceivable")} value={fmtMoney(d.dueReceivable)} accent="bg-warning/15 text-warning" />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
         <Stat icon={Package} label={t("totalProducts")} value={String(d.productCount)} />
         <Stat icon={Users} label={t("totalCustomers")} value={String(d.customerCount)} />
         <Stat icon={AlertTriangle} label={t("lowStock")} value={String(d.lowStockCount)} accent="bg-destructive/15 text-destructive" />
