@@ -152,8 +152,8 @@ function Dashboard() {
           </div>
         </div>
 
-        <div className="card-premium p-6">
-          <div className="font-display text-lg font-semibold mb-4">{t("lowStock")}</div>
+        <div className="card-premium p-7">
+          <div className="font-display text-xl font-semibold mb-5">{t("lowStock")}</div>
           {d.lowStock.length === 0 ? (
             <p className="text-sm text-muted-foreground">All good. Nothing low.</p>
           ) : (
