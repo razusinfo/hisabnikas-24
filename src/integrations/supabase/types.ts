@@ -119,6 +119,57 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_requests: {
+        Row: {
+          amount: number
+          bkash_number: string
+          created_at: string
+          duration_days: number
+          id: string
+          note: string | null
+          plan: string
+          processed_at: string | null
+          processed_by: string | null
+          sender_number: string
+          status: string
+          trx_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          bkash_number: string
+          created_at?: string
+          duration_days: number
+          id?: string
+          note?: string | null
+          plan: string
+          processed_at?: string | null
+          processed_by?: string | null
+          sender_number: string
+          status?: string
+          trx_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          bkash_number?: string
+          created_at?: string
+          duration_days?: number
+          id?: string
+          note?: string | null
+          plan?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          sender_number?: string
+          status?: string
+          trx_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           barcode: string | null
@@ -189,6 +240,7 @@ export type Database = {
           full_name: string | null
           id: string
           invoice_settings: Json
+          is_super_admin: boolean
           language: string
           logo_url: string | null
           updated_at: string
@@ -200,6 +252,7 @@ export type Database = {
           full_name?: string | null
           id: string
           invoice_settings?: Json
+          is_super_admin?: boolean
           language?: string
           logo_url?: string | null
           updated_at?: string
@@ -211,6 +264,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           invoice_settings?: Json
+          is_super_admin?: boolean
           language?: string
           logo_url?: string | null
           updated_at?: string
@@ -481,12 +535,21 @@ export type Database = {
     Functions: {
       activate_free_plan: { Args: never; Returns: undefined }
       activate_plan: { Args: { _plan: string }; Returns: undefined }
+      approve_payment_request: {
+        Args: { _request_id: string }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      is_super_admin: { Args: { _uid: string }; Returns: boolean }
+      reject_payment_request: {
+        Args: { _note: string; _request_id: string }
+        Returns: undefined
       }
     }
     Enums: {

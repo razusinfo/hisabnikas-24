@@ -13,6 +13,7 @@ import {
   HelpCircle,
   MessageSquare,
   Menu,
+  ShieldCheck,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -90,6 +91,26 @@ function SidebarContent({
   const loc = useLocation();
   const isActive = (to: string) => loc.pathname === to || loc.pathname.startsWith(to + "/");
 
+  const superAdminQ = useQuery({
+    queryKey: ["is-super-admin"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return false;
+      const { data } = await supabase
+        .from("profiles")
+        .select("is_super_admin")
+        .eq("id", u.user.id)
+        .maybeSingle();
+      return !!(data as any)?.is_super_admin;
+    },
+  });
+  const effectiveFooter = superAdminQ.data
+    ? [
+        ...footerNav,
+        { to: "/admin-payments", icon: ShieldCheck, key: "adminPayments" as const },
+      ]
+    : footerNav;
+
   return (
     <div className="flex h-full flex-col">
       <div className="px-6 py-6">
@@ -133,7 +154,7 @@ function SidebarContent({
       </nav>
 
       <div className="px-3 py-4 border-t border-sidebar-border space-y-1">
-        {footerNav.map((item) => {
+        {effectiveFooter.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
           return (

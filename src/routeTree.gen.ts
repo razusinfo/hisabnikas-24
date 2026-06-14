@@ -22,6 +22,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedCurrentPackageRouteImport } from './routes/_authenticated/current-package'
 import { Route as AuthenticatedBuyMessagesRouteImport } from './routes/_authenticated/buy-messages'
+import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authenticated/admin-payments'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -89,10 +90,17 @@ const AuthenticatedBuyMessagesRoute =
     path: '/buy-messages',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminPaymentsRoute =
+  AuthenticatedAdminPaymentsRouteImport.update({
+    id: '/admin-payments',
+    path: '/admin-payments',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/admin-payments': typeof AuthenticatedAdminPaymentsRoute
   '/buy-messages': typeof AuthenticatedBuyMessagesRoute
   '/current-package': typeof AuthenticatedCurrentPackageRoute
   '/customers': typeof AuthenticatedCustomersRoute
@@ -107,6 +115,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/admin-payments': typeof AuthenticatedAdminPaymentsRoute
   '/buy-messages': typeof AuthenticatedBuyMessagesRoute
   '/current-package': typeof AuthenticatedCurrentPackageRoute
   '/customers': typeof AuthenticatedCustomersRoute
@@ -123,6 +132,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/admin-payments': typeof AuthenticatedAdminPaymentsRoute
   '/_authenticated/buy-messages': typeof AuthenticatedBuyMessagesRoute
   '/_authenticated/current-package': typeof AuthenticatedCurrentPackageRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/admin-payments'
     | '/buy-messages'
     | '/current-package'
     | '/customers'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/admin-payments'
     | '/buy-messages'
     | '/current-package'
     | '/customers'
@@ -168,6 +180,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/admin-payments'
     | '/_authenticated/buy-messages'
     | '/_authenticated/current-package'
     | '/_authenticated/customers'
@@ -279,10 +292,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBuyMessagesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin-payments': {
+      id: '/_authenticated/admin-payments'
+      path: '/admin-payments'
+      fullPath: '/admin-payments'
+      preLoaderRoute: typeof AuthenticatedAdminPaymentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminPaymentsRoute: typeof AuthenticatedAdminPaymentsRoute
   AuthenticatedBuyMessagesRoute: typeof AuthenticatedBuyMessagesRoute
   AuthenticatedCurrentPackageRoute: typeof AuthenticatedCurrentPackageRoute
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
@@ -296,6 +317,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminPaymentsRoute: AuthenticatedAdminPaymentsRoute,
   AuthenticatedBuyMessagesRoute: AuthenticatedBuyMessagesRoute,
   AuthenticatedCurrentPackageRoute: AuthenticatedCurrentPackageRoute,
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
