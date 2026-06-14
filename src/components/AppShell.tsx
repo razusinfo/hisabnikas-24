@@ -139,7 +139,7 @@ function SidebarContent({
         </Link>
       </div>
       {searchSlot}
-      <nav className="flex-1 px-3 space-y-1.5 overflow-y-auto">
+      <nav className="flex-1 px-3 space-y-2 overflow-y-auto">
         {nav.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
@@ -149,20 +149,20 @@ function SidebarContent({
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+                "group flex items-center gap-3 px-4 py-3.5 rounded-lg text-base font-medium transition-all",
                 colorClass[item.color],
                 active && "ring-2 ring-primary/40 shadow-sm",
               )}
             >
-              <Icon className="h-4 w-4 shrink-0" />
+              <Icon className="h-5 w-5 shrink-0" />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-current shrink-0" />}
+              {active && <span className="ml-auto h-2 w-2 rounded-full bg-current shrink-0" />}
             </Link>
           );
         })}
       </nav>
 
-      <div className="px-3 py-4 border-t border-sidebar-border space-y-1">
+      <div className="px-3 py-4 border-t border-sidebar-border space-y-2">
         {effectiveFooter.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
@@ -172,14 +172,14 @@ function SidebarContent({
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+                "group flex items-center gap-3 px-4 py-3.5 rounded-lg text-base font-medium transition-all",
                 colorClass[item.color],
                 active && "ring-2 ring-primary/40 shadow-sm",
               )}
             >
-              <Icon className="h-4 w-4 shrink-0" />
+              <Icon className="h-5 w-5 shrink-0" />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-current shrink-0" />}
+              {active && <span className="ml-auto h-2 w-2 rounded-full bg-current shrink-0" />}
             </Link>
           );
         })}
@@ -188,9 +188,9 @@ function SidebarContent({
             onNavigate?.();
             onSignOut();
           }}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-card-rose text-card-rose-fg hover:bg-card-rose/80 transition-all"
+          className="w-full flex items-center gap-3 px-4 py-3.5 rounded-lg text-base font-medium bg-card-rose text-card-rose-fg hover:bg-card-rose/80 transition-all"
         >
-          <LogOut className="h-4 w-4 shrink-0" />
+          <LogOut className="h-5 w-5 shrink-0" />
           <span className="truncate">{t("signOut")}</span>
         </button>
         <div className="px-3 pt-1 pb-0.5 text-center">
