@@ -93,7 +93,7 @@ function AuthPage() {
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-sm">
           <div className="lg:hidden flex items-center mb-8">
-            <img src={appLogo.url} alt="হিসাব নিকাশ-২৪" className="h-12 w-auto" />
+            <img src={appLogo.url} alt="হিসাব নিকাশ-২৪" className="h-16 w-auto" />
           </div>
 
           <h2 className="text-2xl font-display font-semibold">Welcome</h2>
