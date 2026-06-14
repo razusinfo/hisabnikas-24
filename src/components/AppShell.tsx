@@ -168,25 +168,26 @@ function SidebarContent({
         })}
       </nav>
 
-      <div className="px-3 py-4 border-t border-sidebar-border space-y-1">
+      <div className="px-3 py-4 border-t border-sidebar-border space-y-1.5">
         {effectiveFooter.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
+          const cs = colorStyles[(item as any).color ?? "slate"];
           return (
             <Link
               key={item.to}
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
+                "group flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-[15px] font-medium transition-all",
                 active
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
-                  : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60",
+                  ? `${cs.activeBg} ${cs.activeText} ring-1 ${cs.activeRing}`
+                  : `${cs.inactiveText} ${cs.inactiveHoverText} ${cs.inactiveHoverBg}`,
               )}
             >
-              <Icon className={cn("h-4 w-4 shrink-0", active ? "text-primary" : "")} />
+              <Icon className={cn("h-5 w-5 shrink-0", active ? cs.activeText : "")} />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary shrink-0" />}
+              {active && <span className={cn("ml-auto h-2 w-2 rounded-full shrink-0", cs.dot)} />}
             </Link>
           );
         })}
