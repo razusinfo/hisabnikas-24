@@ -169,10 +169,10 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="card-premium p-6 mt-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="font-display text-lg font-semibold flex items-center gap-2">
-            <Receipt className="h-4 w-4 text-primary" /> {t("recentSales")}
+      <div className="card-premium p-7 mt-5">
+        <div className="flex items-center justify-between mb-5">
+          <div className="font-display text-xl font-semibold flex items-center gap-2">
+            <Receipt className="h-5 w-5 text-primary" /> {t("recentSales")}
           </div>
         </div>
         {d.recent.length === 0 ? (
