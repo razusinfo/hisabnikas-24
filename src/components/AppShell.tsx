@@ -259,6 +259,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <span className="font-display text-sm font-semibold tracking-tight truncate">{brandName}</span>
             </Link>
             <div className="flex-1" />
+            <LangToggle compact />
             <SearchIconButton className="min-h-11 min-w-11" />
           </header>
 
