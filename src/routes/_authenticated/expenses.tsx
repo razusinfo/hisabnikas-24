@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/expenses")({
     await context.queryClient.ensureQueryData({ queryKey: ["expenses"], queryFn: fetchExpenses });
   },
   component: ExpensesPage,
-  errorComponent: ({ error }) => <div className="p-8 text-destructive">{error.message}</div>,
+  errorComponent: ({ error }) => { console.error(error); return <div className="p-8 text-destructive">Something went wrong loading this page.</div>; },
   notFoundComponent: () => <div className="p-8">Not found</div>,
 });
 
