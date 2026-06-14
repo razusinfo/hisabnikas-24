@@ -106,7 +106,7 @@ function Dashboard() {
   const { data: d } = useSuspenseQuery({ queryKey: ["dashboard"], queryFn: fetchDashboard });
 
   return (
-    <div className="p-8 max-w-[1400px] mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto">
       <PageHeader title={t("dashboard")} subtitle="Real-time pulse of your business." />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">

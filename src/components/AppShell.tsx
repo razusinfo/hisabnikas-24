@@ -7,17 +7,19 @@ import {
   Package,
   Users,
   LogOut,
-  
   Sparkles,
   Wallet,
   Settings,
   HelpCircle,
   MessageSquare,
+  Menu,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 const nav = [
   { to: "/dashboard", icon: LayoutDashboard, key: "dashboard" as const },
@@ -28,11 +30,117 @@ const nav = [
   { to: "/customers", icon: Users, key: "customers" as const },
 ];
 
+const footerNav = [
+  { to: "/settings", icon: Settings, key: "settings" as const },
+  { to: "/buy-messages", icon: MessageSquare, key: "buyMessages" as const },
+  { to: "/help", icon: HelpCircle, key: "helpSupport" as const },
+  { to: "/current-package", icon: Sparkles, key: "currentPackage" as const },
+];
+
+function SidebarContent({
+  onNavigate,
+  onSignOut,
+  brandName,
+  brandLogo,
+}: {
+  onNavigate?: () => void;
+  onSignOut: () => void;
+  brandName: string;
+  brandLogo: string | null | undefined;
+}) {
+  const { t } = useI18n();
+  const loc = useLocation();
+  const isActive = (to: string) => loc.pathname === to || loc.pathname.startsWith(to + "/");
+
+  return (
+    <div className="flex h-full flex-col">
+      <div className="px-6 py-6">
+        <Link to="/dashboard" onClick={onNavigate} className="flex items-center gap-2.5">
+          <div className="h-9 w-9 shrink-0 rounded-xl flex items-center justify-center bg-primary/15 ring-1 ring-primary/30 overflow-hidden">
+            {brandLogo ? (
+              <img src={brandLogo} alt="logo" className="h-full w-full object-cover" />
+            ) : (
+              <Sparkles className="h-4 w-4 text-primary" />
+            )}
+          </div>
+          <div className="leading-tight min-w-0">
+            <div className="font-display text-base font-semibold tracking-tight truncate">{brandName}</div>
+            <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{t("tagline")}</div>
+          </div>
+        </Link>
+      </div>
+
+      <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto">
+        {nav.map((item) => {
+          const active = isActive(item.to);
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              onClick={onNavigate}
+              className={cn(
+                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
+                active
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
+                  : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60",
+              )}
+            >
+              <Icon className={cn("h-4 w-4 shrink-0", active ? "text-primary" : "")} />
+              <span className="truncate">{t(item.key)}</span>
+              {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary shrink-0" />}
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="px-3 py-4 border-t border-sidebar-border space-y-1">
+        {footerNav.map((item) => {
+          const active = isActive(item.to);
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              onClick={onNavigate}
+              className={cn(
+                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
+                active
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
+                  : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60",
+              )}
+            >
+              <Icon className={cn("h-4 w-4 shrink-0", active ? "text-primary" : "")} />
+              <span className="truncate">{t(item.key)}</span>
+              {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary shrink-0" />}
+            </Link>
+          );
+        })}
+        <button
+          onClick={() => {
+            onNavigate?.();
+            onSignOut();
+          }}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10"
+        >
+          <LogOut className="h-4 w-4 shrink-0" />
+          <span className="truncate">{t("signOut")}</span>
+        </button>
+        <div className="px-3 pt-1 pb-0.5 text-center">
+          <span className="text-[10px] text-muted-foreground tracking-wide">
+            {t("appName")} <span className="opacity-60">|</span> {t("version")}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const { t } = useI18n();
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const loc = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleSignOut = async () => {
     await qc.cancelQueries();
@@ -67,116 +175,44 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen flex bg-background text-foreground">
-      <aside className="w-64 shrink-0 bg-sidebar border-r border-sidebar-border flex flex-col">
-        <div className="px-6 py-6">
-          <Link to="/dashboard" className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl flex items-center justify-center bg-primary/15 ring-1 ring-primary/30 overflow-hidden">
+      {/* Desktop sidebar */}
+      <aside className="hidden md:flex w-64 shrink-0 bg-sidebar border-r border-sidebar-border flex-col">
+        <SidebarContent onSignOut={handleSignOut} brandName={brandName} brandLogo={brandLogo} />
+      </aside>
+
+      <div className="flex-1 min-w-0 flex flex-col">
+        {/* Mobile top bar */}
+        <header className="md:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-3 bg-sidebar/95 backdrop-blur border-b border-sidebar-border">
+          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Open menu" className="min-h-11 min-w-11">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="p-0 w-72 bg-sidebar">
+              <SheetTitle className="sr-only">Menu</SheetTitle>
+              <SidebarContent
+                onNavigate={() => setMobileOpen(false)}
+                onSignOut={handleSignOut}
+                brandName={brandName}
+                brandLogo={brandLogo}
+              />
+            </SheetContent>
+          </Sheet>
+          <Link to="/dashboard" className="flex items-center gap-2 min-w-0">
+            <div className="h-8 w-8 shrink-0 rounded-lg flex items-center justify-center bg-primary/15 ring-1 ring-primary/30 overflow-hidden">
               {brandLogo ? (
                 <img src={brandLogo} alt="logo" className="h-full w-full object-cover" />
               ) : (
                 <Sparkles className="h-4 w-4 text-primary" />
               )}
             </div>
-            <div className="leading-tight">
-              <div className="font-display text-base font-semibold tracking-tight">{brandName}</div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{t("tagline")}</div>
-            </div>
+            <span className="font-display text-sm font-semibold tracking-tight truncate">{brandName}</span>
           </Link>
-        </div>
+        </header>
 
-
-        <nav className="flex-1 px-3 space-y-0.5">
-          {nav.map((item) => {
-            const active = loc.pathname === item.to || loc.pathname.startsWith(item.to + "/");
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={cn(
-                  "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
-                  active
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
-                    : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60",
-                )}
-              >
-                <Icon className={cn("h-4 w-4", active ? "text-primary" : "")} />
-                <span>{t(item.key)}</span>
-                {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="px-3 py-4 border-t border-sidebar-border space-y-1">
-          <Link
-            to="/settings"
-            className={cn(
-              "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
-              loc.pathname === "/settings" || loc.pathname.startsWith("/settings/")
-                ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
-                : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60",
-            )}
-          >
-            <Settings className={cn("h-4 w-4", loc.pathname === "/settings" || loc.pathname.startsWith("/settings/") ? "text-primary" : "")} />
-            <span>{t("settings")}</span>
-            {(loc.pathname === "/settings" || loc.pathname.startsWith("/settings/")) && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />}
-          </Link>
-          <Link
-            to="/buy-messages"
-            className={cn(
-              "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
-              loc.pathname === "/buy-messages" || loc.pathname.startsWith("/buy-messages/")
-                ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
-                : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60",
-            )}
-          >
-            <MessageSquare className={cn("h-4 w-4", loc.pathname === "/buy-messages" || loc.pathname.startsWith("/buy-messages/") ? "text-primary" : "")} />
-            <span>{t("buyMessages")}</span>
-            {(loc.pathname === "/buy-messages" || loc.pathname.startsWith("/buy-messages/")) && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />}
-          </Link>
-          <Link
-            to="/help"
-            className={cn(
-              "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
-              loc.pathname === "/help" || loc.pathname.startsWith("/help/")
-                ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
-                : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60",
-            )}
-          >
-            <HelpCircle className={cn("h-4 w-4", loc.pathname === "/help" || loc.pathname.startsWith("/help/") ? "text-primary" : "")} />
-            <span>{t("helpSupport")}</span>
-            {(loc.pathname === "/help" || loc.pathname.startsWith("/help/")) && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />}
-          </Link>
-          <button
-            onClick={handleSignOut}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10"
-          >
-            <LogOut className="h-4 w-4" />
-            <span>{t("signOut")}</span>
-          </button>
-          <Link
-            to="/current-package"
-            className={cn(
-              "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
-              loc.pathname === "/current-package" || loc.pathname.startsWith("/current-package/")
-                ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
-                : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60",
-            )}
-          >
-            <Sparkles className={cn("h-4 w-4", loc.pathname === "/current-package" || loc.pathname.startsWith("/current-package/") ? "text-primary" : "")} />
-            <span>{t("currentPackage")}</span>
-            {(loc.pathname === "/current-package" || loc.pathname.startsWith("/current-package/")) && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />}
-          </Link>
-          <div className="px-3 pt-1 pb-0.5 text-center">
-            <span className="text-[10px] text-muted-foreground tracking-wide">
-              {t("appName")} <span className="opacity-60">|</span> {t("version")}
-            </span>
-          </div>
-        </div>
-      </aside>
-
-      <main className="flex-1 min-w-0 overflow-x-hidden">{children}</main>
+        <main className="flex-1 min-w-0 overflow-x-hidden">{children}</main>
+      </div>
     </div>
   );
 }
@@ -191,12 +227,12 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="flex items-end justify-between gap-4 mb-8">
-      <div>
-        <h1 className="text-3xl font-display font-semibold tracking-tight">{title}</h1>
+    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3 mb-6 sm:mb-8 sm:flex sm:items-end sm:justify-between sm:gap-4">
+      <div className="min-w-0">
+        <h1 className="text-2xl sm:text-3xl font-display font-semibold tracking-tight truncate">{title}</h1>
         {subtitle && <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>}
       </div>
-      {actions && <div className="flex gap-2">{actions}</div>}
+      {actions && <div className="flex flex-wrap gap-2 justify-end">{actions}</div>}
     </div>
   );
 }

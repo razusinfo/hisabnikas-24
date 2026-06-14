@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/expenses")({
   },
   component: ExpensesPage,
   errorComponent: ({ error }) => { console.error(error); return <div className="p-8 text-destructive">Something went wrong loading this page.</div>; },
-  notFoundComponent: () => <div className="p-8">Not found</div>,
+  notFoundComponent: () => <div className="p-4 sm:p-6 lg:p-8">Not found</div>,
 });
 
 async function fetchExpenses() {
@@ -262,7 +262,7 @@ function ExpensesPage() {
   };
 
   return (
-    <div className="p-8 max-w-[1400px] mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto">
       <PageHeader
         title={t("expenses")}
         subtitle={t("expensesSubtitle")}
