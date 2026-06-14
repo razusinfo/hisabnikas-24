@@ -117,7 +117,7 @@ function SidebarContent({
   const effectiveFooter = superAdminQ.data
     ? [
         ...footerNav,
-        { to: "/admin-payments", icon: ShieldCheck, key: "adminPayments" as const },
+        { to: "/admin-payments", icon: ShieldCheck, key: "adminPayments" as const, color: "purple" },
       ]
     : footerNav;
 
