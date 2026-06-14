@@ -483,7 +483,8 @@ function SalesPage() {
         )}
       </div>
 
-      <div className="card-premium overflow-hidden">
+      {/* Desktop table */}
+      <div className="card-premium overflow-hidden hidden md:block">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="text-xs uppercase tracking-wider text-muted-foreground bg-muted/30">
@@ -515,12 +516,12 @@ function SalesPage() {
                   <td className="py-3 px-4 text-right font-mono">{Number(s.due) > 0 ? <span className="text-warning">{fmtMoney(s.due, lang)}</span> : "—"}</td>
                   <td className="py-3 px-4">
                     <div className="flex justify-end gap-1">
-                      <Button size="icon" variant="ghost" onClick={() => openView(s)} title={t("view")}><Eye className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => openView(s)} title={t("view")} aria-label={t("view")}><Eye className="h-4 w-4" /></Button>
                       {Number(s.due) > 0 && (
-                        <Button size="icon" variant="ghost" onClick={() => { setPaySale(s); setPayAmount(String(s.due)); }} title={t("recordPayment")}><CreditCard className="h-4 w-4" /></Button>
+                        <Button size="icon" variant="ghost" onClick={() => { setPaySale(s); setPayAmount(String(s.due)); }} title={t("recordPayment")} aria-label={t("recordPayment")}><CreditCard className="h-4 w-4" /></Button>
                       )}
-                      <Button size="icon" variant="ghost" onClick={() => handlePrint(s)} title={t("print")}><Printer className="h-4 w-4" /></Button>
-                      <Button size="icon" variant="ghost" onClick={() => setDelSale(s)} title={t("delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => handlePrint(s)} title={t("print")} aria-label={t("print")}><Printer className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => setDelSale(s)} title={t("delete")} aria-label={t("delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                     </div>
                   </td>
                 </tr>
@@ -529,6 +530,51 @@ function SalesPage() {
           </table>
         </div>
       </div>
+
+      {/* Mobile cards */}
+      <div className="md:hidden space-y-3">
+        {filtered.length === 0 && (
+          <div className="card-premium p-8 text-center text-muted-foreground text-sm">{t("noData")}</div>
+        )}
+        {filtered.map((s: any) => (
+          <div key={s.id} className="card-premium p-4 space-y-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="font-mono text-sm font-medium truncate">{s.invoice_no}</div>
+                <div className="text-xs text-muted-foreground mt-0.5">{fmtDateTime(s.created_at, lang)}</div>
+              </div>
+              {statusBadge(s)}
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="min-w-0">
+                <div className="text-muted-foreground">{t("customer")}</div>
+                <div className="truncate">{s.customers?.name || t("walkIn")}</div>
+              </div>
+              <div className="min-w-0">
+                <div className="text-muted-foreground">{t("method")}</div>
+                <div className="truncate">{methodLabel(s.payment_method)}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground">{t("total")}</div>
+                <div className="font-mono font-medium">{fmtMoney(s.total, lang)}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground">{t("due")}</div>
+                <div className={`font-mono ${Number(s.due) > 0 ? "text-warning" : ""}`}>{Number(s.due) > 0 ? fmtMoney(s.due, lang) : "—"}</div>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 pt-1 border-t">
+              <Button size="sm" variant="ghost" className="min-h-11 flex-1" onClick={() => openView(s)}><Eye className="h-4 w-4 mr-1" />{t("view")}</Button>
+              {Number(s.due) > 0 && (
+                <Button size="sm" variant="ghost" className="min-h-11 flex-1" onClick={() => { setPaySale(s); setPayAmount(String(s.due)); }}><CreditCard className="h-4 w-4 mr-1" />{t("recordPayment")}</Button>
+              )}
+              <Button size="sm" variant="ghost" className="min-h-11" onClick={() => handlePrint(s)} aria-label={t("print")}><Printer className="h-4 w-4" /></Button>
+              <Button size="sm" variant="ghost" className="min-h-11" onClick={() => setDelSale(s)} aria-label={t("delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+            </div>
+          </div>
+        ))}
+      </div>
+
 
       <Dialog open={!!viewSale} onOpenChange={(o) => !o && setViewSale(null)}>
         <DialogContent className="max-w-2xl">

@@ -118,46 +118,89 @@ function CustomersPage() {
         <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("search")} className="border-0 bg-transparent focus-visible:ring-0" />
       </div>
 
-      <div className="card-premium overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="text-xs uppercase tracking-wider text-muted-foreground bg-muted/30">
-            <tr className="text-left">
-              <th className="py-3 px-4">{t("name")}</th>
-              <th className="py-3 px-4">{t("phone")}</th>
-              <th className="py-3 px-4">{t("email")}</th>
-              <th className="py-3 px-4 text-right">{t("due")}</th>
-              <th className="py-3 px-4"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.length === 0 && (
-              <tr><td colSpan={5} className="py-10 text-center text-muted-foreground">{t("noData")}</td></tr>
-            )}
-            {filtered.map((c) => (
-              <tr key={c.id} className="border-t border-border/40 hover:bg-muted/30">
-                <td className="py-3 px-4 font-medium">{c.name}</td>
-                <td className="py-3 px-4 text-muted-foreground">{c.phone || "—"}</td>
-                <td className="py-3 px-4 text-muted-foreground">{c.email || "—"}</td>
-                <td className="py-3 px-4 text-right font-mono">{Number(c.due_balance) > 0 ? <span className="text-warning">{fmtMoney(c.due_balance)}</span> : "—"}</td>
-                <td className="py-3 px-4 text-right">
-                  <div className="flex justify-end gap-1">
-                    {Number(c.due_balance) > 0 && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => { setCollectFor({ id: c.id, name: c.name, due: Number(c.due_balance) }); setCollectAmount(""); }}
-                      >
-                        <Wallet className="h-4 w-4" /> {"বাকি আদায়"}
-                      </Button>
-                    )}
-                    <Button size="icon" variant="ghost" onClick={() => del.mutate(c.id)}><Trash2 className="h-4 w-4" /></Button>
-                  </div>
-                </td>
+      {/* Desktop table */}
+      <div className="card-premium overflow-hidden hidden md:block">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="text-xs uppercase tracking-wider text-muted-foreground bg-muted/30">
+              <tr className="text-left">
+                <th className="py-3 px-4">{t("name")}</th>
+                <th className="py-3 px-4">{t("phone")}</th>
+                <th className="py-3 px-4">{t("email")}</th>
+                <th className="py-3 px-4 text-right">{t("due")}</th>
+                <th className="py-3 px-4"></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.length === 0 && (
+                <tr><td colSpan={5} className="py-10 text-center text-muted-foreground">{t("noData")}</td></tr>
+              )}
+              {filtered.map((c) => (
+                <tr key={c.id} className="border-t border-border/40 hover:bg-muted/30">
+                  <td className="py-3 px-4 font-medium">{c.name}</td>
+                  <td className="py-3 px-4 text-muted-foreground">{c.phone || "—"}</td>
+                  <td className="py-3 px-4 text-muted-foreground">{c.email || "—"}</td>
+                  <td className="py-3 px-4 text-right font-mono">{Number(c.due_balance) > 0 ? <span className="text-warning">{fmtMoney(c.due_balance)}</span> : "—"}</td>
+                  <td className="py-3 px-4 text-right">
+                    <div className="flex justify-end gap-1">
+                      {Number(c.due_balance) > 0 && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => { setCollectFor({ id: c.id, name: c.name, due: Number(c.due_balance) }); setCollectAmount(""); }}
+                        >
+                          <Wallet className="h-4 w-4" /> {"বাকি আদায়"}
+                        </Button>
+                      )}
+                      <Button size="icon" variant="ghost" onClick={() => del.mutate(c.id)} aria-label={t("delete") || "Delete"}><Trash2 className="h-4 w-4" /></Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      {/* Mobile cards */}
+      <div className="md:hidden space-y-3">
+        {filtered.length === 0 && (
+          <div className="card-premium p-8 text-center text-muted-foreground text-sm">{t("noData")}</div>
+        )}
+        {filtered.map((c) => (
+          <div key={c.id} className="card-premium p-4 space-y-2">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="font-medium truncate">{c.name}</div>
+                {c.phone && <div className="text-xs text-muted-foreground mt-0.5 truncate">{c.phone}</div>}
+                {c.email && <div className="text-xs text-muted-foreground truncate">{c.email}</div>}
+              </div>
+              <div className="text-right shrink-0">
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("due")}</div>
+                <div className={`font-mono text-sm ${Number(c.due_balance) > 0 ? "text-warning" : ""}`}>
+                  {Number(c.due_balance) > 0 ? fmtMoney(c.due_balance) : "—"}
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-2 pt-2 border-t">
+              {Number(c.due_balance) > 0 && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="min-h-11 flex-1"
+                  onClick={() => { setCollectFor({ id: c.id, name: c.name, due: Number(c.due_balance) }); setCollectAmount(""); }}
+                >
+                  <Wallet className="h-4 w-4 mr-1" /> {"বাকি আদায়"}
+                </Button>
+              )}
+              <Button size="sm" variant="ghost" className="min-h-11" onClick={() => del.mutate(c.id)} aria-label="Delete">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+
 
       <Dialog open={!!collectFor} onOpenChange={(o) => !o && setCollectFor(null)}>
         <DialogContent>
