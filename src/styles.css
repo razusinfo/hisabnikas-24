@@ -112,20 +112,20 @@
   --chart-4: oklch(0.55 0.22 320);
   --chart-5: oklch(0.6 0.22 25);
 
-  --card-blue: oklch(0.94 0.03 230);
-  --card-blue-fg: oklch(0.45 0.1 230);
-  --card-green: oklch(0.94 0.03 150);
-  --card-green-fg: oklch(0.4 0.1 150);
-  --card-purple: oklch(0.94 0.03 300);
-  --card-purple-fg: oklch(0.45 0.1 300);
-  --card-amber: oklch(0.94 0.03 80);
-  --card-amber-fg: oklch(0.5 0.1 80);
-  --card-teal: oklch(0.94 0.03 180);
-  --card-teal-fg: oklch(0.4 0.1 180);
-  --card-indigo: oklch(0.94 0.03 260);
-  --card-indigo-fg: oklch(0.4 0.1 260);
-  --card-rose: oklch(0.94 0.03 20);
-  --card-rose-fg: oklch(0.5 0.12 20);
+  --card-blue: oklch(0.96 0.05 230);
+  --card-blue-fg: oklch(0.35 0.14 230);
+  --card-green: oklch(0.96 0.06 150);
+  --card-green-fg: oklch(0.3 0.14 150);
+  --card-purple: oklch(0.95 0.05 300);
+  --card-purple-fg: oklch(0.35 0.14 300);
+  --card-amber: oklch(0.96 0.06 80);
+  --card-amber-fg: oklch(0.4 0.14 80);
+  --card-teal: oklch(0.96 0.06 180);
+  --card-teal-fg: oklch(0.3 0.14 180);
+  --card-indigo: oklch(0.95 0.05 260);
+  --card-indigo-fg: oklch(0.33 0.14 260);
+  --card-rose: oklch(0.96 0.05 20);
+  --card-rose-fg: oklch(0.4 0.15 20);
 
   --sidebar: oklch(0.985 0.004 240);
   --sidebar-foreground: oklch(0.28 0.02 240);
