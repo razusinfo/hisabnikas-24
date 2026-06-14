@@ -53,6 +53,7 @@ const dict = {
     buyMessages: "Buy Messages",
     helpSupport: "Help & Support",
     currentPackage: "Current Package",
+    adminPayments: "Payment Approvals",
     packageSubtitle: "Choose the plan that fits your business.",
     planFree: "Free",
     planPro: "Pro",
