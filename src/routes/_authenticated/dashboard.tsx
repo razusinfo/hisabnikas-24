@@ -87,17 +87,17 @@ function Stat({
   icon: Icon, label, value, accent, cardBg, cardFg,
 }: { icon: any; label: string; value: string; accent?: string; cardBg?: string; cardFg?: string }) {
   const base = cardBg
-    ? `rounded-xl border border-border shadow-[var(--shadow-card)] p-6 ${cardBg}`
-    : "card-premium p-6";
+    ? `rounded-xl border border-border shadow-[var(--shadow-card)] p-8 ${cardBg}`
+    : "card-premium p-8";
   return (
     <div className={base}>
       <div className="flex items-start justify-between">
         <div>
-          <div className={`text-sm uppercase tracking-widest ${cardFg ? cardFg : "text-muted-foreground"}`}>{label}</div>
-          <div className={`text-3xl font-display font-semibold mt-3 ${cardFg ?? ""}`}>{value}</div>
+          <div className={`text-base uppercase tracking-widest ${cardFg ? cardFg : "text-muted-foreground"}`}>{label}</div>
+          <div className={`text-4xl font-display font-semibold mt-4 ${cardFg ?? ""}`}>{value}</div>
         </div>
-        <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${accent ?? "bg-primary/15 text-primary"}`}>
-          <Icon className="h-5 w-5" />
+        <div className={`h-14 w-14 rounded-xl flex items-center justify-center ${accent ?? "bg-primary/15 text-primary"}`}>
+          <Icon className="h-6 w-6" />
         </div>
       </div>
     </div>
