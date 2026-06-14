@@ -148,6 +148,7 @@ function Dashboard() {
                 <Tooltip
                   contentStyle={{ background: "oklch(0.98 0.01 230)", border: "1px solid oklch(0.85 0.05 230)", borderRadius: 8 }}
                   labelStyle={{ color: "oklch(0.4 0.1 230)" }}
+                  itemStyle={{ color: "oklch(0.4 0.1 230)" }}
                 />
                 <Area type="monotone" dataKey="sales" stroke="oklch(0.55 0.16 230)" strokeWidth={2} fill="url(#g)" />
               </AreaChart>
