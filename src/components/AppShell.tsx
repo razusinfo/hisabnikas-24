@@ -58,20 +58,34 @@ function LangToggle({ compact = false }: { compact?: boolean }) {
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
+const colorStyles: Record<string, { activeBg: string; activeText: string; activeRing: string; inactiveText: string; inactiveHoverText: string; inactiveHoverBg: string; dot: string }> = {
+  blue: { activeBg: "bg-sky-100", activeText: "text-sky-700", activeRing: "ring-sky-200", inactiveText: "text-sky-500", inactiveHoverText: "hover:text-sky-700", inactiveHoverBg: "hover:bg-sky-50", dot: "bg-sky-500" },
+  emerald: { activeBg: "bg-emerald-100", activeText: "text-emerald-700", activeRing: "ring-emerald-200", inactiveText: "text-emerald-500", inactiveHoverText: "hover:text-emerald-700", inactiveHoverBg: "hover:bg-emerald-50", dot: "bg-emerald-500" },
+  amber: { activeBg: "bg-amber-100", activeText: "text-amber-700", activeRing: "ring-amber-200", inactiveText: "text-amber-500", inactiveHoverText: "hover:text-amber-700", inactiveHoverBg: "hover:bg-amber-50", dot: "bg-amber-500" },
+  violet: { activeBg: "bg-violet-100", activeText: "text-violet-700", activeRing: "ring-violet-200", inactiveText: "text-violet-500", inactiveHoverText: "hover:text-violet-700", inactiveHoverBg: "hover:bg-violet-50", dot: "bg-violet-500" },
+  rose: { activeBg: "bg-rose-100", activeText: "text-rose-700", activeRing: "ring-rose-200", inactiveText: "text-rose-500", inactiveHoverText: "hover:text-rose-700", inactiveHoverBg: "hover:bg-rose-50", dot: "bg-rose-500" },
+  cyan: { activeBg: "bg-cyan-100", activeText: "text-cyan-700", activeRing: "ring-cyan-200", inactiveText: "text-cyan-500", inactiveHoverText: "hover:text-cyan-700", inactiveHoverBg: "hover:bg-cyan-50", dot: "bg-cyan-500" },
+  slate: { activeBg: "bg-slate-100", activeText: "text-slate-700", activeRing: "ring-slate-200", inactiveText: "text-slate-500", inactiveHoverText: "hover:text-slate-700", inactiveHoverBg: "hover:bg-slate-50", dot: "bg-slate-500" },
+  teal: { activeBg: "bg-teal-100", activeText: "text-teal-700", activeRing: "ring-teal-200", inactiveText: "text-teal-500", inactiveHoverText: "hover:text-teal-700", inactiveHoverBg: "hover:bg-teal-50", dot: "bg-teal-500" },
+  orange: { activeBg: "bg-orange-100", activeText: "text-orange-700", activeRing: "ring-orange-200", inactiveText: "text-orange-500", inactiveHoverText: "hover:text-orange-700", inactiveHoverBg: "hover:bg-orange-50", dot: "bg-orange-500" },
+  indigo: { activeBg: "bg-indigo-100", activeText: "text-indigo-700", activeRing: "ring-indigo-200", inactiveText: "text-indigo-500", inactiveHoverText: "hover:text-indigo-700", inactiveHoverBg: "hover:bg-indigo-50", dot: "bg-indigo-500" },
+  red: { activeBg: "bg-red-100", activeText: "text-red-700", activeRing: "ring-red-200", inactiveText: "text-red-500", inactiveHoverText: "hover:text-red-700", inactiveHoverBg: "hover:bg-red-50", dot: "bg-red-500" },
+};
+
 const nav = [
-  { to: "/dashboard", icon: LayoutDashboard, key: "dashboard" as const },
-  { to: "/sales", icon: Receipt, key: "sales" as const },
-  { to: "/purchases", icon: ShoppingCart, key: "purchases" as const },
-  { to: "/products", icon: Package, key: "products" as const },
-  { to: "/expenses", icon: Wallet, key: "expenses" as const },
-  { to: "/customers", icon: Users, key: "customers" as const },
+  { to: "/dashboard", icon: LayoutDashboard, key: "dashboard" as const, color: "blue" },
+  { to: "/sales", icon: Receipt, key: "sales" as const, color: "emerald" },
+  { to: "/purchases", icon: ShoppingCart, key: "purchases" as const, color: "amber" },
+  { to: "/products", icon: Package, key: "products" as const, color: "violet" },
+  { to: "/expenses", icon: Wallet, key: "expenses" as const, color: "rose" },
+  { to: "/customers", icon: Users, key: "customers" as const, color: "cyan" },
 ];
 
 const footerNav = [
-  { to: "/settings", icon: Settings, key: "settings" as const },
-  { to: "/buy-messages", icon: MessageSquare, key: "buyMessages" as const },
-  { to: "/help", icon: HelpCircle, key: "helpSupport" as const },
-  { to: "/current-package", icon: Sparkles, key: "currentPackage" as const },
+  { to: "/settings", icon: Settings, key: "settings" as const, color: "slate" },
+  { to: "/buy-messages", icon: MessageSquare, key: "buyMessages" as const, color: "teal" },
+  { to: "/help", icon: HelpCircle, key: "helpSupport" as const, color: "orange" },
+  { to: "/current-package", icon: Sparkles, key: "currentPackage" as const, color: "indigo" },
 ];
 
 function SidebarContent({
@@ -107,7 +121,7 @@ function SidebarContent({
   const effectiveFooter = superAdminQ.data
     ? [
         ...footerNav,
-        { to: "/admin-payments", icon: ShieldCheck, key: "adminPayments" as const },
+        { to: "/admin-payments", icon: ShieldCheck, key: "adminPayments" as const, color: "red" },
       ]
     : footerNav;
 
@@ -129,49 +143,51 @@ function SidebarContent({
         </Link>
       </div>
       {searchSlot}
-      <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto">
+      <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
         {nav.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
+          const cs = colorStyles[item.color] ?? colorStyles.blue;
           return (
             <Link
               key={item.to}
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
+                "group flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-[15px] font-medium transition-all",
                 active
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
-                  : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60",
+                  ? `${cs.activeBg} ${cs.activeText} ring-1 ${cs.activeRing}`
+                  : `${cs.inactiveText} ${cs.inactiveHoverText} ${cs.inactiveHoverBg}`,
               )}
             >
-              <Icon className={cn("h-4 w-4 shrink-0", active ? "text-primary" : "")} />
+              <Icon className={cn("h-5 w-5 shrink-0", active ? cs.activeText : "")} />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary shrink-0" />}
+              {active && <span className={cn("ml-auto h-2 w-2 rounded-full shrink-0", cs.dot)} />}
             </Link>
           );
         })}
       </nav>
 
-      <div className="px-3 py-4 border-t border-sidebar-border space-y-1">
+      <div className="px-3 py-4 border-t border-sidebar-border space-y-1.5">
         {effectiveFooter.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
+          const cs = colorStyles[(item as any).color ?? "slate"];
           return (
             <Link
               key={item.to}
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
+                "group flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-[15px] font-medium transition-all",
                 active
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground ring-1 ring-primary/20"
-                  : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/60",
+                  ? `${cs.activeBg} ${cs.activeText} ring-1 ${cs.activeRing}`
+                  : `${cs.inactiveText} ${cs.inactiveHoverText} ${cs.inactiveHoverBg}`,
               )}
             >
-              <Icon className={cn("h-4 w-4 shrink-0", active ? "text-primary" : "")} />
+              <Icon className={cn("h-5 w-5 shrink-0", active ? cs.activeText : "")} />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary shrink-0" />}
+              {active && <span className={cn("ml-auto h-2 w-2 rounded-full shrink-0", cs.dot)} />}
             </Link>
           );
         })}
@@ -180,9 +196,9 @@ function SidebarContent({
             onNavigate?.();
             onSignOut();
           }}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10"
+          className="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-[15px] font-medium text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10 transition-all"
         >
-          <LogOut className="h-4 w-4 shrink-0" />
+          <LogOut className="h-5 w-5 shrink-0" />
           <span className="truncate">{t("signOut")}</span>
         </button>
         <div className="px-3 pt-1 pb-0.5 text-center">
@@ -236,7 +252,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <SearchProvider>
       <div className="min-h-screen flex bg-background text-foreground">
         {/* Desktop sidebar */}
-        <aside className="hidden md:flex w-64 shrink-0 bg-sidebar border-r border-sidebar-border flex-col">
+        <aside className="hidden md:flex w-72 shrink-0 bg-sidebar border-r border-sidebar-border flex-col">
           <SidebarContent
             onSignOut={handleSignOut}
             brandName={brandName}
