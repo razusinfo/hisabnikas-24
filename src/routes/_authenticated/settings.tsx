@@ -192,14 +192,14 @@ function SettingsPage() {
 
   if (profileQuery.isLoading) {
     return (
-      <div className="p-8 flex items-center gap-2 text-muted-foreground">
+      <div className="p-4 sm:p-6 lg:p-8 flex items-center gap-2 text-muted-foreground">
         <Loader2 className="h-4 w-4 animate-spin" /> {t("loading")}
       </div>
     );
   }
 
   return (
-    <div className="p-8 max-w-3xl space-y-6">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-3xl space-y-6">
         <PageHeader title={t("settings")} subtitle={t("settingsSubtitle")} />
 
         <Card>

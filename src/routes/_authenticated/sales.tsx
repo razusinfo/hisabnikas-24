@@ -469,15 +469,15 @@ function SalesPage() {
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("searchSalesPlaceholder")} className="pl-9" />
         </div>
         <Select value={status} onValueChange={setStatus}>
-          <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-[160px]"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("allStatus")}</SelectItem>
             <SelectItem value="paid">{t("statusPaid")}</SelectItem>
             <SelectItem value="due">{t("statusDue")}</SelectItem>
           </SelectContent>
         </Select>
-        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-[160px]" />
-        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-[160px]" />
+        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full sm:w-[160px]" />
+        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-full sm:w-[160px]" />
         {(q || status !== "all" || from || to) && (
           <Button variant="ghost" onClick={() => { setQ(""); setStatus("all"); setFrom(""); setTo(""); }}>{t("clear")}</Button>
         )}

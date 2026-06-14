@@ -282,7 +282,7 @@ function ExpensesPage() {
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("searchExpensesPlaceholder")} className="pl-9" />
         </div>
         <Select value={pType} onValueChange={setPType}>
-          <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-[180px]"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("allParties")}</SelectItem>
             <SelectItem value="customer">{t("partyCustomer")}</SelectItem>
@@ -291,7 +291,7 @@ function ExpensesPage() {
           </SelectContent>
         </Select>
         <Select value={pStatus} onValueChange={setPStatus}>
-          <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-[160px]"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("allStatus")}</SelectItem>
             <SelectItem value="open">{t("open")}</SelectItem>
@@ -299,8 +299,8 @@ function ExpensesPage() {
             <SelectItem value="settled">{t("settled")}</SelectItem>
           </SelectContent>
         </Select>
-        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-[160px]" />
-        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-[160px]" />
+        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full sm:w-[160px]" />
+        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-full sm:w-[160px]" />
         {(q || pType !== "all" || pStatus !== "all" || from || to) && (
           <Button variant="ghost" onClick={() => { setQ(""); setPType("all"); setPStatus("all"); setFrom(""); setTo(""); }}>{t("clear")}</Button>
         )}
