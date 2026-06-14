@@ -59,20 +59,30 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { Button } from "@/components/ui/button";
 
 const nav = [
-  { to: "/dashboard", icon: LayoutDashboard, key: "dashboard" as const },
-  { to: "/sales", icon: Receipt, key: "sales" as const },
-  { to: "/purchases", icon: ShoppingCart, key: "purchases" as const },
-  { to: "/products", icon: Package, key: "products" as const },
-  { to: "/expenses", icon: Wallet, key: "expenses" as const },
-  { to: "/customers", icon: Users, key: "customers" as const },
+  { to: "/dashboard", icon: LayoutDashboard, key: "dashboard" as const, color: "blue" },
+  { to: "/sales", icon: Receipt, key: "sales" as const, color: "green" },
+  { to: "/purchases", icon: ShoppingCart, key: "purchases" as const, color: "purple" },
+  { to: "/products", icon: Package, key: "products" as const, color: "amber" },
+  { to: "/expenses", icon: Wallet, key: "expenses" as const, color: "rose" },
+  { to: "/customers", icon: Users, key: "customers" as const, color: "teal" },
 ];
 
 const footerNav = [
-  { to: "/settings", icon: Settings, key: "settings" as const },
-  { to: "/buy-messages", icon: MessageSquare, key: "buyMessages" as const },
-  { to: "/help", icon: HelpCircle, key: "helpSupport" as const },
-  { to: "/current-package", icon: Sparkles, key: "currentPackage" as const },
+  { to: "/settings", icon: Settings, key: "settings" as const, color: "indigo" },
+  { to: "/buy-messages", icon: MessageSquare, key: "buyMessages" as const, color: "blue" },
+  { to: "/help", icon: HelpCircle, key: "helpSupport" as const, color: "teal" },
+  { to: "/current-package", icon: Sparkles, key: "currentPackage" as const, color: "amber" },
 ];
+
+const colorClass: Record<string, string> = {
+  blue: "bg-card-blue text-card-blue-fg hover:bg-card-blue/80",
+  green: "bg-card-green text-card-green-fg hover:bg-card-green/80",
+  purple: "bg-card-purple text-card-purple-fg hover:bg-card-purple/80",
+  amber: "bg-card-amber text-card-amber-fg hover:bg-card-amber/80",
+  rose: "bg-card-rose text-card-rose-fg hover:bg-card-rose/80",
+  teal: "bg-card-teal text-card-teal-fg hover:bg-card-teal/80",
+  indigo: "bg-card-indigo text-card-indigo-fg hover:bg-card-indigo/80",
+};
 
 function SidebarContent({
   onNavigate,
