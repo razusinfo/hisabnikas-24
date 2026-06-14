@@ -86,11 +86,14 @@ export async function fetchDashboard() {
 function Stat({
   icon: Icon, label, value, accent, cardBg, cardFg,
 }: { icon: any; label: string; value: string; accent?: string; cardBg?: string; cardFg?: string }) {
+  const base = cardBg
+    ? `rounded-xl border border-border shadow-[var(--shadow-card)] p-6 ${cardBg}`
+    : "card-premium p-6";
   return (
-    <div className={`card-premium p-6 ${cardBg ?? ""}`}>
+    <div className={base}>
       <div className="flex items-start justify-between">
         <div>
-          <div className={`text-sm uppercase tracking-widest ${cardFg ? "" : "text-muted-foreground"} ${cardFg ?? ""}`}>{label}</div>
+          <div className={`text-sm uppercase tracking-widest ${cardFg ? cardFg : "text-muted-foreground"}`}>{label}</div>
           <div className={`text-3xl font-display font-semibold mt-3 ${cardFg ?? ""}`}>{value}</div>
         </div>
         <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${accent ?? "bg-primary/15 text-primary"}`}>
