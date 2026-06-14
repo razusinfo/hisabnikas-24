@@ -154,7 +154,7 @@ function SidebarContent({
       </nav>
 
       <div className="px-3 py-4 border-t border-sidebar-border space-y-1">
-        {footerNav.map((item) => {
+        {effectiveFooter.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
           return (
