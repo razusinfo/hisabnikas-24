@@ -87,14 +87,14 @@ function Stat({
   icon: Icon, label, value, accent,
 }: { icon: any; label: string; value: string; accent?: string }) {
   return (
-    <div className="card-premium p-5">
+    <div className="card-premium p-6">
       <div className="flex items-start justify-between">
         <div>
-          <div className="text-xs uppercase tracking-widest text-muted-foreground">{label}</div>
-          <div className="text-2xl font-display font-semibold mt-2">{value}</div>
+          <div className="text-sm uppercase tracking-widest text-muted-foreground">{label}</div>
+          <div className="text-3xl font-display font-semibold mt-3">{value}</div>
         </div>
-        <div className={`h-9 w-9 rounded-lg flex items-center justify-center ${accent ?? "bg-primary/15 text-primary"}`}>
-          <Icon className="h-4 w-4" />
+        <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${accent ?? "bg-primary/15 text-primary"}`}>
+          <Icon className="h-5 w-5" />
         </div>
       </div>
     </div>
@@ -109,28 +109,28 @@ function Dashboard() {
     <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto">
       <PageHeader title={t("dashboard")} subtitle="Real-time pulse of your business." />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
         <Stat icon={CalendarDays} label={t("salesToday")} value={fmtMoney(d.salesToday)} />
         <Stat icon={CalendarRange} label={t("salesMonth")} value={fmtMoney(d.salesMonth)} accent="bg-success/15 text-success" />
         <Stat icon={TrendingUp} label={t("salesYear")} value={fmtMoney(d.salesYear)} accent="bg-chart-4/15 text-chart-4" />
         <Stat icon={Wallet} label={t("dueReceivable")} value={fmtMoney(d.dueReceivable)} accent="bg-warning/15 text-warning" />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
         <Stat icon={Package} label={t("totalProducts")} value={String(d.productCount)} />
         <Stat icon={Users} label={t("totalCustomers")} value={String(d.customerCount)} />
         <Stat icon={AlertTriangle} label={t("lowStock")} value={String(d.lowStockCount)} accent="bg-destructive/15 text-destructive" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="card-premium p-6 lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="card-premium p-7 lg:col-span-2">
+          <div className="flex items-center justify-between mb-5">
             <div>
-              <div className="text-xs uppercase tracking-widest text-muted-foreground">Last 14 days</div>
-              <div className="font-display text-lg font-semibold">Sales trend</div>
+              <div className="text-sm uppercase tracking-widest text-muted-foreground">Last 14 days</div>
+              <div className="font-display text-xl font-semibold">Sales trend</div>
             </div>
           </div>
-          <div className="h-64">
+          <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={d.chart} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
                 <defs>
@@ -152,8 +152,8 @@ function Dashboard() {
           </div>
         </div>
 
-        <div className="card-premium p-6">
-          <div className="font-display text-lg font-semibold mb-4">{t("lowStock")}</div>
+        <div className="card-premium p-7">
+          <div className="font-display text-xl font-semibold mb-5">{t("lowStock")}</div>
           {d.lowStock.length === 0 ? (
             <p className="text-sm text-muted-foreground">All good. Nothing low.</p>
           ) : (
@@ -169,10 +169,10 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="card-premium p-6 mt-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="font-display text-lg font-semibold flex items-center gap-2">
-            <Receipt className="h-4 w-4 text-primary" /> {t("recentSales")}
+      <div className="card-premium p-7 mt-5">
+        <div className="flex items-center justify-between mb-5">
+          <div className="font-display text-xl font-semibold flex items-center gap-2">
+            <Receipt className="h-5 w-5 text-primary" /> {t("recentSales")}
           </div>
         </div>
         {d.recent.length === 0 ? (
