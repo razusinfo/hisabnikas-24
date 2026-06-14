@@ -6,7 +6,6 @@ import {
   MessageCircle,
   Globe,
   Send,
-  ChevronDown,
   BookOpen,
   ShoppingCart,
   Package,
