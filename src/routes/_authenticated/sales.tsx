@@ -577,7 +577,7 @@ function SalesPage() {
 
 
       <Dialog open={!!viewSale} onOpenChange={(o) => !o && setViewSale(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t("invoice")} {viewSale?.invoice_no}</DialogTitle>
           </DialogHeader>
@@ -589,7 +589,7 @@ function SalesPage() {
                 <div><div className="text-muted-foreground text-xs">{t("method")}</div>{methodLabel(viewSale.payment_method)}</div>
                 <div><div className="text-muted-foreground text-xs">{t("status")}</div>{statusBadge(viewSale)}</div>
               </div>
-              <div className="border rounded-md overflow-hidden">
+              <div className="border rounded-md overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/30 text-xs uppercase">
                     <tr><th className="text-left p-2">{t("item")}</th><th className="text-right p-2">{t("qty")}</th><th className="text-right p-2">{t("price")}</th><th className="text-right p-2">{t("total")}</th></tr>
@@ -681,7 +681,7 @@ function SalesPage() {
 
       {/* New Sale */}
       <Dialog open={openNew} onOpenChange={(o) => { if (!o) { setOpenNew(false); resetNew(); } }}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>{t("newSale")}</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
@@ -754,7 +754,7 @@ function SalesPage() {
             </div>
 
             {lines.length > 0 && (
-              <div className="border rounded-md overflow-hidden">
+              <div className="border rounded-md overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/30 text-xs uppercase">
                     <tr>

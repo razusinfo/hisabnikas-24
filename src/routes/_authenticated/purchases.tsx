@@ -423,7 +423,7 @@ function PurchasesPage() {
             </div>
 
             {lines.length > 0 && (
-              <div className="border rounded-md overflow-hidden">
+              <div className="border rounded-md overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/30 text-xs uppercase">
                     <tr>
@@ -494,7 +494,7 @@ function PurchasesPage() {
                 <div><div className="text-muted-foreground text-xs">{t("method")}</div>{methodLabel(viewP.payment_method)}</div>
                 <div><div className="text-muted-foreground text-xs">{t("status")}</div>{statusBadge(viewP)}</div>
               </div>
-              <div className="border rounded-md overflow-hidden">
+              <div className="border rounded-md overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/30 text-xs uppercase">
                     <tr><th className="text-left p-2">{t("item")}</th><th className="text-right p-2">{t("qty")}</th><th className="text-right p-2">{t("unitCost")}</th><th className="text-right p-2">{t("total")}</th></tr>
