@@ -498,6 +498,16 @@ const dict = {
     sortNameAZ: "নাম ক–হ",
     sortStockLow: "স্টক: কম → বেশি",
     sortPriceHigh: "মূল্য: বেশি → কম",
+    colorLegend: "রঙ নির্দেশিকা",
+    legendSalesToday: "আজকের বিক্রয়",
+    legendSalesMonth: "এই মাসের বিক্রয়",
+    legendSalesYear: "এই বছরের বিক্রয়",
+    legendDueReceivable: "বাকি আদায়যোগ্য",
+    legendProducts: "পণ্য",
+    legendCustomers: "ক্রেতা",
+    legendLowStock: "কম স্টক",
+    legendSalesTrend: "বিক্রয় প্রবণতা",
+    legendRecentSales: "সাম্প্রতিক বিক্রয়",
   },
 } as const;
 
