@@ -34,22 +34,6 @@ async function fetchMessageCredits() {
   return { credits: Number(data?.message_credits ?? 0), company: data?.company_name ?? "" };
 }
 
-async function fetchPnL() {
-  const [salesRes, purchasesRes, expensesRes, customersRes] = await Promise.all([
-    supabase.from("sales").select("total, paid, due"),
-    supabase.from("purchases").select("total"),
-    supabase.from("expenses").select("amount"),
-    supabase.from("customers").select("due_balance"),
-  ]);
-  const sales = (salesRes.data ?? []).reduce((s, r) => s + Number(r.total ?? 0), 0);
-  const collected = (salesRes.data ?? []).reduce((s, r) => s + Number(r.paid ?? 0), 0);
-  const salesDue = (salesRes.data ?? []).reduce((s, r) => s + Number(r.due ?? 0), 0);
-  const purchases = (purchasesRes.data ?? []).reduce((s, r) => s + Number(r.total ?? 0), 0);
-  const expenses = (expensesRes.data ?? []).reduce((s, r) => s + Number(r.amount ?? 0), 0);
-  const customerDue = (customersRes.data ?? []).reduce((s, r) => s + Number(r.due_balance ?? 0), 0);
-  const profit = sales - purchases - expenses;
-  return { sales, collected, salesDue, purchases, expenses, customerDue, profit };
-}
 
 function CustomersPage() {
   const { t } = useI18n();
