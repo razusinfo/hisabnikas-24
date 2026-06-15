@@ -289,6 +289,35 @@ function CustomersPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={!!smsFor} onOpenChange={(o) => !o && setSmsFor(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>{"বাকি পরিশোধের অনুরোধ"} — {smsFor?.name}</DialogTitle></DialogHeader>
+          <form onSubmit={(e) => { e.preventDefault(); sendSms.mutate(); }} className="space-y-3">
+            <div className="flex items-center justify-between text-sm">
+              <div className="text-muted-foreground">
+                ফোন: <span className="font-mono text-foreground">{smsFor?.phone || "—"}</span>
+              </div>
+              <div className="text-muted-foreground">
+                ক্রেডিট: <span className="font-mono text-foreground">{credInfo?.credits ?? 0}</span>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label>{"মেসেজ"}</Label>
+              <Textarea rows={4} value={smsBody} onChange={(e) => setSmsBody(e.target.value)} maxLength={320} />
+              <div className="text-xs text-muted-foreground text-right">{smsBody.length}/৩২০</div>
+            </div>
+            {(credInfo?.credits ?? 0) < 1 ? (
+              <div className="text-sm text-destructive">
+                মেসেজ ক্রেডিট শেষ। <Link to="/buy-messages" className="underline">মেসেজ কিনুন</Link>
+              </div>
+            ) : null}
+            <Button disabled={sendSms.isPending || !smsFor?.phone || (credInfo?.credits ?? 0) < 1} className="w-full">
+              {sendSms.isPending ? "পাঠানো হচ্ছে..." : "পাঠান (১ ক্রেডিট)"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
