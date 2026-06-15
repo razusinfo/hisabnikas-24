@@ -27,6 +27,13 @@ export async function fetchCustomers() {
   return data;
 }
 
+async function fetchMessageCredits() {
+  const { data: u } = await supabase.auth.getUser();
+  if (!u.user) return 0;
+  const { data } = await supabase.from("profiles").select("message_credits, company_name").eq("id", u.user.id).single();
+  return { credits: Number(data?.message_credits ?? 0), company: data?.company_name ?? "" };
+}
+
 function CustomersPage() {
   const { t } = useI18n();
   const qc = useQueryClient();
