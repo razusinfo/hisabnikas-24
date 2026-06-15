@@ -124,10 +124,12 @@ export type Database = {
           amount: number
           bkash_number: string
           created_at: string
-          duration_days: number
+          duration_days: number | null
           id: string
+          kind: string
+          messages_count: number | null
           note: string | null
-          plan: string
+          plan: string | null
           processed_at: string | null
           processed_by: string | null
           sender_number: string
@@ -140,10 +142,12 @@ export type Database = {
           amount: number
           bkash_number: string
           created_at?: string
-          duration_days: number
+          duration_days?: number | null
           id?: string
+          kind?: string
+          messages_count?: number | null
           note?: string | null
-          plan: string
+          plan?: string | null
           processed_at?: string | null
           processed_by?: string | null
           sender_number: string
@@ -156,10 +160,12 @@ export type Database = {
           amount?: number
           bkash_number?: string
           created_at?: string
-          duration_days?: number
+          duration_days?: number | null
           id?: string
+          kind?: string
+          messages_count?: number | null
           note?: string | null
-          plan?: string
+          plan?: string | null
           processed_at?: string | null
           processed_by?: string | null
           sender_number?: string
@@ -243,6 +249,7 @@ export type Database = {
           is_super_admin: boolean
           language: string
           logo_url: string | null
+          message_credits: number
           updated_at: string
         }
         Insert: {
@@ -255,6 +262,7 @@ export type Database = {
           is_super_admin?: boolean
           language?: string
           logo_url?: string | null
+          message_credits?: number
           updated_at?: string
         }
         Update: {
@@ -267,6 +275,7 @@ export type Database = {
           is_super_admin?: boolean
           language?: string
           logo_url?: string | null
+          message_credits?: number
           updated_at?: string
         }
         Relationships: []
