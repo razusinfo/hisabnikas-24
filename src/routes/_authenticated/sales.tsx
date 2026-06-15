@@ -43,6 +43,40 @@ async function fetchSaleItems(saleId: string) {
   return data ?? [];
 }
 
+let _companyNameCache: string | null = null;
+async function getCompanyName(): Promise<string> {
+  if (_companyNameCache !== null) return _companyNameCache;
+  const { data: u } = await supabase.auth.getUser();
+  if (!u.user) return "";
+  const { data } = await supabase.from("profiles").select("company_name").eq("id", u.user.id).single();
+  _companyNameCache = data?.company_name ?? "";
+  return _companyNameCache;
+}
+
+async function fireSmsAsync(opts: {
+  customerId: string | null;
+  phone: string | null | undefined;
+  body: string;
+  kind: "sale_receipt" | "payment_receipt";
+}) {
+  if (!opts.phone) return;
+  try {
+    const { sendSms } = await import("@/lib/sms.functions");
+    await sendSms({
+      data: {
+        customerId: opts.customerId,
+        phone: opts.phone,
+        body: opts.body,
+        kind: opts.kind,
+      },
+    });
+    toast.success("SMS পাঠানো হয়েছে");
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    toast.warning("SMS পাঠানো যায়নি: " + msg);
+  }
+}
+
 function SalesPage() {
   const { t, lang } = useI18n();
   const qc = useQueryClient();
