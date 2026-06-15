@@ -43,6 +43,40 @@ async function fetchSaleItems(saleId: string) {
   return data ?? [];
 }
 
+let _companyNameCache: string | null = null;
+async function getCompanyName(): Promise<string> {
+  if (_companyNameCache !== null) return _companyNameCache;
+  const { data: u } = await supabase.auth.getUser();
+  if (!u.user) return "";
+  const { data } = await supabase.from("profiles").select("company_name").eq("id", u.user.id).single();
+  _companyNameCache = data?.company_name ?? "";
+  return _companyNameCache;
+}
+
+async function fireSmsAsync(opts: {
+  customerId: string | null;
+  phone: string | null | undefined;
+  body: string;
+  kind: "sale_receipt" | "payment_receipt";
+}) {
+  if (!opts.phone) return;
+  try {
+    const { sendSms } = await import("@/lib/sms.functions");
+    await sendSms({
+      data: {
+        customerId: opts.customerId,
+        phone: opts.phone,
+        body: opts.body,
+        kind: opts.kind,
+      },
+    });
+    toast.success("SMS পাঠানো হয়েছে");
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    toast.warning("SMS পাঠানো যায়নি: " + msg);
+  }
+}
+
 function SalesPage() {
   const { t, lang } = useI18n();
   const qc = useQueryClient();
@@ -188,6 +222,17 @@ function SalesPage() {
       qc.invalidateQueries({ queryKey: ["products-list"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       qc.invalidateQueries({ queryKey: ["customers"] });
+
+      // Fire-and-forget SMS receipt to customer (only if real customer with phone)
+      if (customerId !== "walkin") {
+        const cust = customersList.find((c: any) => c.id === customerId);
+        if (cust?.phone) {
+          const company = await getCompanyName();
+          const dueLine = newDue > 0 ? ` বাকি: ৳${newDue.toFixed(2)}।` : "";
+          const body = `প্রিয় ${cust.name}, ${invoice_no} — মোট: ৳${newTotal.toFixed(2)}, পরিশোধ: ৳${newPaidAmt.toFixed(2)}।${dueLine} ধন্যবাদ${company ? " — " + company : ""}`;
+          void fireSmsAsync({ customerId: cust.id, phone: cust.phone, body, kind: "sale_receipt" });
+        }
+      }
     } catch (e: any) {
       toast.error(e.message);
     } finally {
@@ -291,9 +336,19 @@ function SalesPage() {
       }
     }
     toast.success(t("paymentRecorded"));
+    // Fire-and-forget payment confirmation SMS
+    const phone = paySale?.customers?.phone as string | undefined;
+    const custName = (paySale?.customers?.name as string | undefined) ?? "গ্রাহক";
+    if (phone && paySale.customer_id) {
+      const company = await getCompanyName();
+      const dueLine = newDue > 0 ? ` অবশিষ্ট বাকি: ৳${newDue.toFixed(2)}।` : " সম্পূর্ণ পরিশোধিত।";
+      const body = `প্রিয় ${custName}, ${paySale.invoice_no} এর জন্য ৳${amt.toFixed(2)} পরিশোধ পাওয়া গেছে।${dueLine} ধন্যবাদ${company ? " — " + company : ""}`;
+      void fireSmsAsync({ customerId: paySale.customer_id, phone, body, kind: "payment_receipt" });
+    }
     setPaySale(null);
     setPayAmount("");
     qc.invalidateQueries({ queryKey: ["sales"] });
+    qc.invalidateQueries({ queryKey: ["customers"] });
   }
 
   async function deleteSale() {
