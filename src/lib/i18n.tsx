@@ -401,7 +401,7 @@ const dict = {
     discount: "ছাড়",
     tax: "ভ্যাট",
     total: "মোট",
-    paid: "পরিশোধিত",
+    paid: "পরিশোধিত টাকা",
     cash: "নগদ",
     card: "কার্ড",
     completeSale: "বিক্রয় সম্পন্ন",
