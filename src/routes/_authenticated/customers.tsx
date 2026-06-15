@@ -38,11 +38,14 @@ function CustomersPage() {
   const { t } = useI18n();
   const qc = useQueryClient();
   const { data } = useSuspenseQuery({ queryKey: ["customers"], queryFn: fetchCustomers });
+  const { data: credInfo } = useQuery({ queryKey: ["message-credits"], queryFn: fetchMessageCredits });
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", email: "", address: "" });
   const [collectFor, setCollectFor] = useState<{ id: string; name: string; due: number } | null>(null);
   const [collectAmount, setCollectAmount] = useState("");
+  const [smsFor, setSmsFor] = useState<{ id: string; name: string; phone: string | null; due: number } | null>(null);
+  const [smsBody, setSmsBody] = useState("");
 
   const create = useMutation({
     mutationFn: async () => {
