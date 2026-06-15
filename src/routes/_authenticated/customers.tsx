@@ -94,6 +94,35 @@ function CustomersPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  function openSms(c: { id: string; name: string; phone: string | null; due_balance: number | string }) {
+    const due = Number(c.due_balance);
+    const company = credInfo?.company || "আমাদের দোকান";
+    setSmsFor({ id: c.id, name: c.name, phone: c.phone, due });
+    setSmsBody(`প্রিয় ${c.name}, আপনার বকেয়া ${fmtMoney(due)} পরিশোধের জন্য অনুরোধ করা হচ্ছে। ধন্যবাদ — ${company}`);
+  }
+
+  const sendSms = useMutation({
+    mutationFn: async () => {
+      if (!smsFor) throw new Error("No customer");
+      if (!smsFor.phone) throw new Error("ফোন নম্বর নেই");
+      if (!smsBody.trim()) throw new Error("মেসেজ লিখুন");
+      const { error } = await supabase.rpc("send_due_reminder_sms" as any, {
+        _customer_id: smsFor.id,
+        _phone: smsFor.phone,
+        _body: smsBody.trim(),
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("পরিশোধের অনুরোধ পাঠানো হয়েছে");
+      setSmsFor(null);
+      setSmsBody("");
+      qc.invalidateQueries({ queryKey: ["message-credits"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+
 
   const filtered = data.filter((c) =>
     [c.name, c.phone, c.email].some((v) => v?.toLowerCase().includes(search.toLowerCase())),
