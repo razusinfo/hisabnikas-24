@@ -79,7 +79,6 @@ const nav = [
   { to: "/purchases", icon: ShoppingCart, key: "purchases" as const, color: "amber" },
   { to: "/products", icon: Package, key: "products" as const, color: "violet" },
   { to: "/expenses", icon: Wallet, key: "expenses" as const, color: "rose" },
-  { to: "/customers", icon: Users, key: "customers" as const, color: "cyan" },
 ];
 
 const footerNav = [
