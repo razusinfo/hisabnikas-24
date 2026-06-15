@@ -79,7 +79,24 @@ export const sendSms = createServerFn({ method: "POST" })
       .eq("id", logId as string);
 
     if (status !== "sent") {
-      throw new Error(`SMS পাঠানো যায়নি: ${providerResponse || "অজানা ত্রুটি"}`);
+      // Refund the credit since the provider rejected the message
+      await supabaseAdmin.rpc("refund_sms_credit" as never, {
+        _user_id: context.userId,
+      } as never);
+
+      // Surface a user-friendly reason
+      let reason = providerResponse || "অজানা ত্রুটি";
+      try {
+        const parsed = JSON.parse(providerResponse);
+        if (parsed?.error_message) reason = String(parsed.error_message);
+        if (parsed?.response_code === 1032 || /not Whitelisted/i.test(reason)) {
+          reason =
+            "SMS প্রদানকারীর প্যানেলে IP Whitelist চালু আছে। BulkSMSBD প্যানেল → Phonebook → IP Whitelist বন্ধ করুন অথবা Cloudflare IP গুলো whitelist করুন।";
+        }
+      } catch {
+        /* keep raw */
+      }
+      throw new Error(`SMS পাঠানো যায়নি: ${reason}`);
     }
 
     return { ok: true, logId, providerMsgId };
