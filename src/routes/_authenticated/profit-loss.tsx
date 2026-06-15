@@ -65,7 +65,11 @@ async function fetchPnL(period: Period) {
       .in("sale_id", saleIds);
 
     const productIds = [
-      ...new Set((itemsData ?? []).map((i) => i.product_id).filter(Boolean)),
+      ...new Set(
+        (itemsData ?? [])
+          .map((i) => i.product_id)
+          .filter((id): id is string => Boolean(id))
+      ),
     ];
 
     let costMap = new Map<string, number>();
