@@ -106,6 +106,14 @@ function SalesPage() {
   const [lines, setLines] = useState<{ product_id: string; name: string; qty: number; unit_price: number; stock: number }[]>([]);
   const [creating, setCreating] = useState(false);
   const [productSearch, setProductSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+
+  // Inline new-customer dialog
+  const [openNewCust, setOpenNewCust] = useState(false);
+  const [ncName, setNcName] = useState("");
+  const [ncPhone, setNcPhone] = useState("");
+  const [ncAddress, setNcAddress] = useState("");
+  const [ncSaving, setNcSaving] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", "me"],
@@ -136,10 +144,18 @@ function SalesPage() {
   const { data: productsList = [] } = useQuery({
     queryKey: ["products-list"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("products").select("id,name,sku,sell_price,stock").order("name");
+      const { data, error } = await supabase.from("products").select("id,name,sku,sell_price,stock,category_id").order("name");
       if (error) throw error;
       return (data ?? []).map((p: any) => ({ ...p, price: p.sell_price }));
+    },
+    enabled: openNew,
+  });
+  const { data: categoriesList = [] } = useQuery({
+    queryKey: ["categories-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("categories").select("id,name").order("name");
       if (error) throw error;
+      return data ?? [];
     },
     enabled: openNew,
   });
@@ -155,8 +171,33 @@ function SalesPage() {
 
   const newSubtotal = lines.reduce((a, l) => a + l.qty * l.unit_price, 0);
   const newTotal = Math.max(0, newSubtotal - Number(newDiscount || 0) + Number(newTax || 0));
-  const newPaidAmt = newPaid === "" ? newTotal : Number(newPaid);
+  const newPaidAmt = newMethod === "due" ? 0 : (newPaid === "" ? newTotal : Number(newPaid));
   const newDue = Math.max(0, newTotal - newPaidAmt);
+
+  async function createCustomerInline() {
+    if (!ncName.trim()) return toast.error("নাম দিন");
+    setNcSaving(true);
+    try {
+      const { data: u } = await supabase.auth.getUser();
+      const { data, error } = await supabase.from("customers").insert({
+        owner_id: u.user!.id,
+        name: ncName.trim(),
+        phone: ncPhone.trim() || null,
+        address: ncAddress.trim() || null,
+      }).select("id,name,phone").single();
+      if (error) throw error;
+      qc.invalidateQueries({ queryKey: ["customers-list"] });
+      qc.invalidateQueries({ queryKey: ["customers"] });
+      setCustomerId(data.id);
+      setOpenNewCust(false);
+      setNcName(""); setNcPhone(""); setNcAddress("");
+      toast.success("ক্রেতা যুক্ত হয়েছে");
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setNcSaving(false);
+    }
+  }
 
   function addLine(productId: string) {
     const p = (productsList as any[]).find((x) => x.id === productId);
@@ -742,10 +783,11 @@ function SalesPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs text-muted-foreground">{t("customer")}</label>
-                <Select value={customerId} onValueChange={setCustomerId}>
+                <Select value={customerId} onValueChange={(v) => { if (v === "__new__") { setOpenNewCust(true); } else { setCustomerId(v); } }}>
                   <SelectTrigger><SelectValue placeholder={t("selectCustomer")} /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="walkin">{t("walkIn")}</SelectItem>
+                    <SelectItem value="__new__">+ নতুন ক্রেতা যুক্ত করুন</SelectItem>
                     {(customersList as any[]).map((c) => (
                       <SelectItem key={c.id} value={c.id}>{c.name}{c.phone ? ` · ${c.phone}` : ""}</SelectItem>
                     ))}
@@ -769,14 +811,26 @@ function SalesPage() {
 
             <div>
               <label className="text-xs text-muted-foreground">{t("addItem")}</label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  value={productSearch}
-                  onChange={(e) => setProductSearch(e.target.value)}
-                  placeholder={t("selectProduct")}
-                  className="pl-9"
-                />
+              <div className="grid grid-cols-[180px_1fr] gap-2">
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger><SelectValue placeholder="ক্যাটাগরি" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">সব ক্যাটাগরি</SelectItem>
+                    <SelectItem value="__none__">— ক্যাটাগরিহীন —</SelectItem>
+                    {(categoriesList as any[]).map((c) => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    value={productSearch}
+                    onChange={(e) => setProductSearch(e.target.value)}
+                    placeholder={t("selectProduct")}
+                    className="pl-9"
+                  />
+                </div>
               </div>
               {(() => {
                 const list = (productsList as any[]);
@@ -784,9 +838,10 @@ function SalesPage() {
                   return <div className="mt-2 text-sm text-muted-foreground px-2">{t("noData")}</div>;
                 }
                 const q2 = productSearch.trim().toLowerCase();
-                const filteredP = q2
-                  ? list.filter((p) => `${p.name} ${p.sku ?? ""}`.toLowerCase().includes(q2))
-                  : list;
+                let filteredP = list;
+                if (categoryFilter === "__none__") filteredP = filteredP.filter((p) => !p.category_id);
+                else if (categoryFilter !== "all") filteredP = filteredP.filter((p) => p.category_id === categoryFilter);
+                if (q2) filteredP = filteredP.filter((p) => `${p.name} ${p.sku ?? ""}`.toLowerCase().includes(q2));
                 return (
                   <div className="mt-2 max-h-56 overflow-y-auto border rounded-md divide-y">
                     {filteredP.slice(0, 50).map((p) => (
@@ -846,7 +901,14 @@ function SalesPage() {
               </div>
               <div>
                 <label className="text-xs text-muted-foreground">{t("paid")}</label>
-                <Input type="number" step="0.01" value={newPaid} onChange={(e) => setNewPaid(e.target.value)} placeholder={String(newTotal)} />
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={newMethod === "due" ? "0" : newPaid}
+                  disabled={newMethod === "due"}
+                  onChange={(e) => setNewPaid(e.target.value)}
+                  placeholder={String(newTotal)}
+                />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground">{t("note")}</label>
@@ -864,6 +926,31 @@ function SalesPage() {
           <DialogFooter>
             <Button variant="ghost" onClick={() => { setOpenNew(false); resetNew(); }}>{t("cancel")}</Button>
             <Button onClick={createSale} disabled={creating}>{t("save")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Inline New Customer */}
+      <Dialog open={openNewCust} onOpenChange={(o) => { if (!o) { setOpenNewCust(false); } }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>নতুন ক্রেতা যুক্ত করুন</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs text-muted-foreground">নাম *</label>
+              <Input value={ncName} onChange={(e) => setNcName(e.target.value)} placeholder="ক্রেতার নাম" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">ফোন</label>
+              <Input value={ncPhone} onChange={(e) => setNcPhone(e.target.value)} placeholder="01XXXXXXXXX" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">ঠিকানা</label>
+              <Input value={ncAddress} onChange={(e) => setNcAddress(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setOpenNewCust(false)}>{t("cancel")}</Button>
+            <Button onClick={createCustomerInline} disabled={ncSaving}>{t("save")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
