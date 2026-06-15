@@ -46,6 +46,7 @@ const dict = {
     partial: "Partial",
     pay: "Pay",
     customers: "Customers",
+    profitLoss: "Profit & Loss",
     purchases: "Purchases",
     inventory: "Inventory",
     reports: "Reports",
