@@ -141,23 +141,26 @@ function CustomersPage() {
         title={t("customers")}
         subtitle="Track who buys, what they owe, and when they paid."
         actions={
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4" /> {t("addCustomer")}</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader><DialogTitle>{t("addCustomer")}</DialogTitle></DialogHeader>
-              <form onSubmit={(e) => { e.preventDefault(); create.mutate(); }} className="space-y-3">
-                <div className="space-y-1.5"><Label>{t("name")}</Label><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5"><Label>{t("phone")}</Label><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
-                  <div className="space-y-1.5"><Label>{t("email")}</Label><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
-                </div>
-                <div className="space-y-1.5"><Label>{t("address")}</Label><Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></div>
-                <Button disabled={create.isPending} className="w-full">{t("save")}</Button>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <div className="flex items-center gap-2">
+            <Button onClick={() => setQuickOpen(true)} variant="outline"><ShoppingCart className="h-4 w-4" /> {t("newSale")}</Button>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button><Plus className="h-4 w-4" /> {t("addCustomer")}</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader><DialogTitle>{t("addCustomer")}</DialogTitle></DialogHeader>
+                <form onSubmit={(e) => { e.preventDefault(); create.mutate(); }} className="space-y-3">
+                  <div className="space-y-1.5"><Label>{t("name")}</Label><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5"><Label>{t("phone")}</Label><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
+                    <div className="space-y-1.5"><Label>{t("email")}</Label><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
+                  </div>
+                  <div className="space-y-1.5"><Label>{t("address")}</Label><Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></div>
+                  <Button disabled={create.isPending} className="w-full">{t("save")}</Button>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
         }
       />
 
