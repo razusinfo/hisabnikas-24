@@ -29,7 +29,7 @@ export async function fetchCustomers() {
 
 async function fetchMessageCredits() {
   const { data: u } = await supabase.auth.getUser();
-  if (!u.user) return 0;
+  if (!u.user) return { credits: 0, company: "" };
   const { data } = await supabase.from("profiles").select("message_credits, company_name").eq("id", u.user.id).single();
   return { credits: Number(data?.message_credits ?? 0), company: data?.company_name ?? "" };
 }
