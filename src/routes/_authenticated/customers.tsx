@@ -44,6 +44,7 @@ function CustomersPage() {
   
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
+  const [quickOpen, setQuickOpen] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", email: "", address: "" });
   const [collectFor, setCollectFor] = useState<{ id: string; name: string; due: number } | null>(null);
   const [collectAmount, setCollectAmount] = useState("");
