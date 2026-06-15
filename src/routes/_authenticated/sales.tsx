@@ -811,14 +811,26 @@ function SalesPage() {
 
             <div>
               <label className="text-xs text-muted-foreground">{t("addItem")}</label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  value={productSearch}
-                  onChange={(e) => setProductSearch(e.target.value)}
-                  placeholder={t("selectProduct")}
-                  className="pl-9"
-                />
+              <div className="grid grid-cols-[180px_1fr] gap-2">
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger><SelectValue placeholder="ক্যাটাগরি" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">সব ক্যাটাগরি</SelectItem>
+                    <SelectItem value="__none__">— ক্যাটাগরিহীন —</SelectItem>
+                    {(categoriesList as any[]).map((c) => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    value={productSearch}
+                    onChange={(e) => setProductSearch(e.target.value)}
+                    placeholder={t("selectProduct")}
+                    className="pl-9"
+                  />
+                </div>
               </div>
               {(() => {
                 const list = (productsList as any[]);
@@ -826,9 +838,10 @@ function SalesPage() {
                   return <div className="mt-2 text-sm text-muted-foreground px-2">{t("noData")}</div>;
                 }
                 const q2 = productSearch.trim().toLowerCase();
-                const filteredP = q2
-                  ? list.filter((p) => `${p.name} ${p.sku ?? ""}`.toLowerCase().includes(q2))
-                  : list;
+                let filteredP = list;
+                if (categoryFilter === "__none__") filteredP = filteredP.filter((p) => !p.category_id);
+                else if (categoryFilter !== "all") filteredP = filteredP.filter((p) => p.category_id === categoryFilter);
+                if (q2) filteredP = filteredP.filter((p) => `${p.name} ${p.sku ?? ""}`.toLowerCase().includes(q2));
                 return (
                   <div className="mt-2 max-h-56 overflow-y-auto border rounded-md divide-y">
                     {filteredP.slice(0, 50).map((p) => (
