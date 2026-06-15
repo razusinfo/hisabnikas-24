@@ -171,7 +171,7 @@ function SalesPage() {
 
   const newSubtotal = lines.reduce((a, l) => a + l.qty * l.unit_price, 0);
   const newTotal = Math.max(0, newSubtotal - Number(newDiscount || 0) + Number(newTax || 0));
-  const newPaidAmt = newMethod === "due" ? 0 : (newPaid === "" ? newTotal : Number(newPaid));
+  const newPaidAmt = newPaid === "" ? newTotal : Number(newPaid);
   const newDue = Math.max(0, newTotal - newPaidAmt);
 
   async function createCustomerInline() {
