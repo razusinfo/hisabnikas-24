@@ -134,7 +134,7 @@ export function QuickSaleDialog({ open, onOpenChange }: { open: boolean; onOpenC
             <Select value={customerId} onValueChange={setCustomerId}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="walkin">Walk-in</SelectItem>
+                <SelectItem value="walkin">{t("walkIn")}</SelectItem>
                 {(customers as any[]).map((c) => (
                   <SelectItem key={c.id} value={c.id}>{c.name}{c.phone ? ` · ${c.phone}` : ""}</SelectItem>
                 ))}
@@ -143,11 +143,11 @@ export function QuickSaleDialog({ open, onOpenChange }: { open: boolean; onOpenC
             <Select value={method} onValueChange={setMethod}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="cash">Cash</SelectItem>
-                <SelectItem value="card">Card</SelectItem>
+                <SelectItem value="cash">{t("methodCash")}</SelectItem>
+                <SelectItem value="card">{t("methodCard")}</SelectItem>
                 <SelectItem value="bkash">bKash</SelectItem>
                 <SelectItem value="nagad">Nagad</SelectItem>
-                <SelectItem value="bank">Bank</SelectItem>
+                <SelectItem value="bank">{t("methodBank")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -155,12 +155,12 @@ export function QuickSaleDialog({ open, onOpenChange }: { open: boolean; onOpenC
           <div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search products..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+              <Input placeholder={t("searchProducts") ?? "পণ্য খুঁজুন..."} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
             </div>
             {(search || filteredProducts.length > 0) && (
               <div className="mt-2 border border-border rounded-lg divide-y divide-border max-h-48 overflow-y-auto">
                 {filteredProducts.length === 0 ? (
-                  <div className="p-3 text-sm text-muted-foreground">No products</div>
+                  <div className="p-3 text-sm text-muted-foreground">{t("noData")}</div>
                 ) : filteredProducts.map((p: any) => (
                   <button key={p.id} type="button" onClick={() => addLine(p)} className="w-full text-left p-2.5 hover:bg-muted/50 flex items-center justify-between text-sm">
                     <span className="truncate">{p.name} <span className="text-xs text-muted-foreground">({p.stock})</span></span>
@@ -196,7 +196,7 @@ export function QuickSaleDialog({ open, onOpenChange }: { open: boolean; onOpenC
               <Input type="number" value={discount} onChange={(e) => setDiscount(e.target.value)} />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">{t("paid") ?? "Paid"}</label>
+              <label className="text-xs text-muted-foreground">{t("paid")}</label>
               <Input type="number" placeholder={String(total)} value={paid} onChange={(e) => setPaid(e.target.value)} />
             </div>
           </div>
@@ -210,7 +210,7 @@ export function QuickSaleDialog({ open, onOpenChange }: { open: boolean; onOpenC
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>{t("cancel") ?? "Cancel"}</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>{t("cancel")}</Button>
           <Button onClick={createSale} disabled={creating || lines.length === 0}>{creating ? "..." : t("save")}</Button>
         </DialogFooter>
       </DialogContent>
