@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Menu,
   ShieldCheck,
+  TrendingUp,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -80,6 +81,7 @@ const nav = [
   { to: "/products", icon: Package, key: "products" as const, color: "violet" },
   { to: "/expenses", icon: Wallet, key: "expenses" as const, color: "rose" },
   { to: "/customers", icon: Users, key: "customers" as const, color: "cyan" },
+  { to: "/profit-loss", icon: TrendingUp, key: "profitLoss" as const, color: "teal" },
 ];
 
 const footerNav = [

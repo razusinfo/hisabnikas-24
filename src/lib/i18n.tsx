@@ -289,6 +289,7 @@ const dict = {
     partial: "আংশিক",
     pay: "পরিশোধ",
     customers: "কাষ্টমার সমূহ",
+    profitLoss: "লাভ ক্ষতি",
     purchases: "ক্রয় সমূহ",
     inventory: "ইনভেন্টরি",
     reports: "রিপোর্ট",
