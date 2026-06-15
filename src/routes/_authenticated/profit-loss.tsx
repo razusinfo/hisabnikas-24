@@ -1,29 +1,47 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney } from "@/lib/format";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import {
   TrendingUp,
   TrendingDown,
   ShoppingCart,
   PackageOpen,
   Wallet,
+  CalendarIcon,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/profit-loss")({
   component: ProfitLossPage,
 });
 
-type Period = "daily" | "monthly" | "yearly";
+type Period = "daily" | "monthly" | "yearly" | "custom";
 
-function getRange(period: Period): { from: string; to: string } {
+type Range = { from: string; to: string };
+
+function getRange(
+  period: Period,
+  custom?: { from?: Date; to?: Date },
+): Range {
   const now = new Date();
   const to = new Date(now);
   const from = new Date(now);
+  if (period === "custom") {
+    const f = custom?.from ? new Date(custom.from) : new Date(now);
+    const t = custom?.to ? new Date(custom.to) : new Date(custom?.from ?? now);
+    f.setHours(0, 0, 0, 0);
+    t.setHours(23, 59, 59, 999);
+    return { from: f.toISOString(), to: t.toISOString() };
+  }
   if (period === "daily") {
     from.setHours(0, 0, 0, 0);
     to.setHours(23, 59, 59, 999);
@@ -37,10 +55,9 @@ function getRange(period: Period): { from: string; to: string } {
   return { from: from.toISOString(), to: to.toISOString() };
 }
 
-async function fetchPnL(period: Period) {
-  const { from, to } = getRange(period);
+async function fetchPnL(range: Range) {
+  const { from, to } = range;
 
-  // 1. Get sales in period
   const { data: salesData } = await supabase
     .from("sales")
     .select("id, total, paid, due")
@@ -48,13 +65,10 @@ async function fetchPnL(period: Period) {
     .lte("created_at", to);
 
   const saleIds = (salesData ?? []).map((s) => s.id);
-
-  // 2. Get totals from sales
   const totalSales = (salesData ?? []).reduce((s, r) => s + Number(r.total ?? 0), 0);
   const collected = (salesData ?? []).reduce((s, r) => s + Number(r.paid ?? 0), 0);
   const salesDue = (salesData ?? []).reduce((s, r) => s + Number(r.due ?? 0), 0);
 
-  // 3. Get sale items for sold products
   let revenue = 0;
   let cost = 0;
 
@@ -68,7 +82,7 @@ async function fetchPnL(period: Period) {
       ...new Set(
         (itemsData ?? [])
           .map((i) => i.product_id)
-          .filter((id): id is string => Boolean(id))
+          .filter((id): id is string => Boolean(id)),
       ),
     ];
 
@@ -79,7 +93,7 @@ async function fetchPnL(period: Period) {
         .select("id, cost_price")
         .in("id", productIds);
       costMap = new Map(
-        (productsData ?? []).map((p) => [p.id, Number(p.cost_price ?? 0)])
+        (productsData ?? []).map((p) => [p.id, Number(p.cost_price ?? 0)]),
       );
     }
 
@@ -93,16 +107,22 @@ async function fetchPnL(period: Period) {
   }
 
   const profit = revenue - cost;
-
   return { revenue, cost, profit, totalSales, collected, salesDue };
 }
 
 function ProfitLossPage() {
   const { t } = useI18n();
   const [period, setPeriod] = useState<Period>("daily");
+  const [customFrom, setCustomFrom] = useState<Date | undefined>(undefined);
+  const [customTo, setCustomTo] = useState<Date | undefined>(undefined);
+
+  const range = getRange(period, { from: customFrom, to: customTo });
+  const customReady = period !== "custom" || (customFrom && customTo);
+
   const { data: pnl } = useQuery({
-    queryKey: ["pnl", period],
-    queryFn: () => fetchPnL(period),
+    queryKey: ["pnl", period, range.from, range.to],
+    queryFn: () => fetchPnL(range),
+    enabled: Boolean(customReady),
   });
 
   const periodLabel =
@@ -110,7 +130,11 @@ function ProfitLossPage() {
       ? "আজকের"
       : period === "monthly"
         ? "এই মাসের"
-        : "এই বছরের";
+        : period === "yearly"
+          ? "এই বছরের"
+          : customFrom && customTo
+            ? `${format(customFrom, "dd/MM/yyyy")} - ${format(customTo, "dd/MM/yyyy")}`
+            : "কাস্টম";
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto">
@@ -121,15 +145,13 @@ function ProfitLossPage() {
           <h3 className="font-semibold text-base">
             {periodLabel} লাভ-ক্ষতির সারাংশ
           </h3>
-          <div className="flex items-center gap-2">
-            <Tabs
-              value={period}
-              onValueChange={(v) => setPeriod(v as Period)}
-            >
+          <div className="flex items-center gap-2 flex-wrap">
+            <Tabs value={period} onValueChange={(v) => setPeriod(v as Period)}>
               <TabsList>
                 <TabsTrigger value="daily">দৈনিক</TabsTrigger>
                 <TabsTrigger value="monthly">মাসিক</TabsTrigger>
                 <TabsTrigger value="yearly">বাৎসরিক</TabsTrigger>
+                <TabsTrigger value="custom">কাস্টম</TabsTrigger>
               </TabsList>
             </Tabs>
             {pnl && (
@@ -146,8 +168,64 @@ function ProfitLossPage() {
           </div>
         </div>
 
+        {period === "custom" && (
+          <div className="flex items-center gap-2 mb-4 flex-wrap">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "justify-start text-left font-normal",
+                    !customFrom && "text-muted-foreground",
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {customFrom ? format(customFrom, "dd/MM/yyyy") : "শুরুর তারিখ"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={customFrom}
+                  onSelect={setCustomFrom}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
+            <span className="text-muted-foreground text-sm">→</span>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "justify-start text-left font-normal",
+                    !customTo && "text-muted-foreground",
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {customTo ? format(customTo, "dd/MM/yyyy") : "শেষ তারিখ"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={customTo}
+                  onSelect={setCustomTo}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
+            {(!customFrom || !customTo) && (
+              <span className="text-xs text-muted-foreground">
+                উভয় তারিখ নির্বাচন করুন
+              </span>
+            )}
+          </div>
+        )}
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {/* Product revenue */}
           <div className="rounded-lg border border-border/40 p-3">
             <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
               <TrendingUp className="h-3.5 w-3.5" />
@@ -158,7 +236,6 @@ function ProfitLossPage() {
             </div>
           </div>
 
-          {/* Product cost */}
           <div className="rounded-lg border border-border/40 p-3">
             <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
               <ShoppingCart className="h-3.5 w-3.5" />
@@ -169,7 +246,6 @@ function ProfitLossPage() {
             </div>
           </div>
 
-          {/* Collected */}
           <div className="rounded-lg border border-border/40 p-3">
             <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
               <Wallet className="h-3.5 w-3.5" />
@@ -180,7 +256,6 @@ function ProfitLossPage() {
             </div>
           </div>
 
-          {/* Sales due */}
           <div className="rounded-lg border border-border/40 p-3">
             <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
               <PackageOpen className="h-3.5 w-3.5" />
@@ -191,7 +266,6 @@ function ProfitLossPage() {
             </div>
           </div>
 
-          {/* Product profit / loss — spans full row on mobile, 2 cols on md+ */}
           <div
             className={`rounded-lg border p-3 col-span-2 md:col-span-4 ${
               pnl && pnl.profit >= 0
@@ -209,9 +283,7 @@ function ProfitLossPage() {
             </div>
             <div
               className={`font-mono font-bold text-lg ${
-                pnl && pnl.profit >= 0
-                  ? "text-success"
-                  : "text-destructive"
+                pnl && pnl.profit >= 0 ? "text-success" : "text-destructive"
               }`}
             >
               {fmtMoney(Math.abs(pnl?.profit ?? 0))}
