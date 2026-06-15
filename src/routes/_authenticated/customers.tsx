@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSuspenseQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
@@ -9,8 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney } from "@/lib/format";
-import { Plus, Search, Trash2, Wallet } from "lucide-react";
+import { Plus, Search, Trash2, Wallet, MessageSquare } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/customers")({
   loader: async ({ context }) => {
@@ -25,15 +27,25 @@ export async function fetchCustomers() {
   return data;
 }
 
+async function fetchMessageCredits() {
+  const { data: u } = await supabase.auth.getUser();
+  if (!u.user) return { credits: 0, company: "" };
+  const { data } = await supabase.from("profiles").select("message_credits, company_name").eq("id", u.user.id).single();
+  return { credits: Number(data?.message_credits ?? 0), company: data?.company_name ?? "" };
+}
+
 function CustomersPage() {
   const { t } = useI18n();
   const qc = useQueryClient();
   const { data } = useSuspenseQuery({ queryKey: ["customers"], queryFn: fetchCustomers });
+  const { data: credInfo } = useQuery({ queryKey: ["message-credits"], queryFn: fetchMessageCredits });
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", email: "", address: "" });
   const [collectFor, setCollectFor] = useState<{ id: string; name: string; due: number } | null>(null);
   const [collectAmount, setCollectAmount] = useState("");
+  const [smsFor, setSmsFor] = useState<{ id: string; name: string; phone: string | null; due: number } | null>(null);
+  const [smsBody, setSmsBody] = useState("");
 
   const create = useMutation({
     mutationFn: async () => {
@@ -81,6 +93,35 @@ function CustomersPage() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
+  function openSms(c: { id: string; name: string; phone: string | null; due_balance: number | string }) {
+    const due = Number(c.due_balance);
+    const company = credInfo?.company || "আমাদের দোকান";
+    setSmsFor({ id: c.id, name: c.name, phone: c.phone, due });
+    setSmsBody(`প্রিয় ${c.name}, আপনার বকেয়া ${fmtMoney(due)} পরিশোধের জন্য অনুরোধ করা হচ্ছে। ধন্যবাদ — ${company}`);
+  }
+
+  const sendSms = useMutation({
+    mutationFn: async () => {
+      if (!smsFor) throw new Error("No customer");
+      if (!smsFor.phone) throw new Error("ফোন নম্বর নেই");
+      if (!smsBody.trim()) throw new Error("মেসেজ লিখুন");
+      const { error } = await supabase.rpc("send_due_reminder_sms" as any, {
+        _customer_id: smsFor.id,
+        _phone: smsFor.phone,
+        _body: smsBody.trim(),
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("পরিশোধের অনুরোধ পাঠানো হয়েছে");
+      setSmsFor(null);
+      setSmsBody("");
+      qc.invalidateQueries({ queryKey: ["message-credits"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
 
 
   const filtered = data.filter((c) =>
@@ -144,13 +185,24 @@ function CustomersPage() {
                   <td className="py-3 px-4 text-right">
                     <div className="flex justify-end gap-1">
                       {Number(c.due_balance) > 0 && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => { setCollectFor({ id: c.id, name: c.name, due: Number(c.due_balance) }); setCollectAmount(""); }}
-                        >
-                          <Wallet className="h-4 w-4" /> {"বাকি আদায়"}
-                        </Button>
+                        <>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => { setCollectFor({ id: c.id, name: c.name, due: Number(c.due_balance) }); setCollectAmount(""); }}
+                          >
+                            <Wallet className="h-4 w-4" /> {"বাকি আদায়"}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={!c.phone}
+                            title={c.phone ? "বাকি পরিশোধের অনুরোধ (SMS)" : "ফোন নম্বর নেই"}
+                            onClick={() => openSms(c)}
+                          >
+                            <MessageSquare className="h-4 w-4" /> {"পরিশোধের অনুরোধ"}
+                          </Button>
+                        </>
                       )}
                       <Button size="icon" variant="ghost" onClick={() => del.mutate(c.id)} aria-label={t("delete") || "Delete"}><Trash2 className="h-4 w-4" /></Button>
                     </div>
@@ -182,16 +234,27 @@ function CustomersPage() {
                 </div>
               </div>
             </div>
-            <div className="flex gap-2 pt-2 border-t">
+            <div className="flex gap-2 pt-2 border-t flex-wrap">
               {Number(c.due_balance) > 0 && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="min-h-11 flex-1"
-                  onClick={() => { setCollectFor({ id: c.id, name: c.name, due: Number(c.due_balance) }); setCollectAmount(""); }}
-                >
-                  <Wallet className="h-4 w-4 mr-1" /> {"বাকি আদায়"}
-                </Button>
+                <>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="min-h-11 flex-1"
+                    onClick={() => { setCollectFor({ id: c.id, name: c.name, due: Number(c.due_balance) }); setCollectAmount(""); }}
+                  >
+                    <Wallet className="h-4 w-4 mr-1" /> {"বাকি আদায়"}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={!c.phone}
+                    className="min-h-11 flex-1"
+                    onClick={() => openSms(c)}
+                  >
+                    <MessageSquare className="h-4 w-4 mr-1" /> {"অনুরোধ"}
+                  </Button>
+                </>
               )}
               <Button size="sm" variant="ghost" className="min-h-11" onClick={() => del.mutate(c.id)} aria-label="Delete">
                 <Trash2 className="h-4 w-4" />
@@ -223,6 +286,35 @@ function CustomersPage() {
               />
             </div>
             <Button disabled={collect.isPending} className="w-full">{t("save")}</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!smsFor} onOpenChange={(o) => !o && setSmsFor(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>{"বাকি পরিশোধের অনুরোধ"} — {smsFor?.name}</DialogTitle></DialogHeader>
+          <form onSubmit={(e) => { e.preventDefault(); sendSms.mutate(); }} className="space-y-3">
+            <div className="flex items-center justify-between text-sm">
+              <div className="text-muted-foreground">
+                ফোন: <span className="font-mono text-foreground">{smsFor?.phone || "—"}</span>
+              </div>
+              <div className="text-muted-foreground">
+                ক্রেডিট: <span className="font-mono text-foreground">{credInfo?.credits ?? 0}</span>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label>{"মেসেজ"}</Label>
+              <Textarea rows={4} value={smsBody} onChange={(e) => setSmsBody(e.target.value)} maxLength={320} />
+              <div className="text-xs text-muted-foreground text-right">{smsBody.length}/৩২০</div>
+            </div>
+            {(credInfo?.credits ?? 0) < 1 ? (
+              <div className="text-sm text-destructive">
+                মেসেজ ক্রেডিট শেষ। <Link to="/buy-messages" className="underline">মেসেজ কিনুন</Link>
+              </div>
+            ) : null}
+            <Button disabled={sendSms.isPending || !smsFor?.phone || (credInfo?.credits ?? 0) < 1} className="w-full">
+              {sendSms.isPending ? "পাঠানো হচ্ছে..." : "পাঠান (১ ক্রেডিট)"}
+            </Button>
           </form>
         </DialogContent>
       </Dialog>
