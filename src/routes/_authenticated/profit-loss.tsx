@@ -88,7 +88,7 @@ async function fetchPnL(range: Range) {
   if (saleIds.length > 0) {
     const { data: itemsData } = await supabase
       .from("sale_items")
-      .select("qty, line_total, product_id, name")
+      .select("qty, line_total, product_id, product_name")
       .in("sale_id", saleIds);
 
     const productIds = [
@@ -114,7 +114,7 @@ async function fetchPnL(range: Range) {
       qty: number | null;
       line_total: number | null;
       product_id: string | null;
-      name: string | null;
+      product_name: string | null;
     }>) {
       const qty = Number(item.qty ?? 0);
       const lineTotal = Number(item.line_total ?? 0);
@@ -124,9 +124,9 @@ async function fetchPnL(range: Range) {
       cost += itemCost;
       itemsSold += qty;
 
-      const key = item.product_id ?? `__${item.name ?? "অজানা"}`;
+      const key = item.product_id ?? `__${item.product_name ?? "অজানা"}`;
       const prev = productAgg.get(key) ?? {
-        name: item.name ?? "অজানা পণ্য",
+        name: item.product_name ?? "অজানা পণ্য",
         qty: 0,
         revenue: 0,
         cost: 0,
