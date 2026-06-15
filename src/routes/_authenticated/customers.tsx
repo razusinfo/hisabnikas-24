@@ -332,6 +332,8 @@ function CustomersPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <QuickSaleDialog open={quickOpen} onOpenChange={setQuickOpen} />
     </div>
   );
 }
