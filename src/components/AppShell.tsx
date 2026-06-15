@@ -79,10 +79,10 @@ const nav = [
   { to: "/purchases", icon: ShoppingCart, key: "purchases" as const, color: "amber" },
   { to: "/products", icon: Package, key: "products" as const, color: "violet" },
   { to: "/expenses", icon: Wallet, key: "expenses" as const, color: "rose" },
+  { to: "/customers", icon: Users, key: "customers" as const, color: "cyan" },
 ];
 
 const footerNav = [
-  { to: "/customers", icon: Users, key: "customers" as const, color: "cyan" },
   { to: "/settings", icon: Settings, key: "settings" as const, color: "slate" },
   { to: "/buy-messages", icon: MessageSquare, key: "buyMessages" as const, color: "teal" },
   { to: "/help", icon: HelpCircle, key: "helpSupport" as const, color: "orange" },
