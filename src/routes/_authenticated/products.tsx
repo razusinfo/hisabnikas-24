@@ -73,6 +73,7 @@ function ProductsPage() {
   const { data: categories } = useSuspenseQuery({ queryKey: ["categories"], queryFn: fetchCategories });
 
   const [search, setSearch] = useState("");
+  const [quickOpen, setQuickOpen] = useState(false);
   const [sort, setSort] = useState<"new" | "name" | "stock" | "price">("new");
   const [lowOnly, setLowOnly] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
