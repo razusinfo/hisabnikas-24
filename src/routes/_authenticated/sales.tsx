@@ -222,6 +222,17 @@ function SalesPage() {
       qc.invalidateQueries({ queryKey: ["products-list"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       qc.invalidateQueries({ queryKey: ["customers"] });
+
+      // Fire-and-forget SMS receipt to customer (only if real customer with phone)
+      if (customerId !== "walkin") {
+        const cust = customersList.find((c: any) => c.id === customerId);
+        if (cust?.phone) {
+          const company = await getCompanyName();
+          const dueLine = newDue > 0 ? ` বাকি: ৳${newDue.toFixed(2)}।` : "";
+          const body = `প্রিয় ${cust.name}, ${invoice_no} — মোট: ৳${newTotal.toFixed(2)}, পরিশোধ: ৳${newPaidAmt.toFixed(2)}।${dueLine} ধন্যবাদ${company ? " — " + company : ""}`;
+          void fireSmsAsync({ customerId: cust.id, phone: cust.phone, body, kind: "sale_receipt" });
+        }
+      }
     } catch (e: any) {
       toast.error(e.message);
     } finally {
