@@ -516,6 +516,47 @@ export type Database = {
           },
         ]
       }
+      sms_logs: {
+        Row: {
+          body: string
+          created_at: string
+          customer_id: string | null
+          id: string
+          kind: string
+          owner_id: string
+          phone: string
+          status: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          kind?: string
+          owner_id: string
+          phone: string
+          status?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          kind?: string
+          owner_id?: string
+          phone?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sms_logs_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           created_at: string
@@ -589,6 +630,10 @@ export type Database = {
       reject_payment_request: {
         Args: { _note: string; _request_id: string }
         Returns: undefined
+      }
+      send_due_reminder_sms: {
+        Args: { _body: string; _customer_id: string; _phone: string }
+        Returns: string
       }
     }
     Enums: {
