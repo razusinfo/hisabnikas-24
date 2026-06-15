@@ -82,6 +82,7 @@ const nav = [
 ];
 
 const footerNav = [
+  { to: "/customers", icon: Users, key: "customers" as const, color: "cyan" },
   { to: "/settings", icon: Settings, key: "settings" as const, color: "slate" },
   { to: "/buy-messages", icon: MessageSquare, key: "buyMessages" as const, color: "teal" },
   { to: "/help", icon: HelpCircle, key: "helpSupport" as const, color: "orange" },
