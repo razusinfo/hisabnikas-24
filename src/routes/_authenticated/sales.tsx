@@ -900,12 +900,11 @@ function SalesPage() {
                 <Input type="number" step="0.01" value={newTax} onChange={(e) => setNewTax(e.target.value)} />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground">{t("paid")}</label>
+                <label className="text-xs text-muted-foreground">{t("paid")} {t("amount")}</label>
                 <Input
                   type="number"
                   step="0.01"
-                  value={newMethod === "due" ? "0" : newPaid}
-                  disabled={newMethod === "due"}
+                  value={newPaid}
                   onChange={(e) => setNewPaid(e.target.value)}
                   placeholder={String(newTotal)}
                 />
