@@ -106,6 +106,14 @@ function SalesPage() {
   const [lines, setLines] = useState<{ product_id: string; name: string; qty: number; unit_price: number; stock: number }[]>([]);
   const [creating, setCreating] = useState(false);
   const [productSearch, setProductSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+
+  // Inline new-customer dialog
+  const [openNewCust, setOpenNewCust] = useState(false);
+  const [ncName, setNcName] = useState("");
+  const [ncPhone, setNcPhone] = useState("");
+  const [ncAddress, setNcAddress] = useState("");
+  const [ncSaving, setNcSaving] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", "me"],
