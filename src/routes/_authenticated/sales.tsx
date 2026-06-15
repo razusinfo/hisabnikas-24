@@ -929,6 +929,31 @@ function SalesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Inline New Customer */}
+      <Dialog open={openNewCust} onOpenChange={(o) => { if (!o) { setOpenNewCust(false); } }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>নতুন ক্রেতা যুক্ত করুন</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs text-muted-foreground">নাম *</label>
+              <Input value={ncName} onChange={(e) => setNcName(e.target.value)} placeholder="ক্রেতার নাম" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">ফোন</label>
+              <Input value={ncPhone} onChange={(e) => setNcPhone(e.target.value)} placeholder="01XXXXXXXXX" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">ঠিকানা</label>
+              <Input value={ncAddress} onChange={(e) => setNcAddress(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setOpenNewCust(false)}>{t("cancel")}</Button>
+            <Button onClick={createCustomerInline} disabled={ncSaving}>{t("save")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
