@@ -155,7 +155,7 @@ export function QuickSaleDialog({ open, onOpenChange }: { open: boolean; onOpenC
           <div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder={t("searchProducts") ?? "পণ্য খুঁজুন..."} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+              <Input placeholder="পণ্য খুঁজুন..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
             </div>
             {(search || filteredProducts.length > 0) && (
               <div className="mt-2 border border-border rounded-lg divide-y divide-border max-h-48 overflow-y-auto">
