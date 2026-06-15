@@ -901,7 +901,14 @@ function SalesPage() {
               </div>
               <div>
                 <label className="text-xs text-muted-foreground">{t("paid")}</label>
-                <Input type="number" step="0.01" value={newPaid} onChange={(e) => setNewPaid(e.target.value)} placeholder={String(newTotal)} />
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={newMethod === "due" ? "0" : newPaid}
+                  disabled={newMethod === "due"}
+                  onChange={(e) => setNewPaid(e.target.value)}
+                  placeholder={String(newTotal)}
+                />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground">{t("note")}</label>
