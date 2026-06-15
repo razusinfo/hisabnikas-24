@@ -144,10 +144,18 @@ function SalesPage() {
   const { data: productsList = [] } = useQuery({
     queryKey: ["products-list"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("products").select("id,name,sku,sell_price,stock").order("name");
+      const { data, error } = await supabase.from("products").select("id,name,sku,sell_price,stock,category_id").order("name");
       if (error) throw error;
       return (data ?? []).map((p: any) => ({ ...p, price: p.sell_price }));
+    },
+    enabled: openNew,
+  });
+  const { data: categoriesList = [] } = useQuery({
+    queryKey: ["categories-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("categories").select("id,name").order("name");
       if (error) throw error;
+      return data ?? [];
     },
     enabled: openNew,
   });
@@ -163,8 +171,33 @@ function SalesPage() {
 
   const newSubtotal = lines.reduce((a, l) => a + l.qty * l.unit_price, 0);
   const newTotal = Math.max(0, newSubtotal - Number(newDiscount || 0) + Number(newTax || 0));
-  const newPaidAmt = newPaid === "" ? newTotal : Number(newPaid);
+  const newPaidAmt = newMethod === "due" ? 0 : (newPaid === "" ? newTotal : Number(newPaid));
   const newDue = Math.max(0, newTotal - newPaidAmt);
+
+  async function createCustomerInline() {
+    if (!ncName.trim()) return toast.error("নাম দিন");
+    setNcSaving(true);
+    try {
+      const { data: u } = await supabase.auth.getUser();
+      const { data, error } = await supabase.from("customers").insert({
+        owner_id: u.user!.id,
+        name: ncName.trim(),
+        phone: ncPhone.trim() || null,
+        address: ncAddress.trim() || null,
+      }).select("id,name,phone").single();
+      if (error) throw error;
+      qc.invalidateQueries({ queryKey: ["customers-list"] });
+      qc.invalidateQueries({ queryKey: ["customers"] });
+      setCustomerId(data.id);
+      setOpenNewCust(false);
+      setNcName(""); setNcPhone(""); setNcAddress("");
+      toast.success("ক্রেতা যুক্ত হয়েছে");
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setNcSaving(false);
+    }
+  }
 
   function addLine(productId: string) {
     const p = (productsList as any[]).find((x) => x.id === productId);
