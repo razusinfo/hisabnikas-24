@@ -14,8 +14,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney, fmtNum } from "@/lib/format";
-import { Plus, Search, Trash2, Package, Pencil, Boxes, AlertTriangle, Image as ImageIcon, Upload, X } from "lucide-react";
+import { Plus, Search, Trash2, Package, Pencil, Boxes, AlertTriangle, Image as ImageIcon, Upload, X, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
+import { QuickSaleDialog } from "@/components/QuickSaleDialog";
 
 type Product = {
   id: string;
@@ -72,6 +73,7 @@ function ProductsPage() {
   const { data: categories } = useSuspenseQuery({ queryKey: ["categories"], queryFn: fetchCategories });
 
   const [search, setSearch] = useState("");
+  const [quickOpen, setQuickOpen] = useState(false);
   const [sort, setSort] = useState<"new" | "name" | "stock" | "price">("new");
   const [lowOnly, setLowOnly] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -269,9 +271,14 @@ function ProductsPage() {
         title={t("products")}
         subtitle={t("productsSubtitle")}
         actions={
-          <Button onClick={openCreate}><Plus className="h-4 w-4 mr-2" />{t("addProduct")}</Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setQuickOpen(true)}><ShoppingCart className="h-4 w-4 mr-2" />{t("newSale")}</Button>
+            <Button onClick={openCreate}><Plus className="h-4 w-4 mr-2" />{t("addProduct")}</Button>
+          </div>
         }
       />
+      <QuickSaleDialog open={quickOpen} onOpenChange={setQuickOpen} />
+
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
