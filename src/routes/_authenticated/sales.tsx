@@ -336,9 +336,19 @@ function SalesPage() {
       }
     }
     toast.success(t("paymentRecorded"));
+    // Fire-and-forget payment confirmation SMS
+    const phone = paySale?.customers?.phone as string | undefined;
+    const custName = (paySale?.customers?.name as string | undefined) ?? "গ্রাহক";
+    if (phone && paySale.customer_id) {
+      const company = await getCompanyName();
+      const dueLine = newDue > 0 ? ` অবশিষ্ট বাকি: ৳${newDue.toFixed(2)}।` : " সম্পূর্ণ পরিশোধিত।";
+      const body = `প্রিয় ${custName}, ${paySale.invoice_no} এর জন্য ৳${amt.toFixed(2)} পরিশোধ পাওয়া গেছে।${dueLine} ধন্যবাদ${company ? " — " + company : ""}`;
+      void fireSmsAsync({ customerId: paySale.customer_id, phone, body, kind: "payment_receipt" });
+    }
     setPaySale(null);
     setPayAmount("");
     qc.invalidateQueries({ queryKey: ["sales"] });
+    qc.invalidateQueries({ queryKey: ["customers"] });
   }
 
   async function deleteSale() {
