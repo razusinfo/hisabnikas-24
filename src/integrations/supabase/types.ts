@@ -525,6 +525,8 @@ export type Database = {
           kind: string
           owner_id: string
           phone: string
+          provider_msg_id: string | null
+          provider_response: string | null
           status: string
         }
         Insert: {
@@ -535,6 +537,8 @@ export type Database = {
           kind?: string
           owner_id: string
           phone: string
+          provider_msg_id?: string | null
+          provider_response?: string | null
           status?: string
         }
         Update: {
@@ -545,6 +549,8 @@ export type Database = {
           kind?: string
           owner_id?: string
           phone?: string
+          provider_msg_id?: string | null
+          provider_response?: string | null
           status?: string
         }
         Relationships: [
@@ -618,6 +624,15 @@ export type Database = {
       approve_payment_request: {
         Args: { _request_id: string }
         Returns: undefined
+      }
+      consume_sms_credit: {
+        Args: {
+          _body: string
+          _customer_id: string
+          _kind: string
+          _phone: string
+        }
+        Returns: string
       }
       get_plan_spec: {
         Args: { _kind: string; _plan: string }
