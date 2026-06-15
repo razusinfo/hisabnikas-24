@@ -158,7 +158,7 @@ const dict = {
     discount: "Discount",
     tax: "Tax",
     total: "Total",
-    paid: "Paid",
+    paid: "Paid amount",
     cash: "Cash",
     card: "Card",
     completeSale: "Complete Sale",
