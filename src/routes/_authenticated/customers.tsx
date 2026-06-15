@@ -185,13 +185,24 @@ function CustomersPage() {
                   <td className="py-3 px-4 text-right">
                     <div className="flex justify-end gap-1">
                       {Number(c.due_balance) > 0 && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => { setCollectFor({ id: c.id, name: c.name, due: Number(c.due_balance) }); setCollectAmount(""); }}
-                        >
-                          <Wallet className="h-4 w-4" /> {"বাকি আদায়"}
-                        </Button>
+                        <>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => { setCollectFor({ id: c.id, name: c.name, due: Number(c.due_balance) }); setCollectAmount(""); }}
+                          >
+                            <Wallet className="h-4 w-4" /> {"বাকি আদায়"}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={!c.phone}
+                            title={c.phone ? "বাকি পরিশোধের অনুরোধ (SMS)" : "ফোন নম্বর নেই"}
+                            onClick={() => openSms(c)}
+                          >
+                            <MessageSquare className="h-4 w-4" /> {"পরিশোধের অনুরোধ"}
+                          </Button>
+                        </>
                       )}
                       <Button size="icon" variant="ghost" onClick={() => del.mutate(c.id)} aria-label={t("delete") || "Delete"}><Trash2 className="h-4 w-4" /></Button>
                     </div>
