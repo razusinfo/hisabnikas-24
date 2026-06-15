@@ -106,12 +106,15 @@ function CustomersPage() {
       if (!smsFor) throw new Error("No customer");
       if (!smsFor.phone) throw new Error("ফোন নম্বর নেই");
       if (!smsBody.trim()) throw new Error("মেসেজ লিখুন");
-      const { error } = await supabase.rpc("send_due_reminder_sms" as any, {
-        _customer_id: smsFor.id,
-        _phone: smsFor.phone,
-        _body: smsBody.trim(),
+      const { sendSms: sendSmsFn } = await import("@/lib/sms.functions");
+      return await sendSmsFn({
+        data: {
+          customerId: smsFor.id,
+          phone: smsFor.phone,
+          body: smsBody.trim(),
+          kind: "due_reminder",
+        },
       });
-      if (error) throw error;
     },
     onSuccess: () => {
       toast.success("পরিশোধের অনুরোধ পাঠানো হয়েছে");
