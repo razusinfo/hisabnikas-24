@@ -619,6 +619,14 @@ export type Database = {
         Args: { _request_id: string }
         Returns: undefined
       }
+      get_plan_spec: {
+        Args: { _kind: string; _plan: string }
+        Returns: {
+          amount: number
+          duration_days: number
+          messages_count: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
