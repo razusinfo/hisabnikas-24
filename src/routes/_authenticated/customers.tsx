@@ -234,16 +234,27 @@ function CustomersPage() {
                 </div>
               </div>
             </div>
-            <div className="flex gap-2 pt-2 border-t">
+            <div className="flex gap-2 pt-2 border-t flex-wrap">
               {Number(c.due_balance) > 0 && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="min-h-11 flex-1"
-                  onClick={() => { setCollectFor({ id: c.id, name: c.name, due: Number(c.due_balance) }); setCollectAmount(""); }}
-                >
-                  <Wallet className="h-4 w-4 mr-1" /> {"বাকি আদায়"}
-                </Button>
+                <>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="min-h-11 flex-1"
+                    onClick={() => { setCollectFor({ id: c.id, name: c.name, due: Number(c.due_balance) }); setCollectAmount(""); }}
+                  >
+                    <Wallet className="h-4 w-4 mr-1" /> {"বাকি আদায়"}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={!c.phone}
+                    className="min-h-11 flex-1"
+                    onClick={() => openSms(c)}
+                  >
+                    <MessageSquare className="h-4 w-4 mr-1" /> {"অনুরোধ"}
+                  </Button>
+                </>
               )}
               <Button size="sm" variant="ghost" className="min-h-11" onClick={() => del.mutate(c.id)} aria-label="Delete">
                 <Trash2 className="h-4 w-4" />
