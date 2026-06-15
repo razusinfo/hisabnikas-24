@@ -115,7 +115,9 @@ function AdminPaymentsPage() {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="space-y-1 text-sm">
                   <div className="font-semibold">
-                    {r.plan} · {r.duration_days} দিন · ৳{Number(r.amount).toLocaleString("bn-BD")}
+                    {r.kind === "messages"
+                      ? <>{r.plan} · {Number(r.messages_count ?? 0).toLocaleString("bn-BD")} মেসেজ · ৳{Number(r.amount).toLocaleString("bn-BD")}</>
+                      : <>{r.plan} · {r.duration_days} দিন · ৳{Number(r.amount).toLocaleString("bn-BD")}</>}
                   </div>
                   <div className="text-muted-foreground">
                     গ্রাহক বিকাশ: <span className="font-mono">{r.sender_number}</span>
