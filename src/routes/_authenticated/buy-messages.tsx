@@ -5,6 +5,14 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -23,15 +31,65 @@ import {
   Zap,
   Send,
   Megaphone,
+  Plus,
+  Pencil,
+  Trash2,
+  Eye,
+  FileText,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/buy-messages")({
   component: BuyMessagesPage,
 });
+
+type Template = {
+  id: string;
+  name: string;
+  channel: "sms" | "whatsapp" | "both";
+  body: string;
+  created_at: string;
+};
+
+const VARIABLES: { key: string; label: string; sample: string }[] = [
+  { key: "customer_name", label: "কাস্টমারের নাম", sample: "রহিম উদ্দিন" },
+  { key: "shop_name", label: "দোকানের নাম", sample: "আমার দোকান" },
+  { key: "amount", label: "পরিমাণ", sample: "১,২০০" },
+  { key: "due", label: "বাকি", sample: "৫০০" },
+  { key: "paid", label: "পরিশোধিত", sample: "৭০০" },
+  { key: "invoice_no", label: "ইনভয়েস নং", sample: "INV-০০১" },
+  { key: "date", label: "তারিখ", sample: new Date().toLocaleDateString("bn-BD") },
+  { key: "phone", label: "ফোন", sample: "01XXXXXXXXX" },
+];
+
+const SAMPLE_TEMPLATES: { name: string; channel: "sms" | "whatsapp" | "both"; body: string }[] = [
+  {
+    name: "বাকি স্মরণ",
+    channel: "sms",
+    body: "প্রিয় {customer_name}, {shop_name} থেকে আপনার বকেয়া ৳{due}। অনুগ্রহ করে পরিশোধ করুন। ধন্যবাদ।",
+  },
+  {
+    name: "পেমেন্ট রসিদ",
+    channel: "whatsapp",
+    body: "প্রিয় {customer_name}, {shop_name} এ আপনার ৳{paid} পরিশোধ গৃহীত হয়েছে। ইনভয়েস: {invoice_no}। বাকি: ৳{due}।",
+  },
+  {
+    name: "নতুন অফার",
+    channel: "both",
+    body: "{shop_name} এ বিশেষ অফার! আজই আসুন। বিস্তারিত: {phone}",
+  },
+];
+
+function renderPreview(body: string) {
+  let out = body;
+  for (const v of VARIABLES) {
+    out = out.replaceAll(`{${v.key}}`, v.sample);
+  }
+  return out;
+}
 
 const BKASH_NUMBER = "01719220690";
 
