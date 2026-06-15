@@ -650,6 +650,7 @@ export type Database = {
         Returns: boolean
       }
       is_super_admin: { Args: { _uid: string }; Returns: boolean }
+      refund_sms_credit: { Args: { _user_id: string }; Returns: undefined }
       reject_payment_request: {
         Args: { _note: string; _request_id: string }
         Returns: undefined
