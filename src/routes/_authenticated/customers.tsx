@@ -40,7 +40,7 @@ function CustomersPage() {
   const qc = useQueryClient();
   const { data } = useSuspenseQuery({ queryKey: ["customers"], queryFn: fetchCustomers });
   const { data: credInfo } = useQuery({ queryKey: ["message-credits"], queryFn: fetchMessageCredits });
-  const { data: pnl } = useQuery({ queryKey: ["customers-pnl"], queryFn: fetchPnL });
+  
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", email: "", address: "" });
