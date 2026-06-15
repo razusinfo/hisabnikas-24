@@ -171,7 +171,7 @@ function SalesPage() {
 
   const newSubtotal = lines.reduce((a, l) => a + l.qty * l.unit_price, 0);
   const newTotal = Math.max(0, newSubtotal - Number(newDiscount || 0) + Number(newTax || 0));
-  const newPaidAmt = newMethod === "due" ? 0 : (newPaid === "" ? newTotal : Number(newPaid));
+  const newPaidAmt = newPaid === "" ? newTotal : Number(newPaid);
   const newDue = Math.max(0, newTotal - newPaidAmt);
 
   async function createCustomerInline() {
@@ -796,7 +796,7 @@ function SalesPage() {
               </div>
               <div>
                 <label className="text-xs text-muted-foreground">{t("method")}</label>
-                <Select value={newMethod} onValueChange={setNewMethod}>
+                <Select value={newMethod} onValueChange={(v) => { setNewMethod(v); if (v === "due") setNewPaid("0"); else if (newPaid === "0") setNewPaid(""); }}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="cash">{t("methodCash")}</SelectItem>
@@ -904,8 +904,7 @@ function SalesPage() {
                 <Input
                   type="number"
                   step="0.01"
-                  value={newMethod === "due" ? "0" : newPaid}
-                  disabled={newMethod === "due"}
+                  value={newPaid}
                   onChange={(e) => setNewPaid(e.target.value)}
                   placeholder={String(newTotal)}
                 />
