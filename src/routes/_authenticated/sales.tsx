@@ -796,7 +796,7 @@ function SalesPage() {
               </div>
               <div>
                 <label className="text-xs text-muted-foreground">{t("method")}</label>
-                <Select value={newMethod} onValueChange={setNewMethod}>
+                <Select value={newMethod} onValueChange={(v) => { setNewMethod(v); if (v === "due") setNewPaid("0"); else if (newPaid === "0") setNewPaid(""); }}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="cash">{t("methodCash")}</SelectItem>
