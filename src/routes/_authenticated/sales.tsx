@@ -783,10 +783,11 @@ function SalesPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs text-muted-foreground">{t("customer")}</label>
-                <Select value={customerId} onValueChange={setCustomerId}>
+                <Select value={customerId} onValueChange={(v) => { if (v === "__new__") { setOpenNewCust(true); } else { setCustomerId(v); } }}>
                   <SelectTrigger><SelectValue placeholder={t("selectCustomer")} /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="walkin">{t("walkIn")}</SelectItem>
+                    <SelectItem value="__new__">+ নতুন ক্রেতা যুক্ত করুন</SelectItem>
                     {(customersList as any[]).map((c) => (
                       <SelectItem key={c.id} value={c.id}>{c.name}{c.phone ? ` · ${c.phone}` : ""}</SelectItem>
                     ))}
