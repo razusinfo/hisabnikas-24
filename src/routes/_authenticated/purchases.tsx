@@ -267,7 +267,7 @@ function PurchasesPage() {
         date: t("date"),
         customer: t("supplier"),
         phone: t("phone"),
-        method: t("method"),
+        method: t("address") + ":",
         item: t("item"),
         price: t("unitCost"),
         qty: t("qty"),
