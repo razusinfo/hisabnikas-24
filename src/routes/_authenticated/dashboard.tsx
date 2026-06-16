@@ -129,9 +129,11 @@ function Dashboard() {
         title={t("dashboard")}
         subtitle="Real-time pulse of your business."
         actions={
-          <Button onClick={() => setQuickOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            {t("newSale")}
+          <Button asChild>
+            <Link to="/sales">
+              <Plus className="h-4 w-4 mr-2" />
+              {t("newSale")}
+            </Link>
           </Button>
         }
       />
