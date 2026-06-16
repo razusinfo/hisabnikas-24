@@ -796,9 +796,10 @@ function SalesPage() {
               </div>
             </div>
           )}
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:gap-2">
             <Button variant="ghost" onClick={() => { setPaySale(null); setPayAmount(""); }}>{t("cancel")}</Button>
-            <Button onClick={recordPayment}>{t("save")}</Button>
+            <Button variant="outline" onClick={() => recordPayment({ print: true })}><Printer className="h-4 w-4 mr-2" />{lang === "bn" ? "সেভ ও প্রিন্ট" : "Save & Print"}</Button>
+            <Button onClick={() => recordPayment()}>{t("save")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
