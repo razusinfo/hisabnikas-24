@@ -88,7 +88,14 @@ function ProductsPage() {
     showPurchasePrice: appSettings?.showPurchasePrice !== false,
     showSalePrice: appSettings?.showSalePrice !== false,
     lowStockAlert: appSettings?.lowStockAlert !== false,
+    vat: appSettings?.vat === true,
+    mrpPrice: appSettings?.mrpPrice === true,
+    batchNumber: appSettings?.batchNumber === true,
+    serialImei: appSettings?.serialImei === true,
+    size: appSettings?.size === true,
+    expiryDate: appSettings?.expiryDate === true,
   };
+
 
   const [search, setSearch] = useState("");
   const [quickOpen, setQuickOpen] = useState(false);
