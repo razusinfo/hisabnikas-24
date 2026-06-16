@@ -28,6 +28,7 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [phone, setPhone] = useState("");
 
   const onSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
