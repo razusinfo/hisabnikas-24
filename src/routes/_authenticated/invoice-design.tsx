@@ -291,7 +291,7 @@ function InvoicePreview({
   const subColor = headerInverse ? "rgba(255,255,255,0.9)" : "#444";
 
   const rows = Array.from({ length: 7 }, (_, i) => ({
-    no: i + 1, name: `Demo Product ${i + 1}`, qty: 1, price: 250, disc: 25, vat: 11.25, total: 236.25,
+    no: i + 1, name: `Demo Product ${i + 1}`, qty: 1, price: 250, total: 250,
   }));
 
   const headers = [
@@ -299,8 +299,6 @@ function InvoicePreview({
     { bn: "পণ্যের নাম", en: "Item" },
     { bn: "পরিমাণ", en: "Qty" },
     { bn: "মূল্য", en: "Price" },
-    { bn: "ডিসকাউন্ট", en: "Disc" },
-    { bn: "ভ্যাট", en: "VAT" },
     { bn: "মোট", en: "Total" },
   ];
 
@@ -382,8 +380,6 @@ function InvoicePreview({
                 <td className="p-2">{r.name}</td>
                 <td className="p-2">{r.qty}</td>
                 <td className="p-2">৳{r.price.toFixed(2)}</td>
-                <td className="p-2">৳{r.disc.toFixed(2)}</td>
-                <td className="p-2">৳{r.vat.toFixed(2)}</td>
                 <td className="p-2">৳{r.total.toFixed(2)}</td>
               </tr>
             ))}

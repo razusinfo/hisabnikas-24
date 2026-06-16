@@ -511,8 +511,6 @@ function SalesPage() {
       </table>
       <div class="totals">
         <div class="line"><span>${esc(t("subtotal"))}</span><span class="num">${fmtMoney(s.subtotal, lang)}</span></div>
-        <div class="line"><span>${esc(t("discount"))}</span><span class="num">- ${fmtMoney(s.discount, lang)}</span></div>
-        <div class="line"><span>${esc(t("tax"))}</span><span class="num">${fmtMoney(s.tax, lang)}</span></div>
         <div class="line grand"><span>${esc(t("total"))}</span><span class="num">${fmtMoney(s.total, lang)}</span></div>
         <div class="line paid"><span>${esc(t("paid"))}</span><span class="num">${fmtMoney(s.paid, lang)}</span></div>
         <div class="line due"><span>${esc(t("due"))}</span><span class="num">${fmtMoney(s.due, lang)}</span></div>
@@ -713,8 +711,6 @@ function SalesPage() {
               </div>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="text-muted-foreground">{t("subtotal")}</div><div className="text-right font-mono">{fmtMoney(viewSale.subtotal, lang)}</div>
-                <div className="text-muted-foreground">{t("discount")}</div><div className="text-right font-mono">{fmtMoney(viewSale.discount, lang)}</div>
-                <div className="text-muted-foreground">{t("tax")}</div><div className="text-right font-mono">{fmtMoney(viewSale.tax, lang)}</div>
                 <div className="font-medium">{t("total")}</div><div className="text-right font-mono font-medium">{fmtMoney(viewSale.total, lang)}</div>
                 <div className="text-success">{t("paid")}</div><div className="text-right font-mono text-success">{fmtMoney(viewSale.paid, lang)}</div>
                 <div className="text-warning">{t("due")}</div><div className="text-right font-mono text-warning">{fmtMoney(viewSale.due, lang)}</div>
