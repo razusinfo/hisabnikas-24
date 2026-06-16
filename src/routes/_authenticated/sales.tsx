@@ -638,7 +638,9 @@ function SalesPage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2 pt-1 border-t">
-              <Button size="sm" variant="ghost" className="min-h-11 flex-1" onClick={() => openView(s)}><Eye className="h-4 w-4 mr-1" />{t("view")}</Button>
+              {sett.allowViewInvoice && (
+                <Button size="sm" variant="ghost" className="min-h-11 flex-1" onClick={() => openView(s)}><Eye className="h-4 w-4 mr-1" />{t("view")}</Button>
+              )}
               {Number(s.due) > 0 && (
                 <Button size="sm" variant="ghost" className="min-h-11 flex-1" onClick={() => { setPaySale(s); setPayAmount(String(s.due)); }}><CreditCard className="h-4 w-4 mr-1" />{t("recordPayment")}</Button>
               )}
