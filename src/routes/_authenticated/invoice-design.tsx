@@ -297,8 +297,8 @@ function InvoicePreview({
   const headers = [
     { bn: "ক্রম", en: "#" },
     { bn: "পণ্যের নাম", en: "Item" },
-    { bn: "পরিমাণ", en: "Qty" },
     { bn: "মূল্য", en: "Price" },
+    { bn: "পরিমাণ", en: "Qty" },
     { bn: "মোট", en: "Total" },
   ];
 
@@ -378,8 +378,8 @@ function InvoicePreview({
               <tr key={r.no} style={{ background: idx % 2 ? `${theme}08` : "transparent" }} className="border-b border-gray-100">
                 <td className="p-2">{r.no}</td>
                 <td className="p-2">{r.name}</td>
-                <td className="p-2">{r.qty}</td>
                 <td className="p-2">৳{r.price.toFixed(2)}</td>
+                <td className="p-2">{r.qty}</td>
                 <td className="p-2">৳{r.total.toFixed(2)}</td>
               </tr>
             ))}

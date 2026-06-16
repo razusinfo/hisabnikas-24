@@ -425,8 +425,8 @@ function SalesPage() {
     const rows = lineItems.map((l, i) => `<tr>
       <td class="num">${i + 1}</td>
       <td>${esc(l.product_name)}</td>
-      <td class="num">${lang === "bn" ? Number(l.qty).toLocaleString("bn-BD") : l.qty}</td>
       <td class="right">${fmtMoney(l.unit_price, lang)}</td>
+      <td class="num">${lang === "bn" ? Number(l.qty).toLocaleString("bn-BD") : l.qty}</td>
       <td class="right">${fmtMoney(l.line_total, lang)}</td>
     </tr>`).join("");
     const dueBadge = Number(s.due) > 0
@@ -503,8 +503,8 @@ function SalesPage() {
         <thead><tr>
           <th style="width:58px">#</th>
           <th>${esc(t("item"))}</th>
-          <th class="right" style="width:126px">${esc(t("qty"))}</th>
           <th class="right" style="width:198px">${esc(t("price"))}</th>
+          <th class="right" style="width:126px">${esc(t("qty"))}</th>
           <th class="right" style="width:234px">${esc(t("total"))}</th>
         </tr></thead>
         <tbody>${rows}</tbody>
@@ -686,7 +686,7 @@ function SalesPage() {
               <div className="border rounded-md overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/30 text-xs uppercase">
-                    <tr><th className="text-left p-2">{t("item")}</th><th className="text-right p-2">{t("qty")}</th><th className="text-right p-2">{t("price")}</th><th className="text-right p-2">{t("total")}</th></tr>
+                    <tr><th className="text-left p-2">{t("item")}</th><th className="text-right p-2">{t("price")}</th><th className="text-right p-2">{t("qty")}</th><th className="text-right p-2">{t("total")}</th></tr>
                   </thead>
                   <tbody>
                     {items === null && <tr><td colSpan={4} className="p-4 text-center text-muted-foreground">{t("loading")}</td></tr>}
@@ -695,13 +695,13 @@ function SalesPage() {
                         <td className="p-2">{i.product_name}</td>
                         <td className="p-2 text-right font-mono">
                           {editing ? (
-                            <Input type="number" step="0.01" value={i.qty} onChange={(e) => updateItem(i.id, { qty: Number(e.target.value) })} className="h-7 w-20 ml-auto text-right" />
-                          ) : (lang === "bn" ? Number(i.qty).toLocaleString("bn-BD") : i.qty)}
+                            <Input type="number" step="0.01" value={i.unit_price} onChange={(e) => updateItem(i.id, { unit_price: Number(e.target.value) })} className="h-7 w-24 ml-auto text-right" />
+                          ) : fmtMoney(i.unit_price, lang)}
                         </td>
                         <td className="p-2 text-right font-mono">
                           {editing ? (
-                            <Input type="number" step="0.01" value={i.unit_price} onChange={(e) => updateItem(i.id, { unit_price: Number(e.target.value) })} className="h-7 w-24 ml-auto text-right" />
-                          ) : fmtMoney(i.unit_price, lang)}
+                            <Input type="number" step="0.01" value={i.qty} onChange={(e) => updateItem(i.id, { qty: Number(e.target.value) })} className="h-7 w-20 ml-auto text-right" />
+                          ) : (lang === "bn" ? Number(i.qty).toLocaleString("bn-BD") : i.qty)}
                         </td>
                         <td className="p-2 text-right font-mono">{fmtMoney(i.line_total, lang)}</td>
                       </tr>
