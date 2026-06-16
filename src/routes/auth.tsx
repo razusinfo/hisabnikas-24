@@ -110,7 +110,7 @@ function AuthPage() {
         </div>
         <div className="relative max-w-md space-y-6">
           <h1 className="text-5xl font-display font-semibold leading-[1.05] tracking-tight">
-            Run Your Shop Like a Global Brand & Keep Accounts — <span className="text-gradient">Hisab Nikas-24</span>
+            ব্যবসা করবেন আপনি আর হিসাব রাখবে <span className="text-gradient">হিসাব নিকাশ-২৪</span>
           </h1>
           <p className="text-muted-foreground text-lg leading-relaxed">
             POS, inventory, customers, dues, and live analytics — in one premium dashboard built for retail and wholesale.
