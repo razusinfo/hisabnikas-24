@@ -202,7 +202,8 @@ function InvoiceDesignPage() {
       },
       business: {
         name: profile?.company_name ?? "Your Business",
-        owner: profile?.address ?? "",
+        owner: profile?.full_name ?? "",
+        address: profile?.address ?? "",
         logoUrl: profile?.logo_url ?? null,
       },
       settings: settingsForPrint,
