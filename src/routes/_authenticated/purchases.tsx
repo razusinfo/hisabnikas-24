@@ -258,6 +258,8 @@ function PurchasesPage() {
         name: profile?.company_name || "",
         owner: profile?.full_name || "",
         address: profile?.address || "",
+        phone: profile?.phone || null,
+        email: (profile as any)?.email || null,
         logoUrl: profile?.logo_url || null,
       },
       settings: profile?.invoice_settings ?? {},
