@@ -170,8 +170,9 @@ function AuthPage() {
           </div>
 
           <Tabs defaultValue="signin">
-            <TabsList className="grid grid-cols-2 w-full">
+            <TabsList className="grid grid-cols-3 w-full">
               <TabsTrigger value="signin">{t("signIn")}</TabsTrigger>
+              <TabsTrigger value="otp">OTP</TabsTrigger>
               <TabsTrigger value="signup">{t("signUp")}</TabsTrigger>
             </TabsList>
             <TabsContent value="signin">
