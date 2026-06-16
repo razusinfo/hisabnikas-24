@@ -484,6 +484,7 @@ function ProductsPage() {
                 </Button>
               </div>
             </div>
+            )}
             <DialogFooter className="gap-2">
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>{t("cancel")}</Button>
               <Button type="submit" disabled={save.isPending}>{t("save")}</Button>
