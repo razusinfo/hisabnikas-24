@@ -156,6 +156,8 @@ function formatBytes(s?: string) {
 
 function BackupRestorePage() {
   const { t } = useI18n();
+  const search = useSearch({ from: "/_authenticated/backup-restore" });
+  const qc = useQueryClient();
   const [restoring, setRestoring] = useState(false);
   const [driveConnected, setDriveConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
@@ -168,7 +170,31 @@ function BackupRestorePage() {
   const [lastAuto, setLastAuto] = useState(0);
   const [autoRunning, setAutoRunning] = useState(false);
 
+  // Server-side connection
+  const getConn = useServerFn(getDriveConnection);
+  const getAuthUrl = useServerFn(getDriveAuthUrl);
+  const setAutoDailyServer = useServerFn(setAutoDailyFn);
+  const disconnectServer = useServerFn(disconnectDrive);
+  const runBackupNowServer = useServerFn(runBackupNow);
+
+  const connQ = useQuery({
+    queryKey: ["drive-connection"],
+    queryFn: () => getConn(),
+  });
+  const serverConn = connQ.data;
+  const [serverRunning, setServerRunning] = useState(false);
+  const [serverConnecting, setServerConnecting] = useState(false);
+
   useEffect(() => {
+    if (search.drive_connected) {
+      toast.success(t("autoBackupActive"));
+      qc.invalidateQueries({ queryKey: ["drive-connection"] });
+    }
+    if (search.drive_error) {
+      toast.error(`Google: ${search.drive_error}`);
+    }
+  }, [search.drive_connected, search.drive_error]);
+
     setDriveConnected(isSignedIn());
     supabase.auth.getUser().then(({ data }) => {
       const id = data.user?.id ?? null;
