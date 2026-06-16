@@ -28,6 +28,7 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [phone, setPhone] = useState("");
 
   const onSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +47,7 @@ function AuthPage() {
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: { full_name: fullName, company_name: companyName },
+        data: { full_name: fullName, company_name: companyName, phone },
       },
     });
     setLoading(false);
@@ -137,6 +138,10 @@ function AuthPage() {
                 <div className="space-y-1.5">
                   <Label>{t("companyName")}</Label>
                   <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>মোবাইল নাম্বার</Label>
+                  <Input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="01XXXXXXXXX" />
                 </div>
                 <div className="space-y-1.5">
                   <Label>{t("email")}</Label>
