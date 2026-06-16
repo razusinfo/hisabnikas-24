@@ -233,7 +233,7 @@ function SalesPage() {
     setLines((ls) => ls.filter((_, i) => i !== idx));
   }
   function resetNew() {
-    setCustomerId("walkin"); setNewMethod("cash"); setNewDiscount("0"); setNewTax("0"); setNewPaid(""); setNewNote(""); setLines([]);
+    setCustomerId("walkin"); setNewMethod("cash"); setNewDiscount("0"); setNewTax("0"); setNewDelivery("0"); setNewPaid(""); setNewNote(""); setLines([]);
   }
 
   async function createSale() {
