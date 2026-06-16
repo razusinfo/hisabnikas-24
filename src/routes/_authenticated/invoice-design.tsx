@@ -578,8 +578,8 @@ function InvoicePreview({
         {/* Meta description */}
         <div className="mt-3 space-y-1" style={{ fontSize: f.base - 1 }}>
           <div className="flex justify-between">
-            <div><span className="font-semibold">{tr("ইনভয়েস নং", "Invoice #")}:</span> 5093758370499</div>
-            <div>তারিখ:১১/১০/২০২৩</div>
+            <div><span className="font-semibold">{tr("চালান নং", "Invoice #")}:</span> 5093758370499</div>
+            <div><span className="font-semibold">{tr("তারিখ", "Date")}:</span> ১১/১০/২০২৩</div>
           </div>
           <div className="flex items-center gap-3 flex-wrap" style={{ fontSize: f.base - 2 }}>
             <span><span className="font-semibold">{tr("ক্রেতার নাম:", "Customer Name:")}</span> Demo Party</span>
