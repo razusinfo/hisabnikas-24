@@ -223,7 +223,7 @@ function BusinessProfilePage() {
                 <Input
                   id="logo-file"
                   type="file"
-                  accept="image/*"
+                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
                   className="hidden"
                   disabled={uploadLogo.isPending}
                   onChange={(e) => {
