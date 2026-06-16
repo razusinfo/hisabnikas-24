@@ -208,6 +208,18 @@ function SidebarContent({
   );
 }
 
+function TopQuickLink({ to, icon: Icon, label, colorClass }: { to: string; icon: typeof Settings; label: string; colorClass: string }) {
+  return (
+    <Link
+      to={to}
+      className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors", colorClass)}
+    >
+      <Icon className="h-4 w-4" />
+      <span className="hidden lg:inline">{label}</span>
+    </Link>
+  );
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const { t } = useI18n();
   const navigate = useNavigate();
