@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Loader2, UserCircle2, Upload, Trash2 } from "lucide-react";
+import { AvatarCropDialog } from "@/components/AvatarCropDialog";
 
 export const Route = createFileRoute("/_authenticated/proprietor-profile")({
   component: ProprietorProfilePage,
@@ -104,14 +105,15 @@ function ProprietorProfilePage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+
   const uploadAvatar = useMutation({
-    mutationFn: async (file: File) => {
+    mutationFn: async (blob: Blob) => {
       if (!profileQuery.data) throw new Error("No profile");
-      const ext = file.name.split(".").pop() || "png";
-      const path = `${profileQuery.data.id}/avatar-${Date.now()}.${ext}`;
+      const path = `${profileQuery.data.id}/avatar-${Date.now()}.png`;
       const { error: upErr } = await supabase.storage
         .from("business-logos")
-        .upload(path, file, { upsert: true, contentType: file.type });
+        .upload(path, blob, { upsert: true, contentType: "image/png" });
       if (upErr) throw upErr;
       if (profileQuery.data.avatar_url) {
         await supabase.storage.from("business-logos").remove([profileQuery.data.avatar_url]);
@@ -124,6 +126,7 @@ function ProprietorProfilePage() {
     },
     onSuccess: () => {
       toast.success(t("settingsSaved"));
+      setPendingFile(null);
       qc.invalidateQueries({ queryKey: ["proprietor-profile"] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -185,7 +188,7 @@ function ProprietorProfilePage() {
                 disabled={uploadAvatar.isPending}
                 onChange={(e) => {
                   const f = e.target.files?.[0];
-                  if (f) uploadAvatar.mutate(f);
+                  if (f) setPendingFile(f);
                   e.target.value = "";
                 }}
               />
@@ -245,6 +248,13 @@ function ProprietorProfilePage() {
           </div>
         </CardContent>
       </Card>
+
+      <AvatarCropDialog
+        file={pendingFile}
+        onCancel={() => setPendingFile(null)}
+        onCropped={(blob) => uploadAvatar.mutate(blob)}
+        saving={uploadAvatar.isPending}
+      />
     </div>
   );
 }
