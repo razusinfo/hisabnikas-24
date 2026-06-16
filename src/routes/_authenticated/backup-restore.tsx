@@ -343,9 +343,136 @@ function BackupRestorePage() {
     }
   };
 
+  const handleServerConnect = async () => {
+    setServerConnecting(true);
+    try {
+      const { url } = await getAuthUrl();
+      window.location.href = url;
+    } catch (e: any) {
+      toast.error(e.message || "Failed to start connect");
+      setServerConnecting(false);
+    }
+  };
+
+  const handleServerDisconnect = async () => {
+    if (!confirm(t("disconnect") + "?")) return;
+    try {
+      await disconnectServer();
+      qc.invalidateQueries({ queryKey: ["drive-connection"] });
+      toast.success(t("disconnect"));
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+  };
+
+  const handleToggleServerAuto = async (next: boolean) => {
+    try {
+      await setAutoDailyServer({ data: { enabled: next } });
+      qc.invalidateQueries({ queryKey: ["drive-connection"] });
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+  };
+
+  const handleServerRunNow = async () => {
+    setServerRunning(true);
+    try {
+      await runBackupNowServer();
+      toast.success(t("driveBackupUploaded"));
+      qc.invalidateQueries({ queryKey: ["drive-connection"] });
+    } catch (e: any) {
+      toast.error(e.message || t("backupFailed"));
+    } finally {
+      setServerRunning(false);
+    }
+  };
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-3xl space-y-6">
       <PageHeader title={t("backupRestore")} subtitle={t("backupRestoreSubtitle")} />
+
+      {/* Server-side daily auto-backup */}
+      <Card className="border-primary/30">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-primary" />
+            {t("serverAutoBackup")}
+          </CardTitle>
+          <CardDescription>{t("serverAutoBackupDesc")}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {connQ.isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : !serverConn ? (
+            <Button onClick={handleServerConnect} disabled={serverConnecting}>
+              {serverConnecting ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <Cloud className="h-4 w-4 mr-2" />
+              )}
+              {t("connectForAutoBackup")}
+            </Button>
+          ) : (
+            <>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  {t("autoBackupActive")}
+                </div>
+                {serverConn.google_email && (
+                  <span className="text-xs text-muted-foreground">
+                    {t("serverConnectedAs")}: {serverConn.google_email}
+                  </span>
+                )}
+                <Button size="sm" variant="outline" onClick={handleServerDisconnect} className="ml-auto">
+                  {t("disconnect")}
+                </Button>
+              </div>
+
+              <div className="rounded-lg border p-3 space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="flex-1 min-w-0">
+                    <Label className="text-sm font-medium">{t("autoBackupDaily")}</Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {t("serverAutoBackupDesc")}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={!!serverConn.auto_daily}
+                    onCheckedChange={handleToggleServerAuto}
+                  />
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+                  <span>
+                    {t("lastServerBackup")}:{" "}
+                    {serverConn.last_backup_at
+                      ? new Date(serverConn.last_backup_at).toLocaleString()
+                      : t("never")}
+                    {serverConn.last_backup_status === "success" && (
+                      <span className="ml-2 text-emerald-600">✓ {t("backupStatusSuccess")}</span>
+                    )}
+                    {serverConn.last_backup_status === "failed" && (
+                      <span className="ml-2 text-destructive">✗ {t("backupStatusFailed")}</span>
+                    )}
+                  </span>
+                  <Button size="sm" variant="ghost" onClick={handleServerRunNow} disabled={serverRunning}>
+                    {serverRunning ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
+                    ) : (
+                      <CloudUpload className="h-3.5 w-3.5 mr-1.5" />
+                    )}
+                    {t("backupNow")}
+                  </Button>
+                </div>
+                {serverConn.last_backup_error && (
+                  <p className="text-xs text-destructive">{serverConn.last_backup_error}</p>
+                )}
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
 
       {/* Google Drive */}
       <Card>
