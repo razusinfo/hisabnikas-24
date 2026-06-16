@@ -858,6 +858,10 @@ function SalesPage() {
                 </Select>
               </div>
               <div>
+                <label className="text-xs text-muted-foreground">{t("date")}</label>
+                <Input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} />
+              </div>
+              <div>
                 <label className="text-xs text-muted-foreground">{t("method")}</label>
                 <Select value={newMethod} onValueChange={(v) => { setNewMethod(v); if (v === "due") setNewPaid("0"); else if (newPaid === "0") setNewPaid(""); }}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
