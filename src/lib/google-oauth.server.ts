@@ -133,18 +133,22 @@ export async function ensureBackupFolder(accessToken: string, existingFolderId?:
       if (!j.trashed) return existingFolderId;
     }
   }
+  // With drive.file scope, only files created by this app are visible.
   const q = encodeURIComponent(
     `name='${BACKUP_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
   );
   const search = await fetch(
-    `https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`,
+    `https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)&spaces=drive`,
     { headers: { Authorization: `Bearer ${accessToken}` } },
   );
   if (search.ok) {
     const j = await search.json();
     if (j.files?.length) return j.files[0].id;
+  } else {
+    const txt = await search.text();
+    throw new Error(`Drive folder search failed: ${search.status} ${txt}`);
   }
-  const create = await fetch("https://www.googleapis.com/drive/v3/files", {
+  const create = await fetch("https://www.googleapis.com/drive/v3/files?fields=id", {
     method: "POST",
     headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -152,8 +156,12 @@ export async function ensureBackupFolder(accessToken: string, existingFolderId?:
       mimeType: "application/vnd.google-apps.folder",
     }),
   });
-  if (!create.ok) throw new Error("Failed to create backup folder");
+  if (!create.ok) {
+    const txt = await create.text();
+    throw new Error(`Failed to create backup folder: ${create.status} ${txt}`);
+  }
   const j = await create.json();
+  if (!j.id) throw new Error("Drive folder create returned no id");
   return j.id;
 }
 
