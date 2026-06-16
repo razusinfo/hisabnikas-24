@@ -325,6 +325,7 @@ export type Database = {
           language: string
           logo_url: string | null
           message_credits: number
+          phone: string | null
           updated_at: string
         }
         Insert: {
@@ -338,6 +339,7 @@ export type Database = {
           language?: string
           logo_url?: string | null
           message_credits?: number
+          phone?: string | null
           updated_at?: string
         }
         Update: {
@@ -351,6 +353,7 @@ export type Database = {
           language?: string
           logo_url?: string | null
           message_credits?: number
+          phone?: string | null
           updated_at?: string
         }
         Relationships: []
