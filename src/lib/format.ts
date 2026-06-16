@@ -28,6 +28,15 @@ export const fmtDateTime = (d: string | Date, lang: "en" | "bn" = "en") => {
   return dt.toLocaleString(locale, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 };
 
+export const fmtInvoiceDate = (d: string | Date, lang: "en" | "bn" = "en") => {
+  const dt = typeof d === "string" ? new Date(d) : d;
+  const day = String(dt.getDate()).padStart(2, "0");
+  const month = String(dt.getMonth() + 1).padStart(2, "0");
+  const year = dt.getFullYear();
+  const dateStr = lang === "bn" ? toBnDigits(`${day}/${month}/${year}`) : `${day}/${month}/${year}`;
+  return lang === "bn" ? `(তারিখ:${dateStr})` : `(Date:${dateStr})`;
+};
+
 export const fmtNum = (n: number | string | null | undefined, lang: "en" | "bn" = "en") => {
   const v = typeof n === "string" ? Number(n) : n ?? 0;
   const s = String(v ?? 0);
