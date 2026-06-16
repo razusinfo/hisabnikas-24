@@ -221,6 +221,15 @@ function ProprietorProfilePage() {
           </div>
 
           <div className="grid gap-2">
+            <Label>{t("phone")}</Label>
+            <Input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              maxLength={20}
+            />
+          </div>
+
+          <div className="grid gap-2">
             <Label>{t("email")}</Label>
             <Input
               type="email"
