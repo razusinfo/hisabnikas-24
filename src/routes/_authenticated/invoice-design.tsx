@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { ArrowLeft, Check, Loader2, Printer, Share2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { printStyledInvoice } from "@/lib/print-invoice";
+import { useInvoicePreview } from "@/components/InvoicePreviewProvider";
+
 
 export const Route = createFileRoute("/_authenticated/invoice-design")({
   component: InvoiceDesignPage,
