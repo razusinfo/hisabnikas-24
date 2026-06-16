@@ -121,6 +121,15 @@ function SalesPage() {
   const [ncAddress, setNcAddress] = useState("");
   const [ncSaving, setNcSaving] = useState(false);
 
+  // Inline new-product dialog
+  const [openNewProd, setOpenNewProd] = useState(false);
+  const [npName, setNpName] = useState("");
+  const [npSku, setNpSku] = useState("");
+  const [npPrice, setNpPrice] = useState("");
+  const [npStock, setNpStock] = useState("");
+  const [npCategoryId, setNpCategoryId] = useState<string>("");
+  const [npSaving, setNpSaving] = useState(false);
+
   const { data: profile } = useQuery({
     queryKey: ["profile", "me"],
     queryFn: async () => {
@@ -217,6 +226,37 @@ function SalesPage() {
       toast.error(e.message);
     } finally {
       setNcSaving(false);
+    }
+  }
+
+  async function createProductInline() {
+    if (!npName.trim()) return toast.error(lang === "bn" ? "পণ্যের নাম দিন" : "Enter product name");
+    setNpSaving(true);
+    try {
+      const { data: u } = await supabase.auth.getUser();
+      const { data, error } = await supabase.from("products").insert({
+        owner_id: u.user!.id,
+        name: npName.trim(),
+        sku: npSku.trim() || null,
+        sell_price: Number(npPrice || 0),
+        stock: Number(npStock || 0),
+        category_id: npCategoryId || null,
+        cost_price: 0,
+        unit: "",
+      }).select("id,name,sku,sell_price,stock,category_id").single();
+      if (error) throw error;
+      qc.invalidateQueries({ queryKey: ["products-list"] });
+      qc.invalidateQueries({ queryKey: ["products"] });
+      qc.invalidateQueries({ queryKey: ["dashboard"] });
+      setOpenNewProd(false);
+      setNpName(""); setNpSku(""); setNpPrice(""); setNpStock(""); setNpCategoryId("");
+      toast.success(t("productCreated"));
+      // Immediately add to cart
+      setLines((ls) => [...ls, { product_id: data.id, name: data.name, qty: 1, unit_price: Number(data.sell_price || 0), stock: Number(data.stock || 0) }]);
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setNpSaving(false);
     }
   }
 
@@ -878,7 +918,7 @@ function SalesPage() {
 
             <div>
               <label className="text-xs text-muted-foreground">{t("addItem")}</label>
-              <div className="grid grid-cols-[180px_1fr] gap-2">
+              <div className="grid grid-cols-[180px_1fr_auto] gap-2 items-end">
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger><SelectValue placeholder="ক্যাটাগরি" /></SelectTrigger>
                   <SelectContent>
@@ -898,6 +938,7 @@ function SalesPage() {
                     className="pl-9"
                   />
                 </div>
+                <Button type="button" variant="outline" size="sm" onClick={() => setOpenNewProd(true)}><Plus className="h-3.5 w-3.5 mr-1" />{lang === "bn" ? "নতুন পণ্য" : "New Product"}</Button>
               </div>
               {(() => {
                 const list = (productsList as any[]);
@@ -1027,6 +1068,51 @@ function SalesPage() {
           <DialogFooter>
             <Button variant="ghost" onClick={() => setOpenNewCust(false)}>{t("cancel")}</Button>
             <Button onClick={createCustomerInline} disabled={ncSaving}>{t("save")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Inline New Product */}
+      <Dialog open={openNewProd} onOpenChange={(o) => { if (!o) { setOpenNewProd(false); } }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>{lang === "bn" ? "নতুন পণ্য যুক্ত করুন" : "Add New Product"}</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs text-muted-foreground">{t("name")} *</label>
+              <Input value={npName} onChange={(e) => setNpName(e.target.value)} placeholder={lang === "bn" ? "পণ্যের নাম" : "Product name"} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-muted-foreground">{t("sku")}</label>
+                <Input value={npSku} onChange={(e) => setNpSku(e.target.value)} placeholder={lang === "bn" ? "এসকিউ" : "SKU"} />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{t("stock")}</label>
+                <Input type="number" min="0" value={npStock} onChange={(e) => setNpStock(e.target.value)} placeholder="0" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-muted-foreground">{t("price")}</label>
+                <Input type="number" min="0" step="0.01" value={npPrice} onChange={(e) => setNpPrice(e.target.value)} placeholder="0" />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{t("category")}</label>
+                <Select value={npCategoryId} onValueChange={setNpCategoryId}>
+                  <SelectTrigger><SelectValue placeholder={lang === "bn" ? "ক্যাটাগরি" : "Category"} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">{lang === "bn" ? "— ক্যাটাগরিহীন —" : "— No category —"}</SelectItem>
+                    {(categoriesList as any[]).map((c) => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setOpenNewProd(false)}>{t("cancel")}</Button>
+            <Button onClick={createProductInline} disabled={npSaving}>{t("save")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
