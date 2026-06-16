@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSalesRouteImport } from './routes/_authenticated/sales'
 import { Route as AuthenticatedPurchasesRouteImport } from './routes/_authenticated/purchases'
+import { Route as AuthenticatedProprietorProfileRouteImport } from './routes/_authenticated/proprietor-profile'
 import { Route as AuthenticatedProfitLossRouteImport } from './routes/_authenticated/profit-loss'
 import { Route as AuthenticatedProductsRouteImport } from './routes/_authenticated/products'
 import { Route as AuthenticatedHelpRouteImport } from './routes/_authenticated/help'
@@ -57,6 +58,12 @@ const AuthenticatedPurchasesRoute = AuthenticatedPurchasesRouteImport.update({
   path: '/purchases',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedProprietorProfileRoute =
+  AuthenticatedProprietorProfileRouteImport.update({
+    id: '/proprietor-profile',
+    path: '/proprietor-profile',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProfitLossRoute = AuthenticatedProfitLossRouteImport.update({
   id: '/profit-loss',
   path: '/profit-loss',
@@ -136,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/help': typeof AuthenticatedHelpRoute
   '/products': typeof AuthenticatedProductsRoute
   '/profit-loss': typeof AuthenticatedProfitLossRoute
+  '/proprietor-profile': typeof AuthenticatedProprietorProfileRoute
   '/purchases': typeof AuthenticatedPurchasesRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -155,6 +163,7 @@ export interface FileRoutesByTo {
   '/help': typeof AuthenticatedHelpRoute
   '/products': typeof AuthenticatedProductsRoute
   '/profit-loss': typeof AuthenticatedProfitLossRoute
+  '/proprietor-profile': typeof AuthenticatedProprietorProfileRoute
   '/purchases': typeof AuthenticatedPurchasesRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -176,6 +185,7 @@ export interface FileRoutesById {
   '/_authenticated/help': typeof AuthenticatedHelpRoute
   '/_authenticated/products': typeof AuthenticatedProductsRoute
   '/_authenticated/profit-loss': typeof AuthenticatedProfitLossRoute
+  '/_authenticated/proprietor-profile': typeof AuthenticatedProprietorProfileRoute
   '/_authenticated/purchases': typeof AuthenticatedPurchasesRoute
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
@@ -197,6 +207,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/products'
     | '/profit-loss'
+    | '/proprietor-profile'
     | '/purchases'
     | '/sales'
     | '/settings'
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/products'
     | '/profit-loss'
+    | '/proprietor-profile'
     | '/purchases'
     | '/sales'
     | '/settings'
@@ -236,6 +248,7 @@ export interface FileRouteTypes {
     | '/_authenticated/help'
     | '/_authenticated/products'
     | '/_authenticated/profit-loss'
+    | '/_authenticated/proprietor-profile'
     | '/_authenticated/purchases'
     | '/_authenticated/sales'
     | '/_authenticated/settings'
@@ -293,6 +306,13 @@ declare module '@tanstack/react-router' {
       path: '/purchases'
       fullPath: '/purchases'
       preLoaderRoute: typeof AuthenticatedPurchasesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/proprietor-profile': {
+      id: '/_authenticated/proprietor-profile'
+      path: '/proprietor-profile'
+      fullPath: '/proprietor-profile'
+      preLoaderRoute: typeof AuthenticatedProprietorProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/profit-loss': {
@@ -393,6 +413,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHelpRoute: typeof AuthenticatedHelpRoute
   AuthenticatedProductsRoute: typeof AuthenticatedProductsRoute
   AuthenticatedProfitLossRoute: typeof AuthenticatedProfitLossRoute
+  AuthenticatedProprietorProfileRoute: typeof AuthenticatedProprietorProfileRoute
   AuthenticatedPurchasesRoute: typeof AuthenticatedPurchasesRoute
   AuthenticatedSalesRoute: typeof AuthenticatedSalesRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
@@ -409,6 +430,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHelpRoute: AuthenticatedHelpRoute,
   AuthenticatedProductsRoute: AuthenticatedProductsRoute,
   AuthenticatedProfitLossRoute: AuthenticatedProfitLossRoute,
+  AuthenticatedProprietorProfileRoute: AuthenticatedProprietorProfileRoute,
   AuthenticatedPurchasesRoute: AuthenticatedPurchasesRoute,
   AuthenticatedSalesRoute: AuthenticatedSalesRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
