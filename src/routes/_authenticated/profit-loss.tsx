@@ -190,6 +190,40 @@ async function fetchPnL(range: Range) {
   };
 }
 
+function SegmentedControl<T extends string>({
+  value,
+  onChange,
+  options,
+}: {
+  value: T;
+  onChange: (v: T) => void;
+  options: { value: T; label: string; icon: React.ReactNode }[];
+}) {
+  return (
+    <div className="inline-flex items-center rounded-full bg-muted p-1 gap-0.5 border border-border/50">
+      {options.map((opt) => {
+        const active = value === opt.value;
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            className={cn(
+              "relative flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-200",
+              active
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent/60",
+            )}
+          >
+            {opt.icon}
+            <span>{opt.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function ProfitLossPage() {
   const { t } = useI18n();
   const [period, setPeriod] = useState<Period>("daily");
