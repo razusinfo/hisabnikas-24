@@ -232,7 +232,7 @@ function PurchasesPage() {
   }
 
   function printDoc(p: any, ls: any[]) {
-    printStyledInvoice({
+    showInvoicePreview({
       doc: {
         invoice_no: p.invoice_no,
         created_at: p.created_at,

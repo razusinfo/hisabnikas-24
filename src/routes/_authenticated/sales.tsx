@@ -457,7 +457,7 @@ function SalesPage() {
   }
 
   function printInvoice(s: any, lineItems: any[]) {
-    printStyledInvoice({
+    showInvoicePreview({
       doc: {
         invoice_no: s.invoice_no,
         created_at: s.created_at,
@@ -521,7 +521,7 @@ function SalesPage() {
 
   function printPaymentReceipt(s: any, amount: number, newPaid: number, newDue: number) {
     const isBn = lang === "bn";
-    printStyledInvoice({
+    showInvoicePreview({
       doc: {
         invoice_no: (isBn ? "পরিশোধ • " : "PAY • ") + s.invoice_no,
         created_at: new Date().toISOString(),
