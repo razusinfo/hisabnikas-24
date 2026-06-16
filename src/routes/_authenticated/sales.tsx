@@ -492,7 +492,10 @@ function SalesPage() {
         <div class="card">
           <div class="lbl">${esc(t("customer"))}</div>
           <div class="val">${esc(s.customers?.name ?? t("walkIn"))}</div>
-          ${s.customers?.phone ? `<div class="sub">${esc(s.customers.phone)}</div>` : ""}
+        </div>
+        <div class="card">
+          <div class="lbl">${esc(t("phone"))}</div>
+          <div class="val">${esc(s.customers?.phone ?? "—")}</div>
         </div>
         <div class="card">
           <div class="lbl">${esc(t("method"))}</div>
