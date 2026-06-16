@@ -20,6 +20,7 @@ export const Route = createFileRoute("/_authenticated/proprietor-profile")({
 type Profile = {
   id: string;
   full_name: string | null;
+  phone: string | null;
   address: string | null;
   avatar_url: string | null;
 };
@@ -35,7 +36,7 @@ function ProprietorProfilePage() {
       if (!u.user) throw new Error("Not signed in");
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, address, avatar_url")
+        .select("id, full_name, phone, address, avatar_url")
         .eq("id", u.user.id)
         .single();
       if (error) throw error;
@@ -52,12 +53,14 @@ function ProprietorProfilePage() {
   });
 
   const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
 
   useEffect(() => {
     if (profileQuery.data) {
       setFullName(profileQuery.data.full_name ?? "");
+      setPhone(profileQuery.data.phone ?? "");
       setAddress(profileQuery.data.address ?? "");
     }
   }, [profileQuery.data]);
@@ -86,6 +89,7 @@ function ProprietorProfilePage() {
         .from("profiles")
         .update({
           full_name: fullName.trim() || null,
+          phone: phone.trim() || null,
           address: address.trim() || null,
         } as never)
         .eq("id", profileQuery.data.id);
@@ -213,6 +217,15 @@ function ProprietorProfilePage() {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               maxLength={120}
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label>{t("phone")}</Label>
+            <Input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              maxLength={20}
             />
           </div>
 
