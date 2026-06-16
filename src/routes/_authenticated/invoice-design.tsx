@@ -271,91 +271,172 @@ function InvoicePreview({
   const f = FONT_SIZE_MAP[fontSize];
   const tr = (bn: string, en: string) => (lang === "bn" ? bn : en);
 
-  // Templates differ in header style
-  const headerStyle: React.CSSProperties = (() => {
+  // Header container variations per template
+  const headerWrap: React.CSSProperties = (() => {
     switch (template) {
-      case 2: return { background: theme, color: "#fff", padding: 16, borderRadius: 8 };
-      case 3: return { borderTop: `4px solid ${theme}`, padding: "16px 0" };
-      case 4: return { background: `${theme}15`, padding: 16, borderLeft: `4px solid ${theme}` };
-      case 5: return { borderBottom: `2px dashed ${theme}`, padding: "12px 0" };
-      case 6: return { background: theme, color: "#fff", padding: 16, clipPath: "polygon(0 0, 100% 0, 100% 80%, 0 100%)" };
-      case 7: return { padding: 12, border: `2px solid ${theme}` };
-      case 8: return { background: `linear-gradient(135deg, ${theme}, ${theme}aa)`, color: "#fff", padding: 16, borderRadius: 8 };
-      case 9: return { padding: "12px 0", borderBottom: `3px double ${theme}` };
-      default: return { padding: "8px 0", borderBottom: `1px solid ${theme}` };
+      case 2: return { background: theme, color: "#fff", padding: 14, borderRadius: 6 };
+      case 3: return { borderTop: `4px solid ${theme}`, paddingTop: 12 };
+      case 4: return { background: `${theme}12`, padding: 14, borderLeft: `4px solid ${theme}` };
+      case 5: return { borderBottom: `2px dashed ${theme}`, paddingBottom: 10 };
+      case 6: return { background: theme, color: "#fff", padding: 14, clipPath: "polygon(0 0,100% 0,100% 82%,0 100%)" };
+      case 7: return { padding: 10, border: `2px solid ${theme}` };
+      case 8: return { background: `linear-gradient(135deg, ${theme}, ${theme}aa)`, color: "#fff", padding: 14, borderRadius: 6 };
+      case 9: return { borderBottom: `3px double ${theme}`, paddingBottom: 10 };
+      default: return { borderBottom: `1px solid ${theme}55`, paddingBottom: 10 };
     }
   })();
 
-  const titleColor = [2, 6, 8].includes(template) ? "#fff" : theme;
+  const headerInverse = [2, 6, 8].includes(template);
+  const titleColor = headerInverse ? "#fff" : theme;
+  const subColor = headerInverse ? "rgba(255,255,255,0.9)" : "#444";
 
-  const rows = Array.from({ length: 5 }, (_, i) => ({
-    no: i + 1, name: `Demo Product ${i + 1}`, qty: 1, price: 250, vat: 11.25, total: 236.25,
+  const rows = Array.from({ length: 7 }, (_, i) => ({
+    no: i + 1, name: `Demo Product ${i + 1}`, qty: 1, price: 250, disc: 25, vat: 11.25, total: 236.25,
   }));
 
+  const headers = [
+    { bn: "ক্রম", en: "#" },
+    { bn: "পণ্যের নাম", en: "Item" },
+    { bn: "পরিমাণ", en: "Qty" },
+    { bn: "মূল্য", en: "Price" },
+    { bn: "ডিসকাউন্ট", en: "Disc" },
+    { bn: "ভ্যাট", en: "VAT" },
+    { bn: "মোট", en: "Total" },
+  ];
+
   return (
-    <div className="p-6 bg-white text-black" style={{ fontSize: f.base }}>
-      <div style={headerStyle} className="flex items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
-          {logoUrl && <img src={logoUrl} alt="" className="h-12 w-12 object-contain rounded" />}
-          <div>
-            <div style={{ fontSize: f.head, fontWeight: 700 }}>{companyName}</div>
-            {phone && <div style={{ fontSize: f.base - 1, opacity: 0.85 }}>{tr("ফোন", "Phone")}: {phone}</div>}
-            <div style={{ fontSize: f.base - 1, opacity: 0.85 }}>{tr("ইনভয়েস", "Invoice")}</div>
+    <div className="relative p-6 bg-white text-black overflow-hidden" style={{ fontSize: f.base }}>
+      {/* watermark */}
+      {logoUrl && (
+        <img
+          src={logoUrl}
+          alt=""
+          className="pointer-events-none absolute inset-0 m-auto opacity-10 object-contain"
+          style={{ width: "55%", height: "55%" }}
+        />
+      )}
+
+      <div className="relative">
+        {/* Header */}
+        <div style={headerWrap}>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-3 w-1/4">
+              {logoUrl ? (
+                <img src={logoUrl} alt="" className="h-14 w-14 object-contain rounded" />
+              ) : (
+                <div
+                  className="h-14 w-14 rounded flex items-center justify-center font-bold"
+                  style={{ background: headerInverse ? "rgba(255,255,255,0.2)" : `${theme}20`, color: titleColor }}
+                >
+                  LOGO
+                </div>
+              )}
+            </div>
+            <div className="flex-1 text-center">
+              <div style={{ fontSize: f.title, fontWeight: 800, color: titleColor, lineHeight: 1.1 }}>
+                {companyName}
+              </div>
+              <div style={{ fontSize: f.base - 1, color: subColor, marginTop: 2 }}>
+                {tr("ঠিকানা এখানে লিখুন", "Address goes here")}
+              </div>
+              {phone && (
+                <div style={{ fontSize: f.base - 1, color: subColor }}>
+                  {tr("ফোন", "Phone")}: {phone}
+                </div>
+              )}
+            </div>
+            <div className="text-right w-1/4" style={{ color: headerInverse ? "#fff" : "#000" }}>
+              <div style={{ fontSize: f.base - 1, color: subColor }}>
+                {tr("তারিখ", "Date")}: 16/6/2026
+              </div>
+              <div style={{ fontSize: f.head + 4, fontWeight: 800, color: titleColor, letterSpacing: 1 }}>
+                {tr("ইনভয়েস", "INVOICE")}
+              </div>
+            </div>
           </div>
         </div>
-        <div className="text-right">
-          <div style={{ fontSize: f.base - 1 }}>{tr("তারিখ", "Date")}: 16/6/2026</div>
-          <div style={{ fontSize: f.title, fontWeight: 700, color: titleColor }}>
-            {tr("ইনভয়েস", "INVOICE")}
-          </div>
+
+        {/* Meta */}
+        <div className="mt-3 grid grid-cols-2 gap-y-1" style={{ fontSize: f.base - 1 }}>
+          <div><span className="font-semibold">{tr("ইনভয়েস নং", "Invoice #")}:</span> 5093758370499</div>
+          <div className="text-right"><span className="font-semibold">{tr("ইনভয়েসের তারিখ", "Inv. Date")}:</span> 11/10/2023</div>
+          <div><span className="font-semibold">{tr("কাস্টমার", "Customer")}:</span> Demo Party</div>
+          <div><span className="font-semibold">{tr("ফোন", "Phone")}:</span> 01XXXXXXXXX</div>
         </div>
-      </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-2" style={{ fontSize: f.base - 1 }}>
-        <div><span className="font-semibold">{tr("ইনভয়েস নং", "Invoice #")}:</span> 509375870499</div>
-        <div className="text-right"><span className="font-semibold">{tr("ইনভয়েসের তারিখ", "Inv. Date")}:</span> 11/10/2023</div>
-        <div><span className="font-semibold">{tr("কাস্টমার", "Customer")}:</span> Demo Party</div>
-        <div><span className="font-semibold">{tr("ফোন", "Phone")}:</span> 01XXXXXXXXX</div>
-      </div>
-
-      <table className="w-full mt-4 border-collapse" style={{ fontSize: f.base - 1 }}>
-        <thead>
-          <tr style={{ backgroundColor: `${theme}20`, color: theme }}>
-            {["ক্রম/#", "পণ্যের নাম/Item", "পরিমাণ/Qty", "মূল্য/Price", "ভ্যাট/VAT", "মোট/Total"].map((h) => (
-              <th key={h} className="text-left p-2 border-b" style={{ borderColor: `${theme}40` }}>
-                {h.split("/")[lang === "bn" ? 0 : 1]}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.no} className="border-b border-gray-100">
-              <td className="p-2">{r.no}</td>
-              <td className="p-2">{r.name}</td>
-              <td className="p-2">{r.qty}</td>
-              <td className="p-2">৳{r.price.toFixed(2)}</td>
-              <td className="p-2">৳{r.vat.toFixed(2)}</td>
-              <td className="p-2">৳{r.total.toFixed(2)}</td>
+        {/* Table */}
+        <table className="w-full mt-4 border-collapse" style={{ fontSize: f.base - 1 }}>
+          <thead>
+            <tr style={{ background: theme, color: "#fff" }}>
+              {headers.map((h, i) => (
+                <th key={i} className="text-left p-2 font-semibold" style={{ borderRight: i < headers.length - 1 ? "1px solid rgba(255,255,255,0.2)" : undefined }}>
+                  {lang === "bn" ? h.bn : h.en}
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((r, idx) => (
+              <tr key={r.no} style={{ background: idx % 2 ? `${theme}08` : "transparent" }} className="border-b border-gray-100">
+                <td className="p-2">{r.no}</td>
+                <td className="p-2">{r.name}</td>
+                <td className="p-2">{r.qty}</td>
+                <td className="p-2">৳{r.price.toFixed(2)}</td>
+                <td className="p-2">৳{r.disc.toFixed(2)}</td>
+                <td className="p-2">৳{r.vat.toFixed(2)}</td>
+                <td className="p-2">৳{r.total.toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-      <div className="mt-4 flex justify-end">
-        <div className="w-1/2 space-y-1" style={{ fontSize: f.base - 1 }}>
-          <Line label={tr("সাব টোটাল", "Sub total")} value="৳1,250.00" />
-          <Line label={tr("ডেলিভারি চার্জ", "Delivery")} value="৳120.00" />
-          <Line label={tr("সর্বমোট", "Grand total")} value="৳1,768.75" bold color={theme} />
+        {/* Notes + Totals */}
+        <div className="mt-4 grid grid-cols-2 gap-6" style={{ fontSize: f.base - 1 }}>
+          <div className="space-y-2">
+            <div>
+              <div className="font-semibold">{tr("বর্ণনা", "Description")}</div>
+              <div className="text-gray-700">
+                {tr("এই ইনভয়েসটি কেবলমাত্র ডেমোনেস্ট্রেশনের জন্য তৈরি করা হয়েছে", "This invoice is created for demonstration only")}
+              </div>
+            </div>
+            <div>
+              <div className="font-semibold">{tr("পেমেন্টের ধরন", "Payment Type")}</div>
+              <div className="text-gray-700">bKash</div>
+              <div className="text-gray-700">{tr("লেনদেন আইডি", "Txn ID")}: XXXXXXXX</div>
+              <div className="text-gray-700">{tr("ফোন নং", "Phone")}: 01XXXXXXXXX</div>
+            </div>
+          </div>
+          <div className="space-y-1">
+            <Line label={tr("সাব টোটাল", "Sub total")} value="৳1,750.00" />
+            <Line label={tr("ডেলিভারি চার্জ", "Delivery")} value="৳120.00" />
+            <Line label={tr("মোট পরিশোধ", "Total Paid")} value="৳1,768.75" />
+            <Line label={tr("মোট বকেয়া", "Due")} value="৳1,648.75" />
+            <div style={{ borderTop: `1px solid ${theme}`, marginTop: 4, paddingTop: 4 }}>
+              <Line label={tr("বর্তমান পাওনা", "Current Balance")} value="৳2,148.75" bold color={theme} />
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="mt-6 flex justify-between items-end" style={{ fontSize: f.base - 1 }}>
-        <div>
-          <div className="border-t pt-1 w-32 text-center">{tr("ক্রেতার স্বাক্ষর", "Customer")}</div>
+        {/* Note line */}
+        <div className="mt-4 text-gray-700" style={{ fontSize: f.base - 1 }}>
+          {tr("কথায়: এক হাজার সাত শত আটাত্তর টাকা পঁচাত্তর পয়সা মাত্র", "In words: One thousand seven hundred seventy-eight taka seventy-five paisa only")}
         </div>
-        <div>
-          <div className="border-t pt-1 w-32 text-center">{tr("অনুমোদনকারীর স্বাক্ষর", "Authorized")}</div>
+
+        {/* Signatures */}
+        <div className="mt-10 flex justify-between items-end" style={{ fontSize: f.base - 1 }}>
+          <div className="border-t border-gray-400 pt-1 w-40 text-center">{tr("ক্রেতার স্বাক্ষর", "Customer Signature")}</div>
+          <div className="border-t border-gray-400 pt-1 w-40 text-center">{tr("অনুমোদনকারীর স্বাক্ষর", "Authorized Signature")}</div>
+        </div>
+
+        {/* Footer terms */}
+        <div className="mt-6 pt-3 border-t" style={{ borderColor: `${theme}40`, fontSize: f.base - 2 }}>
+          <div className="font-semibold" style={{ color: theme }}>{tr("শর্তাবলী", "Terms & Conditions")}</div>
+          <div className="text-gray-600">
+            {tr(
+              "পণ্য ৭ দিনের মধ্যে আসল প্যাকেজিং সহ ফেরত দেওয়া যাবে। সহজে নষ্ট হওয়া পণ্য ফেরতযোগ্য নয়।",
+              "Products can be returned within 7 days in their original, unopened condition. Perishable goods cannot be returned."
+            )}
+          </div>
         </div>
       </div>
     </div>
