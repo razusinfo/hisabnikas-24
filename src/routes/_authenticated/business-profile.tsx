@@ -15,6 +15,38 @@ export const Route = createFileRoute("/_authenticated/business-profile")({
   component: BusinessProfilePage,
 });
 
+async function resizeImage(file: File, maxW: number, maxH: number): Promise<Blob | null> {
+  try {
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result as string);
+      r.onerror = () => reject(r.error);
+      r.readAsDataURL(file);
+    });
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = () => reject(new Error("decode failed"));
+      i.src = dataUrl;
+    });
+    const ratio = Math.min(maxW / img.width, maxH / img.height, 1);
+    const w = Math.round(img.width * ratio);
+    const h = Math.round(img.height * ratio);
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+    ctx.drawImage(img, 0, 0, w, h);
+    return await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob((b) => resolve(b), "image/webp", 0.9),
+    );
+  } catch {
+    return null;
+  }
+}
+
+
 type Profile = {
   id: string;
   company_name: string | null;
