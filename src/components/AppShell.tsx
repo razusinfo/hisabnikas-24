@@ -471,7 +471,15 @@ export function AppShell({ children }: { children: ReactNode }) {
             <TopQuickLink to="/purchases" icon={ShoppingCart} label={t("purchases")} colorClass="text-amber-600 hover:bg-amber-50" />
             <TopQuickLink to="/sales" icon={Receipt} label={t("sales")} colorClass="text-emerald-600 hover:bg-emerald-50" />
             <TopQuickLink to="/help" icon={HelpCircle} label={t("helpSupport")} colorClass="text-orange-600 hover:bg-orange-50" />
-            <TopQuickLink to="/settings" icon={Settings} label={t("settings")} colorClass="text-slate-600 hover:bg-slate-100" />
+            <Link
+              to="/settings"
+              className="flex items-center justify-center h-9 w-9 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
+              title={t("settings")}
+              aria-label={t("settings")}
+            >
+              <Settings className="h-4 w-4" />
+            </Link>
+
             <ProprietorMenu
               brandName={brandName}
               avatarUrl={proprietorAvatar}
