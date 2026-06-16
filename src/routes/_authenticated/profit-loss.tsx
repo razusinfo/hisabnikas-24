@@ -6,11 +6,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney } from "@/lib/format";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 import {
   TrendingUp,
   TrendingDown,
@@ -18,6 +17,9 @@ import {
   PackageOpen,
   Wallet,
   CalendarIcon,
+  CalendarDays,
+  CalendarRange,
+  SlidersHorizontal,
   Receipt,
   Printer,
   Coins,
@@ -188,6 +190,40 @@ async function fetchPnL(range: Range) {
   };
 }
 
+function SegmentedControl<T extends string>({
+  value,
+  onChange,
+  options,
+}: {
+  value: T;
+  onChange: (v: T) => void;
+  options: { value: T; label: string; icon: React.ReactNode }[];
+}) {
+  return (
+    <div className="inline-flex items-center rounded-full bg-muted p-1 gap-0.5 border border-border/50">
+      {options.map((opt) => {
+        const active = value === opt.value;
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            className={cn(
+              "relative flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-200",
+              active
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent/60",
+            )}
+          >
+            {opt.icon}
+            <span>{opt.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function ProfitLossPage() {
   const { t } = useI18n();
   const [period, setPeriod] = useState<Period>("daily");
@@ -236,14 +272,16 @@ function ProfitLossPage() {
             {periodLabel} লাভ-ক্ষতির সারাংশ
           </h3>
           <div className="flex items-center gap-2 flex-wrap print:hidden">
-            <Tabs value={period} onValueChange={(v) => setPeriod(v as Period)}>
-              <TabsList>
-                <TabsTrigger value="daily">দৈনিক</TabsTrigger>
-                <TabsTrigger value="monthly">মাসিক</TabsTrigger>
-                <TabsTrigger value="yearly">বাৎসরিক</TabsTrigger>
-                <TabsTrigger value="custom">কাস্টম</TabsTrigger>
-              </TabsList>
-            </Tabs>
+            <SegmentedControl
+              value={period}
+              onChange={setPeriod}
+              options={[
+                { value: "daily", label: "দৈনিক", icon: <CalendarDays className="h-3.5 w-3.5" /> },
+                { value: "monthly", label: "মাসিক", icon: <CalendarIcon className="h-3.5 w-3.5" /> },
+                { value: "yearly", label: "বাৎসরিক", icon: <CalendarRange className="h-3.5 w-3.5" /> },
+                { value: "custom", label: "কাস্টম", icon: <SlidersHorizontal className="h-3.5 w-3.5" /> },
+              ]}
+            />
             <Button
               variant="outline"
               size="sm"
