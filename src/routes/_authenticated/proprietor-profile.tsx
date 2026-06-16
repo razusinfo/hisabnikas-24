@@ -36,7 +36,7 @@ function ProprietorProfilePage() {
       if (!u.user) throw new Error("Not signed in");
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, address, avatar_url")
+        .select("id, full_name, phone, address, avatar_url")
         .eq("id", u.user.id)
         .single();
       if (error) throw error;
