@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import { ArrowLeft, Check, Loader2, Printer, Share2 } from "lucide-react";
+import { ArrowLeft, Check, Loader2, Printer, Share2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { printStyledInvoice } from "@/lib/print-invoice";
 
@@ -121,7 +121,55 @@ function InvoiceDesignPage() {
       });
   };
 
+  const [testSeed, setTestSeed] = useState(0);
+
+  const SAMPLE_CUSTOMERS = [
+    { name: tr("রহিম উদ্দিন", "Rahim Uddin"), phone: "01711-234567" },
+    { name: tr("করিমা বেগম", "Karima Begum"), phone: "01819-998877" },
+    { name: tr("ABC ট্রেডার্স", "ABC Traders"), phone: "01976-543210" },
+    { name: tr("সুমন এন্টারপ্রাইজ", "Sumon Enterprise"), phone: "01511-112233" },
+    { name: tr("মেসার্স জাহিদ স্টোর", "M/s Jahid Store"), phone: "01622-778899" },
+  ];
+
+  const SAMPLE_PRODUCTS = [
+    { name: tr("বাসমতি চাল ৫ কেজি", "Basmati Rice 5kg"), price: 850 },
+    { name: tr("সয়াবিন তেল ১ লিটার", "Soybean Oil 1L"), price: 175 },
+    { name: tr("ডিটারজেন্ট পাউডার ১ কেজি", "Detergent Powder 1kg"), price: 220 },
+    { name: tr("চা পাতা ৫০০ গ্রাম", "Tea Leaves 500g"), price: 320 },
+    { name: tr("লাল চিনি ১ কেজি", "Brown Sugar 1kg"), price: 140 },
+    { name: tr("মসুর ডাল ১ কেজি", "Lentil 1kg"), price: 135 },
+    { name: tr("সরিষার তেল ৫০০ মিলি", "Mustard Oil 500ml"), price: 195 },
+    { name: tr("আটা ২ কেজি", "Flour 2kg"), price: 130 },
+    { name: tr("লবণ ১ কেজি", "Salt 1kg"), price: 40 },
+    { name: tr("হলুদ গুঁড়া ২০০ গ্রাম", "Turmeric Powder 200g"), price: 85 },
+  ];
+
   const buildSampleInvoice = () => {
+    // Pseudo-random seed-based picker so each click yields a new invoice
+    const rnd = (n: number, salt: number) =>
+      Math.abs(Math.sin((testSeed + 1) * (salt + 1) * 12.9898) * 43758.5453) % n;
+
+    const customer = SAMPLE_CUSTOMERS[Math.floor(rnd(SAMPLE_CUSTOMERS.length, 1))];
+    const itemCount = 3 + Math.floor(rnd(5, 2)); // 3-7 items
+    const picked = new Set<number>();
+    const items = Array.from({ length: itemCount }, (_, i) => {
+      let idx = Math.floor(rnd(SAMPLE_PRODUCTS.length, i + 3));
+      while (picked.has(idx)) idx = (idx + 1) % SAMPLE_PRODUCTS.length;
+      picked.add(idx);
+      const p = SAMPLE_PRODUCTS[idx];
+      const qty = 1 + Math.floor(rnd(5, i + 10));
+      return { name: p.name, qty, price: p.price, total: p.price * qty };
+    });
+    const subtotal = items.reduce((s, i) => s + i.total, 0);
+    const discount = Math.round(subtotal * 0.05);
+    const tax = Math.round((subtotal - discount) * 0.05);
+    const deliveryCharge = 60;
+    const previousDue = Math.floor(rnd(2000, 7));
+    const total = subtotal - discount + tax + deliveryCharge;
+    const paid = Math.round(total * (0.4 + (rnd(60, 8) / 100))); // 40-100% paid
+    const due = Math.max(0, total - paid) + previousDue;
+    const invoiceNo = `INV-${String(1000 + testSeed).padStart(4, "0")}`;
+
     const settingsForPrint = {
       ...((profile?.invoice_settings ?? {}) as Record<string, unknown>),
       invoiceTheme: theme,
@@ -130,25 +178,27 @@ function InvoiceDesignPage() {
       invoiceFontFamily: fontFamily,
       invoiceFontWeight: fontWeight,
     };
-    const items = Array.from({ length: 5 }, (_, i) => ({
-      name: `Demo Product ${i + 1}`,
-      qty: 1,
-      price: 250,
-      total: 250,
-    }));
+
     return {
       doc: {
-        invoice_no: "INV-PREVIEW-001",
+        invoice_no: invoiceNo,
         created_at: new Date().toISOString(),
-        partyName: tr("ডেমো কাস্টমার", "Demo Customer"),
-        partyPhone: "01XXXXXXXXX",
-        method: "Cash",
-        note: tr("এটি একটি প্রিভিউ ইনভয়েস", "This is a preview invoice"),
-        subtotal: 1250,
-        total: 1250,
-        paid: 1000,
-        due: 250,
+        partyName: customer.name,
+        partyPhone: customer.phone,
+        method: ["Cash", "bKash", "Nagad", "Bank"][Math.floor(rnd(4, 9))],
+        note: tr(
+          "ধন্যবাদ আমাদের সাথে ব্যবসা করার জন্য।",
+          "Thank you for doing business with us.",
+        ),
+        subtotal,
+        total,
+        paid,
+        due,
         items,
+        previousDue,
+        discount,
+        tax,
+        deliveryCharge,
       },
       business: {
         name: profile?.company_name ?? "Your Business",
@@ -174,12 +224,27 @@ function InvoiceDesignPage() {
         statusDue: tr("বকেয়া", "Due"),
         statusPartial: tr("আংশিক", "Partial"),
         signature: tr("স্বাক্ষর", "Signature"),
+        previousDue: tr("পূর্বের বকেয়া", "Previous Due"),
+        discount: tr("ছাড়", "Discount"),
+        tax: tr("ট্যাক্স/ভ্যাট", "Tax/VAT"),
+        deliveryCharge: tr("ডেলিভারি চার্জ", "Delivery"),
+        terms: tr("শর্তাবলী", "Terms"),
+        notes: tr("নোট", "Notes"),
+        bankDetails: tr("ব্যাংক বিবরণ", "Bank Details"),
+        paymentInstructions: tr("পেমেন্ট নির্দেশনা", "Payment Instructions"),
       },
     };
   };
 
   const doPrint = () => {
     printStyledInvoice(buildSampleInvoice());
+  };
+
+  const doGenerateTest = () => {
+    setTestSeed((s) => s + 1);
+    // Defer so state updates before building
+    setTimeout(() => printStyledInvoice(buildSampleInvoice()), 0);
+    toast.success(tr("নতুন টেস্ট ইনভয়েস তৈরি হয়েছে", "New test invoice generated"));
   };
 
   const doShare = async () => {
@@ -214,7 +279,14 @@ function InvoiceDesignPage() {
           </Button>
           <PageHeader title={tr("ইনভয়েস প্রিভিউ", "Invoice Preview")} />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => doGenerateTest()}
+          >
+            <Sparkles className="h-4 w-4" /> {tr("টেস্ট ইনভয়েস তৈরি করুন", "Generate Test Invoice")}
+          </Button>
           <Button
             className="gap-2 text-white"
             style={{ backgroundColor: theme }}
