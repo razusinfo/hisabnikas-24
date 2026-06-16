@@ -213,8 +213,8 @@ function InvoiceDesignPage() {
 
           <section>
             <h3 className="text-base font-semibold mb-3">{tr("ফন্ট স্টাইল", "Font Style")}</h3>
-            <div className="grid grid-cols-3 gap-3">
-              {FONT_FAMILIES.map((f) => {
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {INVOICE_FONT_FAMILIES.map((f) => {
                 const active = fontFamily === f.value;
                 return (
                   <button
@@ -223,11 +223,36 @@ function InvoiceDesignPage() {
                     onClick={() => { setFontFamily(f.value); persist({ invoiceFontFamily: f.value }); }}
                     style={active ? { backgroundColor: theme, color: "#fff", fontFamily: f.css } : { fontFamily: f.css }}
                     className={cn(
-                      "h-14 rounded-lg border text-sm font-semibold transition flex items-center justify-center",
+                      "h-14 rounded-lg border text-sm font-semibold transition flex items-center justify-center px-2 text-center",
                       active ? "border-transparent" : "bg-background hover:bg-muted border-border"
                     )}
                   >
                     {f.label[lang === "bn" ? "bn" : "en"]}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold mb-3">{tr("ফন্ট ওয়েট", "Font Weight")}</h3>
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+              {INVOICE_FONT_WEIGHTS.map((w) => {
+                const active = fontWeight === w.value;
+                return (
+                  <button
+                    key={w.value}
+                    type="button"
+                    onClick={() => { setFontWeight(w.value); persist({ invoiceFontWeight: w.value }); }}
+                    style={active
+                      ? { backgroundColor: theme, color: "#fff", fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }
+                      : { fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }}
+                    className={cn(
+                      "h-12 rounded-lg border text-sm transition flex items-center justify-center px-1 text-center",
+                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
+                    )}
+                  >
+                    {w.label[lang === "bn" ? "bn" : "en"]}
                   </button>
                 );
               })}
