@@ -63,6 +63,32 @@ export function QuickSaleDialog({ open, onOpenChange }: { open: boolean; onOpenC
 
   function reset() {
     setCustomerId("walkin"); setMethod("cash"); setDiscount("0"); setPaid(""); setLines([]); setSearch("");
+    setShowAddCustomer(false); setNewCustomer({ name: "", phone: "", address: "" });
+  }
+
+  async function saveNewCustomer() {
+    if (!newCustomer.name.trim()) return toast.error("নাম লিখুন");
+    setAddingCustomer(true);
+    try {
+      const { data: u } = await supabase.auth.getUser();
+      const { data, error } = await supabase.from("customers").insert({
+        owner_id: u.user!.id,
+        name: newCustomer.name.trim(),
+        phone: newCustomer.phone.trim() || null,
+        address: newCustomer.address.trim() || null,
+      }).select().single();
+      if (error) throw error;
+      toast.success("ক্রেতা যোগ হয়েছে");
+      setCustomerId(data.id);
+      setShowAddCustomer(false);
+      setNewCustomer({ name: "", phone: "", address: "" });
+      qc.invalidateQueries({ queryKey: ["customers-list"] });
+      qc.invalidateQueries({ queryKey: ["customers"] });
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setAddingCustomer(false);
+    }
   }
 
   function addLine(p: any) {
