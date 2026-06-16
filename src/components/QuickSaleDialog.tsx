@@ -24,6 +24,9 @@ export function QuickSaleDialog({ open, onOpenChange }: { open: boolean; onOpenC
   const [lines, setLines] = useState<Line[]>([]);
   const [search, setSearch] = useState("");
   const [creating, setCreating] = useState(false);
+  const [showAddCustomer, setShowAddCustomer] = useState(false);
+  const [newCustomer, setNewCustomer] = useState({ name: "", phone: "", address: "" });
+  const [addingCustomer, setAddingCustomer] = useState(false);
 
   const { data: products = [] } = useQuery({
     queryKey: ["products-list"],
