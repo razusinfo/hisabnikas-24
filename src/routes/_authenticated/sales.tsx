@@ -14,6 +14,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { toast } from "sonner";
 import { Eye, CreditCard, Printer, Trash2, Search, Plus, Pencil, Save as SaveIcon, X } from "lucide-react";
 import { useInvoicePreview } from "@/components/InvoicePreviewProvider";
+import { ProductFormDialog, type CreatedProduct } from "@/components/ProductFormDialog";
 
 
 
