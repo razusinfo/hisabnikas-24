@@ -291,6 +291,22 @@ export function AppShell({ children }: { children: ReactNode }) {
             <SearchIconButton className="min-h-11 min-w-11" />
           </header>
 
+          {/* Desktop top quick-actions bar */}
+          <header className="hidden md:flex sticky top-0 z-20 items-center justify-end gap-2 px-6 py-2.5 bg-background/95 backdrop-blur border-b border-border/60">
+            <TopQuickLink to="/purchases" icon={ShoppingCart} label={t("purchases")} colorClass="text-amber-600 hover:bg-amber-50" />
+            <TopQuickLink to="/sales" icon={Receipt} label={t("sales")} colorClass="text-emerald-600 hover:bg-emerald-50" />
+            <TopQuickLink to="/help" icon={HelpCircle} label={t("helpSupport")} colorClass="text-orange-600 hover:bg-orange-50" />
+            <TopQuickLink to="/settings" icon={Settings} label={t("settings")} colorClass="text-slate-600 hover:bg-slate-100" />
+            <Link
+              to="/settings"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-primary hover:bg-primary/10 transition-colors max-w-[200px]"
+              title={brandName}
+            >
+              <UserCircle2 className="h-5 w-5 shrink-0" />
+              <span className="truncate">{brandName}</span>
+            </Link>
+          </header>
+
           <main className="flex-1 min-w-0 overflow-x-hidden">{children}</main>
           <footer className="px-4 py-3 text-center text-[11px] text-muted-foreground border-t border-border/40">
             প্রস্তুতকারক: www.sylhetionlineshop.com
