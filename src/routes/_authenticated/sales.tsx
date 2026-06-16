@@ -473,7 +473,7 @@ function SalesPage() {
       business: {
         name: profile?.company_name || "",
         owner: profile?.full_name || "",
-        logoUrl: profile?.logo_url || null,
+        logoUrl: logoUrl || null,
       },
       settings: profile?.invoice_settings ?? {},
       lang: lang as "bn" | "en",
