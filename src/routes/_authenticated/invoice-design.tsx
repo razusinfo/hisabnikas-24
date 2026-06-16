@@ -207,6 +207,29 @@ function InvoiceDesignPage() {
           </section>
 
           <section>
+            <h3 className="text-base font-semibold mb-3">{tr("ফন্ট স্টাইল", "Font Style")}</h3>
+            <div className="grid grid-cols-3 gap-3">
+              {FONT_FAMILIES.map((f) => {
+                const active = fontFamily === f.value;
+                return (
+                  <button
+                    key={f.value}
+                    type="button"
+                    onClick={() => { setFontFamily(f.value); persist({ invoiceFontFamily: f.value }); }}
+                    style={active ? { backgroundColor: theme, color: "#fff", fontFamily: f.css } : { fontFamily: f.css }}
+                    className={cn(
+                      "h-14 rounded-lg border text-sm font-semibold transition flex items-center justify-center",
+                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
+                    )}
+                  >
+                    {f.label[lang === "bn" ? "bn" : "en"]}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <section>
             <h3 className="text-base font-semibold mb-3">{tr("টেমপ্লেট", "Template")}</h3>
             <div className="grid grid-cols-3 gap-4">
               {TEMPLATES.map((n) => {
