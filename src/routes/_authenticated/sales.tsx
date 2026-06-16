@@ -121,6 +121,15 @@ function SalesPage() {
   const [ncAddress, setNcAddress] = useState("");
   const [ncSaving, setNcSaving] = useState(false);
 
+  // Inline new-product dialog
+  const [openNewProd, setOpenNewProd] = useState(false);
+  const [npName, setNpName] = useState("");
+  const [npSku, setNpSku] = useState("");
+  const [npPrice, setNpPrice] = useState("");
+  const [npStock, setNpStock] = useState("");
+  const [npCategoryId, setNpCategoryId] = useState<string>("");
+  const [npSaving, setNpSaving] = useState(false);
+
   const { data: profile } = useQuery({
     queryKey: ["profile", "me"],
     queryFn: async () => {
