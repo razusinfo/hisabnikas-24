@@ -154,13 +154,7 @@ export function buildInvoiceHtml({ doc, business, settings, lang, labels, hideMe
 
       .meta .no{font-family:ui-monospace,Menlo,monospace;font-size:${thermal ? 11 : baseFs}px;color:${invertHeader ? "#fff" : (thermal ? "#000" : "#334155")};margin-top:4px}
       .meta .date{font-size:${thermal ? 10 : baseFs - 2}px;color:${subClr};margin-top:2px}
-      .info-row{display:flex;justify-content:space-between;align-items:flex-start;margin-top:${thermal ? 6 : 14}px}
-      .info-left{display:flex;flex-direction:column;gap:2px}
-      .info-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
-      .info-left .lbl{font-size:${thermal ? 9 : baseFs - 5}px;letter-spacing:0.08em;text-transform:uppercase;color:#94a3b8;font-weight:600}
-      .info-right .lbl{font-size:${thermal ? 9 : baseFs - 5}px;letter-spacing:0.08em;text-transform:uppercase;color:#94a3b8;font-weight:600}
-      .info-left .no{font-family:ui-monospace,Menlo,monospace;font-size:${thermal ? 11 : baseFs}px;color:${thermal ? "#000" : "#334155"}}
-      .info-right .date{font-size:${thermal ? 10 : baseFs - 2}px;color:${subClr}}
+      .info-row{display:flex;justify-content:space-between;align-items:center;margin-top:${thermal ? 6 : 14}px;font-size:${thermal ? 11 : baseFs}px;color:${thermal ? "#000" : "#334155"}}
       .row{display:${thermal ? "block" : "flex"};justify-content:space-between;gap:22px;margin-top:${thermal ? 6 : 18}px}
       .card{flex:1;background:${thermal ? "transparent" : `${theme}0d`};border:${thermal ? "none" : `1px solid ${theme}33`};border-radius:10px;padding:${thermal ? "2px 0" : "10px 18px"}}
       .info-line{display:flex;align-items:center;gap:${thermal ? "8px" : "14px"};margin-top:${thermal ? "6px" : "14px"};padding:${thermal ? "2px 0" : "10px 14px"};background:${thermal ? "transparent" : `${theme}0d`};border:${thermal ? "none" : `1px solid ${theme}33`};border-radius:8px;font-size:${thermal ? 10 : baseFs - 3}px;color:${thermal ? "#000" : "#334155"};flex-wrap:wrap}
