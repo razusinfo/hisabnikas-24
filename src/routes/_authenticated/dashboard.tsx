@@ -100,14 +100,14 @@ function Stat({
 }: { icon: any; label: string; value: string; themeIndex: number; to?: string }) {
   const t = cardThemes[themeIndex % cardThemes.length];
   const content = (
-    <div className={`${t.bg} border ${t.border} rounded-xl shadow-sm p-6 ${to ? "transition-all hover:shadow-md hover:-translate-y-0.5 cursor-pointer" : ""}`}>
+    <div className={`${t.bg} border ${t.border} rounded-xl shadow-sm p-4 ${to ? "transition-all hover:shadow-md hover:-translate-y-0.5 cursor-pointer" : ""}`}>
       <div className="flex items-start justify-between">
         <div>
-          <div className="text-sm uppercase tracking-widest text-muted-foreground">{label}</div>
-          <div className="text-3xl font-display font-semibold mt-3">{value}</div>
+          <div className="text-xs uppercase tracking-widest text-muted-foreground">{label}</div>
+          <div className="text-xl font-display font-semibold mt-2">{value}</div>
         </div>
-        <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${t.iconBg} ${t.iconText}`}>
-          <Icon className="h-5 w-5" />
+        <div className={`h-9 w-9 rounded-lg flex items-center justify-center ${t.iconBg} ${t.iconText}`}>
+          <Icon className="h-4 w-4" />
         </div>
       </div>
     </div>
