@@ -10,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { useServerFn } from "@tanstack/react-start";
+import { requestPhoneOtp, verifyPhoneOtp } from "@/lib/phone-otp.functions";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -29,6 +31,44 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [phone, setPhone] = useState("");
+  const [otpPhone, setOtpPhone] = useState("");
+  const [otpCode, setOtpCode] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const requestOtpFn = useServerFn(requestPhoneOtp);
+  const verifyOtpFn = useServerFn(verifyPhoneOtp);
+
+  const onRequestOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await requestOtpFn({ data: { phone: otpPhone } });
+      setOtpSent(true);
+      toast.success("OTP পাঠানো হয়েছে");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "OTP পাঠানো যায়নি");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const r = await verifyOtpFn({ data: { phone: otpPhone, code: otpCode } });
+      const { error } = await supabase.auth.verifyOtp({
+        email: r.email,
+        token_hash: r.tokenHash,
+        type: "magiclink",
+      });
+      if (error) throw error;
+      navigate({ to: "/dashboard", replace: true });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "লগইন ব্যর্থ");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const onSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,8 +170,9 @@ function AuthPage() {
           </div>
 
           <Tabs defaultValue="signin">
-            <TabsList className="grid grid-cols-2 w-full">
+            <TabsList className="grid grid-cols-3 w-full">
               <TabsTrigger value="signin">{t("signIn")}</TabsTrigger>
+              <TabsTrigger value="otp">OTP</TabsTrigger>
               <TabsTrigger value="signup">{t("signUp")}</TabsTrigger>
             </TabsList>
             <TabsContent value="signin">
@@ -146,6 +187,56 @@ function AuthPage() {
                 </div>
                 <Button disabled={loading} className="w-full h-11 mt-2">{t("signIn")}</Button>
               </form>
+            </TabsContent>
+            <TabsContent value="otp">
+              {!otpSent ? (
+                <form onSubmit={onRequestOtp} className="space-y-3 mt-4">
+                  <div className="space-y-1.5">
+                    <Label>মোবাইল নাম্বার</Label>
+                    <Input
+                      type="tel"
+                      required
+                      value={otpPhone}
+                      onChange={(e) => setOtpPhone(e.target.value)}
+                      placeholder="01XXXXXXXXX"
+                    />
+                  </div>
+                  <Button disabled={loading} className="w-full h-11 mt-2">
+                    OTP পাঠান
+                  </Button>
+                </form>
+              ) : (
+                <form onSubmit={onVerifyOtp} className="space-y-3 mt-4">
+                  <p className="text-xs text-muted-foreground">
+                    {otpPhone} নাম্বারে পাঠানো ৬ ডিজিট OTP কোড লিখুন
+                  </p>
+                  <div className="space-y-1.5">
+                    <Label>OTP কোড</Label>
+                    <Input
+                      inputMode="numeric"
+                      pattern="\d{6}"
+                      maxLength={6}
+                      required
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+                      placeholder="000000"
+                    />
+                  </div>
+                  <Button disabled={loading} className="w-full h-11 mt-2">
+                    লগইন করুন
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOtpSent(false);
+                      setOtpCode("");
+                    }}
+                    className="text-xs text-muted-foreground hover:text-foreground w-full text-center"
+                  >
+                    নাম্বার পরিবর্তন করুন
+                  </button>
+                </form>
+              )}
             </TabsContent>
             <TabsContent value="signup">
               <form onSubmit={onSignUp} className="space-y-3 mt-4">
