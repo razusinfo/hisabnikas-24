@@ -10,10 +10,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney } from "@/lib/format";
 import { Plus, Search, Trash2, Wallet, MessageSquare, ShoppingCart, BookUser } from "lucide-react";
-import { QuickSaleDialog } from "@/components/QuickSaleDialog";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/customers")({
   loader: async ({ context }) => {
