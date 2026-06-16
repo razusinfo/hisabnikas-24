@@ -98,7 +98,7 @@ function ProductsPage() {
 
 
   const [search, setSearch] = useState("");
-  const [quickOpen, setQuickOpen] = useState(false);
+  const navigate = useNavigate();
   const [sort, setSort] = useState<"new" | "name" | "stock" | "price">("new");
   const [lowOnly, setLowOnly] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
