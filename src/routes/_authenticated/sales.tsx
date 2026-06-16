@@ -918,7 +918,7 @@ function SalesPage() {
 
             <div>
               <label className="text-xs text-muted-foreground">{t("addItem")}</label>
-              <div className="grid grid-cols-[180px_1fr] gap-2">
+              <div className="grid grid-cols-[180px_1fr_auto] gap-2 items-end">
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger><SelectValue placeholder="ক্যাটাগরি" /></SelectTrigger>
                   <SelectContent>
