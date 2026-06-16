@@ -23,6 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { SearchProvider, SearchTrigger, SearchIconButton } from "@/components/GlobalSearch";
+import { useAutoBackup } from "@/lib/auto-backup";
 
 function LangToggle({ compact = false }: { compact?: boolean }) {
   const { lang, setLang } = useI18n();
@@ -211,6 +212,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [mobileOpen, setMobileOpen] = useState(false);
+  useAutoBackup();
 
   const handleSignOut = async () => {
     await qc.cancelQueries();

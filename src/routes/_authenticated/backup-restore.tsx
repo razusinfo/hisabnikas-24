@@ -30,6 +30,13 @@ import {
   deleteBackup,
   type DriveBackupFile,
 } from "@/lib/google-drive";
+import { Switch } from "@/components/ui/switch";
+import {
+  isAutoBackupEnabled,
+  setAutoBackupEnabled,
+  getLastAutoBackup,
+  runAutoBackup,
+} from "@/lib/auto-backup";
 
 export const Route = createFileRoute("/_authenticated/backup-restore")({
   component: BackupRestorePage,
@@ -143,16 +150,57 @@ function BackupRestorePage() {
   const [driveFiles, setDriveFiles] = useState<DriveBackupFile[]>([]);
   const [loadingFiles, setLoadingFiles] = useState(false);
   const [busyFileId, setBusyFileId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [autoDaily, setAutoDaily] = useState(false);
+  const [lastAuto, setLastAuto] = useState(0);
+  const [autoRunning, setAutoRunning] = useState(false);
 
   useEffect(() => {
     setDriveConnected(isSignedIn());
+    supabase.auth.getUser().then(({ data }) => {
+      const id = data.user?.id ?? null;
+      setUserId(id);
+      if (id) {
+        setAutoDaily(isAutoBackupEnabled(id));
+        setLastAuto(getLastAutoBackup(id));
+      }
+    });
   }, []);
+
+  const toggleAutoDaily = (next: boolean) => {
+    if (!userId) return;
+    setAutoBackupEnabled(userId, next);
+    setAutoDaily(next);
+    if (next && !driveConnected) {
+      toast.message(t("connectGoogleDrive"));
+    }
+  };
+
+  const handleRunAutoNow = async () => {
+    if (!userId) return;
+    setAutoRunning(true);
+    try {
+      await runAutoBackup(userId);
+      setLastAuto(getLastAutoBackup(userId));
+      toast.success(t("driveBackupUploaded"));
+      await refreshDriveList();
+    } catch (e: any) {
+      toast.error(e.message || t("backupFailed"));
+    } finally {
+      setAutoRunning(false);
+    }
+  };
+
+
 
   const backupQ = useQuery({
     queryKey: ["backup-data"],
     queryFn: fetchAllData,
     enabled: false,
   });
+
+
+
 
   const handleBackup = async () => {
     try {
@@ -294,6 +342,38 @@ function BackupRestorePage() {
                   {t("disconnect")}
                 </Button>
               </div>
+
+              <div className="rounded-lg border p-3 space-y-2">
+                <div className="flex items-start gap-3">
+                  <div className="flex-1 min-w-0">
+                    <Label className="text-sm font-medium">{t("autoBackupDaily")}</Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {t("autoBackupDailyDesc")}
+                    </p>
+                  </div>
+                  <Switch checked={autoDaily} onCheckedChange={toggleAutoDaily} />
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+                  <span>
+                    {t("lastAutoBackup")}:{" "}
+                    {lastAuto ? new Date(lastAuto).toLocaleString() : t("never")}
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={handleRunAutoNow}
+                    disabled={autoRunning}
+                  >
+                    {autoRunning ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
+                    ) : (
+                      <CloudUpload className="h-3.5 w-3.5 mr-1.5" />
+                    )}
+                    {t("backupNow")}
+                  </Button>
+                </div>
+              </div>
+
 
               <div className="flex flex-wrap gap-2">
                 <Button onClick={handleBackupToDrive} disabled={uploadingDrive}>
