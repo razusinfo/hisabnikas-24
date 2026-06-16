@@ -543,6 +543,7 @@ function SalesPage() {
       business: {
         name: profile?.company_name || "",
         owner: profile?.full_name || "",
+        address: profile?.address || "",
         logoUrl: logoUrl || null,
       },
       settings: profile?.invoice_settings ?? {},
