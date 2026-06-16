@@ -195,6 +195,7 @@ function BackupRestorePage() {
     }
   }, [search.drive_connected, search.drive_error]);
 
+  useEffect(() => {
     setDriveConnected(isSignedIn());
     supabase.auth.getUser().then(({ data }) => {
       const id = data.user?.id ?? null;
