@@ -468,7 +468,7 @@ function SalesPage() {
         .top{display:flex;justify-content:space-between;align-items:flex-start;gap:28px;${topStyle}}
         .brand{display:flex;gap:18px;align-items:center}
         .brand img{height:76px;width:76px;object-fit:contain;border-radius:10px;border:1px solid #e2e8f0;background:#fff}
-        .brand .biz{font-size:${baseFs + 9}px;font-weight:700;letter-spacing:-0.01em;font-family:'Playfair Display','Noto Serif Bengali',Georgia,serif;color:${titleClr}}
+        .brand .biz{font-size:${baseFs + 9}px;font-weight:700;letter-spacing:-0.01em;font-family:${fontFamilyCss};color:${titleClr}}
         .brand .owner{font-size:${baseFs - 2}px;color:${subClr};margin-top:2px}
         .meta{text-align:right}
         .meta .no{font-family:ui-monospace,Menlo,monospace;font-size:${baseFs}px;color:${invertHeader ? "#fff" : "#334155"};margin-top:4px}
