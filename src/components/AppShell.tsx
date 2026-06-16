@@ -179,7 +179,7 @@ function SidebarContent({
 
       {searchSlot}
       <nav className="px-3 space-y-2">
-        {nav.map((item) => {
+        {fixedNav.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
           const cs = colorStyles[item.color] ?? colorStyles.blue;
@@ -189,22 +189,22 @@ function SidebarContent({
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-4 px-5 py-5 rounded-xl text-base font-medium transition-all",
+                "group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all",
                 active
                   ? `${cs.activeBg} ${cs.activeText} ring-1 ${cs.activeRing}`
                   : `${cs.inactiveBg} ${cs.inactiveText} ${cs.inactiveHoverText} ${cs.inactiveHoverBg}`,
               )}
             >
-              <Icon className={cn("h-6 w-6 shrink-0", active ? cs.activeText : "")} />
+              <Icon className={cn("h-5 w-5 shrink-0", active ? cs.activeText : "")} />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className={cn("ml-auto h-2.5 w-2.5 rounded-full shrink-0", cs.dot)} />}
+              {active && <span className={cn("ml-auto h-2 w-2 rounded-full shrink-0", cs.dot)} />}
             </Link>
           );
         })}
       </nav>
 
-      <div className="flex-1 overflow-y-auto min-h-0 px-3 py-4 border-t border-sidebar-border space-y-2">
-        {effectiveFooter.map((item) => {
+      <div className="flex-1 overflow-y-auto min-h-0 px-3 py-3 border-t border-sidebar-border space-y-2">
+        {effectiveScrollNav.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
           const cs = colorStyles[(item as any).color ?? "slate"];
