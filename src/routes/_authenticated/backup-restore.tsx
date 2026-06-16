@@ -30,6 +30,13 @@ import {
   deleteBackup,
   type DriveBackupFile,
 } from "@/lib/google-drive";
+import { Switch } from "@/components/ui/switch";
+import {
+  isAutoBackupEnabled,
+  setAutoBackupEnabled,
+  getLastAutoBackup,
+  runAutoBackup,
+} from "@/lib/auto-backup";
 
 export const Route = createFileRoute("/_authenticated/backup-restore")({
   component: BackupRestorePage,
