@@ -238,10 +238,10 @@ export function AppShell({ children }: { children: ReactNode }) {
     queryKey: ["app-brand"],
     queryFn: async () => {
       const { data: u } = await supabase.auth.getUser();
-      if (!u.user) return { name: null as string | null, logoUrl: null as string | null };
+      if (!u.user) return { name: null as string | null, logoUrl: null as string | null, avatarUrl: null as string | null };
       const { data: p } = await supabase
         .from("profiles")
-        .select("company_name, logo_url")
+        .select("company_name, logo_url, avatar_url")
         .eq("id", u.user.id)
         .maybeSingle();
       let logoUrl: string | null = null;
@@ -251,12 +251,21 @@ export function AppShell({ children }: { children: ReactNode }) {
           .createSignedUrl(p.logo_url, 60 * 60);
         logoUrl = signed?.signedUrl ?? null;
       }
-      return { name: p?.company_name ?? null, logoUrl };
+      let avatarUrl: string | null = null;
+      const avatarPath = (p as { avatar_url?: string | null } | null)?.avatar_url;
+      if (avatarPath) {
+        const { data: signed } = await supabase.storage
+          .from("business-logos")
+          .createSignedUrl(avatarPath, 60 * 60);
+        avatarUrl = signed?.signedUrl ?? null;
+      }
+      return { name: p?.company_name ?? null, logoUrl, avatarUrl };
     },
   });
 
   const brandName = brandQuery.data?.name || t("appName");
   const brandLogo = brandQuery.data?.logoUrl;
+  const proprietorAvatar = brandQuery.data?.avatarUrl;
 
   return (
     <SearchProvider>
