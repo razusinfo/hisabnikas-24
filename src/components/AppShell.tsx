@@ -148,9 +148,24 @@ function SidebarContent({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="px-6 py-5">
-        <Link to="/dashboard" onClick={onNavigate} className="flex items-center">
-          <img src={appLogo.url} alt="হিসাব নিকাশ-২৪" className="h-28 w-auto" />
+      <div className="px-6 py-5 flex flex-col items-center text-center">
+        <Link to="/dashboard" onClick={onNavigate} className="flex flex-col items-center">
+          {brandLogo ? (
+            <img
+              src={brandLogo}
+              alt={brandName}
+              className="h-16 w-auto object-contain mb-2"
+            />
+          ) : (
+            <div className="h-16 w-16 rounded-full bg-sidebar-accent flex items-center justify-center mb-2">
+              <span className="text-2xl font-bold text-sidebar-foreground/70">
+                {brandName.charAt(0)}
+              </span>
+            </div>
+          )}
+          <h2 className="text-base font-semibold text-sidebar-foreground truncate w-full leading-tight">
+            {brandName}
+          </h2>
         </Link>
       </div>
       {searchSlot}
