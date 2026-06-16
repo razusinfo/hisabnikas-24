@@ -277,6 +277,11 @@ const dict = {
     driveBackupDeleted: "Backup deleted from Google Drive.",
     confirmDeleteBackup: "Delete this backup from Google Drive?",
     localFile: "Local File",
+    autoBackupDaily: "Daily auto-backup",
+    autoBackupDailyDesc: "Once a day, automatically upload a backup to your Google Drive when you open the app.",
+    lastAutoBackup: "Last auto-backup",
+    never: "Never",
+    backupNow: "Back up now",
   },
   bn: {
     appName: "হিসাব নিকাশ-২৪",
