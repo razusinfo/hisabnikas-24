@@ -82,11 +82,34 @@ function BusinessProfilePage() {
   const uploadLogo = useMutation({
     mutationFn: async (file: File) => {
       if (!profileQuery.data) throw new Error("No profile");
-      const ext = file.name.split(".").pop() || "png";
+
+      const ALLOWED = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"];
+      const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+      if (!ALLOWED.includes(file.type)) {
+        throw new Error(t("logoInvalidType"));
+      }
+      if (file.size > MAX_BYTES) {
+        throw new Error(t("logoTooLarge"));
+      }
+
+      let uploadBlob: Blob = file;
+      let ext = file.name.split(".").pop()?.toLowerCase() || "png";
+      let contentType = file.type;
+
+      // Resize raster images to max 512x512 (preserve aspect ratio); skip SVG
+      if (file.type !== "image/svg+xml") {
+        const resized = await resizeImage(file, 512, 512);
+        if (resized) {
+          uploadBlob = resized;
+          ext = "webp";
+          contentType = "image/webp";
+        }
+      }
+
       const path = `${profileQuery.data.id}/logo-${Date.now()}.${ext}`;
       const { error: upErr } = await supabase.storage
         .from("business-logos")
-        .upload(path, file, { upsert: true, contentType: file.type });
+        .upload(path, uploadBlob, { upsert: true, contentType });
       if (upErr) throw upErr;
       if (profileQuery.data.logo_url) {
         await supabase.storage.from("business-logos").remove([profileQuery.data.logo_url]);
@@ -97,6 +120,7 @@ function BusinessProfilePage() {
         .eq("id", profileQuery.data.id);
       if (error) throw error;
     },
+
     onSuccess: () => {
       toast.success(t("settingsSaved"));
       qc.invalidateQueries({ queryKey: ["profile", "business"] });
