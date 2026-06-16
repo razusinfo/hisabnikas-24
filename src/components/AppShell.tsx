@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   TrendingUp,
   Database,
+  UserCircle2,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -207,6 +208,18 @@ function SidebarContent({
   );
 }
 
+function TopQuickLink({ to, icon: Icon, label, colorClass }: { to: string; icon: typeof Settings; label: string; colorClass: string }) {
+  return (
+    <Link
+      to={to}
+      className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors", colorClass)}
+    >
+      <Icon className="h-4 w-4" />
+      <span className="hidden lg:inline">{label}</span>
+    </Link>
+  );
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const { t } = useI18n();
   const navigate = useNavigate();
@@ -288,6 +301,22 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="flex-1" />
             <LangToggle compact />
             <SearchIconButton className="min-h-11 min-w-11" />
+          </header>
+
+          {/* Desktop top quick-actions bar */}
+          <header className="hidden md:flex sticky top-0 z-20 items-center justify-end gap-2 px-6 py-2.5 bg-background/95 backdrop-blur border-b border-border/60">
+            <TopQuickLink to="/purchases" icon={ShoppingCart} label={t("purchases")} colorClass="text-amber-600 hover:bg-amber-50" />
+            <TopQuickLink to="/sales" icon={Receipt} label={t("sales")} colorClass="text-emerald-600 hover:bg-emerald-50" />
+            <TopQuickLink to="/help" icon={HelpCircle} label={t("helpSupport")} colorClass="text-orange-600 hover:bg-orange-50" />
+            <TopQuickLink to="/settings" icon={Settings} label={t("settings")} colorClass="text-slate-600 hover:bg-slate-100" />
+            <Link
+              to="/settings"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-primary hover:bg-primary/10 transition-colors max-w-[200px]"
+              title={brandName}
+            >
+              <UserCircle2 className="h-5 w-5 shrink-0" />
+              <span className="truncate">{brandName}</span>
+            </Link>
           </header>
 
           <main className="flex-1 min-w-0 overflow-x-hidden">{children}</main>
