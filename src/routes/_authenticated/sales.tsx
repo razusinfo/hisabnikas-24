@@ -391,7 +391,7 @@ function SalesPage() {
     }
   }
 
-  async function recordPayment() {
+  async function recordPayment(opts?: { print?: boolean }) {
     if (!paySale) return;
     const amt = Number(payAmount);
     if (!amt || amt <= 0) return toast.error(t("enterValidAmount"));
@@ -419,11 +419,15 @@ function SalesPage() {
       const body = `প্রিয় ${custName}, ${paySale.invoice_no} এর জন্য ৳${amt.toFixed(2)} পরিশোধ পাওয়া গেছে।${dueLine} ধন্যবাদ${company ? " — " + company : ""}`;
       void fireSmsAsync({ customerId: paySale.customer_id, phone, body, kind: "payment_receipt" });
     }
+    if (opts?.print) {
+      printPaymentReceipt(paySale, amt, newPaid, newDue);
+    }
     setPaySale(null);
     setPayAmount("");
     qc.invalidateQueries({ queryKey: ["sales"] });
     qc.invalidateQueries({ queryKey: ["customers"] });
   }
+
 
   async function deleteSale() {
     if (!delSale) return;
@@ -473,7 +477,7 @@ function SalesPage() {
       business: {
         name: profile?.company_name || "",
         owner: profile?.full_name || "",
-        logoUrl: profile?.logo_url || null,
+        logoUrl: logoUrl || null,
       },
       settings: profile?.invoice_settings ?? {},
       lang: lang as "bn" | "en",
@@ -509,6 +513,65 @@ function SalesPage() {
     const lines = await fetchSaleItems(s.id);
     printInvoice(s, lines);
   }
+
+  function printPaymentReceipt(s: any, amount: number, newPaid: number, newDue: number) {
+    const isBn = lang === "bn";
+    printStyledInvoice({
+      doc: {
+        invoice_no: (isBn ? "পরিশোধ • " : "PAY • ") + s.invoice_no,
+        created_at: new Date().toISOString(),
+        partyName: s.customers?.name ?? t("walkIn"),
+        partyPhone: s.customers?.phone ?? "",
+        method: methodLabel(s.payment_method),
+        note: isBn
+          ? `ইনভয়েস ${s.invoice_no} এর বাকি পরিশোধের রসিদ`
+          : `Payment receipt for invoice ${s.invoice_no}`,
+        subtotal: amount,
+        total: amount,
+        paid: newPaid,
+        due: newDue,
+        items: [
+          {
+            name: isBn ? `বাকি পরিশোধ — ${s.invoice_no}` : `Due payment — ${s.invoice_no}`,
+            qty: 1,
+            price: amount,
+            total: amount,
+          },
+        ],
+      },
+      business: {
+        name: profile?.company_name || "",
+        owner: profile?.full_name || "",
+        logoUrl: logoUrl || null,
+      },
+      settings: profile?.invoice_settings ?? {},
+      lang: lang as "bn" | "en",
+      labels: {
+        invoice: isBn ? "পরিশোধ রসিদ" : "Payment Receipt",
+        customer: t("customer"),
+        phone: t("phone"),
+        method: t("method"),
+        item: isBn ? "বিবরণ" : "Description",
+        price: isBn ? "পরিমাণ" : "Amount",
+        qty: t("qty"),
+        total: t("total"),
+        subtotal: isBn ? "পরিশোধিত" : "Received",
+        paid: isBn ? "মোট পরিশোধিত" : "Total Paid",
+        due: isBn ? "অবশিষ্ট বাকি" : "Remaining Due",
+        note: t("note"),
+        statusPaid: t("statusPaid"),
+        statusDue: t("statusDue"),
+        statusPartial: t("statusPartial"),
+        bankDetails: t("invoiceBankDetails"),
+        paymentInstructions: t("invoicePaymentInstructions"),
+        terms: t("invoiceTerms"),
+        notes: t("invoiceNotes"),
+        signature: isBn ? "স্বাক্ষর" : "Signature",
+      },
+      hideMethod: false,
+    });
+  }
+
 
 
   const statusBadge = (s: any) => {
@@ -733,9 +796,10 @@ function SalesPage() {
               </div>
             </div>
           )}
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:gap-2">
             <Button variant="ghost" onClick={() => { setPaySale(null); setPayAmount(""); }}>{t("cancel")}</Button>
-            <Button onClick={recordPayment}>{t("save")}</Button>
+            <Button variant="outline" onClick={() => recordPayment({ print: true })}><Printer className="h-4 w-4 mr-2" />{lang === "bn" ? "সেভ ও প্রিন্ট" : "Save & Print"}</Button>
+            <Button onClick={() => recordPayment()}>{t("save")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
