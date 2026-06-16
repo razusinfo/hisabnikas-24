@@ -108,6 +108,7 @@ function SalesPage() {
   const [newDelivery, setNewDelivery] = useState("0");
   const [newPaid, setNewPaid] = useState<string>("");
   const [newNote, setNewNote] = useState("");
+  const [newDate, setNewDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
   const [lines, setLines] = useState<{ product_id: string; name: string; qty: number; unit_price: number; stock: number }[]>([]);
   const [creating, setCreating] = useState(false);
   const [productSearch, setProductSearch] = useState("");
@@ -236,7 +237,7 @@ function SalesPage() {
     setLines((ls) => ls.filter((_, i) => i !== idx));
   }
   function resetNew() {
-    setCustomerId("walkin"); setNewMethod("cash"); setNewDiscount("0"); setNewTax("0"); setNewDelivery("0"); setNewPaid(""); setNewNote(""); setLines([]);
+    setCustomerId("walkin"); setNewMethod("cash"); setNewDiscount("0"); setNewTax("0"); setNewDelivery("0"); setNewPaid(""); setNewNote(""); setLines([]); setNewDate(new Date().toISOString().slice(0, 10));
   }
 
   async function createSale() {
@@ -265,6 +266,14 @@ function SalesPage() {
       const noteWithDelivery = sett.deliveryCharge && Number(newDelivery) > 0
         ? `${newNote ? newNote + " | " : ""}Delivery: ${newDelivery}`
         : newNote;
+      const today = new Date().toISOString().slice(0, 10);
+      let saleCreatedAt: string | undefined;
+      if (newDate && newDate !== today) {
+        const now = new Date();
+        const d = new Date(newDate + "T00:00:00");
+        d.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+        saleCreatedAt = d.toISOString();
+      }
       const { data: sale, error } = await supabase.from("sales").insert({
         owner_id: u.user!.id,
         customer_id: customerId === "walkin" ? null : customerId,
@@ -278,6 +287,7 @@ function SalesPage() {
         payment_method: newMethod,
         status,
         note: noteWithDelivery || null,
+        ...(saleCreatedAt ? { created_at: saleCreatedAt } : {}),
       }).select().single();
       if (error) throw error;
       const rows = lines.map((l) => ({
@@ -846,6 +856,10 @@ function SalesPage() {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{t("date")}</label>
+                <Input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground">{t("method")}</label>
