@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Printer, X } from "lucide-react";
 import { buildInvoiceHtml, type PrintInvoiceOptions } from "@/lib/print-invoice";
-import { useLang } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n";
 
 type Ctx = { showInvoicePreview: (opts: PrintInvoiceOptions) => void };
 const InvoicePreviewContext = createContext<Ctx | null>(null);
