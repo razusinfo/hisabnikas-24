@@ -139,12 +139,12 @@ function SidebarContent({
       return !!(data as any)?.is_super_admin;
     },
   });
-  const effectiveFooter = superAdminQ.data
+  const effectiveScrollNav = superAdminQ.data
     ? [
-        ...footerNav,
+        ...scrollNav,
         { to: "/admin-payments", icon: ShieldCheck, key: "adminPayments" as const, color: "red" },
       ]
-    : footerNav;
+    : scrollNav;
 
   return (
     <div className="flex h-full flex-col">
