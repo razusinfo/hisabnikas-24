@@ -14,11 +14,20 @@ export const Route = createFileRoute("/_authenticated/invoice-design")({
   component: InvoiceDesignPage,
 });
 
+import {
+  INVOICE_FONT_FAMILIES,
+  INVOICE_FONT_WEIGHTS,
+  getInvoiceFontCss,
+  type InvoiceFontKey,
+  type InvoiceFontWeight,
+} from "@/lib/invoice-fonts";
+
 type DesignSettings = {
   invoiceTheme?: string;
   invoiceFontSize?: "sm" | "md" | "lg" | "xl";
   invoiceTemplate?: number;
-  invoiceFontFamily?: "serif" | "sans" | "modern";
+  invoiceFontFamily?: InvoiceFontKey;
+  invoiceFontWeight?: InvoiceFontWeight;
 };
 
 const THEMES = [
@@ -31,12 +40,6 @@ const FONT_SIZES: { value: "sm" | "md" | "lg" | "xl"; label: { bn: string; en: s
   { value: "md", label: { bn: "মাঝারি", en: "Medium" } },
   { value: "lg", label: { bn: "বড়", en: "Large" } },
   { value: "xl", label: { bn: "অতিরিক্ত বড়", en: "Extra Large" } },
-];
-
-const FONT_FAMILIES: { value: "serif" | "sans" | "modern"; label: { bn: string; en: string }; css: string }[] = [
-  { value: "serif", label: { bn: "সেরিফ", en: "Serif" }, css: "'Playfair Display', 'Noto Serif Bengali', Georgia, serif" },
-  { value: "sans", label: { bn: "স্যান্স সেরিফ", en: "Sans Serif" }, css: "'Plus Jakarta Sans', 'Noto Sans Bengali', system-ui, sans-serif" },
-  { value: "modern", label: { bn: "মডার্ন", en: "Modern" }, css: "'Space Grotesk', 'Noto Sans Bengali', system-ui, sans-serif" },
 ];
 
 const TEMPLATES = Array.from({ length: 9 }, (_, i) => i + 1);
@@ -64,7 +67,8 @@ function InvoiceDesignPage() {
   const [theme, setTheme] = useState<string>(THEMES[0]);
   const [fontSize, setFontSize] = useState<"sm" | "md" | "lg" | "xl">("md");
   const [template, setTemplate] = useState<number>(1);
-  const [fontFamily, setFontFamily] = useState<"serif" | "sans" | "modern">("serif");
+  const [fontFamily, setFontFamily] = useState<InvoiceFontKey>("serif");
+  const [fontWeight, setFontWeight] = useState<InvoiceFontWeight>(700);
 
   useEffect(() => {
     const s = (profileQuery.data?.invoice_settings ?? {}) as DesignSettings;
@@ -72,13 +76,14 @@ function InvoiceDesignPage() {
     if (s.invoiceFontSize) setFontSize(s.invoiceFontSize);
     if (s.invoiceTemplate) setTemplate(s.invoiceTemplate);
     if (s.invoiceFontFamily) setFontFamily(s.invoiceFontFamily);
+    if (s.invoiceFontWeight) setFontWeight(s.invoiceFontWeight);
   }, [profileQuery.data]);
 
   const save = useMutation({
     mutationFn: async () => {
       if (!profileQuery.data) throw new Error("No profile");
       const prev = (profileQuery.data.invoice_settings ?? {}) as Record<string, unknown>;
-      const next = { ...prev, invoiceTheme: theme, invoiceFontSize: fontSize, invoiceTemplate: template, invoiceFontFamily: fontFamily };
+      const next = { ...prev, invoiceTheme: theme, invoiceFontSize: fontSize, invoiceTemplate: template, invoiceFontFamily: fontFamily, invoiceFontWeight: fontWeight };
       const { error } = await supabase
         .from("profiles")
         .update({ invoice_settings: next as never })
@@ -94,8 +99,6 @@ function InvoiceDesignPage() {
 
   const profile = profileQuery.data;
 
-  // Auto-save on change (debounced via mutate—simple approach: save on button + on each change)
-  // We'll save on change to feel "live"
   const persist = (patch: Partial<DesignSettings>) => {
     if (!profile) return;
     const prev = (profile.invoice_settings ?? {}) as Record<string, unknown>;
@@ -105,6 +108,7 @@ function InvoiceDesignPage() {
       invoiceFontSize: patch.invoiceFontSize ?? fontSize,
       invoiceTemplate: patch.invoiceTemplate ?? template,
       invoiceFontFamily: patch.invoiceFontFamily ?? fontFamily,
+      invoiceFontWeight: patch.invoiceFontWeight ?? fontWeight,
     };
     supabase
       .from("profiles")
@@ -152,6 +156,7 @@ function InvoiceDesignPage() {
             fontSize={fontSize}
             template={template}
             fontFamily={fontFamily}
+            fontWeight={fontWeight}
             companyName={profile?.company_name ?? "Your Business"}
             phone={profile?.phone ?? ""}
             logoUrl={profile?.logo_url ?? null}
@@ -208,8 +213,8 @@ function InvoiceDesignPage() {
 
           <section>
             <h3 className="text-base font-semibold mb-3">{tr("ফন্ট স্টাইল", "Font Style")}</h3>
-            <div className="grid grid-cols-3 gap-3">
-              {FONT_FAMILIES.map((f) => {
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {INVOICE_FONT_FAMILIES.map((f) => {
                 const active = fontFamily === f.value;
                 return (
                   <button
@@ -218,11 +223,36 @@ function InvoiceDesignPage() {
                     onClick={() => { setFontFamily(f.value); persist({ invoiceFontFamily: f.value }); }}
                     style={active ? { backgroundColor: theme, color: "#fff", fontFamily: f.css } : { fontFamily: f.css }}
                     className={cn(
-                      "h-14 rounded-lg border text-sm font-semibold transition flex items-center justify-center",
+                      "h-14 rounded-lg border text-sm font-semibold transition flex items-center justify-center px-2 text-center",
                       active ? "border-transparent" : "bg-background hover:bg-muted border-border"
                     )}
                   >
                     {f.label[lang === "bn" ? "bn" : "en"]}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold mb-3">{tr("ফন্ট ওয়েট", "Font Weight")}</h3>
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+              {INVOICE_FONT_WEIGHTS.map((w) => {
+                const active = fontWeight === w.value;
+                return (
+                  <button
+                    key={w.value}
+                    type="button"
+                    onClick={() => { setFontWeight(w.value); persist({ invoiceFontWeight: w.value }); }}
+                    style={active
+                      ? { backgroundColor: theme, color: "#fff", fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }
+                      : { fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }}
+                    className={cn(
+                      "h-12 rounded-lg border text-sm transition flex items-center justify-center px-1 text-center",
+                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
+                    )}
+                  >
+                    {w.label[lang === "bn" ? "bn" : "en"]}
                   </button>
                 );
               })}
@@ -292,12 +322,13 @@ const FONT_SIZE_MAP = {
 } as const;
 
 function InvoicePreview({
-  theme, fontSize, template, fontFamily, companyName, phone, logoUrl, lang,
+  theme, fontSize, template, fontFamily, fontWeight, companyName, phone, logoUrl, lang,
 }: {
   theme: string;
   fontSize: "sm" | "md" | "lg" | "xl";
   template: number;
-  fontFamily: "serif" | "sans" | "modern";
+  fontFamily: InvoiceFontKey;
+  fontWeight: InvoiceFontWeight;
   companyName: string;
   phone: string;
   logoUrl: string | null;
@@ -366,7 +397,7 @@ function InvoicePreview({
               )}
             </div>
             <div className="flex-1 text-center flex flex-col items-center justify-center">
-              <div style={{ fontSize: f.title, fontWeight: 700, color: titleColor, lineHeight: 1.1, fontFamily: FONT_FAMILIES.find(f => f.value === fontFamily)?.css ?? FONT_FAMILIES[0].css }} className="whitespace-nowrap">
+              <div style={{ fontSize: f.title, fontWeight, color: titleColor, lineHeight: 1.1, fontFamily: getInvoiceFontCss(fontFamily) }} className="whitespace-nowrap">
                 {companyName}
               </div>
               <div style={{ fontSize: f.base - 1, color: subColor, marginTop: 2 }}>

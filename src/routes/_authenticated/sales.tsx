@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { Eye, CreditCard, Printer, Trash2, Search, Plus, Pencil, Save as SaveIcon, X } from "lucide-react";
+import { getInvoiceFontCss } from "@/lib/invoice-fonts";
 
 
 export const Route = createFileRoute("/_authenticated/sales")({
@@ -424,12 +425,9 @@ function SalesPage() {
     const theme: string = inv.invoiceTheme || "#0f172a";
     const fontSizeKey: "sm" | "md" | "lg" | "xl" = inv.invoiceFontSize || "md";
     const template: number = Number(inv.invoiceTemplate) || 1;
-    const fontFamilyKey: "serif" | "sans" | "modern" = inv.invoiceFontFamily || "serif";
-    const fontFamilyCss = {
-      serif: "'Playfair Display','Noto Serif Bengali',Georgia,serif",
-      sans: "'Plus Jakarta Sans','Noto Sans Bengali',system-ui,sans-serif",
-      modern: "'Space Grotesk','Noto Sans Bengali',system-ui,sans-serif",
-    }[fontFamilyKey];
+    const fontFamilyKey: string = inv.invoiceFontFamily || "serif";
+    const fontFamilyCss = getInvoiceFontCss(fontFamilyKey);
+    const fontWeight: number = Number(inv.invoiceFontWeight) || 700;
     const baseFs = { sm: 17, md: 20, lg: 23, xl: 26 }[fontSizeKey];
     // Header style per template
     const headerStyles: Record<number, string> = {
@@ -468,7 +466,7 @@ function SalesPage() {
         .top{display:flex;justify-content:space-between;align-items:flex-start;gap:28px;${topStyle}}
         .brand{display:flex;gap:18px;align-items:center}
         .brand img{height:76px;width:76px;object-fit:contain;border-radius:10px;border:1px solid #e2e8f0;background:#fff}
-        .brand .biz{font-size:${baseFs + 9}px;font-weight:700;letter-spacing:-0.01em;font-family:${fontFamilyCss};color:${titleClr}}
+        .brand .biz{font-size:${baseFs + 9}px;font-weight:${fontWeight};letter-spacing:-0.01em;font-family:${fontFamilyCss};color:${titleClr}}
         .brand .owner{font-size:${baseFs - 2}px;color:${subClr};margin-top:2px}
         .meta{text-align:right}
         .meta .no{font-family:ui-monospace,Menlo,monospace;font-size:${baseFs}px;color:${invertHeader ? "#fff" : "#334155"};margin-top:4px}
