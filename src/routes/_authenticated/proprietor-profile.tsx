@@ -20,6 +20,7 @@ export const Route = createFileRoute("/_authenticated/proprietor-profile")({
 type Profile = {
   id: string;
   full_name: string | null;
+  phone: string | null;
   address: string | null;
   avatar_url: string | null;
 };
