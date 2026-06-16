@@ -218,7 +218,14 @@ function ProductsPage() {
         low_stock_threshold: Number(form.low_stock_threshold) || 0,
         category_id: form.category_id || null,
         image_url: form.image_url || null,
+        vat: Number(form.vat) || 0,
+        mrp: form.mrp === "" ? null : Number(form.mrp),
+        batch_no: form.batch_no.trim() || null,
+        serial_no: form.serial_no.trim() || null,
+        size: form.size.trim() || null,
+        expiry_date: form.expiry_date || null,
       };
+
       if (editing) {
         const { error } = await supabase.from("products").update(payload).eq("id", editing.id);
         if (error) throw error;
