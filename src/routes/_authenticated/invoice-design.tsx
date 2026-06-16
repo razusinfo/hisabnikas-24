@@ -332,8 +332,8 @@ function InvoicePreview({
                 </div>
               )}
             </div>
-            <div className="flex-1 text-center">
-              <div style={{ fontSize: f.title, fontWeight: 800, color: titleColor, lineHeight: 1.1 }}>
+            <div className="flex-1 text-center flex flex-col items-center justify-center">
+              <div style={{ fontSize: f.title, fontWeight: 800, color: titleColor, lineHeight: 1.1 }} className="whitespace-nowrap">
                 {companyName}
               </div>
               <div style={{ fontSize: f.base - 1, color: subColor, marginTop: 2 }}>
