@@ -229,7 +229,152 @@ function TopQuickLink({ to, icon: Icon, label, colorClass }: { to: string; icon:
   );
 }
 
+function useTheme() {
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    if (typeof document === "undefined") return false;
+    return document.documentElement.classList.contains("dark");
+  });
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const saved = localStorage.getItem("theme");
+    const dark = saved === "dark";
+    document.documentElement.classList.toggle("dark", dark);
+    setIsDark(dark);
+  }, []);
+  const toggle = (next: boolean) => {
+    setIsDark(next);
+    if (typeof document !== "undefined") {
+      document.documentElement.classList.toggle("dark", next);
+      localStorage.setItem("theme", next ? "dark" : "light");
+    }
+  };
+  return { isDark, toggle };
+}
+
+function ProprietorMenu({
+  brandName,
+  avatarUrl,
+  onSignOut,
+}: {
+  brandName: string;
+  avatarUrl: string | null | undefined;
+  onSignOut: () => void;
+}) {
+  const { lang } = useI18n();
+  const bn = lang === "bn";
+  const { isDark, toggle } = useTheme();
+  const [open, setOpen] = useState(false);
+
+  const labels = {
+    subtitle: bn ? "ব্যবহারকারীর প্রোফাইল" : "User profile",
+    profile: bn ? "প্রোফাইল" : "Profile",
+    businesses: bn ? "ব্যবসা সমূহ" : "Businesses",
+    subscription: bn ? "সাবস্ক্রিপশন" : "Subscription",
+    lightTheme: bn ? "হালকা থিম" : "Light theme",
+    signOut: bn ? "লগ আউট" : "Sign out",
+    edit: bn ? "ছবি/তথ্য সম্পাদনা" : "Edit profile",
+  };
+
+  const items = [
+    { to: "/proprietor-profile", icon: UserIcon, label: labels.profile },
+    { to: "/settings", icon: Briefcase, label: labels.businesses },
+    { to: "/current-package", icon: CreditCard, label: labels.subscription },
+  ];
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          className="ml-1 flex items-center justify-center rounded-full hover:ring-2 hover:ring-primary/30 transition-all"
+          title={brandName}
+          aria-label={brandName}
+        >
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt={brandName}
+              className="h-9 w-9 rounded-full object-cover border border-border"
+            />
+          ) : (
+            <UserCircle2 className="h-9 w-9 text-primary" />
+          )}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="end" sideOffset={8} className="w-72 p-0 overflow-hidden rounded-2xl border-border/60 shadow-xl">
+        <div className="relative h-20 bg-gradient-to-br from-violet-400 to-violet-500">
+          <Link
+            to="/proprietor-profile"
+            onClick={() => setOpen(false)}
+            aria-label={labels.edit}
+            className="absolute top-2 right-2 inline-flex items-center justify-center h-7 w-7 rounded-full bg-white/90 text-violet-700 hover:bg-white shadow"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </Link>
+          <div className="absolute left-1/2 -bottom-9 -translate-x-1/2">
+            <Link to="/proprietor-profile" onClick={() => setOpen(false)} className="relative block">
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={brandName}
+                  className="h-[72px] w-[72px] rounded-full object-cover border-4 border-background shadow-md"
+                />
+              ) : (
+                <div className="h-[72px] w-[72px] rounded-full bg-muted border-4 border-background shadow-md flex items-center justify-center">
+                  <UserCircle2 className="h-10 w-10 text-muted-foreground" />
+                </div>
+              )}
+              <span className="absolute bottom-0 right-0 inline-flex items-center justify-center h-6 w-6 rounded-full bg-violet-500 text-white border-2 border-background">
+                <Pencil className="h-3 w-3" />
+              </span>
+            </Link>
+          </div>
+        </div>
+        <div className="pt-11 pb-3 px-4 text-center">
+          <div className="text-base font-semibold truncate">{brandName}</div>
+          <div className="text-xs text-muted-foreground mt-0.5">{labels.subtitle}</div>
+        </div>
+        <div className="px-2 pb-2">
+          {items.map((it) => {
+            const Icon = it.icon;
+            return (
+              <Link
+                key={it.to}
+                to={it.to}
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-foreground/80 hover:bg-accent hover:text-foreground transition-colors"
+              >
+                <Icon className="h-4 w-4 text-muted-foreground" />
+                <span>{it.label}</span>
+              </Link>
+            );
+          })}
+          <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg">
+            {isDark ? (
+              <Moon className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <Sun className="h-4 w-4 text-muted-foreground" />
+            )}
+            <span className="text-sm text-foreground/80 flex-1">{labels.lightTheme}</span>
+            <Switch checked={isDark} onCheckedChange={toggle} aria-label={labels.lightTheme} />
+          </div>
+          <button
+            onClick={() => {
+              setOpen(false);
+              onSignOut();
+            }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-foreground/80 hover:bg-destructive/10 hover:text-destructive transition-colors"
+          >
+            <LogOut className="h-4 w-4 text-muted-foreground" />
+            <span>{labels.signOut}</span>
+          </button>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
+
   const { t } = useI18n();
   const navigate = useNavigate();
   const qc = useQueryClient();
