@@ -391,7 +391,7 @@ function SalesPage() {
     }
   }
 
-  async function recordPayment() {
+  async function recordPayment(opts?: { print?: boolean }) {
     if (!paySale) return;
     const amt = Number(payAmount);
     if (!amt || amt <= 0) return toast.error(t("enterValidAmount"));
@@ -419,11 +419,15 @@ function SalesPage() {
       const body = `প্রিয় ${custName}, ${paySale.invoice_no} এর জন্য ৳${amt.toFixed(2)} পরিশোধ পাওয়া গেছে।${dueLine} ধন্যবাদ${company ? " — " + company : ""}`;
       void fireSmsAsync({ customerId: paySale.customer_id, phone, body, kind: "payment_receipt" });
     }
+    if (opts?.print) {
+      printPaymentReceipt(paySale, amt, newPaid, newDue);
+    }
     setPaySale(null);
     setPayAmount("");
     qc.invalidateQueries({ queryKey: ["sales"] });
     qc.invalidateQueries({ queryKey: ["customers"] });
   }
+
 
   async function deleteSale() {
     if (!delSale) return;
