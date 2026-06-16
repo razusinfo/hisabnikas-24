@@ -343,6 +343,38 @@ function BackupRestorePage() {
                 </Button>
               </div>
 
+              <div className="rounded-lg border p-3 space-y-2">
+                <div className="flex items-start gap-3">
+                  <div className="flex-1 min-w-0">
+                    <Label className="text-sm font-medium">{t("autoBackupDaily")}</Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {t("autoBackupDailyDesc")}
+                    </p>
+                  </div>
+                  <Switch checked={autoDaily} onCheckedChange={toggleAutoDaily} />
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+                  <span>
+                    {t("lastAutoBackup")}:{" "}
+                    {lastAuto ? new Date(lastAuto).toLocaleString() : t("never")}
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={handleRunAutoNow}
+                    disabled={autoRunning}
+                  >
+                    {autoRunning ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
+                    ) : (
+                      <CloudUpload className="h-3.5 w-3.5 mr-1.5" />
+                    )}
+                    {t("backupNow")}
+                  </Button>
+                </div>
+              </div>
+
+
               <div className="flex flex-wrap gap-2">
                 <Button onClick={handleBackupToDrive} disabled={uploadingDrive}>
                   {uploadingDrive ? (
