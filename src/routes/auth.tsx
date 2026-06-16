@@ -31,6 +31,44 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [phone, setPhone] = useState("");
+  const [otpPhone, setOtpPhone] = useState("");
+  const [otpCode, setOtpCode] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const requestOtpFn = useServerFn(requestPhoneOtp);
+  const verifyOtpFn = useServerFn(verifyPhoneOtp);
+
+  const onRequestOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await requestOtpFn({ data: { phone: otpPhone } });
+      setOtpSent(true);
+      toast.success("OTP পাঠানো হয়েছে");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "OTP পাঠানো যায়নি");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const r = await verifyOtpFn({ data: { phone: otpPhone, code: otpCode } });
+      const { error } = await supabase.auth.verifyOtp({
+        email: r.email,
+        token_hash: r.tokenHash,
+        type: "magiclink",
+      });
+      if (error) throw error;
+      navigate({ to: "/dashboard", replace: true });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "লগইন ব্যর্থ");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const onSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
