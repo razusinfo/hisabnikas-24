@@ -561,7 +561,7 @@ function SalesPage() {
           <table className="w-full text-sm">
             <thead className="text-xs uppercase tracking-wider text-muted-foreground bg-muted/30">
               <tr className="text-left">
-                <th className="py-3 px-4">{t("invoice")}</th>
+                {sett.showInvoiceNumber && <th className="py-3 px-4">{t("invoice")}</th>}
                 <th className="py-3 px-4">{t("date")}</th>
                 <th className="py-3 px-4">{t("customer")}</th>
                 <th className="py-3 px-4">{t("method")}</th>
@@ -574,11 +574,11 @@ function SalesPage() {
             </thead>
             <tbody>
               {filtered.length === 0 && (
-                <tr><td colSpan={9} className="py-10 text-center text-muted-foreground">{t("noData")}</td></tr>
+                <tr><td colSpan={sett.showInvoiceNumber ? 9 : 8} className="py-10 text-center text-muted-foreground">{t("noData")}</td></tr>
               )}
               {filtered.map((s: any) => (
                 <tr key={s.id} className="border-t border-border/40 hover:bg-muted/30">
-                  <td className="py-3 px-4 font-mono">{s.invoice_no}</td>
+                  {sett.showInvoiceNumber && <td className="py-3 px-4 font-mono">{s.invoice_no}</td>}
                   <td className="py-3 px-4 text-muted-foreground whitespace-nowrap">{fmtDateTime(s.created_at, lang)}</td>
                   <td className="py-3 px-4">{s.customers?.name || <span className="text-muted-foreground">{t("walkIn")}</span>}</td>
                   <td className="py-3 px-4">{methodLabel(s.payment_method)}</td>
@@ -588,7 +588,9 @@ function SalesPage() {
                   <td className="py-3 px-4 text-right font-mono">{Number(s.due) > 0 ? <span className="text-warning">{fmtMoney(s.due, lang)}</span> : "—"}</td>
                   <td className="py-3 px-4">
                     <div className="flex justify-end gap-1">
-                      <Button size="icon" variant="ghost" onClick={() => openView(s)} title={t("view")} aria-label={t("view")}><Eye className="h-4 w-4" /></Button>
+                      {sett.allowViewInvoice && (
+                        <Button size="icon" variant="ghost" onClick={() => openView(s)} title={t("view")} aria-label={t("view")}><Eye className="h-4 w-4" /></Button>
+                      )}
                       {Number(s.due) > 0 && (
                         <Button size="icon" variant="ghost" onClick={() => { setPaySale(s); setPayAmount(String(s.due)); }} title={t("recordPayment")} aria-label={t("recordPayment")}><CreditCard className="h-4 w-4" /></Button>
                       )}
