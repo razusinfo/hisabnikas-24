@@ -11,7 +11,8 @@ function getRedirectUri(): string {
 export const getDriveConnection = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data, error } = await context.supabase
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
       .from("google_drive_connections")
       .select("google_email, auto_daily, last_backup_at, last_backup_status, last_backup_error")
       .eq("user_id", context.userId)
@@ -33,7 +34,8 @@ export const setAutoDaily = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { enabled: boolean }) => d)
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
       .from("google_drive_connections")
       .update({ auto_daily: data.enabled })
       .eq("user_id", context.userId);
@@ -44,7 +46,8 @@ export const setAutoDaily = createServerFn({ method: "POST" })
 export const disconnectDrive = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { error } = await context.supabase
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
       .from("google_drive_connections")
       .delete()
       .eq("user_id", context.userId);
