@@ -18,6 +18,7 @@ type DesignSettings = {
   invoiceTheme?: string;
   invoiceFontSize?: "sm" | "md" | "lg" | "xl";
   invoiceTemplate?: number;
+  invoiceFontFamily?: "serif" | "sans" | "modern";
 };
 
 const THEMES = [
@@ -30,6 +31,12 @@ const FONT_SIZES: { value: "sm" | "md" | "lg" | "xl"; label: { bn: string; en: s
   { value: "md", label: { bn: "মাঝারি", en: "Medium" } },
   { value: "lg", label: { bn: "বড়", en: "Large" } },
   { value: "xl", label: { bn: "অতিরিক্ত বড়", en: "Extra Large" } },
+];
+
+const FONT_FAMILIES: { value: "serif" | "sans" | "modern"; label: { bn: string; en: string }; css: string }[] = [
+  { value: "serif", label: { bn: "সেরিফ", en: "Serif" }, css: "'Playfair Display', 'Noto Serif Bengali', Georgia, serif" },
+  { value: "sans", label: { bn: "স্যান্স সেরিফ", en: "Sans Serif" }, css: "'Plus Jakarta Sans', 'Noto Sans Bengali', system-ui, sans-serif" },
+  { value: "modern", label: { bn: "মডার্ন", en: "Modern" }, css: "'Space Grotesk', 'Noto Sans Bengali', system-ui, sans-serif" },
 ];
 
 const TEMPLATES = Array.from({ length: 9 }, (_, i) => i + 1);
