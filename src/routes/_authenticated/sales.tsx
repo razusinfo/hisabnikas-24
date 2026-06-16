@@ -938,6 +938,7 @@ function SalesPage() {
                     className="pl-9"
                   />
                 </div>
+                <Button type="button" variant="outline" size="sm" onClick={() => setOpenNewProd(true)}><Plus className="h-3.5 w-3.5 mr-1" />{lang === "bn" ? "নতুন পণ্য" : "New Product"}</Button>
               </div>
               {(() => {
                 const list = (productsList as any[]);
