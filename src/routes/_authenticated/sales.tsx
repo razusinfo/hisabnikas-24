@@ -102,6 +102,7 @@ function SalesPage() {
   const [newMethod, setNewMethod] = useState("cash");
   const [newDiscount, setNewDiscount] = useState("0");
   const [newTax, setNewTax] = useState("0");
+  const [newDelivery, setNewDelivery] = useState("0");
   const [newPaid, setNewPaid] = useState<string>("");
   const [newNote, setNewNote] = useState("");
   const [lines, setLines] = useState<{ product_id: string; name: string; qty: number; unit_price: number; stock: number }[]>([]);
@@ -170,8 +171,23 @@ function SalesPage() {
     enabled: openNew,
   });
 
+  const inv = (profile?.invoice_settings ?? {}) as any;
+  const sett = {
+    showInvoiceNumber: inv.showInvoiceNumber !== false,
+    taxPerTx: inv.taxPerTx !== false,
+    discountPerTx: inv.discountPerTx !== false,
+    deliveryCharge: !!inv.deliveryCharge,
+    dueSmsOnTx: inv.dueSmsOnTx !== false,
+    allowViewInvoice: inv.allowViewInvoice !== false,
+    autoIncrementInvoice: inv.autoIncrementInvoice !== false,
+    startingInvoiceNumber: Number(inv.startingInvoiceNumber) || 1000,
+    showPreviousDue: !!inv.showPreviousDue,
+    cashSaleDefault: inv.cashSaleDefault !== false,
+  };
+  // Set default method to cash if cashSaleDefault is on (already cash by default)
+
   const newSubtotal = lines.reduce((a, l) => a + l.qty * l.unit_price, 0);
-  const newTotal = Math.max(0, newSubtotal - Number(newDiscount || 0) + Number(newTax || 0));
+  const newTotal = Math.max(0, newSubtotal - Number(newDiscount || 0) + Number(newTax || 0) + Number(newDelivery || 0));
   const newPaidAmt = newPaid === "" ? newTotal : Number(newPaid);
   const newDue = Math.max(0, newTotal - newPaidAmt);
 
@@ -217,7 +233,7 @@ function SalesPage() {
     setLines((ls) => ls.filter((_, i) => i !== idx));
   }
   function resetNew() {
-    setCustomerId("walkin"); setNewMethod("cash"); setNewDiscount("0"); setNewTax("0"); setNewPaid(""); setNewNote(""); setLines([]);
+    setCustomerId("walkin"); setNewMethod("cash"); setNewDiscount("0"); setNewTax("0"); setNewDelivery("0"); setNewPaid(""); setNewNote(""); setLines([]);
   }
 
   async function createSale() {
@@ -228,21 +244,37 @@ function SalesPage() {
     setCreating(true);
     try {
       const { data: u } = await supabase.auth.getUser();
-      const invoice_no = "INV-" + Date.now().toString().slice(-8);
+      // Generate invoice number — auto-increment if enabled
+      let invoice_no = "INV-" + Date.now().toString().slice(-8);
+      if (sett.autoIncrementInvoice) {
+        const { data: last } = await supabase
+          .from("sales")
+          .select("invoice_no")
+          .eq("owner_id", u.user!.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        const m = last?.invoice_no?.match(/(\d+)\s*$/);
+        const next = m ? Number(m[1]) + 1 : sett.startingInvoiceNumber;
+        invoice_no = "INV-" + String(next).padStart(4, "0");
+      }
       const status = newDue <= 0 ? "paid" : newPaidAmt > 0 ? "partial" : "due";
+      const noteWithDelivery = sett.deliveryCharge && Number(newDelivery) > 0
+        ? `${newNote ? newNote + " | " : ""}Delivery: ${newDelivery}`
+        : newNote;
       const { data: sale, error } = await supabase.from("sales").insert({
         owner_id: u.user!.id,
         customer_id: customerId === "walkin" ? null : customerId,
         invoice_no,
         subtotal: newSubtotal,
         discount: Number(newDiscount || 0),
-        tax: Number(newTax || 0),
+        tax: Number(newTax || 0) + Number(newDelivery || 0),
         total: newTotal,
         paid: newPaidAmt,
         due: newDue,
         payment_method: newMethod,
         status,
-        note: newNote || null,
+        note: noteWithDelivery || null,
       }).select().single();
       if (error) throw error;
       const rows = lines.map((l) => ({
@@ -265,8 +297,8 @@ function SalesPage() {
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       qc.invalidateQueries({ queryKey: ["customers"] });
 
-      // Fire-and-forget SMS receipt to customer (only if real customer with phone)
-      if (customerId !== "walkin") {
+      // Fire-and-forget SMS receipt — gated by dueSmsOnTx setting
+      if (sett.dueSmsOnTx && customerId !== "walkin") {
         const cust = customersList.find((c: any) => c.id === customerId);
         if (cust?.phone) {
           const company = await getCompanyName();
@@ -435,6 +467,8 @@ function SalesPage() {
           price: l.unit_price,
           total: l.line_total,
         })),
+        discount: s.discount,
+        tax: s.tax,
       },
       business: {
         name: profile?.company_name || "",
@@ -463,6 +497,10 @@ function SalesPage() {
         paymentInstructions: t("invoicePaymentInstructions"),
         terms: t("invoiceTerms"),
         notes: t("invoiceNotes"),
+        discount: lang === "bn" ? "ডিসকাউন্ট" : "Discount",
+        tax: lang === "bn" ? "ট্যাক্স" : "Tax",
+        deliveryCharge: lang === "bn" ? "ডেলিভারি চার্জ" : "Delivery",
+        signature: lang === "bn" ? "স্বাক্ষর" : "Signature",
       },
     });
   }
@@ -523,7 +561,7 @@ function SalesPage() {
           <table className="w-full text-sm">
             <thead className="text-xs uppercase tracking-wider text-muted-foreground bg-muted/30">
               <tr className="text-left">
-                <th className="py-3 px-4">{t("invoice")}</th>
+                {sett.showInvoiceNumber && <th className="py-3 px-4">{t("invoice")}</th>}
                 <th className="py-3 px-4">{t("date")}</th>
                 <th className="py-3 px-4">{t("customer")}</th>
                 <th className="py-3 px-4">{t("method")}</th>
@@ -536,11 +574,11 @@ function SalesPage() {
             </thead>
             <tbody>
               {filtered.length === 0 && (
-                <tr><td colSpan={9} className="py-10 text-center text-muted-foreground">{t("noData")}</td></tr>
+                <tr><td colSpan={sett.showInvoiceNumber ? 9 : 8} className="py-10 text-center text-muted-foreground">{t("noData")}</td></tr>
               )}
               {filtered.map((s: any) => (
                 <tr key={s.id} className="border-t border-border/40 hover:bg-muted/30">
-                  <td className="py-3 px-4 font-mono">{s.invoice_no}</td>
+                  {sett.showInvoiceNumber && <td className="py-3 px-4 font-mono">{s.invoice_no}</td>}
                   <td className="py-3 px-4 text-muted-foreground whitespace-nowrap">{fmtDateTime(s.created_at, lang)}</td>
                   <td className="py-3 px-4">{s.customers?.name || <span className="text-muted-foreground">{t("walkIn")}</span>}</td>
                   <td className="py-3 px-4">{methodLabel(s.payment_method)}</td>
@@ -550,7 +588,9 @@ function SalesPage() {
                   <td className="py-3 px-4 text-right font-mono">{Number(s.due) > 0 ? <span className="text-warning">{fmtMoney(s.due, lang)}</span> : "—"}</td>
                   <td className="py-3 px-4">
                     <div className="flex justify-end gap-1">
-                      <Button size="icon" variant="ghost" onClick={() => openView(s)} title={t("view")} aria-label={t("view")}><Eye className="h-4 w-4" /></Button>
+                      {sett.allowViewInvoice && (
+                        <Button size="icon" variant="ghost" onClick={() => openView(s)} title={t("view")} aria-label={t("view")}><Eye className="h-4 w-4" /></Button>
+                      )}
                       {Number(s.due) > 0 && (
                         <Button size="icon" variant="ghost" onClick={() => { setPaySale(s); setPayAmount(String(s.due)); }} title={t("recordPayment")} aria-label={t("recordPayment")}><CreditCard className="h-4 w-4" /></Button>
                       )}
@@ -598,7 +638,9 @@ function SalesPage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2 pt-1 border-t">
-              <Button size="sm" variant="ghost" className="min-h-11 flex-1" onClick={() => openView(s)}><Eye className="h-4 w-4 mr-1" />{t("view")}</Button>
+              {sett.allowViewInvoice && (
+                <Button size="sm" variant="ghost" className="min-h-11 flex-1" onClick={() => openView(s)}><Eye className="h-4 w-4 mr-1" />{t("view")}</Button>
+              )}
               {Number(s.due) > 0 && (
                 <Button size="sm" variant="ghost" className="min-h-11 flex-1" onClick={() => { setPaySale(s); setPayAmount(String(s.due)); }}><CreditCard className="h-4 w-4 mr-1" />{t("recordPayment")}</Button>
               )}
@@ -827,14 +869,24 @@ function SalesPage() {
             )}
 
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs text-muted-foreground">{t("discount")}</label>
-                <Input type="number" step="0.01" value={newDiscount} onChange={(e) => setNewDiscount(e.target.value)} />
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground">{t("tax")}</label>
-                <Input type="number" step="0.01" value={newTax} onChange={(e) => setNewTax(e.target.value)} />
-              </div>
+              {sett.discountPerTx && (
+                <div>
+                  <label className="text-xs text-muted-foreground">{t("discount")}</label>
+                  <Input type="number" step="0.01" value={newDiscount} onChange={(e) => setNewDiscount(e.target.value)} />
+                </div>
+              )}
+              {sett.taxPerTx && (
+                <div>
+                  <label className="text-xs text-muted-foreground">{t("tax")}</label>
+                  <Input type="number" step="0.01" value={newTax} onChange={(e) => setNewTax(e.target.value)} />
+                </div>
+              )}
+              {sett.deliveryCharge && (
+                <div>
+                  <label className="text-xs text-muted-foreground">{lang === "bn" ? "ডেলিভারি চার্জ" : "Delivery charge"}</label>
+                  <Input type="number" step="0.01" value={newDelivery} onChange={(e) => setNewDelivery(e.target.value)} />
+                </div>
+              )}
               <div>
                 <label className="text-xs text-muted-foreground">{t("paid")}</label>
                 <Input
