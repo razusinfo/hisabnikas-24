@@ -121,6 +121,82 @@ function InvoiceDesignPage() {
       });
   };
 
+  const buildSampleInvoice = () => {
+    const settingsForPrint = {
+      ...((profile?.invoice_settings ?? {}) as Record<string, unknown>),
+      invoiceTheme: theme,
+      invoiceFontSize: fontSize,
+      invoiceTemplate: template,
+      invoiceFontFamily: fontFamily,
+      invoiceFontWeight: fontWeight,
+    };
+    const items = Array.from({ length: 5 }, (_, i) => ({
+      name: `Demo Product ${i + 1}`,
+      qty: 1,
+      price: 250,
+      total: 250,
+    }));
+    return {
+      doc: {
+        invoice_no: "INV-PREVIEW-001",
+        created_at: new Date().toISOString(),
+        partyName: tr("ডেমো কাস্টমার", "Demo Customer"),
+        partyPhone: "01XXXXXXXXX",
+        method: "Cash",
+        note: tr("এটি একটি প্রিভিউ ইনভয়েস", "This is a preview invoice"),
+        subtotal: 1250,
+        total: 1250,
+        paid: 1000,
+        due: 250,
+        items,
+      },
+      business: {
+        name: profile?.company_name ?? "Your Business",
+        owner: profile?.address ?? "",
+        logoUrl: profile?.logo_url ?? null,
+      },
+      settings: settingsForPrint,
+      lang: (lang === "bn" ? "bn" : "en") as "bn" | "en",
+      labels: {
+        invoice: tr("ইনভয়েস", "Invoice"),
+        customer: tr("কাস্টমার", "Customer"),
+        phone: tr("ফোন", "Phone"),
+        method: tr("পদ্ধতি", "Method"),
+        item: tr("পণ্য", "Item"),
+        price: tr("মূল্য", "Price"),
+        qty: tr("পরিমাণ", "Qty"),
+        total: tr("মোট", "Total"),
+        subtotal: tr("সাব টোটাল", "Subtotal"),
+        paid: tr("পরিশোধ", "Paid"),
+        due: tr("বকেয়া", "Due"),
+        note: tr("নোট", "Note"),
+        statusPaid: tr("পরিশোধিত", "Paid"),
+        statusDue: tr("বকেয়া", "Due"),
+        statusPartial: tr("আংশিক", "Partial"),
+        signature: tr("স্বাক্ষর", "Signature"),
+      },
+    };
+  };
+
+  const doPrint = () => {
+    printStyledInvoice(buildSampleInvoice());
+  };
+
+  const doShare = async () => {
+    const url = window.location.href;
+    const title = tr("ইনভয়েস ডিজাইন প্রিভিউ", "Invoice Design Preview");
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        toast.success(tr("লিংক কপি হয়েছে", "Link copied"));
+      }
+    } catch {
+      /* user cancelled */
+    }
+  };
+
   if (profileQuery.isLoading) {
     return (
       <div className="p-6 flex items-center gap-2 text-muted-foreground">
