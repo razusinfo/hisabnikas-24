@@ -467,6 +467,8 @@ function SalesPage() {
           price: l.unit_price,
           total: l.line_total,
         })),
+        discount: s.discount,
+        tax: s.tax,
       },
       business: {
         name: profile?.company_name || "",
