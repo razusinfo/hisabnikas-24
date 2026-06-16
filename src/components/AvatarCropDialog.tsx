@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
-import Cropper, { type Area } from "react-easy-crop";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import type { Area } from "react-easy-crop";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Loader2 } from "lucide-react";
+
+const Cropper = lazy(() => import("react-easy-crop"));
 
 async function getCroppedBlob(src: string, area: Area, size = 512): Promise<Blob> {
   const img = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -67,17 +69,19 @@ export function AvatarCropDialog({
         </DialogHeader>
         <div className="relative w-full h-72 bg-muted rounded-md overflow-hidden">
           {src && (
-            <Cropper
-              image={src}
-              crop={crop}
-              zoom={zoom}
-              aspect={1}
-              cropShape="round"
-              showGrid={false}
-              onCropChange={setCrop}
-              onZoomChange={setZoom}
-              onCropComplete={onComplete}
-            />
+            <Suspense fallback={<div className="flex h-full items-center justify-center"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>}>
+              <Cropper
+                image={src}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                cropShape="round"
+                showGrid={false}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onComplete}
+              />
+            </Suspense>
           )}
         </div>
         <div className="px-1">
