@@ -131,8 +131,8 @@ function AuthPage() {
         <div className="relative text-xs text-muted-foreground">© হিসাব নিকাশ-২৪</div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-sm">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-6">
+        <div className="w-full max-w-sm bg-card text-card-foreground rounded-2xl border border-border shadow-xl p-6 sm:p-8 lg:bg-transparent lg:text-foreground lg:rounded-none lg:border-0 lg:shadow-none lg:p-0">
           <div className="flex justify-end mb-4">
             <div className="inline-flex rounded-md border border-border overflow-hidden text-xs">
               <button
@@ -151,12 +151,12 @@ function AuthPage() {
               </button>
             </div>
           </div>
-          <div className="lg:hidden flex items-center mb-8">
-            <img src={appLogo.url} alt="হিসাব নিকাশ-২৪" className="h-32 w-auto" />
+          <div className="lg:hidden flex items-center justify-center mb-6">
+            <img src={appLogo.url} alt="হিসাব নিকাশ-২৪" className="h-24 w-auto" />
           </div>
 
-          <h2 className="text-2xl font-display font-semibold">Welcome</h2>
-          <p className="text-sm text-muted-foreground mt-1 mb-6">Sign in to your workspace or create a new one.</p>
+          <h2 className="text-2xl font-display font-semibold text-center lg:text-left">Welcome</h2>
+          <p className="text-sm text-muted-foreground mt-1 mb-6 text-center lg:text-left">Sign in to your workspace or create a new one.</p>
 
           <Button onClick={onGoogle} variant="outline" className="w-full mb-4 h-11">
             <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24"><path fill="currentColor" d="M21.35 11.1H12v3.2h5.35c-.23 1.45-1.66 4.25-5.35 4.25-3.22 0-5.85-2.66-5.85-5.95s2.63-5.95 5.85-5.95c1.83 0 3.06.78 3.76 1.45l2.56-2.47C16.92 4.13 14.71 3.2 12 3.2 6.97 3.2 2.9 7.27 2.9 12.3s4.07 9.1 9.1 9.1c5.26 0 8.74-3.69 8.74-8.89 0-.6-.07-1.06-.16-1.41z"/></svg>
