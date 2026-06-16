@@ -18,6 +18,7 @@ type DesignSettings = {
   invoiceTheme?: string;
   invoiceFontSize?: "sm" | "md" | "lg" | "xl";
   invoiceTemplate?: number;
+  invoiceFontFamily?: "serif" | "sans" | "modern";
 };
 
 const THEMES = [
@@ -30,6 +31,12 @@ const FONT_SIZES: { value: "sm" | "md" | "lg" | "xl"; label: { bn: string; en: s
   { value: "md", label: { bn: "মাঝারি", en: "Medium" } },
   { value: "lg", label: { bn: "বড়", en: "Large" } },
   { value: "xl", label: { bn: "অতিরিক্ত বড়", en: "Extra Large" } },
+];
+
+const FONT_FAMILIES: { value: "serif" | "sans" | "modern"; label: { bn: string; en: string }; css: string }[] = [
+  { value: "serif", label: { bn: "সেরিফ", en: "Serif" }, css: "'Playfair Display', 'Noto Serif Bengali', Georgia, serif" },
+  { value: "sans", label: { bn: "স্যান্স সেরিফ", en: "Sans Serif" }, css: "'Plus Jakarta Sans', 'Noto Sans Bengali', system-ui, sans-serif" },
+  { value: "modern", label: { bn: "মডার্ন", en: "Modern" }, css: "'Space Grotesk', 'Noto Sans Bengali', system-ui, sans-serif" },
 ];
 
 const TEMPLATES = Array.from({ length: 9 }, (_, i) => i + 1);
@@ -57,19 +64,21 @@ function InvoiceDesignPage() {
   const [theme, setTheme] = useState<string>(THEMES[0]);
   const [fontSize, setFontSize] = useState<"sm" | "md" | "lg" | "xl">("md");
   const [template, setTemplate] = useState<number>(1);
+  const [fontFamily, setFontFamily] = useState<"serif" | "sans" | "modern">("serif");
 
   useEffect(() => {
     const s = (profileQuery.data?.invoice_settings ?? {}) as DesignSettings;
     if (s.invoiceTheme) setTheme(s.invoiceTheme);
     if (s.invoiceFontSize) setFontSize(s.invoiceFontSize);
     if (s.invoiceTemplate) setTemplate(s.invoiceTemplate);
+    if (s.invoiceFontFamily) setFontFamily(s.invoiceFontFamily);
   }, [profileQuery.data]);
 
   const save = useMutation({
     mutationFn: async () => {
       if (!profileQuery.data) throw new Error("No profile");
       const prev = (profileQuery.data.invoice_settings ?? {}) as Record<string, unknown>;
-      const next = { ...prev, invoiceTheme: theme, invoiceFontSize: fontSize, invoiceTemplate: template };
+      const next = { ...prev, invoiceTheme: theme, invoiceFontSize: fontSize, invoiceTemplate: template, invoiceFontFamily: fontFamily };
       const { error } = await supabase
         .from("profiles")
         .update({ invoice_settings: next as never })
@@ -95,6 +104,7 @@ function InvoiceDesignPage() {
       invoiceTheme: patch.invoiceTheme ?? theme,
       invoiceFontSize: patch.invoiceFontSize ?? fontSize,
       invoiceTemplate: patch.invoiceTemplate ?? template,
+      invoiceFontFamily: patch.invoiceFontFamily ?? fontFamily,
     };
     supabase
       .from("profiles")
@@ -137,15 +147,16 @@ function InvoiceDesignPage() {
         {/* Left: Invoice preview */}
         <Card className="overflow-hidden">
           <CardContent className="p-0">
-            <InvoicePreview
-              theme={theme}
-              fontSize={fontSize}
-              template={template}
-              companyName={profile?.company_name ?? "Your Business"}
-              phone={profile?.phone ?? ""}
-              logoUrl={profile?.logo_url ?? null}
-              lang={lang}
-            />
+          <InvoicePreview
+            theme={theme}
+            fontSize={fontSize}
+            template={template}
+            fontFamily={fontFamily}
+            companyName={profile?.company_name ?? "Your Business"}
+            phone={profile?.phone ?? ""}
+            logoUrl={profile?.logo_url ?? null}
+            lang={lang}
+          />
           </CardContent>
         </Card>
 
@@ -185,6 +196,29 @@ function InvoiceDesignPage() {
                     style={active ? { backgroundColor: theme, color: "#fff" } : undefined}
                     className={cn(
                       "h-11 rounded-lg border text-sm font-medium transition",
+                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
+                    )}
+                  >
+                    {f.label[lang === "bn" ? "bn" : "en"]}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <section>
+            <h3 className="text-base font-semibold mb-3">{tr("ফন্ট স্টাইল", "Font Style")}</h3>
+            <div className="grid grid-cols-3 gap-3">
+              {FONT_FAMILIES.map((f) => {
+                const active = fontFamily === f.value;
+                return (
+                  <button
+                    key={f.value}
+                    type="button"
+                    onClick={() => { setFontFamily(f.value); persist({ invoiceFontFamily: f.value }); }}
+                    style={active ? { backgroundColor: theme, color: "#fff", fontFamily: f.css } : { fontFamily: f.css }}
+                    className={cn(
+                      "h-14 rounded-lg border text-sm font-semibold transition flex items-center justify-center",
                       active ? "border-transparent" : "bg-background hover:bg-muted border-border"
                     )}
                   >
@@ -258,11 +292,12 @@ const FONT_SIZE_MAP = {
 } as const;
 
 function InvoicePreview({
-  theme, fontSize, template, companyName, phone, logoUrl, lang,
+  theme, fontSize, template, fontFamily, companyName, phone, logoUrl, lang,
 }: {
   theme: string;
   fontSize: "sm" | "md" | "lg" | "xl";
   template: number;
+  fontFamily: "serif" | "sans" | "modern";
   companyName: string;
   phone: string;
   logoUrl: string | null;
@@ -331,7 +366,7 @@ function InvoicePreview({
               )}
             </div>
             <div className="flex-1 text-center flex flex-col items-center justify-center">
-              <div style={{ fontSize: f.title, fontWeight: 700, color: titleColor, lineHeight: 1.1, fontFamily: "'Playfair Display', 'Noto Serif Bengali', Georgia, serif" }} className="whitespace-nowrap">
+              <div style={{ fontSize: f.title, fontWeight: 700, color: titleColor, lineHeight: 1.1, fontFamily: FONT_FAMILIES.find(f => f.value === fontFamily)?.css ?? FONT_FAMILIES[0].css }} className="whitespace-nowrap">
                 {companyName}
               </div>
               <div style={{ fontSize: f.base - 1, color: subColor, marginTop: 2 }}>
