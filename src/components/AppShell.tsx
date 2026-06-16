@@ -178,7 +178,7 @@ function SidebarContent({
       </div>
 
       {searchSlot}
-      <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 space-y-2 overflow-y-auto">
         {nav.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
@@ -189,21 +189,21 @@ function SidebarContent({
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-[15px] font-medium transition-all",
+                "group flex items-center gap-4 px-5 py-5 rounded-xl text-base font-medium transition-all",
                 active
                   ? `${cs.activeBg} ${cs.activeText} ring-1 ${cs.activeRing}`
-                  : `${cs.inactiveText} ${cs.inactiveHoverText} ${cs.inactiveHoverBg}`,
+                  : `${cs.inactiveBg} ${cs.inactiveText} ${cs.inactiveHoverText} ${cs.inactiveHoverBg}`,
               )}
             >
-              <Icon className={cn("h-5 w-5 shrink-0", active ? cs.activeText : "")} />
+              <Icon className={cn("h-6 w-6 shrink-0", active ? cs.activeText : "")} />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className={cn("ml-auto h-2 w-2 rounded-full shrink-0", cs.dot)} />}
+              {active && <span className={cn("ml-auto h-2.5 w-2.5 rounded-full shrink-0", cs.dot)} />}
             </Link>
           );
         })}
       </nav>
 
-      <div className="px-3 py-4 border-t border-sidebar-border space-y-1.5">
+      <div className="px-3 py-4 border-t border-sidebar-border space-y-2">
         {effectiveFooter.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
@@ -214,15 +214,15 @@ function SidebarContent({
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-[15px] font-medium transition-all",
+                "group flex items-center gap-4 px-5 py-5 rounded-xl text-base font-medium transition-all",
                 active
                   ? `${cs.activeBg} ${cs.activeText} ring-1 ${cs.activeRing}`
-                  : `${cs.inactiveText} ${cs.inactiveHoverText} ${cs.inactiveHoverBg}`,
+                  : `${cs.inactiveBg} ${cs.inactiveText} ${cs.inactiveHoverText} ${cs.inactiveHoverBg}`,
               )}
             >
-              <Icon className={cn("h-5 w-5 shrink-0", active ? cs.activeText : "")} />
+              <Icon className={cn("h-6 w-6 shrink-0", active ? cs.activeText : "")} />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className={cn("ml-auto h-2 w-2 rounded-full shrink-0", cs.dot)} />}
+              {active && <span className={cn("ml-auto h-2.5 w-2.5 rounded-full shrink-0", cs.dot)} />}
             </Link>
           );
         })}
@@ -231,9 +231,9 @@ function SidebarContent({
             onNavigate?.();
             onSignOut();
           }}
-          className="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-[15px] font-medium text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10 transition-all"
+          className="w-full flex items-center gap-4 px-5 py-5 rounded-xl text-base font-medium text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10 transition-all"
         >
-          <LogOut className="h-5 w-5 shrink-0" />
+          <LogOut className="h-6 w-6 shrink-0" />
           <span className="truncate">{t("signOut")}</span>
         </button>
         <div className="px-3 pt-1 pb-0.5 text-center">
@@ -454,7 +454,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <SearchProvider>
       <div className="min-h-screen flex bg-background text-foreground">
         {/* Desktop sidebar */}
-        <aside className="hidden md:flex w-72 shrink-0 bg-sidebar border-r border-sidebar-border flex-col">
+        <aside className="hidden md:flex w-80 shrink-0 bg-sidebar border-r border-sidebar-border flex-col">
           <SidebarContent
             onSignOut={handleSignOut}
             brandName={brandName}
@@ -477,7 +477,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="p-0 w-72 bg-sidebar">
+              <SheetContent side="left" className="p-0 w-80 bg-sidebar">
                 <SheetTitle className="sr-only">Menu</SheetTitle>
                 <SidebarContent
                   onNavigate={() => setMobileOpen(false)}
