@@ -189,6 +189,7 @@ export function buildInvoiceHtml({ doc, business, settings, lang, labels, hideMe
           ${showHeading && showCompanyName ? `<div class="biz">${esc(business.name || labels.invoice)}</div>` : ""}
           ${showBusinessInfo && business.owner ? `<div class="owner">${lang === "bn" ? "প্রোঃ" : "Prop:"} ${esc(business.owner)}</div>` : ""}
           ${business.address ? `<div class="addr">${esc(business.address)}</div>` : ""}
+          ${business.phone || business.email ? `<div class="addr" style="margin-top:2px;font-size:${baseFs - 2}px">${business.phone ? `${lang === "bn" ? "মোবাইল" : "Phone"}: ${esc(business.phone)}` : ""}${business.phone && business.email ? " | " : ""}${business.email ? `Email: ${esc(business.email)}` : ""}</div>` : ""}
         </div>
       </div>
     </div>
