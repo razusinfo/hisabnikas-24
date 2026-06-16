@@ -266,6 +266,14 @@ function SalesPage() {
       const noteWithDelivery = sett.deliveryCharge && Number(newDelivery) > 0
         ? `${newNote ? newNote + " | " : ""}Delivery: ${newDelivery}`
         : newNote;
+      const today = new Date().toISOString().slice(0, 10);
+      let saleCreatedAt: string | undefined;
+      if (newDate && newDate !== today) {
+        const now = new Date();
+        const d = new Date(newDate + "T00:00:00");
+        d.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+        saleCreatedAt = d.toISOString();
+      }
       const { data: sale, error } = await supabase.from("sales").insert({
         owner_id: u.user!.id,
         customer_id: customerId === "walkin" ? null : customerId,
@@ -279,6 +287,7 @@ function SalesPage() {
         payment_method: newMethod,
         status,
         note: noteWithDelivery || null,
+        ...(saleCreatedAt ? { created_at: saleCreatedAt } : {}),
       }).select().single();
       if (error) throw error;
       const rows = lines.map((l) => ({
