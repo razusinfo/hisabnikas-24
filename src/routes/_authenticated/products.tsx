@@ -72,6 +72,15 @@ function ProductsPage() {
   const qc = useQueryClient();
   const { data } = useSuspenseQuery({ queryKey: ["products"], queryFn: fetchProducts });
   const { data: categories } = useSuspenseQuery({ queryKey: ["categories"], queryFn: fetchCategories });
+  const { data: appSettings } = useAppSettings();
+  const sett = {
+    barcodeScan: appSettings?.barcodeScan !== false,
+    itemUnit: appSettings?.itemUnit !== false,
+    itemCategory: appSettings?.itemCategory !== false,
+    showPurchasePrice: appSettings?.showPurchasePrice !== false,
+    showSalePrice: appSettings?.showSalePrice !== false,
+    lowStockAlert: appSettings?.lowStockAlert !== false,
+  };
 
   const [search, setSearch] = useState("");
   const [quickOpen, setQuickOpen] = useState(false);
