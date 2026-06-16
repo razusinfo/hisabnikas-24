@@ -87,6 +87,7 @@ const nav = [
 
 const footerNav = [
   { to: "/settings", icon: Settings, key: "settings" as const, color: "slate" },
+  { to: "/backup-restore", icon: Database, key: "backupRestore" as const, color: "slate" },
   { to: "/buy-messages", icon: MessageSquare, key: "buyMessages" as const, color: "teal" },
   { to: "/help", icon: HelpCircle, key: "helpSupport" as const, color: "orange" },
   { to: "/current-package", icon: Sparkles, key: "currentPackage" as const, color: "indigo" },
