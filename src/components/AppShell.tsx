@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   TrendingUp,
   Database,
+  UserCircle2,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
