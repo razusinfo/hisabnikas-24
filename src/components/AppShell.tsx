@@ -1,5 +1,6 @@
 import appLogo from "@/assets/logo.png.asset.json";
 import helpIcon from "@/assets/help-icon.png.asset.json";
+import settingsIcon from "@/assets/settings-icon.png.asset.json";
 
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -483,11 +484,11 @@ export function AppShell({ children }: { children: ReactNode }) {
 
             <Link
               to="/settings"
-              className="flex items-center justify-center h-9 w-9 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
+              className="flex items-center justify-center transition-transform hover:scale-105"
               title={t("settings")}
               aria-label={t("settings")}
             >
-              <Settings className="h-4 w-4" />
+              <img src={settingsIcon.url} alt={t("settings")} className="h-9 w-9 object-contain" />
             </Link>
 
             <ProprietorMenu
