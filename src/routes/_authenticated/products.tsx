@@ -31,6 +31,12 @@ type Product = {
   low_stock_threshold: number;
   category_id: string | null;
   image_url: string | null;
+  vat: number | null;
+  mrp: number | null;
+  batch_no: string | null;
+  serial_no: string | null;
+  size: string | null;
+  expiry_date: string | null;
 };
 
 type Category = { id: string; name: string };
@@ -39,7 +45,9 @@ const emptyForm = {
   name: "", sku: "", barcode: "", unit: "pcs",
   cost_price: "0", sell_price: "0", stock: "0", low_stock_threshold: "5",
   category_id: "", image_url: "" as string,
+  vat: "0", mrp: "", batch_no: "", serial_no: "", size: "", expiry_date: "",
 };
+
 
 async function fetchProducts() {
   const { data, error } = await supabase
