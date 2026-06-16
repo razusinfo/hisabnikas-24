@@ -187,7 +187,7 @@ export function buildInvoiceHtml({ doc, business, settings, lang, labels, hideMe
       <div class="brand">
         <div>
           ${showHeading && showCompanyName ? `<div class="biz">${esc(business.name || labels.invoice)}</div>` : ""}
-          ${showBusinessInfo && business.owner ? `<div class="owner">${esc(business.owner)}</div>` : ""}
+          ${showBusinessInfo && business.owner ? `<div class="owner">${lang === "bn" ? "প্রোঃ" : "Prop:"} ${esc(business.owner)}</div>` : ""}
           ${business.address ? `<div class="addr">${esc(business.address)}</div>` : ""}
         </div>
       </div>
