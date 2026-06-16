@@ -49,6 +49,8 @@ const TEMPLATES = Array.from({ length: 9 }, (_, i) => i + 1);
 
 function InvoiceDesignPage() {
   const { t, lang } = useI18n();
+  const { showInvoicePreview } = useInvoicePreview();
+
   const tr = (bn: string, en: string) => (lang === "bn" ? bn : en);
   const qc = useQueryClient();
 
