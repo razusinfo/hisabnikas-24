@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
-import Cropper, { type Area } from "react-easy-crop";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import type { Area } from "react-easy-crop";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Loader2 } from "lucide-react";
+
+const Cropper = lazy(() => import("react-easy-crop"));
 
 async function getCroppedBlob(src: string, area: Area, size = 512): Promise<Blob> {
   const img = await new Promise<HTMLImageElement>((resolve, reject) => {
