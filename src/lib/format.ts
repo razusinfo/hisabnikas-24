@@ -33,8 +33,7 @@ export const fmtInvoiceDate = (d: string | Date, lang: "en" | "bn" = "en") => {
   const day = String(dt.getDate()).padStart(2, "0");
   const month = String(dt.getMonth() + 1).padStart(2, "0");
   const year = dt.getFullYear();
-  const dateStr = lang === "bn" ? toBnDigits(`${day}/${month}/${year}`) : `${day}/${month}/${year}`;
-  return lang === "bn" ? `তারিখ:${dateStr}` : `Date:${dateStr}`;
+  return lang === "bn" ? toBnDigits(`${day}/${month}/${year}`) : `${day}/${month}/${year}`;
 };
 
 export const fmtNum = (n: number | string | null | undefined, lang: "en" | "bn" = "en") => {
