@@ -581,9 +581,12 @@ function InvoicePreview({
             <div><span className="font-semibold">{tr("ইনভয়েস নং", "Invoice #")}:</span> 5093758370499</div>
             <div>তারিখ:১১/১০/২০২৩</div>
           </div>
-          <div className="flex justify-between">
-            <div><span className="font-semibold">{tr("কাস্টমার", "Customer")}:</span> Demo Party</div>
-            <div><span className="font-semibold">{tr("ফোন", "Phone")}:</span> 01XXXXXXXXX</div>
+          <div className="flex items-center gap-3 flex-wrap" style={{ fontSize: f.base - 2 }}>
+            <span><span className="font-semibold">{tr("ক্রেতার নাম:", "Customer Name:")}</span> Demo Party</span>
+            <span className="text-gray-400">|</span>
+            <span><span className="font-semibold">{tr("ফোন", "Phone")}:</span> 01XXXXXXXXX</span>
+            <span className="text-gray-400">|</span>
+            <span><span className="font-semibold">{tr("ঠিকানা:", "Address:")}</span> {tr("ধানমন্ডি, ঢাকা", "Dhanmondi, Dhaka")}</span>
           </div>
         </div>
 
