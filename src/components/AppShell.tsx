@@ -77,18 +77,18 @@ function LangToggle({ compact = false }: { compact?: boolean }) {
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
-const colorStyles: Record<string, { activeBg: string; activeText: string; activeRing: string; inactiveText: string; inactiveHoverText: string; inactiveHoverBg: string; dot: string }> = {
-  blue: { activeBg: "bg-sky-100", activeText: "text-sky-700", activeRing: "ring-sky-200", inactiveText: "text-sky-500", inactiveHoverText: "hover:text-sky-700", inactiveHoverBg: "hover:bg-sky-50", dot: "bg-sky-500" },
-  emerald: { activeBg: "bg-emerald-100", activeText: "text-emerald-700", activeRing: "ring-emerald-200", inactiveText: "text-emerald-500", inactiveHoverText: "hover:text-emerald-700", inactiveHoverBg: "hover:bg-emerald-50", dot: "bg-emerald-500" },
-  amber: { activeBg: "bg-amber-100", activeText: "text-amber-700", activeRing: "ring-amber-200", inactiveText: "text-amber-500", inactiveHoverText: "hover:text-amber-700", inactiveHoverBg: "hover:bg-amber-50", dot: "bg-amber-500" },
-  violet: { activeBg: "bg-violet-100", activeText: "text-violet-700", activeRing: "ring-violet-200", inactiveText: "text-violet-500", inactiveHoverText: "hover:text-violet-700", inactiveHoverBg: "hover:bg-violet-50", dot: "bg-violet-500" },
-  rose: { activeBg: "bg-rose-100", activeText: "text-rose-700", activeRing: "ring-rose-200", inactiveText: "text-rose-500", inactiveHoverText: "hover:text-rose-700", inactiveHoverBg: "hover:bg-rose-50", dot: "bg-rose-500" },
-  cyan: { activeBg: "bg-cyan-100", activeText: "text-cyan-700", activeRing: "ring-cyan-200", inactiveText: "text-cyan-500", inactiveHoverText: "hover:text-cyan-700", inactiveHoverBg: "hover:bg-cyan-50", dot: "bg-cyan-500" },
-  slate: { activeBg: "bg-slate-100", activeText: "text-slate-700", activeRing: "ring-slate-200", inactiveText: "text-slate-500", inactiveHoverText: "hover:text-slate-700", inactiveHoverBg: "hover:bg-slate-50", dot: "bg-slate-500" },
-  teal: { activeBg: "bg-teal-100", activeText: "text-teal-700", activeRing: "ring-teal-200", inactiveText: "text-teal-500", inactiveHoverText: "hover:text-teal-700", inactiveHoverBg: "hover:bg-teal-50", dot: "bg-teal-500" },
-  orange: { activeBg: "bg-orange-100", activeText: "text-orange-700", activeRing: "ring-orange-200", inactiveText: "text-orange-500", inactiveHoverText: "hover:text-orange-700", inactiveHoverBg: "hover:bg-orange-50", dot: "bg-orange-500" },
-  indigo: { activeBg: "bg-indigo-100", activeText: "text-indigo-700", activeRing: "ring-indigo-200", inactiveText: "text-indigo-500", inactiveHoverText: "hover:text-indigo-700", inactiveHoverBg: "hover:bg-indigo-50", dot: "bg-indigo-500" },
-  red: { activeBg: "bg-red-100", activeText: "text-red-700", activeRing: "ring-red-200", inactiveText: "text-red-500", inactiveHoverText: "hover:text-red-700", inactiveHoverBg: "hover:bg-red-50", dot: "bg-red-500" },
+const colorStyles: Record<string, { activeBg: string; activeText: string; activeRing: string; inactiveText: string; inactiveHoverText: string; inactiveHoverBg: string; inactiveBg: string; dot: string }> = {
+  blue: { activeBg: "bg-sky-100", activeText: "text-sky-700", activeRing: "ring-sky-200", inactiveText: "text-sky-600", inactiveHoverText: "hover:text-sky-700", inactiveHoverBg: "hover:bg-sky-100", inactiveBg: "bg-sky-50", dot: "bg-sky-500" },
+  emerald: { activeBg: "bg-emerald-100", activeText: "text-emerald-700", activeRing: "ring-emerald-200", inactiveText: "text-emerald-600", inactiveHoverText: "hover:text-emerald-700", inactiveHoverBg: "hover:bg-emerald-100", inactiveBg: "bg-emerald-50", dot: "bg-emerald-500" },
+  amber: { activeBg: "bg-amber-100", activeText: "text-amber-700", activeRing: "ring-amber-200", inactiveText: "text-amber-600", inactiveHoverText: "hover:text-amber-700", inactiveHoverBg: "hover:bg-amber-100", inactiveBg: "bg-amber-50", dot: "bg-amber-500" },
+  violet: { activeBg: "bg-violet-100", activeText: "text-violet-700", activeRing: "ring-violet-200", inactiveText: "text-violet-600", inactiveHoverText: "hover:text-violet-700", inactiveHoverBg: "hover:bg-violet-100", inactiveBg: "bg-violet-50", dot: "bg-violet-500" },
+  rose: { activeBg: "bg-rose-100", activeText: "text-rose-700", activeRing: "ring-rose-200", inactiveText: "text-rose-600", inactiveHoverText: "hover:text-rose-700", inactiveHoverBg: "hover:bg-rose-100", inactiveBg: "bg-rose-50", dot: "bg-rose-500" },
+  cyan: { activeBg: "bg-cyan-100", activeText: "text-cyan-700", activeRing: "ring-cyan-200", inactiveText: "text-cyan-600", inactiveHoverText: "hover:text-cyan-700", inactiveHoverBg: "hover:bg-cyan-100", inactiveBg: "bg-cyan-50", dot: "bg-cyan-500" },
+  slate: { activeBg: "bg-slate-100", activeText: "text-slate-700", activeRing: "ring-slate-200", inactiveText: "text-slate-600", inactiveHoverText: "hover:text-slate-700", inactiveHoverBg: "hover:bg-slate-100", inactiveBg: "bg-slate-50", dot: "bg-slate-500" },
+  teal: { activeBg: "bg-teal-100", activeText: "text-teal-700", activeRing: "ring-teal-200", inactiveText: "text-teal-600", inactiveHoverText: "hover:text-teal-700", inactiveHoverBg: "hover:bg-teal-100", inactiveBg: "bg-teal-50", dot: "bg-teal-500" },
+  orange: { activeBg: "bg-orange-100", activeText: "text-orange-700", activeRing: "ring-orange-200", inactiveText: "text-orange-600", inactiveHoverText: "hover:text-orange-700", inactiveHoverBg: "hover:bg-orange-100", inactiveBg: "bg-orange-50", dot: "bg-orange-500" },
+  indigo: { activeBg: "bg-indigo-100", activeText: "text-indigo-700", activeRing: "ring-indigo-200", inactiveText: "text-indigo-600", inactiveHoverText: "hover:text-indigo-700", inactiveHoverBg: "hover:bg-indigo-100", inactiveBg: "bg-indigo-50", dot: "bg-indigo-500" },
+  red: { activeBg: "bg-red-100", activeText: "text-red-700", activeRing: "ring-red-200", inactiveText: "text-red-600", inactiveHoverText: "hover:text-red-700", inactiveHoverBg: "hover:bg-red-100", inactiveBg: "bg-red-50", dot: "bg-red-500" },
 };
 
 const nav = [
@@ -178,7 +178,7 @@ function SidebarContent({
       </div>
 
       {searchSlot}
-      <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 space-y-2 overflow-y-auto">
         {nav.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
@@ -189,21 +189,21 @@ function SidebarContent({
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-[15px] font-medium transition-all",
+                "group flex items-center gap-4 px-5 py-5 rounded-xl text-base font-medium transition-all",
                 active
                   ? `${cs.activeBg} ${cs.activeText} ring-1 ${cs.activeRing}`
-                  : `${cs.inactiveText} ${cs.inactiveHoverText} ${cs.inactiveHoverBg}`,
+                  : `${cs.inactiveBg} ${cs.inactiveText} ${cs.inactiveHoverText} ${cs.inactiveHoverBg}`,
               )}
             >
-              <Icon className={cn("h-5 w-5 shrink-0", active ? cs.activeText : "")} />
+              <Icon className={cn("h-6 w-6 shrink-0", active ? cs.activeText : "")} />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className={cn("ml-auto h-2 w-2 rounded-full shrink-0", cs.dot)} />}
+              {active && <span className={cn("ml-auto h-2.5 w-2.5 rounded-full shrink-0", cs.dot)} />}
             </Link>
           );
         })}
       </nav>
 
-      <div className="px-3 py-4 border-t border-sidebar-border space-y-1.5">
+      <div className="px-3 py-4 border-t border-sidebar-border space-y-2">
         {effectiveFooter.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
@@ -214,15 +214,15 @@ function SidebarContent({
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-[15px] font-medium transition-all",
+                "group flex items-center gap-4 px-5 py-5 rounded-xl text-base font-medium transition-all",
                 active
                   ? `${cs.activeBg} ${cs.activeText} ring-1 ${cs.activeRing}`
-                  : `${cs.inactiveText} ${cs.inactiveHoverText} ${cs.inactiveHoverBg}`,
+                  : `${cs.inactiveBg} ${cs.inactiveText} ${cs.inactiveHoverText} ${cs.inactiveHoverBg}`,
               )}
             >
-              <Icon className={cn("h-5 w-5 shrink-0", active ? cs.activeText : "")} />
+              <Icon className={cn("h-6 w-6 shrink-0", active ? cs.activeText : "")} />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className={cn("ml-auto h-2 w-2 rounded-full shrink-0", cs.dot)} />}
+              {active && <span className={cn("ml-auto h-2.5 w-2.5 rounded-full shrink-0", cs.dot)} />}
             </Link>
           );
         })}
@@ -231,9 +231,9 @@ function SidebarContent({
             onNavigate?.();
             onSignOut();
           }}
-          className="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-[15px] font-medium text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10 transition-all"
+          className="w-full flex items-center gap-4 px-5 py-5 rounded-xl text-base font-medium text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10 transition-all"
         >
-          <LogOut className="h-5 w-5 shrink-0" />
+          <LogOut className="h-6 w-6 shrink-0" />
           <span className="truncate">{t("signOut")}</span>
         </button>
         <div className="px-3 pt-1 pb-0.5 text-center">
@@ -454,7 +454,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <SearchProvider>
       <div className="min-h-screen flex bg-background text-foreground">
         {/* Desktop sidebar */}
-        <aside className="hidden md:flex w-72 shrink-0 bg-sidebar border-r border-sidebar-border flex-col">
+        <aside className="hidden md:flex w-80 shrink-0 bg-sidebar border-r border-sidebar-border flex-col">
           <SidebarContent
             onSignOut={handleSignOut}
             brandName={brandName}
@@ -477,7 +477,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="p-0 w-72 bg-sidebar">
+              <SheetContent side="left" className="p-0 w-80 bg-sidebar">
                 <SheetTitle className="sr-only">Menu</SheetTitle>
                 <SidebarContent
                   onNavigate={() => setMobileOpen(false)}
