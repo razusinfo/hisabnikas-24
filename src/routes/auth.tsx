@@ -10,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { useServerFn } from "@tanstack/react-start";
+import { requestPhoneOtp, verifyPhoneOtp } from "@/lib/phone-otp.functions";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
