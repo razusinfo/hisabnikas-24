@@ -48,7 +48,6 @@ function getRange(
   }
   if (period === "daily") {
     from.setHours(0, 0, 0, 0);
-    to.setHours(23, 59, 59, 999);
   } else if (period === "monthly") {
     from.setDate(1);
     from.setHours(0, 0, 0, 0);
@@ -56,6 +55,7 @@ function getRange(
     from.setMonth(0, 1);
     from.setHours(0, 0, 0, 0);
   }
+  to.setHours(23, 59, 59, 999);
   return { from: from.toISOString(), to: to.toISOString() };
 }
 
