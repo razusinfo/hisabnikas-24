@@ -104,6 +104,14 @@ function SalesPage() {
 
   // New sale dialog state
   const [openNew, setOpenNew] = useState(false);
+  const search = Route.useSearch();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (search.new === 1) {
+      setOpenNew(true);
+      navigate({ to: "/sales", search: {}, replace: true });
+    }
+  }, [search.new, navigate]);
   const [customerId, setCustomerId] = useState<string>("walkin");
   const [newMethod, setNewMethod] = useState("cash");
   const [newDiscount, setNewDiscount] = useState("0");
