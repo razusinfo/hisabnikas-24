@@ -82,6 +82,8 @@ async function fireSmsAsync(opts: {
 
 function SalesPage() {
   const { t, lang } = useI18n();
+  const { showInvoicePreview } = useInvoicePreview();
+
   const qc = useQueryClient();
   const { data } = useSuspenseQuery({ queryKey: ["sales"], queryFn: fetchSales });
 
