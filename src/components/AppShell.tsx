@@ -454,7 +454,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <SearchProvider>
       <div className="min-h-screen flex bg-background text-foreground">
         {/* Desktop sidebar */}
-        <aside className="hidden md:flex w-80 shrink-0 bg-sidebar border-r border-sidebar-border flex-col">
+        <aside className="hidden md:flex w-64 shrink-0 bg-sidebar border-r border-sidebar-border flex-col">
           <SidebarContent
             onSignOut={handleSignOut}
             brandName={brandName}
