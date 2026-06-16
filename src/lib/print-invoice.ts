@@ -10,6 +10,7 @@ export type PrintInvoiceItem = {
 
 export type PrintInvoiceLabels = {
   invoice: string;
+  date: string;
   customer: string;
   phone: string;
   method: string;
