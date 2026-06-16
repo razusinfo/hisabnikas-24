@@ -57,7 +57,6 @@ export type PrintInvoiceOptions = {
   settings: any;
   lang: "bn" | "en";
   labels: PrintInvoiceLabels;
-  date: string;
   hideMethod?: boolean;
 };
 
