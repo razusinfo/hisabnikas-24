@@ -64,7 +64,7 @@ function InvoiceDesignPage() {
         .eq("id", u.user.id)
         .single();
       if (error) throw error;
-      return data;
+      return data ? { ...data, email: u.user.email || null } : null;
     },
   });
 
@@ -207,6 +207,8 @@ function InvoiceDesignPage() {
         name: profile?.company_name ?? "Your Business",
         owner: profile?.full_name ?? "",
         address: profile?.address ?? "",
+        phone: profile?.phone ?? null,
+        email: (profile as any)?.email ?? null,
         logoUrl: profile?.logo_url ?? null,
       },
       settings: settingsForPrint,
@@ -322,6 +324,7 @@ function InvoiceDesignPage() {
             fontWeight={fontWeight}
             companyName={profile?.company_name ?? "Your Business"}
             phone={profile?.phone ?? ""}
+            email={(profile as any)?.email ?? ""}
             logoUrl={profile?.logo_url ?? null}
             lang={lang}
           />
@@ -485,7 +488,7 @@ const FONT_SIZE_MAP = {
 } as const;
 
 function InvoicePreview({
-  theme, fontSize, template, fontFamily, fontWeight, companyName, phone, logoUrl, lang,
+  theme, fontSize, template, fontFamily, fontWeight, companyName, phone, email, logoUrl, lang,
 }: {
   theme: string;
   fontSize: "sm" | "md" | "lg" | "xl";
@@ -494,6 +497,7 @@ function InvoicePreview({
   fontWeight: InvoiceFontWeight;
   companyName: string;
   phone: string;
+  email: string;
   logoUrl: string | null;
   lang: string;
 }) {
@@ -569,6 +573,11 @@ function InvoicePreview({
               {phone && (
                 <div style={{ fontSize: f.base - 1, color: subColor }}>
                   {tr("ফোন", "Phone")}: {phone}
+                </div>
+              )}
+              {email && (
+                <div style={{ fontSize: f.base - 1, color: subColor }}>
+                  Email: {email}
                 </div>
               )}
             </div>

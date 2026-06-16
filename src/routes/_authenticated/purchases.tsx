@@ -92,10 +92,10 @@ function PurchasesPage() {
       if (!u.user) return null;
       const { data } = await supabase
         .from("profiles")
-        .select("full_name, company_name, logo_url, address, invoice_settings")
+        .select("full_name, company_name, logo_url, address, phone, invoice_settings")
         .eq("id", u.user.id)
         .single();
-      return data;
+      return data ? { ...data, email: u.user.email || null } : null;
     },
   });
 
@@ -258,6 +258,8 @@ function PurchasesPage() {
         name: profile?.company_name || "",
         owner: profile?.full_name || "",
         address: profile?.address || "",
+        phone: profile?.phone || null,
+        email: (profile as any)?.email || null,
         logoUrl: profile?.logo_url || null,
       },
       settings: profile?.invoice_settings ?? {},
