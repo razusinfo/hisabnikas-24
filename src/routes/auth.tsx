@@ -140,6 +140,10 @@ function AuthPage() {
                   <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
                 </div>
                 <div className="space-y-1.5">
+                  <Label>মোবাইল নাম্বার</Label>
+                  <Input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="01XXXXXXXXX" />
+                </div>
+                <div className="space-y-1.5">
                   <Label>{t("email")}</Label>
                   <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
