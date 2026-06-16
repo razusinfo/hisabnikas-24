@@ -1,4 +1,6 @@
 import appLogo from "@/assets/logo.png.asset.json";
+import helpIcon from "@/assets/help-icon.png.asset.json";
+
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
