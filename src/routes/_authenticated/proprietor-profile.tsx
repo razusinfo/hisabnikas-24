@@ -105,14 +105,15 @@ function ProprietorProfilePage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+
   const uploadAvatar = useMutation({
-    mutationFn: async (file: File) => {
+    mutationFn: async (blob: Blob) => {
       if (!profileQuery.data) throw new Error("No profile");
-      const ext = file.name.split(".").pop() || "png";
-      const path = `${profileQuery.data.id}/avatar-${Date.now()}.${ext}`;
+      const path = `${profileQuery.data.id}/avatar-${Date.now()}.png`;
       const { error: upErr } = await supabase.storage
         .from("business-logos")
-        .upload(path, file, { upsert: true, contentType: file.type });
+        .upload(path, blob, { upsert: true, contentType: "image/png" });
       if (upErr) throw upErr;
       if (profileQuery.data.avatar_url) {
         await supabase.storage.from("business-logos").remove([profileQuery.data.avatar_url]);
@@ -125,6 +126,7 @@ function ProprietorProfilePage() {
     },
     onSuccess: () => {
       toast.success(t("settingsSaved"));
+      setPendingFile(null);
       qc.invalidateQueries({ queryKey: ["proprietor-profile"] });
     },
     onError: (e: Error) => toast.error(e.message),
