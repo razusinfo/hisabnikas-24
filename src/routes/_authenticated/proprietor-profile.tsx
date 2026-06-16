@@ -248,6 +248,13 @@ function ProprietorProfilePage() {
           </div>
         </CardContent>
       </Card>
+
+      <AvatarCropDialog
+        file={pendingFile}
+        onCancel={() => setPendingFile(null)}
+        onCropped={(blob) => uploadAvatar.mutate(blob)}
+        saving={uploadAvatar.isPending}
+      />
     </div>
   );
 }
