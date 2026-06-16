@@ -310,7 +310,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <TopQuickLink to="/help" icon={HelpCircle} label={t("helpSupport")} colorClass="text-orange-600 hover:bg-orange-50" />
             <TopQuickLink to="/settings" icon={Settings} label={t("settings")} colorClass="text-slate-600 hover:bg-slate-100" />
             <Link
-              to="/settings"
+              to="/proprietor-profile"
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-primary hover:bg-primary/10 transition-colors max-w-[200px]"
               title={brandName}
             >
