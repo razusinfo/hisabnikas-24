@@ -145,12 +145,13 @@ export function printStyledInvoice({ doc, business, settings, lang, labels, hide
       ${pageStyle}
       .top{display:flex;justify-content:center;align-items:center;gap:${thermal ? 8 : 28}px;position:relative;${topStyle}}
       .brand{display:flex;gap:${thermal ? 8 : 18}px;align-items:center;flex-direction:column;text-align:center}
-      .brand img{height:${thermal ? 40 : 76}px;width:${thermal ? 40 : 76}px;object-fit:contain;border-radius:${thermal ? 4 : 10}px;${thermal ? "" : "border:1px solid #e2e8f0;"}background:#fff}
+      .logo-left{position:absolute;left:0;top:0}
+      .logo-left img{height:${thermal ? 40 : 76}px;width:${thermal ? 40 : 76}px;object-fit:contain;border-radius:${thermal ? 4 : 10}px;${thermal ? "" : "border:1px solid #e2e8f0;"}background:#fff}
       .brand .biz{font-size:${thermal ? 16 : baseFs + 9}px;font-weight:${fontWeight};letter-spacing:-0.01em;font-family:${fontFamilyCss};color:${titleClr}}
       .brand .owner{font-size:${thermal ? 11 : baseFs - 2}px;color:${subClr};margin-top:2px}
       .brand .addr{font-size:${thermal ? 10 : baseFs - 4}px;color:${subClr};margin-top:2px;text-align:center;max-width:${thermal ? "70mm" : "420px"};line-height:1.3}
       .meta{position:absolute;right:0;top:0;text-align:right}
-      .meta img{height:${thermal ? 40 : 76}px;width:${thermal ? 40 : 76}px;object-fit:contain;border-radius:${thermal ? 4 : 10}px;${thermal ? "" : "border:1px solid #e2e8f0;"}background:#fff;margin-bottom:${thermal ? 4 : 10}px;display:inline-block;vertical-align:top}
+      
       .meta .no{font-family:ui-monospace,Menlo,monospace;font-size:${thermal ? 11 : baseFs}px;color:${invertHeader ? "#fff" : (thermal ? "#000" : "#334155")};margin-top:4px}
       .meta .date{font-size:${thermal ? 10 : baseFs - 2}px;color:${subClr};margin-top:2px}
       .row{display:${thermal ? "block" : "flex"};justify-content:space-between;gap:22px;margin-top:${thermal ? 6 : 18}px}
@@ -179,8 +180,8 @@ export function printStyledInvoice({ doc, business, settings, lang, labels, hide
       @media print{body{padding:${thermal ? "1mm" : "0.1in"}}.sheet{max-width:none}}
     </style></head><body><div class="sheet">
     <div class="top">
+      ${showCompanyLogo && business.logoUrl ? `<div class="logo-left"><img src="${esc(business.logoUrl)}" alt=""></div>` : ""}
       <div class="brand">
-        ${thermal && showCompanyLogo && business.logoUrl ? `<img src="${esc(business.logoUrl)}" alt="">` : ""}
         <div>
           ${showHeading && showCompanyName ? `<div class="biz">${esc(business.name || labels.invoice)}</div>` : ""}
           ${showBusinessInfo && business.owner ? `<div class="owner">${esc(business.owner)}</div>` : ""}
@@ -188,7 +189,6 @@ export function printStyledInvoice({ doc, business, settings, lang, labels, hide
         </div>
       </div>
       <div class="meta">
-        ${!thermal && showCompanyLogo && business.logoUrl ? `<img src="${esc(business.logoUrl)}" alt="">` : ""}
         ${showInvoiceNumber ? `<div class="no">${esc(doc.invoice_no)}</div>` : ""}
         ${showExportDate ? `<div class="date">${esc(fmtInvoiceDate(doc.created_at, lang))}</div>` : ""}
         <div style="margin-top:${thermal ? 4 : 10}px">${dueBadge}</div>
