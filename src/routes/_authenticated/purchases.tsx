@@ -58,6 +58,8 @@ type Line = { product_id: string | null; name: string; qty: number; unit_cost: n
 
 function PurchasesPage() {
   const { t, lang } = useI18n();
+  const { showInvoicePreview } = useInvoicePreview();
+
   const qc = useQueryClient();
   const { data } = useSuspenseQuery({ queryKey: ["purchases"], queryFn: fetchPurchases });
 
