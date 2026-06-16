@@ -82,6 +82,20 @@ function PurchasesPage() {
 
   const { data: products = [] } = useQuery({ queryKey: ["products-list"], queryFn: fetchProducts, enabled: openNew });
 
+  const { data: profile } = useQuery({
+    queryKey: ["profile", "me"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return null;
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, company_name, logo_url, invoice_settings")
+        .eq("id", u.user.id)
+        .single();
+      return data;
+    },
+  });
+
   const methodLabel = (m: string) => {
     const key = `method${m ? m.charAt(0).toUpperCase() + m.slice(1) : ""}` as any;
     const v = (t as any)(key);
