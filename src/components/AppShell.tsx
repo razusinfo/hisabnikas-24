@@ -91,17 +91,17 @@ const colorStyles: Record<string, { activeBg: string; activeText: string; active
   red: { activeBg: "bg-red-100", activeText: "text-red-700", activeRing: "ring-red-200", inactiveText: "text-red-600", inactiveHoverText: "hover:text-red-700", inactiveHoverBg: "hover:bg-red-100", inactiveBg: "bg-red-50", dot: "bg-red-500" },
 };
 
-const nav = [
+const fixedNav = [
   { to: "/dashboard", icon: LayoutDashboard, key: "dashboard" as const, color: "blue" },
   { to: "/sales", icon: Receipt, key: "sales" as const, color: "emerald" },
   { to: "/purchases", icon: ShoppingCart, key: "purchases" as const, color: "amber" },
   { to: "/products", icon: Package, key: "products" as const, color: "violet" },
   { to: "/expenses", icon: Wallet, key: "expenses" as const, color: "rose" },
-  { to: "/customers", icon: Users, key: "customers" as const, color: "cyan" },
-  { to: "/profit-loss", icon: TrendingUp, key: "profitLoss" as const, color: "teal" },
 ];
 
-const footerNav = [
+const scrollNav = [
+  { to: "/customers", icon: Users, key: "customers" as const, color: "cyan" },
+  { to: "/profit-loss", icon: TrendingUp, key: "profitLoss" as const, color: "teal" },
   { to: "/settings", icon: Settings, key: "settings" as const, color: "slate" },
   { to: "/backup-restore", icon: Database, key: "backupRestore" as const, color: "slate" },
   { to: "/buy-messages", icon: MessageSquare, key: "buyMessages" as const, color: "teal" },
