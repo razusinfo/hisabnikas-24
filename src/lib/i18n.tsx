@@ -468,6 +468,7 @@ const dict = {
     invoice: "চালান",
     date: "তারিখ",
     customer: "ক্রেতা",
+    customerName: "ক্রেতার নাম:",
     qty: "পরিমাণ",
     noData: "এখনও কিছু নেই।",
     save: "সংরক্ষণ",
