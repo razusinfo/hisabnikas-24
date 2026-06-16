@@ -117,19 +117,12 @@ function Stat({
 function Dashboard() {
   const { t } = useI18n();
   const { data: d } = useSuspenseQuery({ queryKey: ["dashboard"], queryFn: fetchDashboard });
-  const navigate = useNavigate();
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto">
       <PageHeader
         title={t("dashboard")}
         subtitle="Real-time pulse of your business."
-        actions={
-          <Button onClick={() => navigate({ to: "/sales", search: { new: 1 } })}>
-            <Plus className="h-4 w-4 mr-2" />
-            {t("newSale")}
-          </Button>
-        }
       />
 
 
