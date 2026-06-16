@@ -160,26 +160,61 @@ export function QuickSaleDialog({ open, onOpenChange }: { open: boolean; onOpenC
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Select value={customerId} onValueChange={setCustomerId}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="walkin">{t("walkIn")}</SelectItem>
-                {(customers as any[]).map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.name}{c.phone ? ` · ${c.phone}` : ""}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={method} onValueChange={setMethod}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="cash">{t("methodCash")}</SelectItem>
-                <SelectItem value="card">{t("methodCard")}</SelectItem>
-                <SelectItem value="bkash">bKash</SelectItem>
-                <SelectItem value="nagad">Nagad</SelectItem>
-                <SelectItem value="bank">{t("methodBank")}</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Select value={customerId} onValueChange={(v) => { setCustomerId(v); setShowAddCustomer(false); }}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="walkin">{t("walkIn")}</SelectItem>
+                    {(customers as any[]).map((c) => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}{c.phone ? ` · ${c.phone}` : ""}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {!showAddCustomer && (
+                  <button type="button" onClick={() => setShowAddCustomer(true)} className="text-xs flex items-center gap-1 text-primary hover:underline">
+                    <UserPlus className="h-3 w-3" /> নতুন গ্রাহক যুক্ত করুন
+                  </button>
+                )}
+              </div>
+              <Select value={method} onValueChange={setMethod}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cash">{t("methodCash")}</SelectItem>
+                  <SelectItem value="card">{t("methodCard")}</SelectItem>
+                  <SelectItem value="bkash">bKash</SelectItem>
+                  <SelectItem value="nagad">Nagad</SelectItem>
+                  <SelectItem value="bank">{t("methodBank")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {showAddCustomer && (
+              <div className="border border-border rounded-lg p-3 space-y-2 bg-muted/30">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">নতুন গ্রাহক</span>
+                  <button type="button" onClick={() => setShowAddCustomer(false)} className="text-xs text-muted-foreground hover:text-foreground">বাতিল</button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-xs">{t("name")}</Label>
+                    <Input size={1} value={newCustomer.name} onChange={(e) => setNewCustomer({ ...newCustomer, name: e.target.value })} placeholder="গ্রাহকের নাম" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">{t("phone")}</Label>
+                    <Input size={1} value={newCustomer.phone} onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })} placeholder="ফোন নম্বর" />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">{t("address")}</Label>
+                  <Input size={1} value={newCustomer.address} onChange={(e) => setNewCustomer({ ...newCustomer, address: e.target.value })} placeholder="ঠিকানা" />
+                </div>
+                <Button size="sm" onClick={saveNewCustomer} disabled={addingCustomer} className="w-full sm:w-auto">
+                  {addingCustomer ? "..." : "গ্রাহক সংরক্ষণ"}
+                </Button>
+              </div>
+            )}
           </div>
 
           <div>
