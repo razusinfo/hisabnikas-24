@@ -238,10 +238,10 @@ export function AppShell({ children }: { children: ReactNode }) {
     queryKey: ["app-brand"],
     queryFn: async () => {
       const { data: u } = await supabase.auth.getUser();
-      if (!u.user) return { name: null as string | null, logoUrl: null as string | null };
+      if (!u.user) return { name: null as string | null, logoUrl: null as string | null, avatarUrl: null as string | null };
       const { data: p } = await supabase
         .from("profiles")
-        .select("company_name, logo_url")
+        .select("company_name, logo_url, avatar_url")
         .eq("id", u.user.id)
         .maybeSingle();
       let logoUrl: string | null = null;
@@ -251,12 +251,21 @@ export function AppShell({ children }: { children: ReactNode }) {
           .createSignedUrl(p.logo_url, 60 * 60);
         logoUrl = signed?.signedUrl ?? null;
       }
-      return { name: p?.company_name ?? null, logoUrl };
+      let avatarUrl: string | null = null;
+      const avatarPath = (p as { avatar_url?: string | null } | null)?.avatar_url;
+      if (avatarPath) {
+        const { data: signed } = await supabase.storage
+          .from("business-logos")
+          .createSignedUrl(avatarPath, 60 * 60);
+        avatarUrl = signed?.signedUrl ?? null;
+      }
+      return { name: p?.company_name ?? null, logoUrl, avatarUrl };
     },
   });
 
   const brandName = brandQuery.data?.name || t("appName");
   const brandLogo = brandQuery.data?.logoUrl;
+  const proprietorAvatar = brandQuery.data?.avatarUrl;
 
   return (
     <SearchProvider>
@@ -311,11 +320,19 @@ export function AppShell({ children }: { children: ReactNode }) {
             <TopQuickLink to="/settings" icon={Settings} label={t("settings")} colorClass="text-slate-600 hover:bg-slate-100" />
             <Link
               to="/proprietor-profile"
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-primary hover:bg-primary/10 transition-colors max-w-[200px]"
+              className="ml-1 flex items-center justify-center rounded-full hover:ring-2 hover:ring-primary/30 transition-all"
               title={brandName}
+              aria-label={brandName}
             >
-              <UserCircle2 className="h-5 w-5 shrink-0" />
-              <span className="truncate">{brandName}</span>
+              {proprietorAvatar ? (
+                <img
+                  src={proprietorAvatar}
+                  alt={brandName}
+                  className="h-9 w-9 rounded-full object-cover border border-border"
+                />
+              ) : (
+                <UserCircle2 className="h-9 w-9 text-primary" />
+              )}
             </Link>
           </header>
 
