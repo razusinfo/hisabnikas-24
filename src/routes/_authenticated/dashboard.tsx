@@ -178,12 +178,12 @@ function Dashboard() {
           </div>
         </div>
 
-        <div className="card-premium p-7">
-          <div className="font-display text-xl font-semibold mb-5">{t("lowStock")}</div>
+        <div className="card-premium p-5">
+          <div className="font-display text-lg font-semibold mb-4">{t("lowStock")}</div>
           {d.lowStock.length === 0 ? (
             <p className="text-sm text-muted-foreground">All good. Nothing low.</p>
           ) : (
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {d.lowStock.map((p) => (
                 <li key={p.id} className="flex justify-between items-center text-sm">
                   <span className="truncate">{p.name}</span>
@@ -195,10 +195,10 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="card-premium p-7 mt-5">
-        <div className="flex items-center justify-between mb-5">
-          <div className="font-display text-xl font-semibold flex items-center gap-2">
-            <Receipt className="h-5 w-5 text-primary" /> {t("recentSales")}
+      <div className="card-premium p-5 mt-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="font-display text-lg font-semibold flex items-center gap-2">
+            <Receipt className="h-4 w-4 text-primary" /> {t("recentSales")}
           </div>
         </div>
         {d.recent.length === 0 ? (
