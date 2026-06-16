@@ -475,7 +475,13 @@ export function AppShell({ children }: { children: ReactNode }) {
           {/* Desktop top quick-actions bar */}
           <header className="hidden md:flex sticky top-0 z-20 items-center justify-end gap-2 px-6 py-2.5 bg-background/95 backdrop-blur border-b border-border/60">
             <TopQuickLink to="/purchases" icon={ShoppingCart} label={t("purchases")} colorClass="text-amber-600 hover:bg-amber-50" />
-            <TopQuickLink to="/sales" icon={Receipt} label={t("sales")} colorClass="text-emerald-600 hover:bg-emerald-50" />
+            <button
+              onClick={() => setQuickOpen(true)}
+              className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors", "text-emerald-600 hover:bg-emerald-50")}
+            >
+              <Plus className="h-4 w-4" />
+              <span className="hidden lg:inline">{t("newSale")}</span>
+            </button>
             <Link
               to="/help"
               className="flex items-center justify-center h-10 w-10 rounded-full hover:bg-orange-50 transition-colors"
