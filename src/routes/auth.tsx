@@ -21,7 +21,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
-  const { t } = useI18n();
+  const { t, lang, setLang } = useI18n();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
@@ -93,6 +93,24 @@ function AuthPage() {
 
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-sm">
+          <div className="flex justify-end mb-4">
+            <div className="inline-flex rounded-md border border-border overflow-hidden text-xs">
+              <button
+                type="button"
+                onClick={() => setLang("en")}
+                className={`px-3 py-1.5 ${lang === "en" ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:text-foreground"}`}
+              >
+                EN
+              </button>
+              <button
+                type="button"
+                onClick={() => setLang("bn")}
+                className={`px-3 py-1.5 ${lang === "bn" ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:text-foreground"}`}
+              >
+                বাংলা
+              </button>
+            </div>
+          </div>
           <div className="lg:hidden flex items-center mb-8">
             <img src={appLogo.url} alt="হিসাব নিকাশ-২৪" className="h-32 w-auto" />
           </div>
