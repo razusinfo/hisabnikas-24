@@ -177,6 +177,9 @@ function CustomersPage() {
         actions={
           <div className="flex items-center gap-2">
             <Button onClick={() => setQuickOpen(true)} variant="outline"><ShoppingCart className="h-4 w-4" /> {t("newSale")}</Button>
+            <Button onClick={() => importContacts.mutate()} disabled={importContacts.isPending} variant="outline">
+              <BookUser className="h-4 w-4" /> {importContacts.isPending ? "যুক্ত হচ্ছে..." : "কন্ট্যাক্ট থেকে যুক্ত করুন"}
+            </Button>
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <Button><Plus className="h-4 w-4" /> {t("addCustomer")}</Button>
