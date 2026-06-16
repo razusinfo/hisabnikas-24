@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState, type ReactNode } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
@@ -9,15 +9,69 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Loader2, Hash, Percent, FileText, CreditCard } from "lucide-react";
+import { Loader2, Info, ExternalLink } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
 });
 
-type InvoiceSettings = {
+type AppSettings = {
+  // Products
+  productActive?: boolean;
+  itemType?: "product" | "service";
+  barcodeScan?: boolean;
+  stockMaintenance?: boolean;
+  stockValuationMethod?: "avg" | "fifo" | "lifo";
+  itemUnit?: boolean;
+  itemCategory?: boolean;
+  showPurchasePrice?: boolean;
+  discount?: boolean;
+  vat?: boolean;
+  manufactureDate?: boolean;
+  expiryDate?: boolean;
+  description?: boolean;
+  showSalePrice?: boolean;
+  wholesale?: boolean;
+  mrpPrice?: boolean;
+  batchNumber?: boolean;
+  serialImei?: boolean;
+  size?: boolean;
+  expiryAlert?: boolean;
+  expiryAlertDays?: number;
+  lowStockAlert?: boolean;
+  lowStockQty?: number;
+  // Transactions
+  showInvoiceNumber?: boolean;
+  cashSaleDefault?: boolean;
+  txShowPurchasePrice?: boolean;
+  txShowSalePrice?: boolean;
+  deliveryCharge?: boolean;
+  taxPerTx?: boolean;
+  discountPerTx?: boolean;
+  saleProfit?: boolean;
+  allowViewInvoice?: boolean;
+  discountOnPayment?: boolean;
+  dueSmsOnTx?: boolean;
+  inactiveSupplierOnSale?: boolean;
+  inactiveCustomerOnPurchase?: boolean;
+  autoIncrementInvoice?: boolean;
+  startingInvoiceNumber?: number;
+  // Export & printing
+  showHeading?: boolean;
+  showCompanyName?: boolean;
+  showCompanyLogo?: boolean;
+  showExportDate?: boolean;
+  showBusinessInfo?: boolean;
+  showPreviousDue?: boolean;
+  showFooter?: boolean;
+  showSignature?: boolean;
+  showInvoiceTerms?: boolean;
+  showInvoiceDescription?: boolean;
+  useRegularPrinter?: boolean;
+  useThermalPrinter?: boolean;
+  // legacy keys preserved
   prefix?: string;
   nextNumber?: number;
   defaultTax?: number;
@@ -31,12 +85,9 @@ type InvoiceSettings = {
 
 type Profile = {
   id: string;
-  full_name: string | null;
-  company_name: string | null;
   language: string;
   currency: string;
-  logo_url: string | null;
-  invoice_settings: InvoiceSettings | null;
+  invoice_settings: AppSettings | null;
 };
 
 const CURRENCIES = [
@@ -49,8 +100,88 @@ const CURRENCIES = [
   { code: "AED", label: "د.إ AED — UAE Dirham" },
 ];
 
+// Labels in Bengali (primary) with English fallback
+const L = {
+  // sections
+  products: { bn: "পণ্য সমূহ", en: "Products" },
+  transactions: { bn: "লেনদেন", en: "Transactions" },
+  exportPrint: { bn: "এক্সপোর্ট ও প্রিন্টিং", en: "Export & Printing" },
+  save: { bn: "সেভ করুন", en: "Save" },
+  yes: { bn: "YES", en: "YES" },
+  no: { bn: "NO", en: "NO" },
+  go: { bn: "Go", en: "Go" },
+  // products
+  productActive: { bn: "সক্রিয়", en: "Active" },
+  itemType: { bn: "আইটেমের ধরণ", en: "Item type" },
+  product: { bn: "পণ্য", en: "Product" },
+  service: { bn: "সেবা", en: "Service" },
+  barcodeScan: { bn: "বারকোড স্ক্যান", en: "Barcode scan" },
+  stockMaintenance: { bn: "স্টক মেইনটেনেন্স", en: "Stock maintenance" },
+  stockValuationMethod: { bn: "স্টক মূল্য নির্ধারণের প্রক্রিয়া", en: "Stock valuation method" },
+  avgPurchase: { bn: "গড় ক্রয়মূল্য", en: "Average cost" },
+  fifo: { bn: "FIFO", en: "FIFO" },
+  lifo: { bn: "LIFO", en: "LIFO" },
+  itemUnit: { bn: "আইটেম ইউনিট", en: "Item unit" },
+  itemCategory: { bn: "আইটেম ক্যাটাগরি", en: "Item category" },
+  showPurchasePrice: { bn: "ক্রয় মূল্য দেখান", en: "Show purchase price" },
+  discount: { bn: "ডিসকাউন্ট", en: "Discount" },
+  vat: { bn: "ভ্যাট", en: "VAT" },
+  manufactureDate: { bn: "উৎপাদন তারিখ", en: "Manufacture date" },
+  expiryDate: { bn: "মেয়াদ উত্তীর্ণের তারিখ", en: "Expiry date" },
+  description: { bn: "বর্ণনা", en: "Description" },
+  showSalePrice: { bn: "বিক্রয় মূল্য দেখান", en: "Show sale price" },
+  wholesale: { bn: "পাইকারি", en: "Wholesale" },
+  mrpPrice: { bn: "এমআরপি / মূল্য", en: "MRP / Price" },
+  batchNumber: { bn: "ব্যাচ নাম্বার", en: "Batch number" },
+  serialImei: { bn: "ক্রমিক নং / আইএমইআই", en: "Serial / IMEI" },
+  size: { bn: "আকার", en: "Size" },
+  expiryAlert: { bn: "মেয়াদ উত্তীর্ণের এলার্ট", en: "Expiry alert" },
+  expiryAlertDays: { bn: "মেয়াদ উত্তীর্ণের এলার্টের জন্য সর্বোচ্চ দিনের পরিমাণ", en: "Max days for expiry alert" },
+  lowStockAlert: { bn: "স্টক শেষের এলার্ট", en: "Low stock alert" },
+  lowStockQty: { bn: "এলার্টের জন্য সর্বোচ্চ স্টকের পরিমাণ", en: "Max stock qty for alert" },
+  // transactions
+  showInvoiceNumber: { bn: "ইনভয়েস নম্বর প্রদর্শন করুন", en: "Show invoice number" },
+  cashSaleDefault: { bn: "নগদ বিক্রি স্বাভাবিকভাবে সক্রিয় রাখুন", en: "Keep cash sale active by default" },
+  txShowPurchasePrice: { bn: "আইটেমের ক্রয় মূল্য দেখান", en: "Show item purchase price" },
+  txShowSalePrice: { bn: "আইটেমের বিক্রয় মূল্য দেখান", en: "Show item sale price" },
+  deliveryCharge: { bn: "ডেলিভারি চার্জ", en: "Delivery charge" },
+  taxPerTx: { bn: "লেনদেন অনুযায়ী ট্যাক্স", en: "Tax per transaction" },
+  discountPerTx: { bn: "লেনদেন অনুযায়ী ডিসকাউন্ট", en: "Discount per transaction" },
+  saleProfit: { bn: "বিক্রয় ভিত্তিক লাভ প্রদর্শন করুন", en: "Show sale-based profit" },
+  allowViewInvoice: { bn: "ইনভয়েস দেখার অনুমতি দিন", en: "Allow viewing invoice" },
+  discountOnPayment: { bn: "পেমেন্টের সময় ডিসকাউন্ট", en: "Discount at payment time" },
+  dueSmsOnTx: { bn: "লেনদেনের সময় বাকির এসএমএস পাঠান", en: "Send due SMS on transaction" },
+  inactiveSupplierOnSale: { bn: "বিক্রয়ের সময় সাপ্লাইয়ার নিষ্ক্রিয় করুন", en: "Hide supplier on sale" },
+  inactiveCustomerOnPurchase: { bn: "ক্রয়ের সময় কাস্টমার নিষ্ক্রিয় করুন", en: "Hide customer on purchase" },
+  autoIncrementInvoice: { bn: "ইনভয়েস নম্বর স্বয়ংক্রিয়ভাবে বৃদ্ধি করুন", en: "Auto-increment invoice number" },
+  startingInvoiceNumber: { bn: "প্রাথমিক ইনভয়েস নম্বর সেট করুন", en: "Set starting invoice number" },
+  // export & printing
+  showHeading: { bn: "শিরোনাম দেখান", en: "Show heading" },
+  showCompanyName: { bn: "কোম্পানির নাম প্রদর্শন করুন", en: "Show company name" },
+  showCompanyLogo: { bn: "কোম্পানির লোগো প্রদর্শন করুন", en: "Show company logo" },
+  showExportDate: { bn: "এক্সপোর্টের তারিখ প্রদর্শন করুন", en: "Show export date" },
+  showBusinessInfo: { bn: "ব্যবসা প্রতিষ্ঠানের তথ্য দেখান", en: "Show business info" },
+  showPreviousDue: { bn: "পূর্বের বকেয়া দেখান", en: "Show previous due" },
+  showFooter: { bn: "ফুটার দেখান", en: "Show footer" },
+  showSignature: { bn: "স্বাক্ষর দেখান", en: "Show signature" },
+  showInvoiceTerms: { bn: "ইনভয়েসে শর্তাবলী প্রদর্শন করুন", en: "Show invoice terms" },
+  showInvoiceDescription: { bn: "ইনভয়েসে বর্ণনা প্রদর্শন করুন", en: "Show invoice description" },
+  changeInvoiceDesign: { bn: "ইনভয়েসের ডিজাইন পরিবর্তন করুন", en: "Change invoice design" },
+  useRegularPrinter: { bn: "রেগুলার প্রিন্টার ব্যবহার করুন", en: "Use regular printer" },
+  useThermalPrinter: { bn: "থার্মাল প্রিন্টার ব্যবহার করুন", en: "Use thermal printer" },
+  // preferences
+  preferences: { bn: "পছন্দসমূহ", en: "Preferences" },
+  language: { bn: "ভাষা", en: "Language" },
+  currency: { bn: "মুদ্রা", en: "Currency" },
+  changePassword: { bn: "পাসওয়ার্ড পরিবর্তন", en: "Change password" },
+  newPassword: { bn: "নতুন পাসওয়ার্ড", en: "New password" },
+  confirmPassword: { bn: "পাসওয়ার্ড নিশ্চিত করুন", en: "Confirm password" },
+  updatePassword: { bn: "পাসওয়ার্ড আপডেট করুন", en: "Update password" },
+};
+
 function SettingsPage() {
   const { t, lang, setLang } = useI18n();
+  const tr = (k: keyof typeof L) => L[k][lang === "bn" ? "bn" : "en"];
   const qc = useQueryClient();
 
   const profileQuery = useQuery({
@@ -60,7 +191,7 @@ function SettingsPage() {
       if (!u.user) throw new Error("Not signed in");
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, company_name, language, currency, logo_url, invoice_settings")
+        .select("id, language, currency, invoice_settings")
         .eq("id", u.user.id)
         .single();
       if (error) throw error;
@@ -68,44 +199,53 @@ function SettingsPage() {
     },
   });
 
-  const emailQuery = useQuery({
-    queryKey: ["auth", "email"],
-    queryFn: async () => {
-      const { data } = await supabase.auth.getUser();
-      return data.user?.email ?? "";
-    },
-  });
-
-  const [fullName, setFullName] = useState("");
-  const [companyName, setCompanyName] = useState("");
   const [currency, setCurrency] = useState("BDT");
   const [language, setLanguage] = useState<"en" | "bn">("en");
-  const [invoice, setInvoice] = useState<InvoiceSettings>({});
+  const [s, setS] = useState<AppSettings>({});
 
-  const setInv = <K extends keyof InvoiceSettings>(k: K, v: InvoiceSettings[K]) =>
-    setInvoice((prev) => ({ ...prev, [k]: v }));
+  const set = <K extends keyof AppSettings>(k: K, v: AppSettings[K]) =>
+    setS((prev) => ({ ...prev, [k]: v }));
 
   useEffect(() => {
     if (profileQuery.data) {
-      setFullName(profileQuery.data.full_name ?? "");
-      setCompanyName(profileQuery.data.company_name ?? "");
       setCurrency(profileQuery.data.currency ?? "BDT");
       setLanguage((profileQuery.data.language as "en" | "bn") ?? "en");
-      setInvoice(profileQuery.data.invoice_settings ?? {});
+      // sensible defaults to match screenshot
+      const data = profileQuery.data.invoice_settings ?? {};
+      setS({
+        productActive: true,
+        itemType: "product",
+        stockValuationMethod: "avg",
+        expiryAlertDays: 1,
+        lowStockQty: 10,
+        showInvoiceNumber: true,
+        txShowSalePrice: true,
+        saleProfit: true,
+        allowViewInvoice: true,
+        discountOnPayment: true,
+        startingInvoiceNumber: 1000,
+        showHeading: true,
+        showCompanyName: true,
+        showCompanyLogo: true,
+        showExportDate: true,
+        showBusinessInfo: true,
+        showSignature: true,
+        showInvoiceTerms: true,
+        showInvoiceDescription: true,
+        ...data,
+      });
     }
   }, [profileQuery.data]);
 
-  const saveProfile = useMutation({
+  const saveAll = useMutation({
     mutationFn: async () => {
       if (!profileQuery.data) throw new Error("No profile");
       const { error } = await supabase
         .from("profiles")
         .update({
-          full_name: fullName.trim() || null,
-          company_name: companyName.trim() || null,
           currency,
           language,
-          invoice_settings: invoice as never,
+          invoice_settings: s as never,
         })
         .eq("id", profileQuery.data.id);
       if (error) throw error;
@@ -113,60 +253,6 @@ function SettingsPage() {
     onSuccess: () => {
       toast.success(t("settingsSaved"));
       setLang(language);
-      qc.invalidateQueries({ queryKey: ["profile", "me"] });
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
-  const logoUrlQuery = useQuery({
-    queryKey: ["logo-signed", profileQuery.data?.logo_url],
-    enabled: !!profileQuery.data?.logo_url,
-    queryFn: async () => {
-      const path = profileQuery.data!.logo_url!;
-      const { data, error } = await supabase.storage
-        .from("business-logos")
-        .createSignedUrl(path, 3600);
-      if (error) throw error;
-      return data.signedUrl;
-    },
-  });
-
-  const uploadLogo = useMutation({
-    mutationFn: async (file: File) => {
-      if (!profileQuery.data) throw new Error("No profile");
-      const ext = file.name.split(".").pop() || "png";
-      const path = `${profileQuery.data.id}/logo-${Date.now()}.${ext}`;
-      const { error: upErr } = await supabase.storage
-        .from("business-logos")
-        .upload(path, file, { upsert: true, contentType: file.type });
-      if (upErr) throw upErr;
-      if (profileQuery.data.logo_url) {
-        await supabase.storage.from("business-logos").remove([profileQuery.data.logo_url]);
-      }
-      const { error } = await supabase
-        .from("profiles")
-        .update({ logo_url: path })
-        .eq("id", profileQuery.data.id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success(t("settingsSaved"));
-      qc.invalidateQueries({ queryKey: ["profile", "me"] });
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
-  const removeLogo = useMutation({
-    mutationFn: async () => {
-      if (!profileQuery.data?.logo_url) return;
-      await supabase.storage.from("business-logos").remove([profileQuery.data.logo_url]);
-      const { error } = await supabase
-        .from("profiles")
-        .update({ logo_url: null })
-        .eq("id", profileQuery.data.id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["profile", "me"] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -198,231 +284,176 @@ function SettingsPage() {
     );
   }
 
+  const SaveBtn = (
+    <div>
+      <Button
+        onClick={() => saveAll.mutate()}
+        disabled={saveAll.isPending}
+        className="bg-primary hover:bg-primary/90"
+      >
+        {saveAll.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+        {tr("save")}
+      </Button>
+    </div>
+  );
+
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-3xl space-y-6">
-        <PageHeader title={t("settings")} subtitle={t("settingsSubtitle")} />
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
+      <PageHeader title={t("settings")} subtitle={t("settingsSubtitle")} />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("profileInfo")}</CardTitle>
-            <CardDescription>{t("profileInfoDesc")}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-2">
-              <Label>{t("email")}</Label>
-              <Input value={emailQuery.data ?? ""} disabled />
-            </div>
-            <div className="grid gap-2">
-              <Label>{t("fullName")}</Label>
-              <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
-            </div>
-            <div className="grid gap-2">
-              <Label>{t("companyName")}</Label>
-              <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
-            </div>
-            <div className="grid gap-2">
-              <Label>{t("businessLogo")}</Label>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                {logoUrlQuery.data ? (
-                  <img
-                    src={logoUrlQuery.data}
-                    alt="logo"
-                    className="h-16 w-16 rounded-md object-cover border shrink-0"
-                  />
-                ) : (
-                  <div className="h-16 w-16 rounded-md border border-dashed flex items-center justify-center text-xs text-muted-foreground shrink-0">
-                    —
-                  </div>
-                )}
-                <Input
-                  type="file"
-                  accept="image/*"
-                  className="w-full sm:max-w-xs"
-                  disabled={uploadLogo.isPending}
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (f) uploadLogo.mutate(f);
-                    e.target.value = "";
-                  }}
-                />
-                {profileQuery.data?.logo_url && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="min-h-11 w-full sm:w-auto"
-                    onClick={() => removeLogo.mutate()}
-                    disabled={removeLogo.isPending}
-                  >
-                    {t("removeLogo")}
-                  </Button>
-                )}
-              </div>
-            </div>
+      {/* পণ্য সমূহ */}
+      <SectionCard title={tr("products")}>
+        <Grid3>
+          {/* Column 1 */}
+          <ToggleRow label={tr("productActive")} checked={!!s.productActive} onChange={(v) => set("productActive", v)} />
+          <SelectRow
+            label={tr("itemType")}
+            value={s.itemType ?? "product"}
+            onChange={(v) => set("itemType", v as "product" | "service")}
+            options={[
+              { value: "product", label: tr("product") },
+              { value: "service", label: tr("service") },
+            ]}
+          />
+          <ToggleRow label={tr("barcodeScan")} checked={!!s.barcodeScan} onChange={(v) => set("barcodeScan", v)} />
+          <ToggleRow label={tr("stockMaintenance")} checked={!!s.stockMaintenance} onChange={(v) => set("stockMaintenance", v)} />
+          <SelectRow
+            label={tr("stockValuationMethod")}
+            value={s.stockValuationMethod ?? "avg"}
+            onChange={(v) => set("stockValuationMethod", v as "avg" | "fifo" | "lifo")}
+            options={[
+              { value: "avg", label: tr("avgPurchase") },
+              { value: "fifo", label: tr("fifo") },
+              { value: "lifo", label: tr("lifo") },
+            ]}
+          />
+          <ToggleRow label={tr("itemUnit")} checked={!!s.itemUnit} onChange={(v) => set("itemUnit", v)} />
+          <ToggleRow label={tr("itemCategory")} checked={!!s.itemCategory} onChange={(v) => set("itemCategory", v)} />
+          <ToggleRow label={tr("showPurchasePrice")} checked={!!s.showPurchasePrice} onChange={(v) => set("showPurchasePrice", v)} />
+          <ToggleRow label={tr("discount")} checked={!!s.discount} onChange={(v) => set("discount", v)} />
 
-          </CardContent>
-        </Card>
+          {/* Column 2 */}
+          <ToggleRow label={tr("vat")} checked={!!s.vat} onChange={(v) => set("vat", v)} />
+          <ToggleRow label={tr("manufactureDate")} checked={!!s.manufactureDate} onChange={(v) => set("manufactureDate", v)} />
+          <ToggleRow label={tr("expiryDate")} checked={!!s.expiryDate} onChange={(v) => set("expiryDate", v)} />
+          <ToggleRow label={tr("description")} checked={!!s.description} onChange={(v) => set("description", v)} />
+          <ToggleRow label={tr("showSalePrice")} checked={!!s.showSalePrice} onChange={(v) => set("showSalePrice", v)} />
+          <ToggleRow label={tr("wholesale")} checked={!!s.wholesale} onChange={(v) => set("wholesale", v)} />
+          <ToggleRow label={tr("mrpPrice")} checked={!!s.mrpPrice} onChange={(v) => set("mrpPrice", v)} />
+          <ToggleRow label={tr("batchNumber")} checked={!!s.batchNumber} onChange={(v) => set("batchNumber", v)} />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("preferences")}</CardTitle>
-            <CardDescription>{t("preferencesDesc")}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-2">
-              <Label>{t("language")}</Label>
-              <Select value={language} onValueChange={(v) => setLanguage(v as "en" | "bn")}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="bn">বাংলা</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-2">
-              <Label>{t("currency")}</Label>
-              <Select value={currency} onValueChange={setCurrency}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {CURRENCIES.map((c) => (
-                    <SelectItem key={c.code} value={c.code}>{c.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Column 3 */}
+          <ToggleRow label={tr("serialImei")} checked={!!s.serialImei} onChange={(v) => set("serialImei", v)} />
+          <ToggleRow label={tr("size")} checked={!!s.size} onChange={(v) => set("size", v)} />
+          <ToggleRow label={tr("expiryAlert")} checked={!!s.expiryAlert} onChange={(v) => set("expiryAlert", v)} />
+          <NumberRow
+            label={tr("expiryAlertDays")}
+            value={s.expiryAlertDays}
+            onChange={(v) => set("expiryAlertDays", v)}
+          />
+          <ToggleRow label={tr("lowStockAlert")} checked={!!s.lowStockAlert} onChange={(v) => set("lowStockAlert", v)} />
+          <NumberRow
+            label={tr("lowStockQty")}
+            value={s.lowStockQty}
+            onChange={(v) => set("lowStockQty", v)}
+          />
+        </Grid3>
+        <div className="pt-2">{SaveBtn}</div>
+      </SectionCard>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("invoiceSettings")}</CardTitle>
-            <CardDescription>{t("invoiceSettingsDesc")}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                <Hash className="h-4 w-4 text-muted-foreground" /> {t("invoiceNumbering")}
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="grid gap-2">
-                  <Label>{t("invoicePrefix")}</Label>
-                  <Input
-                    value={invoice.prefix ?? ""}
-                    onChange={(e) => setInv("prefix", e.target.value)}
-                    placeholder="INV-"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>{t("invoiceNextNumber")}</Label>
-                  <Input
-                    type="number"
-                    min={1}
-                    value={invoice.nextNumber ?? ""}
-                    onChange={(e) => setInv("nextNumber", e.target.value === "" ? undefined : Number(e.target.value))}
-                    placeholder="1001"
-                  />
-                </div>
-              </div>
-            </div>
+      {/* লেনদেন */}
+      <SectionCard title={tr("transactions")}>
+        <Grid3>
+          <ToggleRow label={tr("showInvoiceNumber")} checked={!!s.showInvoiceNumber} onChange={(v) => set("showInvoiceNumber", v)} />
+          <ToggleRow label={tr("cashSaleDefault")} checked={!!s.cashSaleDefault} onChange={(v) => set("cashSaleDefault", v)} />
+          <ToggleRow label={tr("txShowPurchasePrice")} checked={!!s.txShowPurchasePrice} onChange={(v) => set("txShowPurchasePrice", v)} />
+          <ToggleRow label={tr("txShowSalePrice")} checked={!!s.txShowSalePrice} onChange={(v) => set("txShowSalePrice", v)} />
+          <ToggleRow label={tr("deliveryCharge")} checked={!!s.deliveryCharge} onChange={(v) => set("deliveryCharge", v)} />
 
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                <Percent className="h-4 w-4 text-muted-foreground" /> {t("invoiceTaxCharges")}
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="grid gap-2">
-                  <Label>{t("invoiceDefaultTax")}</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    value={invoice.defaultTax ?? ""}
-                    onChange={(e) => setInv("defaultTax", e.target.value === "" ? undefined : Number(e.target.value))}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>{t("invoiceDefaultDiscount")}</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    value={invoice.defaultDiscount ?? ""}
-                    onChange={(e) => setInv("defaultDiscount", e.target.value === "" ? undefined : Number(e.target.value))}
-                  />
-                </div>
-              </div>
-            </div>
+          <ToggleRow label={tr("taxPerTx")} checked={!!s.taxPerTx} onChange={(v) => set("taxPerTx", v)} />
+          <ToggleRow label={tr("discountPerTx")} checked={!!s.discountPerTx} onChange={(v) => set("discountPerTx", v)} />
+          <ToggleRow label={tr("saleProfit")} checked={!!s.saleProfit} onChange={(v) => set("saleProfit", v)} />
+          <ToggleRow label={tr("allowViewInvoice")} checked={!!s.allowViewInvoice} onChange={(v) => set("allowViewInvoice", v)} />
+          <ToggleRow label={tr("discountOnPayment")} checked={!!s.discountOnPayment} onChange={(v) => set("discountOnPayment", v)} />
+          <ToggleRow label={tr("dueSmsOnTx")} checked={!!s.dueSmsOnTx} onChange={(v) => set("dueSmsOnTx", v)} />
 
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                <FileText className="h-4 w-4 text-muted-foreground" /> {t("invoiceAppearance")}
-              </div>
-              <div className="grid gap-2">
-                <Label>{t("invoiceFooter")}</Label>
-                <Input
-                  value={invoice.footer ?? ""}
-                  onChange={(e) => setInv("footer", e.target.value)}
-                  placeholder="Thank you for your business!"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>{t("invoiceTerms")}</Label>
-                <Textarea
-                  rows={3}
-                  value={invoice.terms ?? ""}
-                  onChange={(e) => setInv("terms", e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>{t("invoiceNotes")}</Label>
-                <Textarea
-                  rows={2}
-                  value={invoice.notes ?? ""}
-                  onChange={(e) => setInv("notes", e.target.value)}
-                />
-              </div>
-            </div>
+          <ToggleRow label={tr("inactiveSupplierOnSale")} checked={!!s.inactiveSupplierOnSale} onChange={(v) => set("inactiveSupplierOnSale", v)} />
+          <ToggleRow label={tr("inactiveCustomerOnPurchase")} checked={!!s.inactiveCustomerOnPurchase} onChange={(v) => set("inactiveCustomerOnPurchase", v)} />
+          <ToggleRow label={tr("autoIncrementInvoice")} checked={!!s.autoIncrementInvoice} onChange={(v) => set("autoIncrementInvoice", v)} />
+          <NumberRow
+            label={tr("startingInvoiceNumber")}
+            value={s.startingInvoiceNumber}
+            onChange={(v) => set("startingInvoiceNumber", v)}
+          />
+        </Grid3>
+        <div className="pt-2">{SaveBtn}</div>
+      </SectionCard>
 
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                <CreditCard className="h-4 w-4 text-muted-foreground" /> {t("invoicePayment")}
-              </div>
-              <div className="grid gap-2">
-                <Label>{t("invoiceBankDetails")}</Label>
-                <Textarea
-                  rows={3}
-                  value={invoice.bankDetails ?? ""}
-                  onChange={(e) => setInv("bankDetails", e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>{t("invoicePaymentInstructions")}</Label>
-                <Textarea
-                  rows={2}
-                  value={invoice.paymentInstructions ?? ""}
-                  onChange={(e) => setInv("paymentInstructions", e.target.value)}
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* এক্সপোর্ট ও প্রিন্টিং */}
+      <SectionCard title={tr("exportPrint")}>
+        <Grid2>
+          <ToggleRow label={tr("showHeading")} checked={!!s.showHeading} onChange={(v) => set("showHeading", v)} />
+          <ToggleRow label={tr("showInvoiceTerms")} checked={!!s.showInvoiceTerms} onChange={(v) => set("showInvoiceTerms", v)} />
+          <ToggleRow label={tr("showCompanyName")} checked={!!s.showCompanyName} onChange={(v) => set("showCompanyName", v)} />
+          <ToggleRow label={tr("showInvoiceDescription")} checked={!!s.showInvoiceDescription} onChange={(v) => set("showInvoiceDescription", v)} />
+          <ToggleRow label={tr("showCompanyLogo")} checked={!!s.showCompanyLogo} onChange={(v) => set("showCompanyLogo", v)} />
+          <Row label={tr("changeInvoiceDesign")}>
+            <Button asChild size="sm" className="h-8 gap-1">
+              <Link to="/business-profile">
+                {tr("go")} <ExternalLink className="h-3.5 w-3.5" />
+              </Link>
+            </Button>
+          </Row>
+          <ToggleRow label={tr("showExportDate")} checked={!!s.showExportDate} onChange={(v) => set("showExportDate", v)} />
+          <ToggleRow label={tr("useRegularPrinter")} checked={!!s.useRegularPrinter} onChange={(v) => set("useRegularPrinter", v)} />
+          <ToggleRow label={tr("showBusinessInfo")} checked={!!s.showBusinessInfo} onChange={(v) => set("showBusinessInfo", v)} />
+          <ToggleRow label={tr("useThermalPrinter")} checked={!!s.useThermalPrinter} onChange={(v) => set("useThermalPrinter", v)} />
+          <ToggleRow label={tr("showPreviousDue")} checked={!!s.showPreviousDue} onChange={(v) => set("showPreviousDue", v)} />
+          <div />
+          <ToggleRow label={tr("showFooter")} checked={!!s.showFooter} onChange={(v) => set("showFooter", v)} />
+          <div />
+          <ToggleRow label={tr("showSignature")} checked={!!s.showSignature} onChange={(v) => set("showSignature", v)} />
+        </Grid2>
+        <div className="pt-2">{SaveBtn}</div>
+      </SectionCard>
 
-
-
-        <div className="flex justify-end">
-          <Button onClick={() => saveProfile.mutate()} disabled={saveProfile.isPending}>
-            {saveProfile.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-            {t("save")}
-          </Button>
+      {/* Preferences + password kept as small footer */}
+      <SectionCard title={tr("preferences")}>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-2">
+            <Label>{tr("language")}</Label>
+            <Select value={language} onValueChange={(v) => setLanguage(v as "en" | "bn")}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="bn">বাংলা</SelectItem>
+                <SelectItem value="en">English</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid gap-2">
+            <Label>{tr("currency")}</Label>
+            <Select value={currency} onValueChange={setCurrency}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {CURRENCIES.map((c) => (
+                  <SelectItem key={c.code} value={c.code}>{c.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
+        <div className="pt-2">{SaveBtn}</div>
+      </SectionCard>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("changePassword")}</CardTitle>
-            <CardDescription>{t("changePasswordDesc")}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>{tr("changePassword")}</CardTitle>
+          <CardDescription>{t("changePasswordDesc")}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
-              <Label>{t("newPassword")}</Label>
+              <Label>{tr("newPassword")}</Label>
               <Input
                 type="password"
                 value={newPassword}
@@ -431,7 +462,7 @@ function SettingsPage() {
               />
             </div>
             <div className="grid gap-2">
-              <Label>{t("confirmPassword")}</Label>
+              <Label>{tr("confirmPassword")}</Label>
               <Input
                 type="password"
                 value={confirmPassword}
@@ -439,18 +470,124 @@ function SettingsPage() {
                 autoComplete="new-password"
               />
             </div>
-            <div className="flex justify-end">
-              <Button
-                variant="secondary"
-                onClick={() => changePassword.mutate()}
-                disabled={changePassword.isPending || !newPassword}
-              >
-                {changePassword.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                {t("updatePassword")}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+          <div>
+            <Button
+              variant="secondary"
+              onClick={() => changePassword.mutate()}
+              disabled={changePassword.isPending || !newPassword}
+            >
+              {changePassword.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              {tr("updatePassword")}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+/* ---------- Layout helpers ---------- */
+
+function SectionCard({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <Card className="overflow-hidden border-primary/20">
+      <CardHeader className="bg-primary/5 border-b py-3">
+        <CardTitle className="text-primary text-base font-semibold">{title}</CardTitle>
+      </CardHeader>
+      <CardContent className="p-4 sm:p-6 space-y-4">{children}</CardContent>
+    </Card>
+  );
+}
+
+function Grid3({ children }: { children: ReactNode }) {
+  return <div className="grid gap-x-8 gap-y-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">{children}</div>;
+}
+
+function Grid2({ children }: { children: ReactNode }) {
+  return <div className="grid gap-x-8 gap-y-3 grid-cols-1 md:grid-cols-2">{children}</div>;
+}
+
+function Row({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex items-center justify-between gap-3 min-h-9">
+      <div className="flex items-center gap-1 text-sm text-foreground/80 text-right flex-1 justify-end">
+        <span>{label}</span>
+        <Info className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
       </div>
+      <div className="shrink-0 min-w-[88px] flex justify-start">{children}</div>
+    </div>
+  );
+}
+
+function ToggleRow({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <Row label={label}>
+      <div className="flex items-center gap-2">
+        <Switch checked={checked} onCheckedChange={onChange} />
+        <span
+          className={`text-[10px] font-semibold tracking-wide ${
+            checked ? "text-primary" : "text-muted-foreground"
+          }`}
+        >
+          {checked ? "YES" : "NO"}
+        </span>
+      </div>
+    </Row>
+  );
+}
+
+function SelectRow({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+}) {
+  return (
+    <Row label={label}>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger className="h-8 w-[140px]"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          {options.map((o) => (
+            <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </Row>
+  );
+}
+
+function NumberRow({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: number | undefined;
+  onChange: (v: number | undefined) => void;
+}) {
+  return (
+    <Row label={label}>
+      <Input
+        type="number"
+        min={0}
+        value={value ?? ""}
+        onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+        className="h-8 w-[88px]"
+      />
+    </Row>
   );
 }
