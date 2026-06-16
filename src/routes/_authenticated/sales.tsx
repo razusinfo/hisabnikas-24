@@ -497,6 +497,10 @@ function SalesPage() {
         paymentInstructions: t("invoicePaymentInstructions"),
         terms: t("invoiceTerms"),
         notes: t("invoiceNotes"),
+        discount: lang === "bn" ? "ডিসকাউন্ট" : "Discount",
+        tax: lang === "bn" ? "ট্যাক্স" : "Tax",
+        deliveryCharge: lang === "bn" ? "ডেলিভারি চার্জ" : "Delivery",
+        signature: lang === "bn" ? "স্বাক্ষর" : "Signature",
       },
     });
   }
