@@ -320,11 +320,19 @@ export function AppShell({ children }: { children: ReactNode }) {
             <TopQuickLink to="/settings" icon={Settings} label={t("settings")} colorClass="text-slate-600 hover:bg-slate-100" />
             <Link
               to="/proprietor-profile"
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-primary hover:bg-primary/10 transition-colors max-w-[200px]"
+              className="ml-1 flex items-center justify-center rounded-full hover:ring-2 hover:ring-primary/30 transition-all"
               title={brandName}
+              aria-label={brandName}
             >
-              <UserCircle2 className="h-5 w-5 shrink-0" />
-              <span className="truncate">{brandName}</span>
+              {proprietorAvatar ? (
+                <img
+                  src={proprietorAvatar}
+                  alt={brandName}
+                  className="h-9 w-9 rounded-full object-cover border border-border"
+                />
+              ) : (
+                <UserCircle2 className="h-9 w-9 text-primary" />
+              )}
             </Link>
           </header>
 
