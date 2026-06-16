@@ -175,7 +175,7 @@ function CustomersPage() {
         subtitle="Track who buys, what they owe, and when they paid."
         actions={
           <div className="flex items-center gap-2">
-            <Button onClick={() => setQuickOpen(true)} variant="outline"><ShoppingCart className="h-4 w-4" /> {t("newSale")}</Button>
+            <Button onClick={() => navigate({ to: "/sales", search: { new: 1 } })} variant="outline"><ShoppingCart className="h-4 w-4" /> {t("newSale")}</Button>
             <Button onClick={() => importContacts.mutate()} disabled={importContacts.isPending} variant="outline">
               <BookUser className="h-4 w-4" /> {importContacts.isPending ? "যুক্ত হচ্ছে..." : "কন্ট্যাক্ট থেকে যুক্ত করুন"}
             </Button>
