@@ -194,7 +194,16 @@ function ProfitLossPage() {
   const [customFrom, setCustomFrom] = useState<Date | undefined>(undefined);
   const [customTo, setCustomTo] = useState<Date | undefined>(undefined);
 
-  const range = getRange(period, { from: customFrom, to: customTo });
+  const range = useMemo(
+    () => getRange(period, { from: customFrom, to: customTo }),
+    [
+      period,
+      customFrom?.getTime(),
+      customTo?.getTime(),
+      // re-evaluate when the calendar day changes
+      new Date().toDateString(),
+    ],
+  );
   const customReady = period !== "custom" || (customFrom && customTo);
 
   const { data: pnl, isLoading } = useQuery({
