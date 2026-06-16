@@ -31,6 +31,12 @@ type Product = {
   low_stock_threshold: number;
   category_id: string | null;
   image_url: string | null;
+  vat: number | null;
+  mrp: number | null;
+  batch_no: string | null;
+  serial_no: string | null;
+  size: string | null;
+  expiry_date: string | null;
 };
 
 type Category = { id: string; name: string };
@@ -39,7 +45,9 @@ const emptyForm = {
   name: "", sku: "", barcode: "", unit: "pcs",
   cost_price: "0", sell_price: "0", stock: "0", low_stock_threshold: "5",
   category_id: "", image_url: "" as string,
+  vat: "0", mrp: "", batch_no: "", serial_no: "", size: "", expiry_date: "",
 };
+
 
 async function fetchProducts() {
   const { data, error } = await supabase
@@ -80,7 +88,14 @@ function ProductsPage() {
     showPurchasePrice: appSettings?.showPurchasePrice !== false,
     showSalePrice: appSettings?.showSalePrice !== false,
     lowStockAlert: appSettings?.lowStockAlert !== false,
+    vat: appSettings?.vat === true,
+    mrpPrice: appSettings?.mrpPrice === true,
+    batchNumber: appSettings?.batchNumber === true,
+    serialImei: appSettings?.serialImei === true,
+    size: appSettings?.size === true,
+    expiryDate: appSettings?.expiryDate === true,
   };
+
 
   const [search, setSearch] = useState("");
   const [quickOpen, setQuickOpen] = useState(false);
@@ -164,9 +179,16 @@ function ProductsPage() {
       cost_price: String(p.cost_price), sell_price: String(p.sell_price),
       stock: String(p.stock), low_stock_threshold: String(p.low_stock_threshold),
       category_id: p.category_id ?? "", image_url: p.image_url ?? "",
+      vat: p.vat != null ? String(p.vat) : "0",
+      mrp: p.mrp != null ? String(p.mrp) : "",
+      batch_no: p.batch_no ?? "",
+      serial_no: p.serial_no ?? "",
+      size: p.size ?? "",
+      expiry_date: p.expiry_date ?? "",
     });
     setOpen(true);
   };
+
 
   const addCategory = useMutation({
     mutationFn: async (name: string) => {
@@ -203,7 +225,14 @@ function ProductsPage() {
         low_stock_threshold: Number(form.low_stock_threshold) || 0,
         category_id: form.category_id || null,
         image_url: form.image_url || null,
+        vat: Number(form.vat) || 0,
+        mrp: form.mrp === "" ? null : Number(form.mrp),
+        batch_no: form.batch_no.trim() || null,
+        serial_no: form.serial_no.trim() || null,
+        size: form.size.trim() || null,
+        expiry_date: form.expiry_date || null,
       };
+
       if (editing) {
         const { error } = await supabase.from("products").update(payload).eq("id", editing.id);
         if (error) throw error;
@@ -484,6 +513,36 @@ function ProductsPage() {
                 </Button>
               </div>
             </div>
+            )}
+            {(sett.vat || sett.mrpPrice) && (
+              <div className="grid grid-cols-2 gap-3">
+                {sett.vat && (
+                  <div className="space-y-1.5"><Label>ভ্যাট (%) / VAT</Label><Input type="number" step="0.01" min="0" value={form.vat} onChange={(e) => setForm({ ...form, vat: e.target.value })} /></div>
+                )}
+                {sett.mrpPrice && (
+                  <div className="space-y-1.5"><Label>MRP</Label><Input type="number" step="0.01" min="0" value={form.mrp} onChange={(e) => setForm({ ...form, mrp: e.target.value })} /></div>
+                )}
+              </div>
+            )}
+            {(sett.batchNumber || sett.serialImei) && (
+              <div className="grid grid-cols-2 gap-3">
+                {sett.batchNumber && (
+                  <div className="space-y-1.5"><Label>ব্যাচ নম্বর / Batch</Label><Input value={form.batch_no} onChange={(e) => setForm({ ...form, batch_no: e.target.value })} /></div>
+                )}
+                {sett.serialImei && (
+                  <div className="space-y-1.5"><Label>সিরিয়াল / IMEI</Label><Input value={form.serial_no} onChange={(e) => setForm({ ...form, serial_no: e.target.value })} /></div>
+                )}
+              </div>
+            )}
+            {(sett.size || sett.expiryDate) && (
+              <div className="grid grid-cols-2 gap-3">
+                {sett.size && (
+                  <div className="space-y-1.5"><Label>সাইজ / Size</Label><Input value={form.size} onChange={(e) => setForm({ ...form, size: e.target.value })} /></div>
+                )}
+                {sett.expiryDate && (
+                  <div className="space-y-1.5"><Label>মেয়াদ উত্তীর্ণের তারিখ / Expiry</Label><Input type="date" value={form.expiry_date} onChange={(e) => setForm({ ...form, expiry_date: e.target.value })} /></div>
+                )}
+              </div>
             )}
             <DialogFooter className="gap-2">
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>{t("cancel")}</Button>

@@ -254,54 +254,72 @@ export type Database = {
       products: {
         Row: {
           barcode: string | null
+          batch_no: string | null
           category_id: string | null
           cost_price: number
           created_at: string
+          expiry_date: string | null
           id: string
           image_url: string | null
           is_active: boolean
           low_stock_threshold: number
+          mrp: number | null
           name: string
           owner_id: string
           sell_price: number
+          serial_no: string | null
+          size: string | null
           sku: string | null
           stock: number
           unit: string
           updated_at: string
+          vat: number
         }
         Insert: {
           barcode?: string | null
+          batch_no?: string | null
           category_id?: string | null
           cost_price?: number
           created_at?: string
+          expiry_date?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean
           low_stock_threshold?: number
+          mrp?: number | null
           name: string
           owner_id: string
           sell_price?: number
+          serial_no?: string | null
+          size?: string | null
           sku?: string | null
           stock?: number
           unit?: string
           updated_at?: string
+          vat?: number
         }
         Update: {
           barcode?: string | null
+          batch_no?: string | null
           category_id?: string | null
           cost_price?: number
           created_at?: string
+          expiry_date?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean
           low_stock_threshold?: number
+          mrp?: number | null
           name?: string
           owner_id?: string
           sell_price?: number
+          serial_no?: string | null
+          size?: string | null
           sku?: string | null
           stock?: number
           unit?: string
           updated_at?: string
+          vat?: number
         }
         Relationships: [
           {
