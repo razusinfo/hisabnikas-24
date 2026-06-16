@@ -477,7 +477,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="p-0 w-72 bg-sidebar">
+              <SheetContent side="left" className="p-0 w-60 bg-sidebar">
                 <SheetTitle className="sr-only">Menu</SheetTitle>
                 <SidebarContent
                   onNavigate={() => setMobileOpen(false)}
