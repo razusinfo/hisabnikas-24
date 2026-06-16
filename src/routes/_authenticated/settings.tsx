@@ -399,7 +399,7 @@ function SettingsPage() {
           <ToggleRow label={tr("showCompanyLogo")} checked={!!s.showCompanyLogo} onChange={(v) => set("showCompanyLogo", v)} />
           <Row label={tr("changeInvoiceDesign")}>
             <Button asChild size="sm" className="h-8 gap-1">
-              <Link to="/business-profile">
+              <Link to="/invoice-design">
                 {tr("go")} <ExternalLink className="h-3.5 w-3.5" />
               </Link>
             </Button>
