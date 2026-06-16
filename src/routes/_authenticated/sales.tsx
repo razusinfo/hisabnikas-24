@@ -424,6 +424,12 @@ function SalesPage() {
     const theme: string = inv.invoiceTheme || "#0f172a";
     const fontSizeKey: "sm" | "md" | "lg" | "xl" = inv.invoiceFontSize || "md";
     const template: number = Number(inv.invoiceTemplate) || 1;
+    const fontFamilyKey: "serif" | "sans" | "modern" = inv.invoiceFontFamily || "serif";
+    const fontFamilyCss = {
+      serif: "'Playfair Display','Noto Serif Bengali',Georgia,serif",
+      sans: "'Plus Jakarta Sans','Noto Sans Bengali',system-ui,sans-serif",
+      modern: "'Space Grotesk','Noto Sans Bengali',system-ui,sans-serif",
+    }[fontFamilyKey];
     const baseFs = { sm: 17, md: 20, lg: 23, xl: 26 }[fontSizeKey];
     // Header style per template
     const headerStyles: Record<number, string> = {
