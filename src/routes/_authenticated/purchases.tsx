@@ -14,6 +14,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { toast } from "sonner";
 import { Eye, CreditCard, Printer, Trash2, Search, Plus, X } from "lucide-react";
 import { printStyledInvoice } from "@/lib/print-invoice";
+import { useInvoicePreview } from "@/components/InvoicePreviewProvider";
+
 
 export const Route = createFileRoute("/_authenticated/purchases")({
   loader: async ({ context }) => {
