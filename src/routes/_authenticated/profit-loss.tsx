@@ -238,14 +238,16 @@ function ProfitLossPage() {
             {periodLabel} লাভ-ক্ষতির সারাংশ
           </h3>
           <div className="flex items-center gap-2 flex-wrap print:hidden">
-            <Tabs value={period} onValueChange={(v) => setPeriod(v as Period)}>
-              <TabsList>
-                <TabsTrigger value="daily">দৈনিক</TabsTrigger>
-                <TabsTrigger value="monthly">মাসিক</TabsTrigger>
-                <TabsTrigger value="yearly">বাৎসরিক</TabsTrigger>
-                <TabsTrigger value="custom">কাস্টম</TabsTrigger>
-              </TabsList>
-            </Tabs>
+            <SegmentedControl
+              value={period}
+              onChange={setPeriod}
+              options={[
+                { value: "daily", label: "দৈনিক", icon: <CalendarDays className="h-3.5 w-3.5" /> },
+                { value: "monthly", label: "মাসিক", icon: <CalendarIcon className="h-3.5 w-3.5" /> },
+                { value: "yearly", label: "বাৎসরিক", icon: <CalendarRange className="h-3.5 w-3.5" /> },
+                { value: "custom", label: "কাস্টম", icon: <SlidersHorizontal className="h-3.5 w-3.5" /> },
+              ]}
+            />
             <Button
               variant="outline"
               size="sm"
