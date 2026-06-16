@@ -65,10 +65,9 @@ const esc = (v: unknown) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string),
   );
 
-export function printStyledInvoice({ doc, business, settings, lang, labels, hideMethod }: PrintInvoiceOptions) {
-  const w = window.open("", "_blank", "width=820,height=1000");
-  if (!w) return;
+export function buildInvoiceHtml({ doc, business, settings, lang, labels, hideMethod }: PrintInvoiceOptions): string {
   const inv = (settings ?? {}) as any;
+
   const theme: string = inv.invoiceTheme || "#0f172a";
   const fontSizeKey: "sm" | "md" | "lg" | "xl" = inv.invoiceFontSize || "md";
   const template: number = Number(inv.invoiceTemplate) || 1;
