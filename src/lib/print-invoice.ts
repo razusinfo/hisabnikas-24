@@ -10,11 +10,11 @@ export type PrintInvoiceItem = {
 
 export type PrintInvoiceLabels = {
   invoice: string;
-  customer: string; // or "Supplier"
+  customer: string;
   phone: string;
   method: string;
   item: string;
-  price: string; // or "Unit Cost"
+  price: string;
   qty: string;
   total: string;
   subtotal: string;
@@ -28,6 +28,11 @@ export type PrintInvoiceLabels = {
   paymentInstructions?: string;
   terms?: string;
   notes?: string;
+  previousDue?: string;
+  signature?: string;
+  deliveryCharge?: string;
+  tax?: string;
+  discount?: string;
 };
 
 export type PrintInvoiceOptions = {
@@ -43,6 +48,10 @@ export type PrintInvoiceOptions = {
     paid: number | string;
     due: number | string;
     items: PrintInvoiceItem[];
+    previousDue?: number | string;
+    discount?: number | string;
+    tax?: number | string;
+    deliveryCharge?: number | string;
   };
   business: { name: string; owner?: string; logoUrl?: string | null };
   settings: any;
@@ -67,6 +76,21 @@ export function printStyledInvoice({ doc, business, settings, lang, labels, hide
   const fontWeight: number = Number(inv.invoiceFontWeight) || 700;
   const baseFs = { sm: 17, md: 20, lg: 23, xl: 26 }[fontSizeKey];
 
+  // Toggles — default to ON unless explicitly false
+  const on = (k: string, def = true) => (inv[k] === undefined ? def : !!inv[k]);
+  const showHeading = on("showHeading");
+  const showCompanyName = on("showCompanyName");
+  const showCompanyLogo = on("showCompanyLogo");
+  const showExportDate = on("showExportDate");
+  const showBusinessInfo = on("showBusinessInfo");
+  const showInvoiceNumber = on("showInvoiceNumber");
+  const showPreviousDue = on("showPreviousDue", false);
+  const showFooter = on("showFooter");
+  const showSignature = on("showSignature");
+  const showInvoiceTerms = on("showInvoiceTerms");
+  const showInvoiceDescription = on("showInvoiceDescription");
+  const thermal = !!inv.useThermalPrinter;
+
   const headerStyles: Record<number, string> = {
     1: `padding-bottom:18px;border-bottom:3px solid ${theme}`,
     2: `background:${theme};color:#fff;padding:16px;border-radius:8px`,
@@ -78,9 +102,9 @@ export function printStyledInvoice({ doc, business, settings, lang, labels, hide
     8: `background:linear-gradient(135deg,${theme},${theme}aa);color:#fff;padding:16px;border-radius:8px`,
     9: `border-bottom:4px double ${theme};padding-bottom:12px`,
   };
-  const topStyle = headerStyles[template] || headerStyles[1];
-  const invertHeader = [2, 6, 8].includes(template);
-  const titleClr = invertHeader ? "#fff" : theme;
+  const topStyle = thermal ? "padding-bottom:6px;border-bottom:2px solid #000" : (headerStyles[template] || headerStyles[1]);
+  const invertHeader = !thermal && [2, 6, 8].includes(template);
+  const titleClr = invertHeader ? "#fff" : (thermal ? "#000" : theme);
   const subClr = invertHeader ? "rgba(255,255,255,0.85)" : "#64748b";
 
   const rows = doc.items
@@ -102,59 +126,68 @@ export function printStyledInvoice({ doc, business, settings, lang, labels, hide
       ? `<span class="badge badge-due">${esc(paidNum > 0 ? labels.statusPartial : labels.statusDue)}</span>`
       : `<span class="badge badge-paid">${esc(labels.statusPaid)}</span>`;
 
+  const discountNum = Number(doc.discount) || 0;
+  const taxNum = Number(doc.tax) || 0;
+  const deliveryNum = Number(doc.deliveryCharge) || 0;
+  const prevDueNum = Number(doc.previousDue) || 0;
+
+  // Page styles vary for thermal
+  const pageStyle = thermal
+    ? `@page{size:80mm auto;margin:2mm}html,body{width:76mm}body{font-family:'Noto Sans Bengali','Inter',sans-serif;color:#000;margin:0;padding:2mm;background:#fff;font-size:12px}.sheet{width:100%}`
+    : `@page{size:8in 6in landscape;margin:0.12in}html,body{width:8in}body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#0f172a;margin:0;padding:0.12in;background:#fff;font-size:${baseFs}px}.sheet{width:100%;max-width:7.76in;margin:0 auto}`;
+
   w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(doc.invoice_no)}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800;900&family=Noto+Serif+Bengali:wght@400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Hind+Siliguri:wght@400;500;600;700&family=Tiro+Bangla&family=Baloo+Da+2:wght@400;500;600;700;800&family=Galada&family=Atma:wght@400;500;600;700&family=Mina:wght@400;700&family=Anek+Bangla:wght@400;500;600;700;800&display=swap">
     <style>
-      @page{size:8in 6in landscape;margin:0.12in}
       *{box-sizing:border-box}
-      html,body{width:8in}
-      body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#0f172a;margin:0;padding:0.12in;background:#fff;font-size:${baseFs}px}
-      .sheet{width:100%;max-width:7.76in;margin:0 auto}
-      .top{display:flex;justify-content:space-between;align-items:flex-start;gap:28px;${topStyle}}
-      .brand{display:flex;gap:18px;align-items:center}
-      .brand img{height:76px;width:76px;object-fit:contain;border-radius:10px;border:1px solid #e2e8f0;background:#fff}
-      .brand .biz{font-size:${baseFs + 9}px;font-weight:${fontWeight};letter-spacing:-0.01em;font-family:${fontFamilyCss};color:${titleClr}}
-      .brand .owner{font-size:${baseFs - 2}px;color:${subClr};margin-top:2px}
+      ${pageStyle}
+      .top{display:flex;justify-content:space-between;align-items:flex-start;gap:${thermal ? 8 : 28}px;${topStyle}}
+      .brand{display:flex;gap:${thermal ? 8 : 18}px;align-items:center}
+      .brand img{height:${thermal ? 40 : 76}px;width:${thermal ? 40 : 76}px;object-fit:contain;border-radius:${thermal ? 4 : 10}px;${thermal ? "" : "border:1px solid #e2e8f0;"}background:#fff}
+      .brand .biz{font-size:${thermal ? 16 : baseFs + 9}px;font-weight:${fontWeight};letter-spacing:-0.01em;font-family:${fontFamilyCss};color:${titleClr}}
+      .brand .owner{font-size:${thermal ? 11 : baseFs - 2}px;color:${subClr};margin-top:2px}
       .meta{text-align:right}
-      .meta .no{font-family:ui-monospace,Menlo,monospace;font-size:${baseFs}px;color:${invertHeader ? "#fff" : "#334155"};margin-top:4px}
-      .meta .date{font-size:${baseFs - 2}px;color:${subClr};margin-top:2px}
-      .row{display:flex;justify-content:space-between;gap:22px;margin-top:18px}
-      .card{flex:1;background:${theme}0d;border:1px solid ${theme}33;border-radius:10px;padding:10px 18px}
-      .card .lbl{font-size:${baseFs - 4}px;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:4px}
-      .card .val{font-size:${baseFs + 2}px;font-weight:600}
-      table.items{width:100%;border-collapse:collapse;margin-top:18px;font-size:${baseFs}px}
-      table.items thead th{background:${theme};color:#fff;text-align:left;padding:6px 12px;font-weight:600;font-size:${baseFs - 2}px;letter-spacing:0.05em;text-transform:uppercase}
+      .meta .no{font-family:ui-monospace,Menlo,monospace;font-size:${thermal ? 11 : baseFs}px;color:${invertHeader ? "#fff" : (thermal ? "#000" : "#334155")};margin-top:4px}
+      .meta .date{font-size:${thermal ? 10 : baseFs - 2}px;color:${subClr};margin-top:2px}
+      .row{display:${thermal ? "block" : "flex"};justify-content:space-between;gap:22px;margin-top:${thermal ? 6 : 18}px}
+      .card{flex:1;background:${thermal ? "transparent" : `${theme}0d`};border:${thermal ? "none" : `1px solid ${theme}33`};border-radius:10px;padding:${thermal ? "2px 0" : "10px 18px"}}
+      .card .lbl{font-size:${thermal ? 10 : baseFs - 4}px;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:2px;display:${thermal ? "inline" : "block"}}
+      .card .val{font-size:${thermal ? 12 : baseFs + 2}px;font-weight:600;display:${thermal ? "inline" : "block"};margin-left:${thermal ? "6px" : "0"}}
+      table.items{width:100%;border-collapse:collapse;margin-top:${thermal ? 8 : 18}px;font-size:${thermal ? 11 : baseFs}px}
+      table.items thead th{background:${thermal ? "transparent" : theme};color:${thermal ? "#000" : "#fff"};text-align:left;padding:${thermal ? "3px 4px" : "6px 12px"};font-weight:600;font-size:${thermal ? 10 : baseFs - 2}px;letter-spacing:0.05em;text-transform:uppercase;border-bottom:${thermal ? "1px solid #000" : "none"}}
       table.items thead th.right{text-align:right}
-      table.items tbody td{padding:5px 12px;border-bottom:1px solid #e2e8f0}
-      table.items tbody tr:nth-child(even) td{background:${theme}0a}
+      table.items tbody td{padding:${thermal ? "3px 4px" : "5px 12px"};border-bottom:${thermal ? "1px dashed #999" : "1px solid #e2e8f0"}}
+      ${thermal ? "" : `table.items tbody tr:nth-child(even) td{background:${theme}0a}`}
       .right{text-align:right}.num{font-family:ui-monospace,Menlo,monospace}
-      .totals{margin-top:14px;margin-left:auto;width:420px;font-size:${baseFs}px}
-      .totals .line{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #e2e8f0}
-      .totals .line.grand{border-top:3px solid ${theme};border-bottom:3px solid ${theme};margin-top:4px;padding:8px 0;font-size:${baseFs + 3}px;font-weight:700;color:${theme}}
-      .totals .line.paid{color:#16a34a}
-      .badge{display:inline-block;padding:3px 14px;border-radius:999px;font-size:${baseFs - 2}px;font-weight:600;letter-spacing:0.04em}
-      .badge-paid{background:#dcfce7;color:#15803d}
-      .badge-due{background:#fee2e2;color:#b91c1c}
-      .footer{margin-top:22px;padding-top:14px;border-top:1px solid ${theme}55;font-size:${baseFs - 2}px;color:#475569;display:grid;gap:10px}
-      .footer h4{margin:0 0 4px;font-size:${baseFs - 2}px;letter-spacing:0.06em;text-transform:uppercase;color:${theme}}
+      .totals{margin-top:${thermal ? 6 : 14}px;margin-left:auto;width:${thermal ? "100%" : "420px"};font-size:${thermal ? 11 : baseFs}px}
+      .totals .line{display:flex;justify-content:space-between;padding:${thermal ? "2px 0" : "4px 0"};border-bottom:1px dashed ${thermal ? "#999" : "#e2e8f0"}}
+      .totals .line.grand{border-top:${thermal ? "1px solid #000" : `3px solid ${theme}`};border-bottom:${thermal ? "1px solid #000" : `3px solid ${theme}`};margin-top:4px;padding:${thermal ? "4px 0" : "8px 0"};font-size:${thermal ? 13 : baseFs + 3}px;font-weight:700;color:${thermal ? "#000" : theme}}
+      .totals .line.paid{color:${thermal ? "#000" : "#16a34a"}}
+      .badge{display:inline-block;padding:${thermal ? "1px 6px" : "3px 14px"};border-radius:999px;font-size:${thermal ? 10 : baseFs - 2}px;font-weight:600;letter-spacing:0.04em;border:${thermal ? "1px solid #000" : "none"}}
+      .badge-paid{background:${thermal ? "#fff" : "#dcfce7"};color:${thermal ? "#000" : "#15803d"}}
+      .badge-due{background:${thermal ? "#fff" : "#fee2e2"};color:${thermal ? "#000" : "#b91c1c"}}
+      .footer{margin-top:${thermal ? 8 : 22}px;padding-top:${thermal ? 6 : 14}px;border-top:1px solid ${thermal ? "#000" : `${theme}55`};font-size:${thermal ? 10 : baseFs - 2}px;color:${thermal ? "#000" : "#475569"};display:grid;gap:${thermal ? 4 : 10}px}
+      .footer h4{margin:0 0 2px;font-size:${thermal ? 10 : baseFs - 2}px;letter-spacing:0.06em;text-transform:uppercase;color:${thermal ? "#000" : theme}}
       .footer p{margin:0;white-space:pre-wrap;line-height:1.4}
-      .thanks{margin-top:18px;text-align:center;font-size:${baseFs}px;color:${theme};font-weight:600}
-      @media print{body{padding:0.1in}.sheet{max-width:none}}
+      .thanks{margin-top:${thermal ? 8 : 18}px;text-align:center;font-size:${thermal ? 12 : baseFs}px;color:${thermal ? "#000" : theme};font-weight:600}
+      .signature{margin-top:${thermal ? 18 : 40}px;display:flex;justify-content:space-between;gap:30px;font-size:${thermal ? 10 : baseFs - 2}px}
+      .signature .sig{flex:1;border-top:1px solid #000;padding-top:4px;text-align:center;color:#475569}
+      @media print{body{padding:${thermal ? "1mm" : "0.1in"}}.sheet{max-width:none}}
     </style></head><body><div class="sheet">
     <div class="top">
       <div class="brand">
-        ${business.logoUrl ? `<img src="${esc(business.logoUrl)}" alt="">` : ""}
+        ${showCompanyLogo && business.logoUrl ? `<img src="${esc(business.logoUrl)}" alt="">` : ""}
         <div>
-          <div class="biz">${esc(business.name || labels.invoice)}</div>
-          ${business.owner ? `<div class="owner">${esc(business.owner)}</div>` : ""}
+          ${showHeading && showCompanyName ? `<div class="biz">${esc(business.name || labels.invoice)}</div>` : ""}
+          ${showBusinessInfo && business.owner ? `<div class="owner">${esc(business.owner)}</div>` : ""}
         </div>
       </div>
       <div class="meta">
-        <div class="no">${esc(doc.invoice_no)}</div>
-        <div class="date">${esc(fmtInvoiceDate(doc.created_at, lang))}</div>
-        <div style="margin-top:10px">${dueBadge}</div>
+        ${showInvoiceNumber ? `<div class="no">${esc(doc.invoice_no)}</div>` : ""}
+        ${showExportDate ? `<div class="date">${esc(fmtInvoiceDate(doc.created_at, lang))}</div>` : ""}
+        <div style="margin-top:${thermal ? 4 : 10}px">${dueBadge}</div>
       </div>
     </div>
     <div class="row">
@@ -173,28 +206,36 @@ export function printStyledInvoice({ doc, business, settings, lang, labels, hide
     </div>
     <table class="items">
       <thead><tr>
-        <th style="width:58px">#</th>
+        <th style="width:${thermal ? 24 : 58}px">#</th>
         <th>${esc(labels.item)}</th>
-        <th class="right" style="width:198px">${esc(labels.price)}</th>
-        <th class="right" style="width:126px">${esc(labels.qty)}</th>
-        <th class="right" style="width:234px">${esc(labels.total)}</th>
+        <th class="right" style="width:${thermal ? 60 : 198}px">${esc(labels.price)}</th>
+        <th class="right" style="width:${thermal ? 40 : 126}px">${esc(labels.qty)}</th>
+        <th class="right" style="width:${thermal ? 70 : 234}px">${esc(labels.total)}</th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>
     <div class="totals">
       <div class="line"><span>${esc(labels.subtotal)}</span><span class="num">${fmtMoney(doc.subtotal, lang)}</span></div>
+      ${discountNum > 0 ? `<div class="line"><span>${esc(labels.discount || "Discount")}</span><span class="num">-${fmtMoney(discountNum, lang)}</span></div>` : ""}
+      ${taxNum > 0 ? `<div class="line"><span>${esc(labels.tax || "Tax")}</span><span class="num">${fmtMoney(taxNum, lang)}</span></div>` : ""}
+      ${deliveryNum > 0 ? `<div class="line"><span>${esc(labels.deliveryCharge || "Delivery")}</span><span class="num">${fmtMoney(deliveryNum, lang)}</span></div>` : ""}
+      ${showPreviousDue && prevDueNum > 0 ? `<div class="line"><span>${esc(labels.previousDue || "Previous Due")}</span><span class="num">${fmtMoney(prevDueNum, lang)}</span></div>` : ""}
       <div class="line grand"><span>${esc(labels.total)}</span><span class="num">${fmtMoney(doc.total, lang)}</span></div>
       <div class="line paid"><span>${esc(labels.paid)}</span><span class="num">${fmtMoney(doc.paid, lang)}</span></div>
       <div class="line due"><span>${esc(labels.due)}</span><span class="num">${fmtMoney(doc.due, lang)}</span></div>
     </div>
-    ${doc.note ? `<div class="footer"><div><h4>${esc(labels.note)}</h4><p>${esc(doc.note)}</p></div></div>` : ""}
+    ${showInvoiceDescription && doc.note ? `<div class="footer"><div><h4>${esc(labels.note)}</h4><p>${esc(doc.note)}</p></div></div>` : ""}
     <div class="footer">
       ${inv.bankDetails && labels.bankDetails ? `<div><h4>${esc(labels.bankDetails)}</h4><p>${esc(inv.bankDetails)}</p></div>` : ""}
       ${inv.paymentInstructions && labels.paymentInstructions ? `<div><h4>${esc(labels.paymentInstructions)}</h4><p>${esc(inv.paymentInstructions)}</p></div>` : ""}
-      ${inv.terms && labels.terms ? `<div><h4>${esc(labels.terms)}</h4><p>${esc(inv.terms)}</p></div>` : ""}
-      ${inv.notes && labels.notes ? `<div><h4>${esc(labels.notes)}</h4><p>${esc(inv.notes)}</p></div>` : ""}
+      ${showInvoiceTerms && inv.terms && labels.terms ? `<div><h4>${esc(labels.terms)}</h4><p>${esc(inv.terms)}</p></div>` : ""}
+      ${showInvoiceDescription && inv.notes && labels.notes ? `<div><h4>${esc(labels.notes)}</h4><p>${esc(inv.notes)}</p></div>` : ""}
     </div>
-    ${inv.footer ? `<div class="thanks">${esc(inv.footer)}</div>` : ""}
+    ${showSignature ? `<div class="signature">
+      <div class="sig">${esc(labels.signature || "Customer Signature")}</div>
+      <div class="sig">${esc(labels.signature ? "" : "Authorized Signature")}${labels.signature ? esc(business.owner || business.name || "Authorized Signature") : ""}</div>
+    </div>` : ""}
+    ${showFooter && inv.footer ? `<div class="thanks">${esc(inv.footer)}</div>` : ""}
     </div><script>window.onload=()=>setTimeout(()=>window.print(),200)</script></body></html>`);
   w.document.close();
 }
