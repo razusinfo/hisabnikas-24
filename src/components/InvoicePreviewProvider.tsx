@@ -19,7 +19,7 @@ export function InvoicePreviewProvider({ children }: { children: ReactNode }) {
   const [html, setHtml] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
-  const { lang } = useLang();
+  const { lang } = useI18n();
   const tr = (bn: string, en: string) => (lang === "bn" ? bn : en);
 
   const showInvoicePreview = useCallback((opts: PrintInvoiceOptions) => {
