@@ -242,15 +242,16 @@ function InvoiceDesignPage() {
   };
 
   const doPrint = () => {
-    printStyledInvoice(buildSampleInvoice());
+    showInvoicePreview(buildSampleInvoice());
   };
 
   const doGenerateTest = () => {
     setTestSeed((s) => s + 1);
     // Defer so state updates before building
-    setTimeout(() => printStyledInvoice(buildSampleInvoice()), 0);
+    setTimeout(() => showInvoicePreview(buildSampleInvoice()), 0);
     toast.success(tr("নতুন টেস্ট ইনভয়েস তৈরি হয়েছে", "New test invoice generated"));
   };
+
 
   const doShare = async () => {
     const url = window.location.href;
