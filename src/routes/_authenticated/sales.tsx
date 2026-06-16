@@ -244,21 +244,37 @@ function SalesPage() {
     setCreating(true);
     try {
       const { data: u } = await supabase.auth.getUser();
-      const invoice_no = "INV-" + Date.now().toString().slice(-8);
+      // Generate invoice number — auto-increment if enabled
+      let invoice_no = "INV-" + Date.now().toString().slice(-8);
+      if (sett.autoIncrementInvoice) {
+        const { data: last } = await supabase
+          .from("sales")
+          .select("invoice_no")
+          .eq("owner_id", u.user!.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        const m = last?.invoice_no?.match(/(\d+)\s*$/);
+        const next = m ? Number(m[1]) + 1 : sett.startingInvoiceNumber;
+        invoice_no = "INV-" + String(next).padStart(4, "0");
+      }
       const status = newDue <= 0 ? "paid" : newPaidAmt > 0 ? "partial" : "due";
+      const noteWithDelivery = sett.deliveryCharge && Number(newDelivery) > 0
+        ? `${newNote ? newNote + " | " : ""}Delivery: ${newDelivery}`
+        : newNote;
       const { data: sale, error } = await supabase.from("sales").insert({
         owner_id: u.user!.id,
         customer_id: customerId === "walkin" ? null : customerId,
         invoice_no,
         subtotal: newSubtotal,
         discount: Number(newDiscount || 0),
-        tax: Number(newTax || 0),
+        tax: Number(newTax || 0) + Number(newDelivery || 0),
         total: newTotal,
         paid: newPaidAmt,
         due: newDue,
         payment_method: newMethod,
         status,
-        note: newNote || null,
+        note: noteWithDelivery || null,
       }).select().single();
       if (error) throw error;
       const rows = lines.map((l) => ({
@@ -281,8 +297,8 @@ function SalesPage() {
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       qc.invalidateQueries({ queryKey: ["customers"] });
 
-      // Fire-and-forget SMS receipt to customer (only if real customer with phone)
-      if (customerId !== "walkin") {
+      // Fire-and-forget SMS receipt — gated by dueSmsOnTx setting
+      if (sett.dueSmsOnTx && customerId !== "walkin") {
         const cust = customersList.find((c: any) => c.id === customerId);
         if (cust?.phone) {
           const company = await getCompanyName();
