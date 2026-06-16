@@ -557,6 +557,11 @@ const dict = {
     driveBackupDeleted: "ব্যাকআপ গুগল ড্রাইভ থেকে মুছে ফেলা হয়েছে।",
     confirmDeleteBackup: "এই ব্যাকআপটি গুগল ড্রাইভ থেকে মুছে ফেলবেন?",
     localFile: "লোকাল ফাইল",
+    autoBackupDaily: "দৈনিক অটো ব্যাকআপ",
+    autoBackupDailyDesc: "দিনে একবার অ্যাপ খুললে স্বয়ংক্রিয়ভাবে আপনার গুগল ড্রাইভে ব্যাকআপ আপলোড হবে।",
+    lastAutoBackup: "সর্বশেষ অটো ব্যাকআপ",
+    never: "কখনো নয়",
+    backupNow: "এখনই ব্যাকআপ",
   },
 } as const;
 
