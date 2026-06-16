@@ -110,53 +110,6 @@
   --shadow-card: 0 1px 2px oklch(0.2 0.02 240 / 4%), 0 8px 24px -12px oklch(0.2 0.02 240 / 10%);
 }
 
-/* ---------- Skin presets (apply via data-skin on <html>) ---------- */
-:root[data-skin="emerald"] {
-  --primary: oklch(0.62 0.16 160);
-  --ring: oklch(0.62 0.16 160 / 50%);
-  --chart-1: oklch(0.62 0.16 160);
-  --sidebar-accent: oklch(0.93 0.04 160);
-  --sidebar-accent-foreground: oklch(0.25 0.05 160);
-  --gradient-hero: linear-gradient(135deg, oklch(0.62 0.16 160) 0%, oklch(0.7 0.14 190) 100%);
-  --shadow-glow: 0 0 40px -10px oklch(0.62 0.16 160 / 25%);
-}
-:root[data-skin="violet"] {
-  --primary: oklch(0.58 0.22 295);
-  --ring: oklch(0.58 0.22 295 / 50%);
-  --chart-1: oklch(0.58 0.22 295);
-  --sidebar-accent: oklch(0.94 0.05 295);
-  --sidebar-accent-foreground: oklch(0.25 0.08 295);
-  --gradient-hero: linear-gradient(135deg, oklch(0.58 0.22 295) 0%, oklch(0.65 0.2 330) 100%);
-  --shadow-glow: 0 0 40px -10px oklch(0.58 0.22 295 / 25%);
-}
-:root[data-skin="rose"] {
-  --primary: oklch(0.62 0.22 15);
-  --ring: oklch(0.62 0.22 15 / 50%);
-  --chart-1: oklch(0.62 0.22 15);
-  --sidebar-accent: oklch(0.94 0.05 15);
-  --sidebar-accent-foreground: oklch(0.28 0.08 15);
-  --gradient-hero: linear-gradient(135deg, oklch(0.62 0.22 15) 0%, oklch(0.7 0.18 50) 100%);
-  --shadow-glow: 0 0 40px -10px oklch(0.62 0.22 15 / 25%);
-}
-:root[data-skin="amber"] {
-  --primary: oklch(0.7 0.17 70);
-  --ring: oklch(0.7 0.17 70 / 50%);
-  --chart-1: oklch(0.7 0.17 70);
-  --sidebar-accent: oklch(0.95 0.05 75);
-  --sidebar-accent-foreground: oklch(0.3 0.08 70);
-  --gradient-hero: linear-gradient(135deg, oklch(0.7 0.17 70) 0%, oklch(0.65 0.2 30) 100%);
-  --shadow-glow: 0 0 40px -10px oklch(0.7 0.17 70 / 25%);
-}
-:root[data-skin="slate"] {
-  --primary: oklch(0.35 0.03 240);
-  --ring: oklch(0.35 0.03 240 / 50%);
-  --chart-1: oklch(0.35 0.03 240);
-  --sidebar-accent: oklch(0.93 0.01 240);
-  --sidebar-accent-foreground: oklch(0.22 0.02 240);
-  --gradient-hero: linear-gradient(135deg, oklch(0.35 0.03 240) 0%, oklch(0.5 0.04 240) 100%);
-  --shadow-glow: 0 0 40px -10px oklch(0.35 0.03 240 / 25%);
-}
-
 .dark { color-scheme: light; }
 
 
