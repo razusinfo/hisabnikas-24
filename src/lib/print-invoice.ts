@@ -163,8 +163,10 @@ export function buildInvoiceHtml({ doc, business, settings, lang, labels, hideMe
       .info-right .date{font-size:${thermal ? 10 : baseFs - 2}px;color:${subClr}}
       .row{display:${thermal ? "block" : "flex"};justify-content:space-between;gap:22px;margin-top:${thermal ? 6 : 18}px}
       .card{flex:1;background:${thermal ? "transparent" : `${theme}0d`};border:${thermal ? "none" : `1px solid ${theme}33`};border-radius:10px;padding:${thermal ? "2px 0" : "10px 18px"}}
-      .card .lbl{font-size:${thermal ? 10 : baseFs - 4}px;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:2px;display:${thermal ? "inline" : "block"}}
-      .card .val{font-size:${thermal ? 12 : baseFs + 2}px;font-weight:600;display:${thermal ? "inline" : "block"};margin-left:${thermal ? "6px" : "0"}}
+      .info-line{display:flex;align-items:center;gap:${thermal ? "8px" : "14px"};margin-top:${thermal ? "6px" : "14px"};padding:${thermal ? "2px 0" : "10px 14px"};background:${thermal ? "transparent" : `${theme}0d`};border:${thermal ? "none" : `1px solid ${theme}33`};border-radius:8px;font-size:${thermal ? 10 : baseFs - 3}px;color:${thermal ? "#000" : "#334155"};flex-wrap:wrap}
+      .info-line .sep{color:${thermal ? "#666" : "#94a3b8"};font-weight:300}
+      .info-line .itm{display:flex;align-items:center;gap:${thermal ? "3px" : "4px"}}
+      .info-line .itm b{font-weight:600;color:${thermal ? "#000" : "#0f172a"}}
       table.items{width:100%;border-collapse:collapse;margin-top:${thermal ? 8 : 18}px;font-size:${thermal ? 11 : baseFs}px}
       table.items thead th{background:${thermal ? "transparent" : theme};color:${thermal ? "#000" : "#fff"};text-align:left;padding:${thermal ? "3px 4px" : "6px 12px"};font-weight:600;font-size:${thermal ? 10 : baseFs - 2}px;letter-spacing:0.05em;text-transform:uppercase;border-bottom:${thermal ? "1px solid #000" : "none"}}
       table.items thead th.right{text-align:right}
