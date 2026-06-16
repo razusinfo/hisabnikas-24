@@ -297,8 +297,8 @@ function InvoicePreview({
   const headers = [
     { bn: "ক্রম", en: "#" },
     { bn: "পণ্যের নাম", en: "Item" },
-    { bn: "পরিমাণ", en: "Qty" },
     { bn: "মূল্য", en: "Price" },
+    { bn: "পরিমাণ", en: "Qty" },
     { bn: "মোট", en: "Total" },
   ];
 
