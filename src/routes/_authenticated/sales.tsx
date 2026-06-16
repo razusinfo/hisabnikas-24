@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
-import { fmtMoney, fmtDateTime, fmtDate } from "@/lib/format";
+import { fmtMoney, fmtDateTime, fmtDate, fmtInvoiceDate } from "@/lib/format";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -484,7 +484,7 @@ function SalesPage() {
         <div class="meta">
           <h1>${esc(t("invoice")).toUpperCase()}</h1>
           <div class="no">${esc(s.invoice_no)}</div>
-          <div class="date">${esc(fmtDateTime(s.created_at, lang))}</div>
+          <div class="date">${esc(fmtInvoiceDate(s.created_at, lang))}</div>
           <div style="margin-top:10px">${dueBadge}</div>
         </div>
       </div>
