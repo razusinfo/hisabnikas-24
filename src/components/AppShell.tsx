@@ -29,7 +29,7 @@ import {
   Moon,
   Plus,
 } from "lucide-react";
-import { QuickSaleDialog } from "@/components/QuickSaleDialog";
+
 import { useState, useEffect, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
