@@ -686,7 +686,7 @@ function SalesPage() {
               <div className="border rounded-md overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/30 text-xs uppercase">
-                    <tr><th className="text-left p-2">{t("item")}</th><th className="text-right p-2">{t("qty")}</th><th className="text-right p-2">{t("price")}</th><th className="text-right p-2">{t("total")}</th></tr>
+                    <tr><th className="text-left p-2">{t("item")}</th><th className="text-right p-2">{t("price")}</th><th className="text-right p-2">{t("qty")}</th><th className="text-right p-2">{t("total")}</th></tr>
                   </thead>
                   <tbody>
                     {items === null && <tr><td colSpan={4} className="p-4 text-center text-muted-foreground">{t("loading")}</td></tr>}
