@@ -438,7 +438,7 @@ const dict = {
     addProduct: "পণ্য যোগ",
     newSale: "নতুন বিক্রয়",
     name: "নাম",
-    phone: "ফোন",
+    phone: "মোবাইল নাম্বার",
     address: "ঠিকানা",
     due: "বাকি",
     actions: "অ্যাকশন",
