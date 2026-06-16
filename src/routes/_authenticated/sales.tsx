@@ -229,6 +229,37 @@ function SalesPage() {
     }
   }
 
+  async function createProductInline() {
+    if (!npName.trim()) return toast.error(lang === "bn" ? "পণ্যের নাম দিন" : "Enter product name");
+    setNpSaving(true);
+    try {
+      const { data: u } = await supabase.auth.getUser();
+      const { data, error } = await supabase.from("products").insert({
+        owner_id: u.user!.id,
+        name: npName.trim(),
+        sku: npSku.trim() || null,
+        sell_price: Number(npPrice || 0),
+        stock: Number(npStock || 0),
+        category_id: npCategoryId || null,
+        cost_price: 0,
+        unit: "",
+      }).select("id,name,sku,sell_price,stock,category_id").single();
+      if (error) throw error;
+      qc.invalidateQueries({ queryKey: ["products-list"] });
+      qc.invalidateQueries({ queryKey: ["products"] });
+      qc.invalidateQueries({ queryKey: ["dashboard"] });
+      setOpenNewProd(false);
+      setNpName(""); setNpSku(""); setNpPrice(""); setNpStock(""); setNpCategoryId("");
+      toast.success(t("productCreated"));
+      // Immediately add to cart
+      setLines((ls) => [...ls, { product_id: data.id, name: data.name, qty: 1, unit_price: Number(data.sell_price || 0), stock: Number(data.stock || 0) }]);
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setNpSaving(false);
+    }
+  }
+
   function addLine(productId: string) {
     const p = (productsList as any[]).find((x) => x.id === productId);
     setProductSearch("");
