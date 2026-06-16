@@ -511,8 +511,6 @@ function SalesPage() {
       </table>
       <div class="totals">
         <div class="line"><span>${esc(t("subtotal"))}</span><span class="num">${fmtMoney(s.subtotal, lang)}</span></div>
-        <div class="line"><span>${esc(t("discount"))}</span><span class="num">- ${fmtMoney(s.discount, lang)}</span></div>
-        <div class="line"><span>${esc(t("tax"))}</span><span class="num">${fmtMoney(s.tax, lang)}</span></div>
         <div class="line grand"><span>${esc(t("total"))}</span><span class="num">${fmtMoney(s.total, lang)}</span></div>
         <div class="line paid"><span>${esc(t("paid"))}</span><span class="num">${fmtMoney(s.paid, lang)}</span></div>
         <div class="line due"><span>${esc(t("due"))}</span><span class="num">${fmtMoney(s.due, lang)}</span></div>
