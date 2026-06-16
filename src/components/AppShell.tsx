@@ -178,7 +178,7 @@ function SidebarContent({
       </div>
 
       {searchSlot}
-      <nav className="flex-1 px-3 space-y-2 overflow-y-auto">
+      <nav className="px-3 space-y-2">
         {nav.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
@@ -203,7 +203,7 @@ function SidebarContent({
         })}
       </nav>
 
-      <div className="px-3 py-4 border-t border-sidebar-border space-y-2">
+      <div className="flex-1 overflow-y-auto min-h-0 px-3 py-4 border-t border-sidebar-border space-y-2">
         {effectiveFooter.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
