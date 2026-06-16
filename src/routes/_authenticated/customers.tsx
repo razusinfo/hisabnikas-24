@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney } from "@/lib/format";
-import { Plus, Search, Trash2, Wallet, MessageSquare, ShoppingCart } from "lucide-react";
+import { Plus, Search, Trash2, Wallet, MessageSquare, ShoppingCart, BookUser } from "lucide-react";
 import { QuickSaleDialog } from "@/components/QuickSaleDialog";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -78,6 +78,40 @@ function CustomersPage() {
     },
   });
 
+  const importContacts = useMutation({
+    mutationFn: async () => {
+      // Contact Picker API — supported on Android Chrome/Edge
+      const navAny = navigator as unknown as {
+        contacts?: { select: (props: string[], opts?: { multiple?: boolean }) => Promise<Array<{ name?: string[]; tel?: string[]; email?: string[]; address?: unknown[] }>> };
+      };
+      if (!navAny.contacts?.select) {
+        throw new Error("আপনার ব্রাউজার/ডিভাইসে কন্ট্যাক্ট পিকার সমর্থিত নয়। Android-এ Chrome ব্যবহার করুন।");
+      }
+      const picked = await navAny.contacts.select(["name", "tel", "email"], { multiple: true });
+      if (!picked || picked.length === 0) return { added: 0 };
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) throw new Error("Not authenticated");
+      const rows = picked
+        .map((c) => ({
+          owner_id: u.user!.id,
+          name: (c.name?.[0] || c.tel?.[0] || "Unnamed").toString().slice(0, 200),
+          phone: (c.tel?.[0] || "").toString().slice(0, 40) || null,
+          email: (c.email?.[0] || "").toString().slice(0, 200) || null,
+        }))
+        .filter((r) => r.name);
+      if (rows.length === 0) return { added: 0 };
+      const { error } = await supabase.from("customers").insert(rows);
+      if (error) throw error;
+      return { added: rows.length };
+    },
+    onSuccess: (res) => {
+      toast.success(`${res.added} জন গ্রাহক যুক্ত হয়েছে`);
+      qc.invalidateQueries({ queryKey: ["customers"] });
+      qc.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const collect = useMutation({
     mutationFn: async () => {
       if (!collectFor) throw new Error("No customer");
@@ -143,6 +177,9 @@ function CustomersPage() {
         actions={
           <div className="flex items-center gap-2">
             <Button onClick={() => setQuickOpen(true)} variant="outline"><ShoppingCart className="h-4 w-4" /> {t("newSale")}</Button>
+            <Button onClick={() => importContacts.mutate()} disabled={importContacts.isPending} variant="outline">
+              <BookUser className="h-4 w-4" /> {importContacts.isPending ? "যুক্ত হচ্ছে..." : "কন্ট্যাক্ট থেকে যুক্ত করুন"}
+            </Button>
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <Button><Plus className="h-4 w-4" /> {t("addCustomer")}</Button>
