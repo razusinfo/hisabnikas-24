@@ -10,10 +10,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney } from "@/lib/format";
 import { Plus, Search, Trash2, Wallet, MessageSquare, ShoppingCart, BookUser } from "lucide-react";
-import { QuickSaleDialog } from "@/components/QuickSaleDialog";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/customers")({
   loader: async ({ context }) => {
@@ -44,7 +43,7 @@ function CustomersPage() {
   
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
-  const [quickOpen, setQuickOpen] = useState(false);
+  const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", phone: "", email: "", address: "" });
   const [collectFor, setCollectFor] = useState<{ id: string; name: string; due: number } | null>(null);
   const [collectAmount, setCollectAmount] = useState("");
@@ -176,7 +175,7 @@ function CustomersPage() {
         subtitle="Track who buys, what they owe, and when they paid."
         actions={
           <div className="flex items-center gap-2">
-            <Button onClick={() => setQuickOpen(true)} variant="outline"><ShoppingCart className="h-4 w-4" /> {t("newSale")}</Button>
+            <Button onClick={() => navigate({ to: "/sales", search: { new: 1 } })} variant="outline"><ShoppingCart className="h-4 w-4" /> {t("newSale")}</Button>
             <Button onClick={() => importContacts.mutate()} disabled={importContacts.isPending} variant="outline">
               <BookUser className="h-4 w-4" /> {importContacts.isPending ? "যুক্ত হচ্ছে..." : "কন্ট্যাক্ট থেকে যুক্ত করুন"}
             </Button>
@@ -370,7 +369,7 @@ function CustomersPage() {
         </DialogContent>
       </Dialog>
 
-      <QuickSaleDialog open={quickOpen} onOpenChange={setQuickOpen} />
+
     </div>
   );
 }

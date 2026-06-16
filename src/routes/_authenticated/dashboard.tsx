@@ -1,10 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
-import { QuickSaleDialog } from "@/components/QuickSaleDialog";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney, fmtDateTime } from "@/lib/format";
 import {
@@ -121,7 +119,7 @@ function Stat({
 function Dashboard() {
   const { t } = useI18n();
   const { data: d } = useSuspenseQuery({ queryKey: ["dashboard"], queryFn: fetchDashboard });
-  const [quickOpen, setQuickOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto">
@@ -129,13 +127,13 @@ function Dashboard() {
         title={t("dashboard")}
         subtitle="Real-time pulse of your business."
         actions={
-          <Button onClick={() => setQuickOpen(true)}>
+          <Button onClick={() => navigate({ to: "/sales", search: { new: 1 } })}>
             <Plus className="h-4 w-4 mr-2" />
             {t("newSale")}
           </Button>
         }
       />
-      <QuickSaleDialog open={quickOpen} onOpenChange={setQuickOpen} />
+
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
         <Stat icon={CalendarDays} label={t("salesToday")} value={fmtMoney(d.salesToday)} themeIndex={0} to="/sales" />
