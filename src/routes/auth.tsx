@@ -188,6 +188,56 @@ function AuthPage() {
                 <Button disabled={loading} className="w-full h-11 mt-2">{t("signIn")}</Button>
               </form>
             </TabsContent>
+            <TabsContent value="otp">
+              {!otpSent ? (
+                <form onSubmit={onRequestOtp} className="space-y-3 mt-4">
+                  <div className="space-y-1.5">
+                    <Label>মোবাইল নাম্বার</Label>
+                    <Input
+                      type="tel"
+                      required
+                      value={otpPhone}
+                      onChange={(e) => setOtpPhone(e.target.value)}
+                      placeholder="01XXXXXXXXX"
+                    />
+                  </div>
+                  <Button disabled={loading} className="w-full h-11 mt-2">
+                    OTP পাঠান
+                  </Button>
+                </form>
+              ) : (
+                <form onSubmit={onVerifyOtp} className="space-y-3 mt-4">
+                  <p className="text-xs text-muted-foreground">
+                    {otpPhone} নাম্বারে পাঠানো ৬ ডিজিট OTP কোড লিখুন
+                  </p>
+                  <div className="space-y-1.5">
+                    <Label>OTP কোড</Label>
+                    <Input
+                      inputMode="numeric"
+                      pattern="\d{6}"
+                      maxLength={6}
+                      required
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+                      placeholder="000000"
+                    />
+                  </div>
+                  <Button disabled={loading} className="w-full h-11 mt-2">
+                    লগইন করুন
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOtpSent(false);
+                      setOtpCode("");
+                    }}
+                    className="text-xs text-muted-foreground hover:text-foreground w-full text-center"
+                  >
+                    নাম্বার পরিবর্তন করুন
+                  </button>
+                </form>
+              )}
+            </TabsContent>
             <TabsContent value="signup">
               <form onSubmit={onSignUp} className="space-y-3 mt-4">
                 <div className="space-y-1.5">
