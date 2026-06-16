@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
@@ -48,7 +48,6 @@ function getRange(
   }
   if (period === "daily") {
     from.setHours(0, 0, 0, 0);
-    to.setHours(23, 59, 59, 999);
   } else if (period === "monthly") {
     from.setDate(1);
     from.setHours(0, 0, 0, 0);
@@ -56,6 +55,7 @@ function getRange(
     from.setMonth(0, 1);
     from.setHours(0, 0, 0, 0);
   }
+  to.setHours(23, 59, 59, 999);
   return { from: from.toISOString(), to: to.toISOString() };
 }
 
@@ -194,7 +194,16 @@ function ProfitLossPage() {
   const [customFrom, setCustomFrom] = useState<Date | undefined>(undefined);
   const [customTo, setCustomTo] = useState<Date | undefined>(undefined);
 
-  const range = getRange(period, { from: customFrom, to: customTo });
+  const range = useMemo(
+    () => getRange(period, { from: customFrom, to: customTo }),
+    [
+      period,
+      customFrom?.getTime(),
+      customTo?.getTime(),
+      // re-evaluate when the calendar day changes
+      new Date().toDateString(),
+    ],
+  );
   const customReady = period !== "custom" || (customFrom && customTo);
 
   const { data: pnl, isLoading } = useQuery({
