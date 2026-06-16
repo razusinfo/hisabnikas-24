@@ -343,14 +343,6 @@ function InvoicePreview({
                 </div>
               )}
             </div>
-            <div className="text-right w-1/4" style={{ color: headerInverse ? "#fff" : "#000" }}>
-              <div style={{ fontSize: f.base - 1, color: subColor }}>
-                তারিখ:১৬/০৬/২০২৬
-              </div>
-              <div style={{ fontSize: f.head + 4, fontWeight: 800, color: titleColor, letterSpacing: 1 }}>
-                {tr("ইনভয়েস", "INVOICE")}
-              </div>
-            </div>
           </div>
         </div>
 
