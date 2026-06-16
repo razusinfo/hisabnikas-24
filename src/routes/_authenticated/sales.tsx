@@ -1052,7 +1052,7 @@ function SalesPage() {
       <ProductFormDialog
         open={openNewProd}
         onOpenChange={setOpenNewProd}
-        onCreated={(p) => {
+        onCreated={(p: CreatedProduct) => {
           setLines((ls) => [...ls, { product_id: p.id, name: p.name, qty: 1, unit_price: Number(p.sell_price || 0), stock: Number(p.stock || 0) }]);
         }}
       />
