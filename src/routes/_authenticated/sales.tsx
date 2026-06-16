@@ -421,6 +421,26 @@ function SalesPage() {
     const inv = (profile?.invoice_settings ?? {}) as any;
     const biz = profile?.company_name || "";
     const owner = profile?.full_name || "";
+    const theme: string = inv.invoiceTheme || "#0f172a";
+    const fontSizeKey: "sm" | "md" | "lg" | "xl" = inv.invoiceFontSize || "md";
+    const template: number = Number(inv.invoiceTemplate) || 1;
+    const baseFs = { sm: 17, md: 20, lg: 23, xl: 26 }[fontSizeKey];
+    // Header style per template
+    const headerStyles: Record<number, string> = {
+      1: `padding-bottom:18px;border-bottom:3px solid ${theme}`,
+      2: `background:${theme};color:#fff;padding:16px;border-radius:8px`,
+      3: `border-top:5px solid ${theme};padding-top:14px`,
+      4: `background:${theme}1f;padding:16px;border-left:5px solid ${theme}`,
+      5: `border-bottom:3px dashed ${theme};padding-bottom:14px`,
+      6: `background:${theme};color:#fff;padding:16px;clip-path:polygon(0 0,100% 0,100% 85%,0 100%)`,
+      7: `padding:12px;border:3px solid ${theme}`,
+      8: `background:linear-gradient(135deg,${theme},${theme}aa);color:#fff;padding:16px;border-radius:8px`,
+      9: `border-bottom:4px double ${theme};padding-bottom:12px`,
+    };
+    const topStyle = headerStyles[template] || headerStyles[1];
+    const invertHeader = [2, 6, 8].includes(template);
+    const titleClr = invertHeader ? "#fff" : theme;
+    const subClr = invertHeader ? "rgba(255,255,255,0.85)" : "#64748b";
     const esc = (v: any) => String(v ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c] as string));
     const rows = lineItems.map((l, i) => `<tr>
       <td class="num">${i + 1}</td>
@@ -437,40 +457,39 @@ function SalesPage() {
         @page{size:8in 6in landscape;margin:0.12in}
         *{box-sizing:border-box}
         html,body{width:8in}
-        body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#0f172a;margin:0;padding:0.12in;background:#fff;font-size:20px}
+        body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#0f172a;margin:0;padding:0.12in;background:#fff;font-size:${baseFs}px}
         .sheet{width:100%;max-width:7.76in;margin:0 auto}
-        .top{display:flex;justify-content:space-between;align-items:flex-start;gap:28px;padding-bottom:18px;border-bottom:3px solid #0f172a}
+        .top{display:flex;justify-content:space-between;align-items:flex-start;gap:28px;${topStyle}}
         .brand{display:flex;gap:18px;align-items:center}
         .brand img{height:76px;width:76px;object-fit:contain;border-radius:10px;border:1px solid #e2e8f0;background:#fff}
-        .brand .biz{font-size:29px;font-weight:700;letter-spacing:-0.01em;font-family:'Playfair Display','Noto Serif Bengali',Georgia,serif}
-        .brand .owner{font-size:18px;color:#64748b;margin-top:2px}
+        .brand .biz{font-size:${baseFs + 9}px;font-weight:700;letter-spacing:-0.01em;font-family:'Playfair Display','Noto Serif Bengali',Georgia,serif;color:${titleClr}}
+        .brand .owner{font-size:${baseFs - 2}px;color:${subClr};margin-top:2px}
         .meta{text-align:right}
-        .meta h1{font-size:32px;margin:0;letter-spacing:0.08em;color:#0f172a;font-weight:800}
-        .meta .no{font-family:ui-monospace,Menlo,monospace;font-size:20px;color:#334155;margin-top:4px}
-        .meta .date{font-size:18px;color:#64748b;margin-top:2px}
+        .meta .no{font-family:ui-monospace,Menlo,monospace;font-size:${baseFs}px;color:${invertHeader ? "#fff" : "#334155"};margin-top:4px}
+        .meta .date{font-size:${baseFs - 2}px;color:${subClr};margin-top:2px}
         .row{display:flex;justify-content:space-between;gap:22px;margin-top:18px}
-        .card{flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 18px}
-        .card .lbl{font-size:16px;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:4px}
-        .card .val{font-size:22px;font-weight:600}
-        .card .sub{font-size:18px;color:#64748b;margin-top:2px}
-        table.items{width:100%;border-collapse:collapse;margin-top:18px;font-size:20px}
-        table.items thead th{background:#0f172a;color:#fff;text-align:left;padding:6px 12px;font-weight:600;font-size:18px;letter-spacing:0.05em;text-transform:uppercase}
+        .card{flex:1;background:${theme}0d;border:1px solid ${theme}33;border-radius:10px;padding:10px 18px}
+        .card .lbl{font-size:${baseFs - 4}px;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:4px}
+        .card .val{font-size:${baseFs + 2}px;font-weight:600}
+        .card .sub{font-size:${baseFs - 2}px;color:#64748b;margin-top:2px}
+        table.items{width:100%;border-collapse:collapse;margin-top:18px;font-size:${baseFs}px}
+        table.items thead th{background:${theme};color:#fff;text-align:left;padding:6px 12px;font-weight:600;font-size:${baseFs - 2}px;letter-spacing:0.05em;text-transform:uppercase}
         table.items thead th.right{text-align:right}
         table.items tbody td{padding:5px 12px;border-bottom:1px solid #e2e8f0}
-        table.items tbody tr:nth-child(even) td{background:#f8fafc}
+        table.items tbody tr:nth-child(even) td{background:${theme}0a}
         .right{text-align:right}.num{font-family:ui-monospace,Menlo,monospace}
-        .totals{margin-top:14px;margin-left:auto;width:420px;font-size:20px}
+        .totals{margin-top:14px;margin-left:auto;width:420px;font-size:${baseFs}px}
         .totals .line{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #e2e8f0}
-        .totals .line.grand{border-top:3px solid #0f172a;border-bottom:3px solid #0f172a;margin-top:4px;padding:8px 0;font-size:23px;font-weight:700}
+        .totals .line.grand{border-top:3px solid ${theme};border-bottom:3px solid ${theme};margin-top:4px;padding:8px 0;font-size:${baseFs + 3}px;font-weight:700;color:${theme}}
         .totals .line.paid{color:#16a34a}
         .totals .line.due{color:#dc2626;font-weight:600}
-        .badge{display:inline-block;padding:3px 14px;border-radius:999px;font-size:18px;font-weight:600;letter-spacing:0.04em}
+        .badge{display:inline-block;padding:3px 14px;border-radius:999px;font-size:${baseFs - 2}px;font-weight:600;letter-spacing:0.04em}
         .badge-paid{background:#dcfce7;color:#15803d}
         .badge-due{background:#fee2e2;color:#b91c1c}
-        .footer{margin-top:22px;padding-top:14px;border-top:1px solid #e2e8f0;font-size:18px;color:#475569;display:grid;gap:10px}
-        .footer h4{margin:0 0 4px;font-size:18px;letter-spacing:0.06em;text-transform:uppercase;color:#0f172a}
+        .footer{margin-top:22px;padding-top:14px;border-top:1px solid ${theme}55;font-size:${baseFs - 2}px;color:#475569;display:grid;gap:10px}
+        .footer h4{margin:0 0 4px;font-size:${baseFs - 2}px;letter-spacing:0.06em;text-transform:uppercase;color:${theme}}
         .footer p{margin:0;white-space:pre-wrap;line-height:1.4}
-        .thanks{margin-top:18px;text-align:center;font-size:20px;color:#0f172a;font-weight:600}
+        .thanks{margin-top:18px;text-align:center;font-size:${baseFs}px;color:${theme};font-weight:600}
         @media print{body{padding:0.1in}.sheet{max-width:none}}
       </style></head><body><div class="sheet">
       <div class="top">
@@ -482,7 +501,6 @@ function SalesPage() {
           </div>
         </div>
         <div class="meta">
-          <h1>${esc(t("invoice")).toUpperCase()}</h1>
           <div class="no">${esc(s.invoice_no)}</div>
           <div class="date">${esc(fmtInvoiceDate(s.created_at, lang))}</div>
           <div style="margin-top:10px">${dueBadge}</div>
