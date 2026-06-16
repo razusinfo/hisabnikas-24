@@ -25,6 +25,8 @@ import { Route as AuthenticatedCurrentPackageRouteImport } from './routes/_authe
 import { Route as AuthenticatedBuyMessagesRouteImport } from './routes/_authenticated/buy-messages'
 import { Route as AuthenticatedBackupRestoreRouteImport } from './routes/_authenticated/backup-restore'
 import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authenticated/admin-payments'
+import { Route as ApiPublicHooksDailyBackupRouteImport } from './routes/api/public/hooks/daily-backup'
+import { Route as ApiPublicGoogleCallbackRouteImport } from './routes/api/public/google/callback'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -109,6 +111,17 @@ const AuthenticatedAdminPaymentsRoute =
     path: '/admin-payments',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicHooksDailyBackupRoute =
+  ApiPublicHooksDailyBackupRouteImport.update({
+    id: '/api/public/hooks/daily-backup',
+    path: '/api/public/hooks/daily-backup',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicGoogleCallbackRoute = ApiPublicGoogleCallbackRouteImport.update({
+  id: '/api/public/google/callback',
+  path: '/api/public/google/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -126,6 +139,8 @@ export interface FileRoutesByFullPath {
   '/purchases': typeof AuthenticatedPurchasesRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/api/public/google/callback': typeof ApiPublicGoogleCallbackRoute
+  '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -143,6 +158,8 @@ export interface FileRoutesByTo {
   '/purchases': typeof AuthenticatedPurchasesRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/api/public/google/callback': typeof ApiPublicGoogleCallbackRoute
+  '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -162,6 +179,8 @@ export interface FileRoutesById {
   '/_authenticated/purchases': typeof AuthenticatedPurchasesRoute
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/api/public/google/callback': typeof ApiPublicGoogleCallbackRoute
+  '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -181,6 +200,8 @@ export interface FileRouteTypes {
     | '/purchases'
     | '/sales'
     | '/settings'
+    | '/api/public/google/callback'
+    | '/api/public/hooks/daily-backup'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -198,6 +219,8 @@ export interface FileRouteTypes {
     | '/purchases'
     | '/sales'
     | '/settings'
+    | '/api/public/google/callback'
+    | '/api/public/hooks/daily-backup'
   id:
     | '__root__'
     | '/'
@@ -216,12 +239,16 @@ export interface FileRouteTypes {
     | '/_authenticated/purchases'
     | '/_authenticated/sales'
     | '/_authenticated/settings'
+    | '/api/public/google/callback'
+    | '/api/public/hooks/daily-backup'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicGoogleCallbackRoute: typeof ApiPublicGoogleCallbackRoute
+  ApiPublicHooksDailyBackupRoute: typeof ApiPublicHooksDailyBackupRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -338,6 +365,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminPaymentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/hooks/daily-backup': {
+      id: '/api/public/hooks/daily-backup'
+      path: '/api/public/hooks/daily-backup'
+      fullPath: '/api/public/hooks/daily-backup'
+      preLoaderRoute: typeof ApiPublicHooksDailyBackupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/google/callback': {
+      id: '/api/public/google/callback'
+      path: '/api/public/google/callback'
+      fullPath: '/api/public/google/callback'
+      preLoaderRoute: typeof ApiPublicGoogleCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -380,6 +421,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicGoogleCallbackRoute: ApiPublicGoogleCallbackRoute,
+  ApiPublicHooksDailyBackupRoute: ApiPublicHooksDailyBackupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
