@@ -174,6 +174,7 @@ const dict = {
     date: "Date",
     customer: "Customer",
     customerName: "Customer Name",
+    
     qty: "Qty",
     noData: "Nothing here yet.",
     save: "Save",
