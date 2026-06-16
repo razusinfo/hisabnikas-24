@@ -1047,50 +1047,14 @@ function SalesPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Inline New Product */}
-      <Dialog open={openNewProd} onOpenChange={(o) => { if (!o) { setOpenNewProd(false); } }}>
-        <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle>{lang === "bn" ? "নতুন পণ্য যুক্ত করুন" : "Add New Product"}</DialogTitle></DialogHeader>
-          <div className="space-y-3">
-            <div>
-              <label className="text-xs text-muted-foreground">{t("name")} *</label>
-              <Input value={npName} onChange={(e) => setNpName(e.target.value)} placeholder={lang === "bn" ? "পণ্যের নাম" : "Product name"} />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs text-muted-foreground">{t("sku")}</label>
-                <Input value={npSku} onChange={(e) => setNpSku(e.target.value)} placeholder={lang === "bn" ? "এসকিউ" : "SKU"} />
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground">{t("stock")}</label>
-                <Input type="number" min="0" value={npStock} onChange={(e) => setNpStock(e.target.value)} placeholder="0" />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs text-muted-foreground">{t("price")}</label>
-                <Input type="number" min="0" step="0.01" value={npPrice} onChange={(e) => setNpPrice(e.target.value)} placeholder="0" />
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground">{t("category")}</label>
-                <Select value={npCategoryId || "none"} onValueChange={(v) => setNpCategoryId(v === "none" ? "" : v)}>
-                  <SelectTrigger><SelectValue placeholder={lang === "bn" ? "ক্যাটাগরি" : "Category"} /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">{lang === "bn" ? "— ক্যাটাগরিহীন —" : "— No category —"}</SelectItem>
-                    {(categoriesList as any[]).map((c) => (
-                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setOpenNewProd(false)}>{t("cancel")}</Button>
-            <Button onClick={createProductInline} disabled={npSaving}>{t("save")}</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Inline New Product (full form) */}
+      <ProductFormDialog
+        open={openNewProd}
+        onOpenChange={setOpenNewProd}
+        onCreated={(p) => {
+          setLines((ls) => [...ls, { product_id: p.id, name: p.name, qty: 1, unit_price: Number(p.sell_price || 0), stock: Number(p.stock || 0) }]);
+        }}
+      />
     </div>
   );
 }
