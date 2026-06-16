@@ -279,7 +279,14 @@ function InvoiceDesignPage() {
           </Button>
           <PageHeader title={tr("ইনভয়েস প্রিভিউ", "Invoice Preview")} />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => doGenerateTest()}
+          >
+            <Sparkles className="h-4 w-4" /> {tr("টেস্ট ইনভয়েস তৈরি করুন", "Generate Test Invoice")}
+          </Button>
           <Button
             className="gap-2 text-white"
             style={{ backgroundColor: theme }}
