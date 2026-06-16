@@ -78,6 +78,40 @@ function CustomersPage() {
     },
   });
 
+  const importContacts = useMutation({
+    mutationFn: async () => {
+      // Contact Picker API — supported on Android Chrome/Edge
+      const navAny = navigator as unknown as {
+        contacts?: { select: (props: string[], opts?: { multiple?: boolean }) => Promise<Array<{ name?: string[]; tel?: string[]; email?: string[]; address?: unknown[] }>> };
+      };
+      if (!navAny.contacts?.select) {
+        throw new Error("আপনার ব্রাউজার/ডিভাইসে কন্ট্যাক্ট পিকার সমর্থিত নয়। Android-এ Chrome ব্যবহার করুন।");
+      }
+      const picked = await navAny.contacts.select(["name", "tel", "email"], { multiple: true });
+      if (!picked || picked.length === 0) return { added: 0 };
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) throw new Error("Not authenticated");
+      const rows = picked
+        .map((c) => ({
+          owner_id: u.user!.id,
+          name: (c.name?.[0] || c.tel?.[0] || "Unnamed").toString().slice(0, 200),
+          phone: (c.tel?.[0] || "").toString().slice(0, 40) || null,
+          email: (c.email?.[0] || "").toString().slice(0, 200) || null,
+        }))
+        .filter((r) => r.name);
+      if (rows.length === 0) return { added: 0 };
+      const { error } = await supabase.from("customers").insert(rows);
+      if (error) throw error;
+      return { added: rows.length };
+    },
+    onSuccess: (res) => {
+      toast.success(`${res.added} জন গ্রাহক যুক্ত হয়েছে`);
+      qc.invalidateQueries({ queryKey: ["customers"] });
+      qc.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const collect = useMutation({
     mutationFn: async () => {
       if (!collectFor) throw new Error("No customer");
