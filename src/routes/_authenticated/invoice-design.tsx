@@ -575,6 +575,11 @@ function InvoicePreview({
                   {tr("ফোন", "Phone")}: {phone}
                 </div>
               )}
+              {email && (
+                <div style={{ fontSize: f.base - 1, color: subColor }}>
+                  Email: {email}
+                </div>
+              )}
             </div>
           </div>
         </div>
