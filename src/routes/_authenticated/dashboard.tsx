@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -98,11 +98,11 @@ const cardThemes = [
 ];
 
 function Stat({
-  icon: Icon, label, value, themeIndex,
-}: { icon: any; label: string; value: string; themeIndex: number }) {
+  icon: Icon, label, value, themeIndex, to,
+}: { icon: any; label: string; value: string; themeIndex: number; to?: string }) {
   const t = cardThemes[themeIndex % cardThemes.length];
-  return (
-    <div className={`${t.bg} border ${t.border} rounded-xl shadow-sm p-6`}>
+  const content = (
+    <div className={`${t.bg} border ${t.border} rounded-xl shadow-sm p-6 ${to ? "transition-all hover:shadow-md hover:-translate-y-0.5 cursor-pointer" : ""}`}>
       <div className="flex items-start justify-between">
         <div>
           <div className="text-sm uppercase tracking-widest text-muted-foreground">{label}</div>
@@ -114,6 +114,8 @@ function Stat({
       </div>
     </div>
   );
+  if (to) return <Link to={to} className="block">{content}</Link>;
+  return content;
 }
 
 function Dashboard() {
@@ -136,9 +138,9 @@ function Dashboard() {
       <QuickSaleDialog open={quickOpen} onOpenChange={setQuickOpen} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
-        <Stat icon={CalendarDays} label={t("salesToday")} value={fmtMoney(d.salesToday)} themeIndex={0} />
-        <Stat icon={CalendarRange} label={t("salesMonth")} value={fmtMoney(d.salesMonth)} themeIndex={1} />
-        <Stat icon={TrendingUp} label={t("salesYear")} value={fmtMoney(d.salesYear)} themeIndex={2} />
+        <Stat icon={CalendarDays} label={t("salesToday")} value={fmtMoney(d.salesToday)} themeIndex={0} to="/sales" />
+        <Stat icon={CalendarRange} label={t("salesMonth")} value={fmtMoney(d.salesMonth)} themeIndex={1} to="/sales" />
+        <Stat icon={TrendingUp} label={t("salesYear")} value={fmtMoney(d.salesYear)} themeIndex={2} to="/sales" />
         <Stat icon={Wallet} label={t("dueReceivable")} value={fmtMoney(d.dueReceivable)} themeIndex={3} />
       </div>
 
