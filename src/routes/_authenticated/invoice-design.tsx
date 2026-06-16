@@ -379,9 +379,8 @@ function InvoicePreview({
                 <td className="p-2">{r.no}</td>
                 <td className="p-2">{r.name}</td>
                 <td className="p-2">{r.qty}</td>
-                <td className="p-2">৳{r.price.toFixed(2)}</td>
-                <td className="p-2">৳{r.disc.toFixed(2)}</td>
-                <td className="p-2">৳{r.vat.toFixed(2)}</td>
+                <td className="p-2">৳{r.total.toFixed(2)}</td>
+
                 <td className="p-2">৳{r.total.toFixed(2)}</td>
               </tr>
             ))}
