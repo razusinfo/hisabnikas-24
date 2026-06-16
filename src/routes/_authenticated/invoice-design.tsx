@@ -347,7 +347,7 @@ function InvoicePreview({
             </div>
             <div className="text-right w-1/4" style={{ color: headerInverse ? "#fff" : "#000" }}>
               <div style={{ fontSize: f.base - 1, color: subColor }}>
-                (তারিখ:১৬/০৬/২০২৬)
+                তারিখ:১৬/০৬/২০২৬
               </div>
               <div style={{ fontSize: f.head + 4, fontWeight: 800, color: titleColor, letterSpacing: 1 }}>
                 {tr("ইনভয়েস", "INVOICE")}
@@ -359,7 +359,7 @@ function InvoicePreview({
         {/* Meta */}
         <div className="mt-3 grid grid-cols-2 gap-y-1" style={{ fontSize: f.base - 1 }}>
           <div><span className="font-semibold">{tr("ইনভয়েস নং", "Invoice #")}:</span> 5093758370499</div>
-          <div className="text-right">(তারিখ:১১/১০/২০২৩)</div>
+          <div className="text-right">তারিখ:১১/১০/২০২৩</div>
           <div><span className="font-semibold">{tr("কাস্টমার", "Customer")}:</span> Demo Party</div>
           <div><span className="font-semibold">{tr("ফোন", "Phone")}:</span> 01XXXXXXXXX</div>
         </div>
