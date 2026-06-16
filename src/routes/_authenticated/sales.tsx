@@ -1098,10 +1098,10 @@ function SalesPage() {
               </div>
               <div>
                 <label className="text-xs text-muted-foreground">{t("category")}</label>
-                <Select value={npCategoryId} onValueChange={setNpCategoryId}>
+                <Select value={npCategoryId || "none"} onValueChange={(v) => setNpCategoryId(v === "none" ? "" : v)}>
                   <SelectTrigger><SelectValue placeholder={lang === "bn" ? "ক্যাটাগরি" : "Category"} /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">{lang === "bn" ? "— ক্যাটাগরিহীন —" : "— No category —"}</SelectItem>
+                    <SelectItem value="none">{lang === "bn" ? "— ক্যাটাগরিহীন —" : "— No category —"}</SelectItem>
                     {(categoriesList as any[]).map((c) => (
                       <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                     ))}
