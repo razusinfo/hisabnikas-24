@@ -27,7 +27,9 @@ import {
   CreditCard,
   Sun,
   Moon,
+  Plus,
 } from "lucide-react";
+import { QuickSaleDialog } from "@/components/QuickSaleDialog";
 import { useState, useEffect, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
@@ -382,6 +384,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [quickOpen, setQuickOpen] = useState(false);
   useAutoBackup();
 
   const handleSignOut = async () => {
@@ -472,7 +475,13 @@ export function AppShell({ children }: { children: ReactNode }) {
           {/* Desktop top quick-actions bar */}
           <header className="hidden md:flex sticky top-0 z-20 items-center justify-end gap-2 px-6 py-2.5 bg-background/95 backdrop-blur border-b border-border/60">
             <TopQuickLink to="/purchases" icon={ShoppingCart} label={t("purchases")} colorClass="text-amber-600 hover:bg-amber-50" />
-            <TopQuickLink to="/sales" icon={Receipt} label={t("sales")} colorClass="text-emerald-600 hover:bg-emerald-50" />
+            <button
+              onClick={() => setQuickOpen(true)}
+              className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors", "text-emerald-600 hover:bg-emerald-50")}
+            >
+              <Plus className="h-4 w-4" />
+              <span className="hidden lg:inline">{t("newSale")}</span>
+            </button>
             <Link
               to="/help"
               className="flex items-center justify-center h-10 w-10 rounded-full hover:bg-orange-50 transition-colors"
@@ -499,6 +508,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           </header>
 
+          <QuickSaleDialog open={quickOpen} onOpenChange={setQuickOpen} />
           <main className="flex-1 min-w-0 overflow-x-hidden">{children}</main>
           <footer className="px-4 py-3 text-center text-[11px] text-muted-foreground border-t border-border/40">
             প্রস্তুতকারক: www.sylhetionlineshop.com
