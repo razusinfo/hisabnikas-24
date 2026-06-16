@@ -47,7 +47,7 @@ function AuthPage() {
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: { full_name: fullName, company_name: companyName },
+        data: { full_name: fullName, company_name: companyName, phone },
       },
     });
     setLoading(false);
