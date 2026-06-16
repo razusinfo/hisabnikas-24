@@ -150,16 +150,47 @@ function BackupRestorePage() {
   const [driveFiles, setDriveFiles] = useState<DriveBackupFile[]>([]);
   const [loadingFiles, setLoadingFiles] = useState(false);
   const [busyFileId, setBusyFileId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [autoDaily, setAutoDaily] = useState(false);
+  const [lastAuto, setLastAuto] = useState(0);
+  const [autoRunning, setAutoRunning] = useState(false);
 
   useEffect(() => {
     setDriveConnected(isSignedIn());
+    supabase.auth.getUser().then(({ data }) => {
+      const id = data.user?.id ?? null;
+      setUserId(id);
+      if (id) {
+        setAutoDaily(isAutoBackupEnabled(id));
+        setLastAuto(getLastAutoBackup(id));
+      }
+    });
   }, []);
 
-  const backupQ = useQuery({
-    queryKey: ["backup-data"],
-    queryFn: fetchAllData,
-    enabled: false,
-  });
+  const toggleAutoDaily = (next: boolean) => {
+    if (!userId) return;
+    setAutoBackupEnabled(userId, next);
+    setAutoDaily(next);
+    if (next && !driveConnected) {
+      toast.message(t("connectGoogleDrive"));
+    }
+  };
+
+  const handleRunAutoNow = async () => {
+    if (!userId) return;
+    setAutoRunning(true);
+    try {
+      await runAutoBackup(userId);
+      setLastAuto(getLastAutoBackup(userId));
+      toast.success(t("driveBackupUploaded"));
+      await refreshDriveList();
+    } catch (e: any) {
+      toast.error(e.message || t("backupFailed"));
+    } finally {
+      setAutoRunning(false);
+    }
+  };
+
 
   const handleBackup = async () => {
     try {
