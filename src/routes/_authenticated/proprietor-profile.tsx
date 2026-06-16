@@ -60,6 +60,7 @@ function ProprietorProfilePage() {
   useEffect(() => {
     if (profileQuery.data) {
       setFullName(profileQuery.data.full_name ?? "");
+      setPhone(profileQuery.data.phone ?? "");
       setAddress(profileQuery.data.address ?? "");
     }
   }, [profileQuery.data]);
