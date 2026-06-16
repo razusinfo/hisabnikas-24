@@ -124,7 +124,7 @@ function SalesPage() {
       if (!u.user) return null;
       const { data } = await supabase
         .from("profiles")
-        .select("full_name, company_name, currency, logo_url, invoice_settings")
+        .select("full_name, company_name, currency, logo_url, address, invoice_settings")
         .eq("id", u.user.id)
         .single();
       return data;
