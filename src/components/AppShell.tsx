@@ -533,8 +533,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
 
           <main className="flex-1 min-w-0 overflow-x-hidden">{children}</main>
-          <footer className="px-4 py-3 text-center text-[11px] text-muted-foreground border-t border-border/40">
-            প্রস্তুতকারক: www.sylhetionlineshop.com
+          <footer className="px-4 py-3 text-center text-sm text-muted-foreground border-t border-border/40">
+            সফটওয়্যার প্রস্তুতকারক: www.sylhetionlineshop.com
           </footer>
         </div>
       </div>
