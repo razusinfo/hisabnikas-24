@@ -408,7 +408,6 @@ export function AppShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [quickOpen, setQuickOpen] = useState(false);
   useAutoBackup();
 
   const handleSignOut = async () => {
