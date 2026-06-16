@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +17,7 @@ import {
   RefreshCw,
   Trash2,
   CheckCircle2,
+  ShieldCheck,
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -37,9 +38,21 @@ import {
   getLastAutoBackup,
   runAutoBackup,
 } from "@/lib/auto-backup";
+import { useServerFn } from "@tanstack/react-start";
+import {
+  getDriveConnection,
+  getDriveAuthUrl,
+  setAutoDaily as setAutoDailyFn,
+  disconnectDrive,
+  runBackupNow,
+} from "@/lib/google-drive.functions";
 
 export const Route = createFileRoute("/_authenticated/backup-restore")({
   component: BackupRestorePage,
+  validateSearch: (s: Record<string, unknown>) => ({
+    drive_connected: s.drive_connected as string | undefined,
+    drive_error: s.drive_error as string | undefined,
+  }),
 });
 
 type BackupData = {
