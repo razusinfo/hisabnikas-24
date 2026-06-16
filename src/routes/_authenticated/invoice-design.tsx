@@ -64,7 +64,7 @@ function InvoiceDesignPage() {
         .eq("id", u.user.id)
         .single();
       if (error) throw error;
-      return data;
+      return data ? { ...data, email: u.user.email || null } : null;
     },
   });
 
