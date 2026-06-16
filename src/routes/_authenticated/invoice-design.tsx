@@ -64,19 +64,21 @@ function InvoiceDesignPage() {
   const [theme, setTheme] = useState<string>(THEMES[0]);
   const [fontSize, setFontSize] = useState<"sm" | "md" | "lg" | "xl">("md");
   const [template, setTemplate] = useState<number>(1);
+  const [fontFamily, setFontFamily] = useState<"serif" | "sans" | "modern">("serif");
 
   useEffect(() => {
     const s = (profileQuery.data?.invoice_settings ?? {}) as DesignSettings;
     if (s.invoiceTheme) setTheme(s.invoiceTheme);
     if (s.invoiceFontSize) setFontSize(s.invoiceFontSize);
     if (s.invoiceTemplate) setTemplate(s.invoiceTemplate);
+    if (s.invoiceFontFamily) setFontFamily(s.invoiceFontFamily);
   }, [profileQuery.data]);
 
   const save = useMutation({
     mutationFn: async () => {
       if (!profileQuery.data) throw new Error("No profile");
       const prev = (profileQuery.data.invoice_settings ?? {}) as Record<string, unknown>;
-      const next = { ...prev, invoiceTheme: theme, invoiceFontSize: fontSize, invoiceTemplate: template };
+      const next = { ...prev, invoiceTheme: theme, invoiceFontSize: fontSize, invoiceTemplate: template, invoiceFontFamily: fontFamily };
       const { error } = await supabase
         .from("profiles")
         .update({ invoice_settings: next as never })
@@ -102,6 +104,7 @@ function InvoiceDesignPage() {
       invoiceTheme: patch.invoiceTheme ?? theme,
       invoiceFontSize: patch.invoiceFontSize ?? fontSize,
       invoiceTemplate: patch.invoiceTemplate ?? template,
+      invoiceFontFamily: patch.invoiceFontFamily ?? fontFamily,
     };
     supabase
       .from("profiles")
