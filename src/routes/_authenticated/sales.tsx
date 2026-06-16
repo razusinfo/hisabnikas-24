@@ -485,6 +485,7 @@ function SalesPage() {
           <h1>${esc(t("invoice")).toUpperCase()}</h1>
           <div class="no">${esc(s.invoice_no)}</div>
           <div class="date">${esc(fmtInvoiceDate(s.created_at, lang))}</div>
+          ${s.customers?.phone ? `<div class="date">${esc(s.customers.phone)}</div>` : ""}
           <div style="margin-top:10px">${dueBadge}</div>
         </div>
       </div>
