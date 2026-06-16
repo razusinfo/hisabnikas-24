@@ -555,7 +555,7 @@ function SalesPage() {
       labels: {
         invoice: isBn ? "পরিশোধ রসিদ" : "Payment Receipt",
         date: t("date"),
-        customer: t("customer"),
+        customer: t("customerName"),
         phone: t("phone"),
         method: t("method"),
         item: isBn ? "বিবরণ" : "Description",
