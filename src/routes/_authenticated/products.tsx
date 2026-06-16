@@ -172,9 +172,16 @@ function ProductsPage() {
       cost_price: String(p.cost_price), sell_price: String(p.sell_price),
       stock: String(p.stock), low_stock_threshold: String(p.low_stock_threshold),
       category_id: p.category_id ?? "", image_url: p.image_url ?? "",
+      vat: p.vat != null ? String(p.vat) : "0",
+      mrp: p.mrp != null ? String(p.mrp) : "",
+      batch_no: p.batch_no ?? "",
+      serial_no: p.serial_no ?? "",
+      size: p.size ?? "",
+      expiry_date: p.expiry_date ?? "",
     });
     setOpen(true);
   };
+
 
   const addCategory = useMutation({
     mutationFn: async (name: string) => {
