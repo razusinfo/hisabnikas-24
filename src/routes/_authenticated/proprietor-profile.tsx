@@ -53,6 +53,7 @@ function ProprietorProfilePage() {
   });
 
   const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
 
