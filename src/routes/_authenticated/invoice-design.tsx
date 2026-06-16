@@ -76,13 +76,14 @@ function InvoiceDesignPage() {
     if (s.invoiceFontSize) setFontSize(s.invoiceFontSize);
     if (s.invoiceTemplate) setTemplate(s.invoiceTemplate);
     if (s.invoiceFontFamily) setFontFamily(s.invoiceFontFamily);
+    if (s.invoiceFontWeight) setFontWeight(s.invoiceFontWeight);
   }, [profileQuery.data]);
 
   const save = useMutation({
     mutationFn: async () => {
       if (!profileQuery.data) throw new Error("No profile");
       const prev = (profileQuery.data.invoice_settings ?? {}) as Record<string, unknown>;
-      const next = { ...prev, invoiceTheme: theme, invoiceFontSize: fontSize, invoiceTemplate: template, invoiceFontFamily: fontFamily };
+      const next = { ...prev, invoiceTheme: theme, invoiceFontSize: fontSize, invoiceTemplate: template, invoiceFontFamily: fontFamily, invoiceFontWeight: fontWeight };
       const { error } = await supabase
         .from("profiles")
         .update({ invoice_settings: next as never })
@@ -98,8 +99,6 @@ function InvoiceDesignPage() {
 
   const profile = profileQuery.data;
 
-  // Auto-save on change (debounced via mutate—simple approach: save on button + on each change)
-  // We'll save on change to feel "live"
   const persist = (patch: Partial<DesignSettings>) => {
     if (!profile) return;
     const prev = (profile.invoice_settings ?? {}) as Record<string, unknown>;
@@ -109,6 +108,7 @@ function InvoiceDesignPage() {
       invoiceFontSize: patch.invoiceFontSize ?? fontSize,
       invoiceTemplate: patch.invoiceTemplate ?? template,
       invoiceFontFamily: patch.invoiceFontFamily ?? fontFamily,
+      invoiceFontWeight: patch.invoiceFontWeight ?? fontWeight,
     };
     supabase
       .from("profiles")
