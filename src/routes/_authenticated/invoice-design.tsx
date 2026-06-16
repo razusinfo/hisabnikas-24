@@ -595,7 +595,7 @@ function InvoicePreview({
           <thead>
             <tr style={{ background: theme, color: "#fff" }}>
               {headers.map((h, i) => (
-                <th key={i} className="text-left p-2 font-semibold" style={{ borderRight: i < headers.length - 1 ? "1px solid rgba(255,255,255,0.2)" : undefined }}>
+                <th key={i} className={cn("p-2 font-semibold", i === 2 || i === 3 || i === 4 ? "text-right" : "text-left")} style={{ borderRight: i < headers.length - 1 ? "1px solid rgba(255,255,255,0.2)" : undefined }}>
                   {lang === "bn" ? h.bn : h.en}
                 </th>
               ))}
@@ -606,9 +606,9 @@ function InvoicePreview({
               <tr key={r.no} style={{ background: idx % 2 ? `${theme}08` : "transparent" }} className="border-b border-gray-100">
                 <td className="p-2">{r.no}</td>
                 <td className="p-2">{r.name}</td>
-                <td className="p-2">৳{r.price.toFixed(2)}</td>
-                <td className="p-2">{r.qty}</td>
-                <td className="p-2">৳{r.total.toFixed(2)}</td>
+                <td className="p-2 text-right">৳{r.price.toFixed(2)}</td>
+                <td className="p-2 text-right">{r.qty}</td>
+                <td className="p-2 text-right">৳{r.total.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
