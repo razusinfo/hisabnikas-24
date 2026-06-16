@@ -113,7 +113,7 @@ export function buildInvoiceHtml({ doc, business, settings, lang, labels, hideMe
       <td class="num">${i + 1}</td>
       <td>${esc(l.name)}</td>
       <td class="right">${typeof l.price === "number" ? fmtMoney(l.price, lang) : esc(l.price)}</td>
-      <td class="num">${lang === "bn" && typeof l.qty === "number" ? Number(l.qty).toLocaleString("bn-BD") : esc(l.qty)}</td>
+      <td class="right num">${lang === "bn" && typeof l.qty === "number" ? Number(l.qty).toLocaleString("bn-BD") : esc(l.qty)}</td>
       <td class="right">${typeof l.total === "number" ? fmtMoney(l.total, lang) : esc(l.total)}</td>
     </tr>`,
     )
