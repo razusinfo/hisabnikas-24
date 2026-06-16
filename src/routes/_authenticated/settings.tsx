@@ -417,6 +417,10 @@ function SettingsPage() {
         <div className="pt-2">{SaveBtn}</div>
       </SectionCard>
 
+      {/* থিম / স্কিন */}
+      <SkinSection lang={lang} />
+
+
       {/* Preferences + password kept as small footer */}
       <SectionCard title={tr("preferences")}>
         <div className="grid gap-4 sm:grid-cols-2">
