@@ -108,6 +108,7 @@ function SalesPage() {
   const [newDelivery, setNewDelivery] = useState("0");
   const [newPaid, setNewPaid] = useState<string>("");
   const [newNote, setNewNote] = useState("");
+  const [newDate, setNewDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
   const [lines, setLines] = useState<{ product_id: string; name: string; qty: number; unit_price: number; stock: number }[]>([]);
   const [creating, setCreating] = useState(false);
   const [productSearch, setProductSearch] = useState("");
