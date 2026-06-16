@@ -487,6 +487,7 @@ function SalesPage() {
       lang: lang as "bn" | "en",
       labels: {
         invoice: t("invoice"),
+        date: t("date"),
         customer: t("customer"),
         phone: t("phone"),
         method: t("method"),
@@ -553,6 +554,7 @@ function SalesPage() {
       lang: lang as "bn" | "en",
       labels: {
         invoice: isBn ? "পরিশোধ রসিদ" : "Payment Receipt",
+        date: t("date"),
         customer: t("customer"),
         phone: t("phone"),
         method: t("method"),
