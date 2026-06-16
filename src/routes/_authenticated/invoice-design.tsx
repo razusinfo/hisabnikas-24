@@ -57,7 +57,7 @@ function InvoiceDesignPage() {
       if (!u.user) throw new Error("Not signed in");
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, company_name, logo_url, phone, address, invoice_settings")
+        .select("id, full_name, company_name, logo_url, phone, address, invoice_settings")
         .eq("id", u.user.id)
         .single();
       if (error) throw error;
