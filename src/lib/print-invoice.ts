@@ -180,7 +180,7 @@ export function printStyledInvoice({ doc, business, settings, lang, labels, hide
     </style></head><body><div class="sheet">
     <div class="top">
       <div class="brand">
-        ${showCompanyLogo && business.logoUrl ? `<img src="${esc(business.logoUrl)}" alt="">` : ""}
+        ${thermal && showCompanyLogo && business.logoUrl ? `<img src="${esc(business.logoUrl)}" alt="">` : ""}
         <div>
           ${showHeading && showCompanyName ? `<div class="biz">${esc(business.name || labels.invoice)}</div>` : ""}
           ${showBusinessInfo && business.owner ? `<div class="owner">${esc(business.owner)}</div>` : ""}
@@ -188,6 +188,7 @@ export function printStyledInvoice({ doc, business, settings, lang, labels, hide
         </div>
       </div>
       <div class="meta">
+        ${!thermal && showCompanyLogo && business.logoUrl ? `<img src="${esc(business.logoUrl)}" alt="">` : ""}
         ${showInvoiceNumber ? `<div class="no">${esc(doc.invoice_no)}</div>` : ""}
         ${showExportDate ? `<div class="date">${esc(fmtInvoiceDate(doc.created_at, lang))}</div>` : ""}
         <div style="margin-top:${thermal ? 4 : 10}px">${dueBadge}</div>
