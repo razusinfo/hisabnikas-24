@@ -18,13 +18,22 @@ import {
   TrendingUp,
   Database,
   UserCircle2,
+  Pencil,
+  User as UserIcon,
+  Briefcase,
+  CreditCard,
+  Sun,
+  Moon,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { SearchProvider, SearchTrigger, SearchIconButton } from "@/components/GlobalSearch";
 import { useAutoBackup } from "@/lib/auto-backup";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Switch } from "@/components/ui/switch";
+
 
 function LangToggle({ compact = false }: { compact?: boolean }) {
   const { lang, setLang } = useI18n();
