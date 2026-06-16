@@ -189,7 +189,14 @@ function BackupRestorePage() {
     } finally {
       setAutoRunning(false);
     }
-  };
+
+  const backupQ = useQuery({
+    queryKey: ["backup-data"],
+    queryFn: fetchAllData,
+    enabled: false,
+  });
+
+
 
 
   const handleBackup = async () => {
