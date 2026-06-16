@@ -239,6 +239,15 @@ export function buildInvoiceHtml({ doc, business, settings, lang, labels, hideMe
       <div class="sig">${esc(labels.signature ? "" : "Authorized Signature")}${labels.signature ? esc(business.owner || business.name || "Authorized Signature") : ""}</div>
     </div>` : ""}
     ${showFooter && inv.footer ? `<div class="thanks">${esc(inv.footer)}</div>` : ""}
-    </div><script>window.onload=()=>setTimeout(()=>window.print(),200)</script></body></html>`);
+    </div></body></html>`;
+}
+
+export function printStyledInvoice(opts: PrintInvoiceOptions) {
+  const w = window.open("", "_blank", "width=820,height=1000");
+  if (!w) return;
+  const html = buildInvoiceHtml(opts);
+  w.document.write(html);
+  w.document.write(`<script>window.onload=()=>setTimeout(()=>window.print(),200)</script>`);
   w.document.close();
 }
+
