@@ -171,8 +171,23 @@ function SalesPage() {
     enabled: openNew,
   });
 
+  const inv = (profile?.invoice_settings ?? {}) as any;
+  const sett = {
+    showInvoiceNumber: inv.showInvoiceNumber !== false,
+    taxPerTx: inv.taxPerTx !== false,
+    discountPerTx: inv.discountPerTx !== false,
+    deliveryCharge: !!inv.deliveryCharge,
+    dueSmsOnTx: inv.dueSmsOnTx !== false,
+    allowViewInvoice: inv.allowViewInvoice !== false,
+    autoIncrementInvoice: inv.autoIncrementInvoice !== false,
+    startingInvoiceNumber: Number(inv.startingInvoiceNumber) || 1000,
+    showPreviousDue: !!inv.showPreviousDue,
+    cashSaleDefault: inv.cashSaleDefault !== false,
+  };
+  // Set default method to cash if cashSaleDefault is on (already cash by default)
+
   const newSubtotal = lines.reduce((a, l) => a + l.qty * l.unit_price, 0);
-  const newTotal = Math.max(0, newSubtotal - Number(newDiscount || 0) + Number(newTax || 0));
+  const newTotal = Math.max(0, newSubtotal - Number(newDiscount || 0) + Number(newTax || 0) + Number(newDelivery || 0));
   const newPaidAmt = newPaid === "" ? newTotal : Number(newPaid);
   const newDue = Math.max(0, newTotal - newPaidAmt);
 
