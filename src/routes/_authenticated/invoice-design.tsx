@@ -349,6 +349,9 @@ function InvoicePreview({
               <div style={{ fontSize: f.base - 1, color: subColor }}>
                 তারিখ:১৬/০৬/২০২৬
               </div>
+              <div style={{ fontSize: f.base - 1, color: subColor }}>
+                {tr("ফোন", "Phone")}: 01XXXXXXXXX
+              </div>
               <div style={{ fontSize: f.head + 4, fontWeight: 800, color: titleColor, letterSpacing: 1 }}>
                 {tr("ইনভয়েস", "INVOICE")}
               </div>
