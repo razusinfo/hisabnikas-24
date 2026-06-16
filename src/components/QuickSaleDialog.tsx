@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Trash2, Plus, Minus, Search } from "lucide-react";
+import { Trash2, Plus, Minus, Search, UserPlus } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney } from "@/lib/format";
 
