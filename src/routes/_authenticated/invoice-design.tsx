@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ArrowLeft, Check, Loader2, Printer, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { printStyledInvoice } from "@/lib/print-invoice";
 
 export const Route = createFileRoute("/_authenticated/invoice-design")({
   component: InvoiceDesignPage,
@@ -138,10 +139,18 @@ function InvoiceDesignPage() {
           <PageHeader title={tr("ইনভয়েস প্রিভিউ", "Invoice Preview")} />
         </div>
         <div className="flex items-center gap-2">
-          <Button className="gap-2" style={{ backgroundColor: theme }}>
+          <Button
+            className="gap-2 text-white"
+            style={{ backgroundColor: theme }}
+            onClick={() => doPrint()}
+          >
             <Printer className="h-4 w-4" /> {tr("প্রিন্ট", "Print")}
           </Button>
-          <Button className="gap-2" style={{ backgroundColor: theme }}>
+          <Button
+            className="gap-2 text-white"
+            style={{ backgroundColor: theme }}
+            onClick={() => doShare()}
+          >
             <Share2 className="h-4 w-4" /> {tr("শেয়ার করুন", "Share")}
           </Button>
         </div>
