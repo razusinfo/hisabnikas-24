@@ -425,8 +425,8 @@ function SalesPage() {
     const rows = lineItems.map((l, i) => `<tr>
       <td class="num">${i + 1}</td>
       <td>${esc(l.product_name)}</td>
-      <td class="num">${lang === "bn" ? Number(l.qty).toLocaleString("bn-BD") : l.qty}</td>
       <td class="right">${fmtMoney(l.unit_price, lang)}</td>
+      <td class="num">${lang === "bn" ? Number(l.qty).toLocaleString("bn-BD") : l.qty}</td>
       <td class="right">${fmtMoney(l.line_total, lang)}</td>
     </tr>`).join("");
     const dueBadge = Number(s.due) > 0
