@@ -503,8 +503,8 @@ function SalesPage() {
         <thead><tr>
           <th style="width:58px">#</th>
           <th>${esc(t("item"))}</th>
-          <th class="right" style="width:126px">${esc(t("qty"))}</th>
           <th class="right" style="width:198px">${esc(t("price"))}</th>
+          <th class="right" style="width:126px">${esc(t("qty"))}</th>
           <th class="right" style="width:234px">${esc(t("total"))}</th>
         </tr></thead>
         <tbody>${rows}</tbody>
