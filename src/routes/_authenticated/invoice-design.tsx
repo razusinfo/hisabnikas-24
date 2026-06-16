@@ -156,6 +156,7 @@ function InvoiceDesignPage() {
             fontSize={fontSize}
             template={template}
             fontFamily={fontFamily}
+            fontWeight={fontWeight}
             companyName={profile?.company_name ?? "Your Business"}
             phone={profile?.phone ?? ""}
             logoUrl={profile?.logo_url ?? null}
