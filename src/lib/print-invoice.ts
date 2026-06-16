@@ -193,12 +193,8 @@ export function buildInvoiceHtml({ doc, business, settings, lang, labels, hideMe
       </div>
     </div>
     <div class="info-row">
-      <div class="info-left">
-        ${showInvoiceNumber ? `<div class="lbl">${esc(labels.invoice)} ${lang === "bn" ? "নং" : "No"}</div><div class="no">${esc(doc.invoice_no)}</div>` : ""}
-      </div>
-      <div class="info-right">
-        ${showExportDate ? `<div class="lbl">${esc(labels.date)}</div><div class="date">${esc(fmtInvoiceDate(doc.created_at, lang))}</div>` : ""}
-      </div>
+      ${showInvoiceNumber ? `<span><b>${esc(labels.invoice)} ${lang === "bn" ? "নং" : "No"}:</b> ${esc(doc.invoice_no)}</span>` : ""}
+      ${showExportDate ? `<span><b>${esc(labels.date)}:</b> ${esc(fmtInvoiceDate(doc.created_at, lang))}</span>` : ""}
     </div>
     <div class="info-line">
       <span class="itm"><b>${esc(labels.customer)}</b> ${esc(doc.partyName || "—")}</span>
