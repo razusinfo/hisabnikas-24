@@ -149,14 +149,14 @@ function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div className="card-premium p-7 lg:col-span-2">
-          <div className="flex items-center justify-between mb-5">
+        <div className="card-premium p-5 lg:col-span-2">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <div className="text-sm uppercase tracking-widest text-muted-foreground">Last 14 days</div>
-              <div className="font-display text-xl font-semibold">Sales trend</div>
+              <div className="text-xs uppercase tracking-widest text-muted-foreground">Last 14 days</div>
+              <div className="font-display text-lg font-semibold">Sales trend</div>
             </div>
           </div>
-          <div className="h-80">
+          <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={d.chart} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
                 <defs>
