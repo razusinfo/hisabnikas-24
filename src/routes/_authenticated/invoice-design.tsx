@@ -488,7 +488,7 @@ const FONT_SIZE_MAP = {
 } as const;
 
 function InvoicePreview({
-  theme, fontSize, template, fontFamily, fontWeight, companyName, phone, logoUrl, lang,
+  theme, fontSize, template, fontFamily, fontWeight, companyName, phone, email, logoUrl, lang,
 }: {
   theme: string;
   fontSize: "sm" | "md" | "lg" | "xl";
@@ -497,6 +497,7 @@ function InvoicePreview({
   fontWeight: InvoiceFontWeight;
   companyName: string;
   phone: string;
+  email: string;
   logoUrl: string | null;
   lang: string;
 }) {
