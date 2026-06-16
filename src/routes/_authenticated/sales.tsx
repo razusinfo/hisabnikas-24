@@ -488,7 +488,7 @@ function SalesPage() {
       labels: {
         invoice: t("invoice"),
         date: t("date"),
-        customer: t("customer"),
+        customer: t("customerName"),
         phone: t("phone"),
         method: t("method"),
         item: t("item"),
