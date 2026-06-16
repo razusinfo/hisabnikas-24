@@ -102,6 +102,7 @@ function SalesPage() {
   const [newMethod, setNewMethod] = useState("cash");
   const [newDiscount, setNewDiscount] = useState("0");
   const [newTax, setNewTax] = useState("0");
+  const [newDelivery, setNewDelivery] = useState("0");
   const [newPaid, setNewPaid] = useState<string>("");
   const [newNote, setNewNote] = useState("");
   const [lines, setLines] = useState<{ product_id: string; name: string; qty: number; unit_price: number; stock: number }[]>([]);
