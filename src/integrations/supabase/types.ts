@@ -119,6 +119,51 @@ export type Database = {
         }
         Relationships: []
       }
+      google_drive_connections: {
+        Row: {
+          access_token: string | null
+          access_token_expires_at: string | null
+          auto_daily: boolean
+          created_at: string
+          folder_id: string | null
+          google_email: string | null
+          last_backup_at: string | null
+          last_backup_error: string | null
+          last_backup_status: string | null
+          refresh_token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token?: string | null
+          access_token_expires_at?: string | null
+          auto_daily?: boolean
+          created_at?: string
+          folder_id?: string | null
+          google_email?: string | null
+          last_backup_at?: string | null
+          last_backup_error?: string | null
+          last_backup_status?: string | null
+          refresh_token: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string | null
+          access_token_expires_at?: string | null
+          auto_daily?: boolean
+          created_at?: string
+          folder_id?: string | null
+          google_email?: string | null
+          last_backup_at?: string | null
+          last_backup_error?: string | null
+          last_backup_status?: string | null
+          refresh_token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       message_templates: {
         Row: {
           body: string
