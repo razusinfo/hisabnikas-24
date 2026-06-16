@@ -151,31 +151,56 @@ function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="card-premium p-5 lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
-            <div>
-              <div className="text-xs uppercase tracking-widest text-muted-foreground">Last 14 days</div>
-              <div className="font-display text-lg font-semibold">Sales trend</div>
+            <div className="font-display text-lg font-semibold flex items-center gap-2">
+              <Receipt className="h-4 w-4 text-primary" /> {t("recentSales")}
             </div>
           </div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={d.chart} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="oklch(0.82 0.14 200)" stopOpacity={0.4} />
-                    <stop offset="100%" stopColor="oklch(0.82 0.14 200)" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.3 0.01 240 / 30%)" />
-                <XAxis dataKey="day" stroke="oklch(0.65 0.012 240)" fontSize={11} />
-                <YAxis stroke="oklch(0.65 0.012 240)" fontSize={11} />
-                <Tooltip
-                  contentStyle={{ background: "oklch(0.17 0.007 240)", border: "1px solid oklch(0.25 0.008 240)", borderRadius: 8 }}
-                  labelStyle={{ color: "oklch(0.85 0.005 240)" }}
-                />
-                <Area type="monotone" dataKey="sales" stroke="oklch(0.82 0.14 200)" strokeWidth={2} fill="url(#g)" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          {d.recent.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{t("noData")}</p>
+          ) : (
+            <>
+              {/* Desktop table */}
+              <div className="overflow-x-auto hidden md:block">
+                <table className="w-full text-sm">
+                  <thead className="text-xs uppercase tracking-wider text-muted-foreground">
+                    <tr className="text-left border-b border-border">
+                      <th className="py-2 pr-4">{t("invoice")}</th>
+                      <th className="py-2 pr-4">{t("date")}</th>
+                      <th className="py-2 pr-4">Method</th>
+                      <th className="py-2 pr-4 text-right">{t("total")}</th>
+                      <th className="py-2 text-right">{t("due")}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {d.recent.map((s) => (
+                      <tr key={s.id} className="border-b border-border/40">
+                        <td className="py-3 pr-4 font-mono">{s.invoice_no}</td>
+                        <td className="py-3 pr-4 text-muted-foreground">{fmtDateTime(s.created_at)}</td>
+                        <td className="py-3 pr-4 capitalize">{s.payment_method}</td>
+                        <td className="py-3 pr-4 text-right font-mono">{fmtMoney(s.total)}</td>
+                        <td className="py-3 text-right font-mono text-warning">{Number(s.due) > 0 ? fmtMoney(s.due) : "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {/* Mobile cards */}
+              <ul className="md:hidden space-y-2">
+                {d.recent.map((s) => (
+                  <li key={s.id} className="border border-border/40 rounded-lg p-3 space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono text-sm font-medium truncate">{s.invoice_no}</span>
+                      <span className="font-mono text-sm font-semibold">{fmtMoney(s.total)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span className="truncate">{fmtDateTime(s.created_at)} · {s.payment_method}</span>
+                      {Number(s.due) > 0 && <span className="text-warning shrink-0">{t("due")}: {fmtMoney(s.due)}</span>}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
 
         <div className="card-premium p-5">
@@ -197,57 +222,31 @@ function Dashboard() {
 
       <div className="card-premium p-5 mt-4">
         <div className="flex items-center justify-between mb-4">
-          <div className="font-display text-lg font-semibold flex items-center gap-2">
-            <Receipt className="h-4 w-4 text-primary" /> {t("recentSales")}
+          <div>
+            <div className="text-xs uppercase tracking-widest text-muted-foreground">Last 14 days</div>
+            <div className="font-display text-lg font-semibold">Sales trend</div>
           </div>
         </div>
-        {d.recent.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t("noData")}</p>
-        ) : (
-          <>
-            {/* Desktop table */}
-            <div className="overflow-x-auto hidden md:block">
-              <table className="w-full text-sm">
-                <thead className="text-xs uppercase tracking-wider text-muted-foreground">
-                  <tr className="text-left border-b border-border">
-                    <th className="py-2 pr-4">{t("invoice")}</th>
-                    <th className="py-2 pr-4">{t("date")}</th>
-                    <th className="py-2 pr-4">Method</th>
-                    <th className="py-2 pr-4 text-right">{t("total")}</th>
-                    <th className="py-2 text-right">{t("due")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {d.recent.map((s) => (
-                    <tr key={s.id} className="border-b border-border/40">
-                      <td className="py-3 pr-4 font-mono">{s.invoice_no}</td>
-                      <td className="py-3 pr-4 text-muted-foreground">{fmtDateTime(s.created_at)}</td>
-                      <td className="py-3 pr-4 capitalize">{s.payment_method}</td>
-                      <td className="py-3 pr-4 text-right font-mono">{fmtMoney(s.total)}</td>
-                      <td className="py-3 text-right font-mono text-warning">{Number(s.due) > 0 ? fmtMoney(s.due) : "—"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {/* Mobile cards */}
-            <ul className="md:hidden space-y-2">
-              {d.recent.map((s) => (
-                <li key={s.id} className="border border-border/40 rounded-lg p-3 space-y-1.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-sm font-medium truncate">{s.invoice_no}</span>
-                    <span className="font-mono text-sm font-semibold">{fmtMoney(s.total)}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span className="truncate">{fmtDateTime(s.created_at)} · {s.payment_method}</span>
-                    {Number(s.due) > 0 && <span className="text-warning shrink-0">{t("due")}: {fmtMoney(s.due)}</span>}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={d.chart} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
+              <defs>
+                <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="oklch(0.82 0.14 200)" stopOpacity={0.4} />
+                  <stop offset="100%" stopColor="oklch(0.82 0.14 200)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.3 0.01 240 / 30%)" />
+              <XAxis dataKey="day" stroke="oklch(0.65 0.012 240)" fontSize={11} />
+              <YAxis stroke="oklch(0.65 0.012 240)" fontSize={11} />
+              <Tooltip
+                contentStyle={{ background: "oklch(0.17 0.007 240)", border: "1px solid oklch(0.25 0.008 240)", borderRadius: 8 }}
+                labelStyle={{ color: "oklch(0.85 0.005 240)" }}
+              />
+              <Area type="monotone" dataKey="sales" stroke="oklch(0.82 0.14 200)" strokeWidth={2} fill="url(#g)" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );
