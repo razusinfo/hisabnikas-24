@@ -214,7 +214,7 @@ function InvoiceDesignPage() {
       labels: {
         invoice: tr("ইনভয়েস", "Invoice"),
         date: tr("তারিখ", "Date"),
-        customer: tr("কাস্টমার", "Customer"),
+        customer: tr("ক্রেতার নাম:", "Customer Name"),
         phone: tr("ফোন", "Phone"),
         method: tr("পদ্ধতি", "Method"),
         item: tr("পণ্য", "Item"),
