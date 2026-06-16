@@ -54,7 +54,7 @@ export type PrintInvoiceOptions = {
     tax?: number | string;
     deliveryCharge?: number | string;
   };
-  business: { name: string; owner?: string; address?: string; logoUrl?: string | null };
+  business: { name: string; owner?: string; address?: string; phone?: string | null; email?: string | null; logoUrl?: string | null };
   settings: any;
   lang: "bn" | "en";
   labels: PrintInvoiceLabels;
