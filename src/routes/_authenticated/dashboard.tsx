@@ -100,14 +100,14 @@ function Stat({
 }: { icon: any; label: string; value: string; themeIndex: number; to?: string }) {
   const t = cardThemes[themeIndex % cardThemes.length];
   const content = (
-    <div className={`${t.bg} border ${t.border} rounded-xl shadow-sm p-6 ${to ? "transition-all hover:shadow-md hover:-translate-y-0.5 cursor-pointer" : ""}`}>
+    <div className={`${t.bg} border ${t.border} rounded-xl shadow-sm p-4 ${to ? "transition-all hover:shadow-md hover:-translate-y-0.5 cursor-pointer" : ""}`}>
       <div className="flex items-start justify-between">
         <div>
-          <div className="text-sm uppercase tracking-widest text-muted-foreground">{label}</div>
-          <div className="text-3xl font-display font-semibold mt-3">{value}</div>
+          <div className="text-xs uppercase tracking-widest text-muted-foreground">{label}</div>
+          <div className="text-xl font-display font-semibold mt-2">{value}</div>
         </div>
-        <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${t.iconBg} ${t.iconText}`}>
-          <Icon className="h-5 w-5" />
+        <div className={`h-9 w-9 rounded-lg flex items-center justify-center ${t.iconBg} ${t.iconText}`}>
+          <Icon className="h-4 w-4" />
         </div>
       </div>
     </div>
@@ -149,14 +149,14 @@ function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div className="card-premium p-7 lg:col-span-2">
-          <div className="flex items-center justify-between mb-5">
+        <div className="card-premium p-5 lg:col-span-2">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <div className="text-sm uppercase tracking-widest text-muted-foreground">Last 14 days</div>
-              <div className="font-display text-xl font-semibold">Sales trend</div>
+              <div className="text-xs uppercase tracking-widest text-muted-foreground">Last 14 days</div>
+              <div className="font-display text-lg font-semibold">Sales trend</div>
             </div>
           </div>
-          <div className="h-80">
+          <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={d.chart} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
                 <defs>
@@ -178,12 +178,12 @@ function Dashboard() {
           </div>
         </div>
 
-        <div className="card-premium p-7">
-          <div className="font-display text-xl font-semibold mb-5">{t("lowStock")}</div>
+        <div className="card-premium p-5">
+          <div className="font-display text-lg font-semibold mb-4">{t("lowStock")}</div>
           {d.lowStock.length === 0 ? (
             <p className="text-sm text-muted-foreground">All good. Nothing low.</p>
           ) : (
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {d.lowStock.map((p) => (
                 <li key={p.id} className="flex justify-between items-center text-sm">
                   <span className="truncate">{p.name}</span>
@@ -195,10 +195,10 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="card-premium p-7 mt-5">
-        <div className="flex items-center justify-between mb-5">
-          <div className="font-display text-xl font-semibold flex items-center gap-2">
-            <Receipt className="h-5 w-5 text-primary" /> {t("recentSales")}
+      <div className="card-premium p-5 mt-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="font-display text-lg font-semibold flex items-center gap-2">
+            <Receipt className="h-4 w-4 text-primary" /> {t("recentSales")}
           </div>
         </div>
         {d.recent.length === 0 ? (
