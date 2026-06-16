@@ -127,11 +127,11 @@ function InvoiceDesignPage() {
   const [testSeed, setTestSeed] = useState(0);
 
   const SAMPLE_CUSTOMERS = [
-    { name: tr("রহিম উদ্দিন", "Rahim Uddin"), phone: "01711-234567" },
-    { name: tr("করিমা বেগম", "Karima Begum"), phone: "01819-998877" },
-    { name: tr("ABC ট্রেডার্স", "ABC Traders"), phone: "01976-543210" },
-    { name: tr("সুমন এন্টারপ্রাইজ", "Sumon Enterprise"), phone: "01511-112233" },
-    { name: tr("মেসার্স জাহিদ স্টোর", "M/s Jahid Store"), phone: "01622-778899" },
+    { name: tr("রহিম উদ্দিন", "Rahim Uddin"), phone: "01711-234567", address: tr("ধানমন্ডি, ঢাকা", "Dhanmondi, Dhaka") },
+    { name: tr("করিমা বেগম", "Karima Begum"), phone: "01819-998877", address: tr("চট্টগ্রাম", "Chittagong") },
+    { name: tr("ABC ট্রেডার্স", "ABC Traders"), phone: "01976-543210", address: tr("মতিঝিল, ঢাকা", "Motijheel, Dhaka") },
+    { name: tr("সুমন এন্টারপ্রাইজ", "Sumon Enterprise"), phone: "01511-112233", address: tr("সিলেট", "Sylhet") },
+    { name: tr("মেসার্স জাহিদ স্টোর", "M/s Jahid Store"), phone: "01622-778899", address: tr("রাজশাহী", "Rajshahi") },
   ];
 
   const SAMPLE_PRODUCTS = [
@@ -188,7 +188,7 @@ function InvoiceDesignPage() {
         created_at: new Date().toISOString(),
         partyName: customer.name,
         partyPhone: customer.phone,
-        method: ["Cash", "bKash", "Nagad", "Bank"][Math.floor(rnd(4, 9))],
+        method: customer.address,
         note: tr(
           "ধন্যবাদ আমাদের সাথে ব্যবসা করার জন্য।",
           "Thank you for doing business with us.",
@@ -216,7 +216,7 @@ function InvoiceDesignPage() {
         date: tr("তারিখ", "Date"),
         customer: tr("ক্রেতার নাম:", "Customer Name"),
         phone: tr("ফোন", "Phone"),
-        method: tr("পদ্ধতি", "Method"),
+        method: tr("ঠিকানা:", "Address:"),
         item: tr("পণ্য", "Item"),
         price: tr("মূল্য", "Price"),
         qty: tr("পরিমাণ", "Qty"),

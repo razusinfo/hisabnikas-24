@@ -29,7 +29,7 @@ export const Route = createFileRoute("/_authenticated/sales")({
 export async function fetchSales() {
   const { data, error } = await supabase
     .from("sales")
-    .select("id,invoice_no,subtotal,discount,tax,total,paid,due,payment_method,status,note,created_at,customer_id,customers(name,phone)")
+    .select("id,invoice_no,subtotal,discount,tax,total,paid,due,payment_method,status,note,created_at,customer_id,customers(name,phone,address)")
     .order("created_at", { ascending: false })
     .limit(500);
   if (error) throw error;
@@ -462,7 +462,7 @@ function SalesPage() {
         created_at: s.created_at,
         partyName: s.customers?.name ?? t("walkIn"),
         partyPhone: s.customers?.phone ?? "",
-        method: methodLabel(s.payment_method),
+        method: s.customers?.address ?? "",
         note: s.note ?? "",
         subtotal: s.subtotal,
         total: s.total,
@@ -490,7 +490,7 @@ function SalesPage() {
         date: t("date"),
         customer: t("customerName"),
         phone: t("phone"),
-        method: t("method"),
+        method: lang === "bn" ? "ঠিকানা:" : "Address:",
         item: t("item"),
         price: t("price"),
         qty: t("qty"),
@@ -527,7 +527,7 @@ function SalesPage() {
         created_at: new Date().toISOString(),
         partyName: s.customers?.name ?? t("walkIn"),
         partyPhone: s.customers?.phone ?? "",
-        method: methodLabel(s.payment_method),
+        method: s.customers?.address ?? "",
         note: isBn
           ? `ইনভয়েস ${s.invoice_no} এর বাকি পরিশোধের রসিদ`
           : `Payment receipt for invoice ${s.invoice_no}`,
@@ -557,7 +557,7 @@ function SalesPage() {
         date: t("date"),
         customer: t("customerName"),
         phone: t("phone"),
-        method: t("method"),
+        method: isBn ? "ঠিকানা:" : "Address:",
         item: isBn ? "বিবরণ" : "Description",
         price: isBn ? "পরিমাণ" : "Amount",
         qty: t("qty"),
