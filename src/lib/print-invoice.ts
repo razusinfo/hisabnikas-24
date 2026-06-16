@@ -133,8 +133,8 @@ export function printStyledInvoice({ doc, business, settings, lang, labels, hide
 
   // Page styles vary for thermal
   const pageStyle = thermal
-    ? `@page{size:80mm auto;margin:2mm}html,body{width:76mm}body{font-family:'Noto Sans Bengali','Inter',sans-serif;color:#000;margin:0;padding:2mm;background:#fff;font-size:12px}.sheet{width:100%}`
-    : `@page{size:8in 6in landscape;margin:0.12in}html,body{width:8in}body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#0f172a;margin:0;padding:0.12in;background:#fff;font-size:${baseFs}px}.sheet{width:100%;max-width:7.76in;margin:0 auto}`;
+    ? `@page{size:80mm auto;margin:2mm}html,body{width:76mm}body{font-family:${fontFamilyCss};color:#000;margin:0;padding:2mm;background:#fff;font-size:12px}.sheet{width:100%}`
+    : `@page{size:8in 6in landscape;margin:0.12in}html,body{width:8in}body{font-family:${fontFamilyCss};color:#0f172a;margin:0;padding:0.12in;background:#fff;font-size:${baseFs}px;font-weight:${Math.max(400, fontWeight - 200)}}.sheet{width:100%;max-width:7.76in;margin:0 auto}`;
 
   w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(doc.invoice_no)}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
