@@ -311,12 +311,12 @@ function ProductsPage() {
         subtitle={t("productsSubtitle")}
         actions={
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setQuickOpen(true)}><ShoppingCart className="h-4 w-4 mr-2" />{t("newSale")}</Button>
+            <Button variant="outline" onClick={() => navigate({ to: "/sales", search: { new: 1 } })}><ShoppingCart className="h-4 w-4 mr-2" />{t("newSale")}</Button>
             <Button onClick={openCreate}><Plus className="h-4 w-4 mr-2" />{t("addProduct")}</Button>
           </div>
         }
       />
-      <QuickSaleDialog open={quickOpen} onOpenChange={setQuickOpen} />
+
 
 
       {/* Stats */}
