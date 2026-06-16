@@ -510,6 +510,65 @@ function SalesPage() {
     printInvoice(s, lines);
   }
 
+  function printPaymentReceipt(s: any, amount: number, newPaid: number, newDue: number) {
+    const isBn = lang === "bn";
+    printStyledInvoice({
+      doc: {
+        invoice_no: (isBn ? "পরিশোধ • " : "PAY • ") + s.invoice_no,
+        created_at: new Date().toISOString(),
+        partyName: s.customers?.name ?? t("walkIn"),
+        partyPhone: s.customers?.phone ?? "",
+        method: methodLabel(s.payment_method),
+        note: isBn
+          ? `ইনভয়েস ${s.invoice_no} এর বাকি পরিশোধের রসিদ`
+          : `Payment receipt for invoice ${s.invoice_no}`,
+        subtotal: amount,
+        total: amount,
+        paid: newPaid,
+        due: newDue,
+        items: [
+          {
+            name: isBn ? `বাকি পরিশোধ — ${s.invoice_no}` : `Due payment — ${s.invoice_no}`,
+            qty: 1,
+            price: amount,
+            total: amount,
+          },
+        ],
+      },
+      business: {
+        name: profile?.company_name || "",
+        owner: profile?.full_name || "",
+        logoUrl: logoUrl || null,
+      },
+      settings: profile?.invoice_settings ?? {},
+      lang: lang as "bn" | "en",
+      labels: {
+        invoice: isBn ? "পরিশোধ রসিদ" : "Payment Receipt",
+        customer: t("customer"),
+        phone: t("phone"),
+        method: t("method"),
+        item: isBn ? "বিবরণ" : "Description",
+        price: isBn ? "পরিমাণ" : "Amount",
+        qty: t("qty"),
+        total: t("total"),
+        subtotal: isBn ? "পরিশোধিত" : "Received",
+        paid: isBn ? "মোট পরিশোধিত" : "Total Paid",
+        due: isBn ? "অবশিষ্ট বাকি" : "Remaining Due",
+        note: t("note"),
+        statusPaid: t("statusPaid"),
+        statusDue: t("statusDue"),
+        statusPartial: t("statusPartial"),
+        bankDetails: t("invoiceBankDetails"),
+        paymentInstructions: t("invoicePaymentInstructions"),
+        terms: t("invoiceTerms"),
+        notes: t("invoiceNotes"),
+        signature: isBn ? "স্বাক্ষর" : "Signature",
+      },
+      hideMethod: false,
+    });
+  }
+
+
 
   const statusBadge = (s: any) => {
     if (Number(s.due) > 0) {
