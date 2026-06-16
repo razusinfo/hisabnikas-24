@@ -869,14 +869,24 @@ function SalesPage() {
             )}
 
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs text-muted-foreground">{t("discount")}</label>
-                <Input type="number" step="0.01" value={newDiscount} onChange={(e) => setNewDiscount(e.target.value)} />
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground">{t("tax")}</label>
-                <Input type="number" step="0.01" value={newTax} onChange={(e) => setNewTax(e.target.value)} />
-              </div>
+              {sett.discountPerTx && (
+                <div>
+                  <label className="text-xs text-muted-foreground">{t("discount")}</label>
+                  <Input type="number" step="0.01" value={newDiscount} onChange={(e) => setNewDiscount(e.target.value)} />
+                </div>
+              )}
+              {sett.taxPerTx && (
+                <div>
+                  <label className="text-xs text-muted-foreground">{t("tax")}</label>
+                  <Input type="number" step="0.01" value={newTax} onChange={(e) => setNewTax(e.target.value)} />
+                </div>
+              )}
+              {sett.deliveryCharge && (
+                <div>
+                  <label className="text-xs text-muted-foreground">{lang === "bn" ? "ডেলিভারি চার্জ" : "Delivery charge"}</label>
+                  <Input type="number" step="0.01" value={newDelivery} onChange={(e) => setNewDelivery(e.target.value)} />
+                </div>
+              )}
               <div>
                 <label className="text-xs text-muted-foreground">{t("paid")}</label>
                 <Input
