@@ -343,7 +343,7 @@ function InvoicePreview({
               )}
             </div>
             <div className="flex-1 text-center flex flex-col items-center justify-center">
-              <div style={{ fontSize: f.title, fontWeight: 700, color: titleColor, lineHeight: 1.1, fontFamily: "'Playfair Display', 'Noto Serif Bengali', Georgia, serif" }} className="whitespace-nowrap">
+              <div style={{ fontSize: f.title, fontWeight: 700, color: titleColor, lineHeight: 1.1, fontFamily: FONT_FAMILIES.find(f => f.value === fontFamily)?.css ?? FONT_FAMILIES[0].css }} className="whitespace-nowrap">
                 {companyName}
               </div>
               <div style={{ fontSize: f.base - 1, color: subColor, marginTop: 2 }}>
