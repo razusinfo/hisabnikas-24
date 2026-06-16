@@ -1,8 +1,7 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
-import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney, fmtDateTime } from "@/lib/format";
 import {
@@ -14,7 +13,6 @@ import {
   CalendarRange,
   CalendarDays,
   Receipt,
-  Plus,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -119,19 +117,12 @@ function Stat({
 function Dashboard() {
   const { t } = useI18n();
   const { data: d } = useSuspenseQuery({ queryKey: ["dashboard"], queryFn: fetchDashboard });
-  const navigate = useNavigate();
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto">
       <PageHeader
         title={t("dashboard")}
         subtitle="Real-time pulse of your business."
-        actions={
-          <Button onClick={() => navigate({ to: "/sales", search: { new: 1 } })}>
-            <Plus className="h-4 w-4 mr-2" />
-            {t("newSale")}
-          </Button>
-        }
       />
 
 
