@@ -9,7 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ArrowLeft, Check, Loader2, Printer, Share2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { printStyledInvoice } from "@/lib/print-invoice";
+import { useInvoicePreview } from "@/components/InvoicePreviewProvider";
+
 
 export const Route = createFileRoute("/_authenticated/invoice-design")({
   component: InvoiceDesignPage,
@@ -47,6 +48,8 @@ const TEMPLATES = Array.from({ length: 9 }, (_, i) => i + 1);
 
 function InvoiceDesignPage() {
   const { t, lang } = useI18n();
+  const { showInvoicePreview } = useInvoicePreview();
+
   const tr = (bn: string, en: string) => (lang === "bn" ? bn : en);
   const qc = useQueryClient();
 
@@ -238,15 +241,16 @@ function InvoiceDesignPage() {
   };
 
   const doPrint = () => {
-    printStyledInvoice(buildSampleInvoice());
+    showInvoicePreview(buildSampleInvoice());
   };
 
   const doGenerateTest = () => {
     setTestSeed((s) => s + 1);
     // Defer so state updates before building
-    setTimeout(() => printStyledInvoice(buildSampleInvoice()), 0);
+    setTimeout(() => showInvoicePreview(buildSampleInvoice()), 0);
     toast.success(tr("নতুন টেস্ট ইনভয়েস তৈরি হয়েছে", "New test invoice generated"));
   };
+
 
   const doShare = async () => {
     const url = window.location.href;

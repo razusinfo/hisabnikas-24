@@ -65,10 +65,9 @@ const esc = (v: unknown) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string),
   );
 
-export function printStyledInvoice({ doc, business, settings, lang, labels, hideMethod }: PrintInvoiceOptions) {
-  const w = window.open("", "_blank", "width=820,height=1000");
-  if (!w) return;
+export function buildInvoiceHtml({ doc, business, settings, lang, labels, hideMethod }: PrintInvoiceOptions): string {
   const inv = (settings ?? {}) as any;
+
   const theme: string = inv.invoiceTheme || "#0f172a";
   const fontSizeKey: "sm" | "md" | "lg" | "xl" = inv.invoiceFontSize || "md";
   const template: number = Number(inv.invoiceTemplate) || 1;
@@ -136,7 +135,7 @@ export function printStyledInvoice({ doc, business, settings, lang, labels, hide
     ? `@page{size:80mm auto;margin:2mm}html,body{width:76mm}body{font-family:${fontFamilyCss};color:#000;margin:0;padding:2mm;background:#fff;font-size:12px}.sheet{width:100%}`
     : `@page{size:8in 6in landscape;margin:0.12in}html,body{width:8in}body{font-family:${fontFamilyCss};color:#0f172a;margin:0;padding:0.12in;background:#fff;font-size:${baseFs}px;font-weight:${Math.max(400, fontWeight - 200)}}.sheet{width:100%;max-width:7.76in;margin:0 auto}`;
 
-  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(doc.invoice_no)}</title>
+  return `<!doctype html><html><head><meta charset="utf-8"><title>${esc(doc.invoice_no)}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800;900&family=Noto+Serif+Bengali:wght@400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Hind+Siliguri:wght@400;500;600;700&family=Tiro+Bangla&family=Baloo+Da+2:wght@400;500;600;700;800&family=Galada&family=Atma:wght@400;500;600;700&family=Mina:wght@400;700&family=Anek+Bangla:wght@400;500;600;700;800&display=swap">
@@ -240,6 +239,15 @@ export function printStyledInvoice({ doc, business, settings, lang, labels, hide
       <div class="sig">${esc(labels.signature ? "" : "Authorized Signature")}${labels.signature ? esc(business.owner || business.name || "Authorized Signature") : ""}</div>
     </div>` : ""}
     ${showFooter && inv.footer ? `<div class="thanks">${esc(inv.footer)}</div>` : ""}
-    </div><script>window.onload=()=>setTimeout(()=>window.print(),200)</script></body></html>`);
+    </div></body></html>`;
+}
+
+export function printStyledInvoice(opts: PrintInvoiceOptions) {
+  const w = window.open("", "_blank", "width=820,height=1000");
+  if (!w) return;
+  const html = buildInvoiceHtml(opts);
+  w.document.write(html);
+  w.document.write(`<script>window.onload=()=>setTimeout(()=>window.print(),200)</script>`);
   w.document.close();
 }
+

@@ -13,7 +13,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { Eye, CreditCard, Printer, Trash2, Search, Plus, Pencil, Save as SaveIcon, X } from "lucide-react";
-import { printStyledInvoice } from "@/lib/print-invoice";
+import { useInvoicePreview } from "@/components/InvoicePreviewProvider";
+
 
 
 export const Route = createFileRoute("/_authenticated/sales")({
@@ -80,6 +81,8 @@ async function fireSmsAsync(opts: {
 
 function SalesPage() {
   const { t, lang } = useI18n();
+  const { showInvoicePreview } = useInvoicePreview();
+
   const qc = useQueryClient();
   const { data } = useSuspenseQuery({ queryKey: ["sales"], queryFn: fetchSales });
 
@@ -453,7 +456,7 @@ function SalesPage() {
   }
 
   function printInvoice(s: any, lineItems: any[]) {
-    printStyledInvoice({
+    showInvoicePreview({
       doc: {
         invoice_no: s.invoice_no,
         created_at: s.created_at,
@@ -517,7 +520,7 @@ function SalesPage() {
 
   function printPaymentReceipt(s: any, amount: number, newPaid: number, newDue: number) {
     const isBn = lang === "bn";
-    printStyledInvoice({
+    showInvoicePreview({
       doc: {
         invoice_no: (isBn ? "পরিশোধ • " : "PAY • ") + s.invoice_no,
         created_at: new Date().toISOString(),

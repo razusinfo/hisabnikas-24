@@ -13,7 +13,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { Eye, CreditCard, Printer, Trash2, Search, Plus, X } from "lucide-react";
-import { printStyledInvoice } from "@/lib/print-invoice";
+import { useInvoicePreview } from "@/components/InvoicePreviewProvider";
+
 
 export const Route = createFileRoute("/_authenticated/purchases")({
   loader: async ({ context }) => {
@@ -56,6 +57,8 @@ type Line = { product_id: string | null; name: string; qty: number; unit_cost: n
 
 function PurchasesPage() {
   const { t, lang } = useI18n();
+  const { showInvoicePreview } = useInvoicePreview();
+
   const qc = useQueryClient();
   const { data } = useSuspenseQuery({ queryKey: ["purchases"], queryFn: fetchPurchases });
 
@@ -232,7 +235,7 @@ function PurchasesPage() {
   }
 
   function printDoc(p: any, ls: any[]) {
-    printStyledInvoice({
+    showInvoicePreview({
       doc: {
         invoice_no: p.invoice_no,
         created_at: p.created_at,
