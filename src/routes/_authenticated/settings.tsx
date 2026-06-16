@@ -595,3 +595,120 @@ function NumberRow({
     </Row>
   );
 }
+
+/* ---------- Skin / Theme selector ---------- */
+
+type SkinId = "default" | "emerald" | "violet" | "rose" | "amber" | "slate";
+
+const SKINS: { id: SkinId; nameBn: string; nameEn: string; swatch: string[] }[] = [
+  { id: "default", nameBn: "ডিফল্ট সায়ান", nameEn: "Default Cyan", swatch: ["#1f8fbf", "#7c4dff", "#22c55e"] },
+  { id: "emerald", nameBn: "এমেরাল্ড", nameEn: "Emerald", swatch: ["#10b981", "#06b6d4", "#84cc16"] },
+  { id: "violet", nameBn: "ভায়োলেট", nameEn: "Violet", swatch: ["#8b5cf6", "#ec4899", "#6366f1"] },
+  { id: "rose", nameBn: "রোজ", nameEn: "Rose", swatch: ["#f43f5e", "#fb923c", "#ef4444"] },
+  { id: "amber", nameBn: "অ্যাম্বার", nameEn: "Amber", swatch: ["#f59e0b", "#ef4444", "#fbbf24"] },
+  { id: "slate", nameBn: "স্লেট মনোক্রোম", nameEn: "Slate Mono", swatch: ["#475569", "#64748b", "#94a3b8"] },
+];
+
+function useSkin() {
+  const [skin, setSkin] = useState<SkinId>("default");
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const saved = (localStorage.getItem("skin") as SkinId) || "default";
+    setSkin(saved);
+    applySkin(saved);
+  }, []);
+  const update = (id: SkinId) => {
+    setSkin(id);
+    applySkin(id);
+    if (typeof localStorage !== "undefined") localStorage.setItem("skin", id);
+  };
+  return { skin, setSkin: update };
+}
+
+function applySkin(id: SkinId) {
+  if (typeof document === "undefined") return;
+  if (id === "default") document.documentElement.removeAttribute("data-skin");
+  else document.documentElement.setAttribute("data-skin", id);
+}
+
+function SkinSection({ lang }: { lang: string }) {
+  const bn = lang === "bn";
+  const { skin, setSkin } = useSkin();
+  const title = bn ? "থিম ও স্কিন" : "Theme & Skin";
+  const desc = bn ? "অ্যাপের রং নির্বাচন করুন — পরিবর্তন তাৎক্ষণিক প্রিভিউতে দেখা যাবে।" : "Pick an app color — changes apply instantly with a live preview.";
+
+  return (
+    <Card className="overflow-hidden border-primary/20">
+      <CardHeader className="bg-primary/5 border-b py-3">
+        <CardTitle className="text-primary text-base font-semibold flex items-center gap-2">
+          <Palette className="h-4 w-4" /> {title}
+        </CardTitle>
+        <CardDescription>{desc}</CardDescription>
+      </CardHeader>
+      <CardContent className="p-4 sm:p-6 grid gap-6 lg:grid-cols-[1fr_1fr]">
+        {/* Skin grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {SKINS.map((sk) => {
+            const active = skin === sk.id;
+            return (
+              <button
+                key={sk.id}
+                type="button"
+                onClick={() => setSkin(sk.id)}
+                className={`group relative rounded-lg border p-3 text-left transition-all hover:shadow-md ${
+                  active ? "border-primary ring-2 ring-primary/40 bg-primary/5" : "border-border bg-card"
+                }`}
+              >
+                <div className="flex items-center gap-1.5 mb-2">
+                  {sk.swatch.map((c, i) => (
+                    <span key={i} className="h-6 w-6 rounded-full border border-border/50" style={{ background: c }} />
+                  ))}
+                </div>
+                <div className="text-xs font-medium">{bn ? sk.nameBn : sk.nameEn}</div>
+                {active && (
+                  <span className="absolute top-2 right-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                    <Check className="h-3 w-3" />
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Live preview */}
+        <div className="rounded-lg border border-border overflow-hidden bg-background">
+          <div className="px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b bg-muted/40">
+            {bn ? "লাইভ প্রিভিউ" : "Live Preview"}
+          </div>
+          <div className="p-4 space-y-3">
+            <div className="rounded-md p-3 text-primary-foreground" style={{ background: "var(--gradient-hero)" }}>
+              <div className="text-xs opacity-90">{bn ? "মোট বিক্রয়" : "Total Sales"}</div>
+              <div className="text-xl font-bold">৳ 1,24,500</div>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { icon: LayoutDashboard, label: bn ? "ড্যাশবোর্ড" : "Dashboard" },
+                { icon: ShoppingCart, label: bn ? "বিক্রয়" : "Sales" },
+                { icon: Users, label: bn ? "কাস্টমার" : "Customers" },
+              ].map((it, i) => (
+                <div key={i} className="flex flex-col items-center gap-1 rounded-md border border-border bg-card p-2">
+                  <it.icon className="h-4 w-4 text-primary" />
+                  <span className="text-[10px] text-muted-foreground">{it.label}</span>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button size="sm" className="h-8">{bn ? "প্রাইমারি" : "Primary"}</Button>
+              <Button size="sm" variant="secondary" className="h-8">{bn ? "সেকেন্ডারি" : "Secondary"}</Button>
+              <Button size="sm" variant="outline" className="h-8">{bn ? "আউটলাইন" : "Outline"}</Button>
+            </div>
+            <div className="rounded-md border border-border p-2 text-xs">
+              <span className="text-muted-foreground">{bn ? "লিংক:" : "Link:"} </span>
+              <a className="text-primary hover:underline" href="#">{bn ? "ইনভয়েস দেখুন" : "View invoice"}</a>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
