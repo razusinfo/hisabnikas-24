@@ -1,8 +1,7 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
-import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney, fmtDateTime } from "@/lib/format";
 import {
@@ -14,7 +13,6 @@ import {
   CalendarRange,
   CalendarDays,
   Receipt,
-  Plus,
 } from "lucide-react";
 import {
   ResponsiveContainer,
