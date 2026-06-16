@@ -207,6 +207,8 @@ function InvoiceDesignPage() {
         name: profile?.company_name ?? "Your Business",
         owner: profile?.full_name ?? "",
         address: profile?.address ?? "",
+        phone: profile?.phone ?? null,
+        email: (profile as any)?.email ?? null,
         logoUrl: profile?.logo_url ?? null,
       },
       settings: settingsForPrint,
