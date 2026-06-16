@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { Eye, CreditCard, Printer, Trash2, Search, Plus, X } from "lucide-react";
+import { printStyledInvoice } from "@/lib/print-invoice";
 
 export const Route = createFileRoute("/_authenticated/purchases")({
   loader: async ({ context }) => {
