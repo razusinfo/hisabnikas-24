@@ -46,7 +46,7 @@ export type PrintInvoiceOptions = {
   };
   business: { name: string; owner?: string; logoUrl?: string | null };
   settings: any;
-  lang: string;
+  lang: "bn" | "en";
   labels: PrintInvoiceLabels;
   hideMethod?: boolean;
 };
