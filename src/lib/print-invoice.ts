@@ -150,7 +150,7 @@ export function printStyledInvoice({ doc, business, settings, lang, labels, hide
       .brand .owner{font-size:${thermal ? 11 : baseFs - 2}px;color:${subClr};margin-top:2px}
       .brand .addr{font-size:${thermal ? 10 : baseFs - 4}px;color:${subClr};margin-top:2px;text-align:center;max-width:${thermal ? "70mm" : "420px"};line-height:1.3}
       .meta{position:absolute;right:0;top:0;text-align:right}
-      .meta img{height:${thermal ? 40 : 76}px;width:${thermal ? 40 : 76}px;object-fit:contain;border-radius:${thermal ? 4 : 10}px;${thermal ? "" : "border:1px solid #e2e8f0;"}background:#fff;margin-bottom:${thermal ? 4 : 10}px;display:block;margin-left:auto}
+      .meta img{height:${thermal ? 40 : 76}px;width:${thermal ? 40 : 76}px;object-fit:contain;border-radius:${thermal ? 4 : 10}px;${thermal ? "" : "border:1px solid #e2e8f0;"}background:#fff;margin-bottom:${thermal ? 4 : 10}px;display:inline-block;vertical-align:top}
       .meta .no{font-family:ui-monospace,Menlo,monospace;font-size:${thermal ? 11 : baseFs}px;color:${invertHeader ? "#fff" : (thermal ? "#000" : "#334155")};margin-top:4px}
       .meta .date{font-size:${thermal ? 10 : baseFs - 2}px;color:${subClr};margin-top:2px}
       .row{display:${thermal ? "block" : "flex"};justify-content:space-between;gap:22px;margin-top:${thermal ? 6 : 18}px}
