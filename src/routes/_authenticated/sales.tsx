@@ -484,7 +484,7 @@ function SalesPage() {
         <div class="meta">
           <h1>${esc(t("invoice")).toUpperCase()}</h1>
           <div class="no">${esc(s.invoice_no)}</div>
-          <div class="date">${esc(fmtDateTime(s.created_at, lang))}</div>
+          <div class="date">${esc(fmtInvoiceDate(s.created_at, lang))}</div
           <div style="margin-top:10px">${dueBadge}</div>
         </div>
       </div>
