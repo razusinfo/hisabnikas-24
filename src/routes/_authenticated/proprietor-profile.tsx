@@ -89,6 +89,7 @@ function ProprietorProfilePage() {
         .from("profiles")
         .update({
           full_name: fullName.trim() || null,
+          phone: phone.trim() || null,
           address: address.trim() || null,
         } as never)
         .eq("id", profileQuery.data.id);
