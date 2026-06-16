@@ -188,7 +188,7 @@ function ProprietorProfilePage() {
                 disabled={uploadAvatar.isPending}
                 onChange={(e) => {
                   const f = e.target.files?.[0];
-                  if (f) uploadAvatar.mutate(f);
+                  if (f) setPendingFile(f);
                   e.target.value = "";
                 }}
               />
