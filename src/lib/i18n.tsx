@@ -570,6 +570,14 @@ const dict = {
     lastAutoBackup: "সর্বশেষ অটো ব্যাকআপ",
     never: "কখনো নয়",
     backupNow: "এখনই ব্যাকআপ",
+    serverAutoBackup: "সার্ভার-সাইড দৈনিক অটো ব্যাকআপ",
+    serverAutoBackupDesc: "একবার গুগল অ্যাকাউন্ট সংযুক্ত করুন। সার্ভার প্রতিদিন আপনাআপনি আপনার গুগল ড্রাইভে ব্যাকআপ পাঠাবে — অ্যাপ বন্ধ থাকলেও।",
+    connectForAutoBackup: "অটো-ব্যাকআপের জন্য গুগল ড্রাইভ সংযুক্ত করুন",
+    autoBackupActive: "অটো-ব্যাকআপ চালু আছে",
+    serverConnectedAs: "সংযুক্ত আছে",
+    lastServerBackup: "সর্বশেষ সার্ভার ব্যাকআপ",
+    backupStatusSuccess: "সফল",
+    backupStatusFailed: "ব্যর্থ",
   },
 } as const;
 
