@@ -264,6 +264,7 @@ function PurchasesPage() {
       lang: lang as "bn" | "en",
       labels: {
         invoice: t("invoice"),
+        date: t("date"),
         customer: t("supplier"),
         phone: t("phone"),
         method: t("method"),

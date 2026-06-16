@@ -213,6 +213,7 @@ function InvoiceDesignPage() {
       lang: (lang === "bn" ? "bn" : "en") as "bn" | "en",
       labels: {
         invoice: tr("ইনভয়েস", "Invoice"),
+        date: tr("তারিখ", "Date"),
         customer: tr("কাস্টমার", "Customer"),
         phone: tr("ফোন", "Phone"),
         method: tr("পদ্ধতি", "Method"),

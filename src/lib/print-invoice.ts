@@ -10,6 +10,7 @@ export type PrintInvoiceItem = {
 
 export type PrintInvoiceLabels = {
   invoice: string;
+  date: string;
   customer: string;
   phone: string;
   method: string;
@@ -150,9 +151,16 @@ export function buildInvoiceHtml({ doc, business, settings, lang, labels, hideMe
       .brand .owner{font-size:${thermal ? 11 : baseFs - 2}px;color:${subClr};margin-top:2px}
       .brand .addr{font-size:${thermal ? 10 : baseFs - 4}px;color:${subClr};margin-top:2px;text-align:center;max-width:${thermal ? "70mm" : "420px"};line-height:1.3}
       .meta{position:absolute;right:0;top:0;text-align:right}
-      
+
       .meta .no{font-family:ui-monospace,Menlo,monospace;font-size:${thermal ? 11 : baseFs}px;color:${invertHeader ? "#fff" : (thermal ? "#000" : "#334155")};margin-top:4px}
       .meta .date{font-size:${thermal ? 10 : baseFs - 2}px;color:${subClr};margin-top:2px}
+      .info-row{display:flex;justify-content:space-between;align-items:flex-start;margin-top:${thermal ? 6 : 14}px}
+      .info-left{display:flex;flex-direction:column;gap:2px}
+      .info-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+      .info-left .lbl{font-size:${thermal ? 9 : baseFs - 5}px;letter-spacing:0.08em;text-transform:uppercase;color:#94a3b8;font-weight:600}
+      .info-right .lbl{font-size:${thermal ? 9 : baseFs - 5}px;letter-spacing:0.08em;text-transform:uppercase;color:#94a3b8;font-weight:600}
+      .info-left .no{font-family:ui-monospace,Menlo,monospace;font-size:${thermal ? 11 : baseFs}px;color:${thermal ? "#000" : "#334155"}}
+      .info-right .date{font-size:${thermal ? 10 : baseFs - 2}px;color:${subClr}}
       .row{display:${thermal ? "block" : "flex"};justify-content:space-between;gap:22px;margin-top:${thermal ? 6 : 18}px}
       .card{flex:1;background:${thermal ? "transparent" : `${theme}0d`};border:${thermal ? "none" : `1px solid ${theme}33`};border-radius:10px;padding:${thermal ? "2px 0" : "10px 18px"}}
       .card .lbl{font-size:${thermal ? 10 : baseFs - 4}px;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:2px;display:${thermal ? "inline" : "block"}}
@@ -187,10 +195,14 @@ export function buildInvoiceHtml({ doc, business, settings, lang, labels, hideMe
           ${business.address ? `<div class="addr">${esc(business.address)}</div>` : ""}
         </div>
       </div>
-      <div class="meta">
-        ${showInvoiceNumber ? `<div class="no">${esc(doc.invoice_no)}</div>` : ""}
-        ${showExportDate ? `<div class="date">${esc(fmtInvoiceDate(doc.created_at, lang))}</div>` : ""}
-        <div style="margin-top:${thermal ? 4 : 10}px">${dueBadge}</div>
+    </div>
+    <div class="info-row">
+      <div class="info-left">
+        ${showInvoiceNumber ? `<div class="lbl">${esc(labels.invoice)} ${lang === "bn" ? "নং" : "No"}</div><div class="no">${esc(doc.invoice_no)}</div>` : ""}
+      </div>
+      <div class="info-right">
+        ${showExportDate ? `<div class="lbl">${esc(labels.date)}</div><div class="date">${esc(fmtInvoiceDate(doc.created_at, lang))}</div>` : ""}
+        <div style="margin-top:${thermal ? 4 : 8}px">${dueBadge}</div>
       </div>
     </div>
     <div class="row">
