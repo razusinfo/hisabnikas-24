@@ -91,17 +91,17 @@ const colorStyles: Record<string, { activeBg: string; activeText: string; active
   red: { activeBg: "bg-red-100", activeText: "text-red-700", activeRing: "ring-red-200", inactiveText: "text-red-600", inactiveHoverText: "hover:text-red-700", inactiveHoverBg: "hover:bg-red-100", inactiveBg: "bg-red-50", dot: "bg-red-500" },
 };
 
-const nav = [
+const fixedNav = [
   { to: "/dashboard", icon: LayoutDashboard, key: "dashboard" as const, color: "blue" },
   { to: "/sales", icon: Receipt, key: "sales" as const, color: "emerald" },
   { to: "/purchases", icon: ShoppingCart, key: "purchases" as const, color: "amber" },
   { to: "/products", icon: Package, key: "products" as const, color: "violet" },
   { to: "/expenses", icon: Wallet, key: "expenses" as const, color: "rose" },
-  { to: "/customers", icon: Users, key: "customers" as const, color: "cyan" },
-  { to: "/profit-loss", icon: TrendingUp, key: "profitLoss" as const, color: "teal" },
 ];
 
-const footerNav = [
+const scrollNav = [
+  { to: "/customers", icon: Users, key: "customers" as const, color: "cyan" },
+  { to: "/profit-loss", icon: TrendingUp, key: "profitLoss" as const, color: "teal" },
   { to: "/settings", icon: Settings, key: "settings" as const, color: "slate" },
   { to: "/backup-restore", icon: Database, key: "backupRestore" as const, color: "slate" },
   { to: "/buy-messages", icon: MessageSquare, key: "buyMessages" as const, color: "teal" },
@@ -139,12 +139,12 @@ function SidebarContent({
       return !!(data as any)?.is_super_admin;
     },
   });
-  const effectiveFooter = superAdminQ.data
+  const effectiveScrollNav = superAdminQ.data
     ? [
-        ...footerNav,
+        ...scrollNav,
         { to: "/admin-payments", icon: ShieldCheck, key: "adminPayments" as const, color: "red" },
       ]
-    : footerNav;
+    : scrollNav;
 
   return (
     <div className="flex h-full flex-col">
@@ -179,7 +179,7 @@ function SidebarContent({
 
       {searchSlot}
       <nav className="px-3 space-y-2">
-        {nav.map((item) => {
+        {fixedNav.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
           const cs = colorStyles[item.color] ?? colorStyles.blue;
@@ -189,22 +189,22 @@ function SidebarContent({
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-4 px-5 py-5 rounded-xl text-base font-medium transition-all",
+                "group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all",
                 active
                   ? `${cs.activeBg} ${cs.activeText} ring-1 ${cs.activeRing}`
                   : `${cs.inactiveBg} ${cs.inactiveText} ${cs.inactiveHoverText} ${cs.inactiveHoverBg}`,
               )}
             >
-              <Icon className={cn("h-6 w-6 shrink-0", active ? cs.activeText : "")} />
+              <Icon className={cn("h-5 w-5 shrink-0", active ? cs.activeText : "")} />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className={cn("ml-auto h-2.5 w-2.5 rounded-full shrink-0", cs.dot)} />}
+              {active && <span className={cn("ml-auto h-2 w-2 rounded-full shrink-0", cs.dot)} />}
             </Link>
           );
         })}
       </nav>
 
-      <div className="flex-1 overflow-y-auto min-h-0 px-3 py-4 border-t border-sidebar-border space-y-2">
-        {effectiveFooter.map((item) => {
+      <div className="flex-1 overflow-y-auto min-h-0 px-3 py-3 border-t border-sidebar-border space-y-2">
+        {effectiveScrollNav.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
           const cs = colorStyles[(item as any).color ?? "slate"];
@@ -454,7 +454,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <SearchProvider>
       <div className="min-h-screen flex bg-background text-foreground">
         {/* Desktop sidebar */}
-        <aside className="hidden md:flex w-80 shrink-0 bg-sidebar border-r border-sidebar-border flex-col">
+        <aside className="hidden md:flex w-64 shrink-0 bg-sidebar border-r border-sidebar-border flex-col">
           <SidebarContent
             onSignOut={handleSignOut}
             brandName={brandName}
@@ -477,7 +477,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="p-0 w-72 bg-sidebar">
+              <SheetContent side="left" className="p-0 w-60 bg-sidebar">
                 <SheetTitle className="sr-only">Menu</SheetTitle>
                 <SidebarContent
                   onNavigate={() => setMobileOpen(false)}
