@@ -24,6 +24,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedCurrentPackageRouteImport } from './routes/_authenticated/current-package'
 import { Route as AuthenticatedBuyMessagesRouteImport } from './routes/_authenticated/buy-messages'
+import { Route as AuthenticatedBusinessProfileRouteImport } from './routes/_authenticated/business-profile'
 import { Route as AuthenticatedBackupRestoreRouteImport } from './routes/_authenticated/backup-restore'
 import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authenticated/admin-payments'
 import { Route as ApiPublicHooksDailyBackupRouteImport } from './routes/api/public/hooks/daily-backup'
@@ -106,6 +107,12 @@ const AuthenticatedBuyMessagesRoute =
     path: '/buy-messages',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedBusinessProfileRoute =
+  AuthenticatedBusinessProfileRouteImport.update({
+    id: '/business-profile',
+    path: '/business-profile',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedBackupRestoreRoute =
   AuthenticatedBackupRestoreRouteImport.update({
     id: '/backup-restore',
@@ -135,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/admin-payments': typeof AuthenticatedAdminPaymentsRoute
   '/backup-restore': typeof AuthenticatedBackupRestoreRoute
+  '/business-profile': typeof AuthenticatedBusinessProfileRoute
   '/buy-messages': typeof AuthenticatedBuyMessagesRoute
   '/current-package': typeof AuthenticatedCurrentPackageRoute
   '/customers': typeof AuthenticatedCustomersRoute
@@ -155,6 +163,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/admin-payments': typeof AuthenticatedAdminPaymentsRoute
   '/backup-restore': typeof AuthenticatedBackupRestoreRoute
+  '/business-profile': typeof AuthenticatedBusinessProfileRoute
   '/buy-messages': typeof AuthenticatedBuyMessagesRoute
   '/current-package': typeof AuthenticatedCurrentPackageRoute
   '/customers': typeof AuthenticatedCustomersRoute
@@ -177,6 +186,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/admin-payments': typeof AuthenticatedAdminPaymentsRoute
   '/_authenticated/backup-restore': typeof AuthenticatedBackupRestoreRoute
+  '/_authenticated/business-profile': typeof AuthenticatedBusinessProfileRoute
   '/_authenticated/buy-messages': typeof AuthenticatedBuyMessagesRoute
   '/_authenticated/current-package': typeof AuthenticatedCurrentPackageRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin-payments'
     | '/backup-restore'
+    | '/business-profile'
     | '/buy-messages'
     | '/current-package'
     | '/customers'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin-payments'
     | '/backup-restore'
+    | '/business-profile'
     | '/buy-messages'
     | '/current-package'
     | '/customers'
@@ -240,6 +252,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/admin-payments'
     | '/_authenticated/backup-restore'
+    | '/_authenticated/business-profile'
     | '/_authenticated/buy-messages'
     | '/_authenticated/current-package'
     | '/_authenticated/customers'
@@ -371,6 +384,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBuyMessagesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/business-profile': {
+      id: '/_authenticated/business-profile'
+      path: '/business-profile'
+      fullPath: '/business-profile'
+      preLoaderRoute: typeof AuthenticatedBusinessProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/backup-restore': {
       id: '/_authenticated/backup-restore'
       path: '/backup-restore'
@@ -405,6 +425,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminPaymentsRoute: typeof AuthenticatedAdminPaymentsRoute
   AuthenticatedBackupRestoreRoute: typeof AuthenticatedBackupRestoreRoute
+  AuthenticatedBusinessProfileRoute: typeof AuthenticatedBusinessProfileRoute
   AuthenticatedBuyMessagesRoute: typeof AuthenticatedBuyMessagesRoute
   AuthenticatedCurrentPackageRoute: typeof AuthenticatedCurrentPackageRoute
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
@@ -422,6 +443,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminPaymentsRoute: AuthenticatedAdminPaymentsRoute,
   AuthenticatedBackupRestoreRoute: AuthenticatedBackupRestoreRoute,
+  AuthenticatedBusinessProfileRoute: AuthenticatedBusinessProfileRoute,
   AuthenticatedBuyMessagesRoute: AuthenticatedBuyMessagesRoute,
   AuthenticatedCurrentPackageRoute: AuthenticatedCurrentPackageRoute,
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,

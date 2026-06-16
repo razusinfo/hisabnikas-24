@@ -167,7 +167,16 @@ function SidebarContent({
             {brandName}
           </h2>
         </Link>
+        <Link
+          to="/business-profile"
+          onClick={onNavigate}
+          className="mt-1 inline-flex items-center gap-1 text-xs text-sidebar-foreground/60 hover:text-sidebar-foreground"
+        >
+          <Pencil className="h-3 w-3" />
+          edit
+        </Link>
       </div>
+
       {searchSlot}
       <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
         {nav.map((item) => {
