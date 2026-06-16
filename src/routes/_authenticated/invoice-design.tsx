@@ -147,15 +147,16 @@ function InvoiceDesignPage() {
         {/* Left: Invoice preview */}
         <Card className="overflow-hidden">
           <CardContent className="p-0">
-            <InvoicePreview
-              theme={theme}
-              fontSize={fontSize}
-              template={template}
-              companyName={profile?.company_name ?? "Your Business"}
-              phone={profile?.phone ?? ""}
-              logoUrl={profile?.logo_url ?? null}
-              lang={lang}
-            />
+          <InvoicePreview
+            theme={theme}
+            fontSize={fontSize}
+            template={template}
+            fontFamily={fontFamily}
+            companyName={profile?.company_name ?? "Your Business"}
+            phone={profile?.phone ?? ""}
+            logoUrl={profile?.logo_url ?? null}
+            lang={lang}
+          />
           </CardContent>
         </Card>
 
