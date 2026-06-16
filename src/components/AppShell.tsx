@@ -1,4 +1,6 @@
 import appLogo from "@/assets/logo.png.asset.json";
+import helpIcon from "@/assets/help-icon.png.asset.json";
+
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -470,7 +472,15 @@ export function AppShell({ children }: { children: ReactNode }) {
           <header className="hidden md:flex sticky top-0 z-20 items-center justify-end gap-2 px-6 py-2.5 bg-background/95 backdrop-blur border-b border-border/60">
             <TopQuickLink to="/purchases" icon={ShoppingCart} label={t("purchases")} colorClass="text-amber-600 hover:bg-amber-50" />
             <TopQuickLink to="/sales" icon={Receipt} label={t("sales")} colorClass="text-emerald-600 hover:bg-emerald-50" />
-            <TopQuickLink to="/help" icon={HelpCircle} label={t("helpSupport")} colorClass="text-orange-600 hover:bg-orange-50" />
+            <Link
+              to="/help"
+              className="flex items-center justify-center h-10 w-10 rounded-full hover:bg-orange-50 transition-colors"
+              title={t("helpSupport")}
+              aria-label={t("helpSupport")}
+            >
+              <img src={helpIcon.url} alt={t("helpSupport")} className="h-9 w-9 object-contain" />
+            </Link>
+
             <Link
               to="/settings"
               className="flex items-center justify-center h-9 w-9 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
