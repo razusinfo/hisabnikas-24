@@ -67,7 +67,8 @@ function InvoiceDesignPage() {
   const [theme, setTheme] = useState<string>(THEMES[0]);
   const [fontSize, setFontSize] = useState<"sm" | "md" | "lg" | "xl">("md");
   const [template, setTemplate] = useState<number>(1);
-  const [fontFamily, setFontFamily] = useState<"serif" | "sans" | "modern">("serif");
+  const [fontFamily, setFontFamily] = useState<InvoiceFontKey>("serif");
+  const [fontWeight, setFontWeight] = useState<InvoiceFontWeight>(700);
 
   useEffect(() => {
     const s = (profileQuery.data?.invoice_settings ?? {}) as DesignSettings;
