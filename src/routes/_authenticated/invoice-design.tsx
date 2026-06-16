@@ -322,12 +322,13 @@ const FONT_SIZE_MAP = {
 } as const;
 
 function InvoicePreview({
-  theme, fontSize, template, fontFamily, companyName, phone, logoUrl, lang,
+  theme, fontSize, template, fontFamily, fontWeight, companyName, phone, logoUrl, lang,
 }: {
   theme: string;
   fontSize: "sm" | "md" | "lg" | "xl";
   template: number;
-  fontFamily: "serif" | "sans" | "modern";
+  fontFamily: InvoiceFontKey;
+  fontWeight: InvoiceFontWeight;
   companyName: string;
   phone: string;
   logoUrl: string | null;
