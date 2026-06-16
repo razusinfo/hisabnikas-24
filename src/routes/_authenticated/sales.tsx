@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
@@ -18,6 +18,9 @@ import { useInvoicePreview } from "@/components/InvoicePreviewProvider";
 
 
 export const Route = createFileRoute("/_authenticated/sales")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    new: search.new === 1 || search.new === "1" ? 1 : undefined,
+  }),
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData({ queryKey: ["sales"], queryFn: fetchSales });
   },
