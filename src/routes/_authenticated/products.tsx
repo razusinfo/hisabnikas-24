@@ -592,6 +592,8 @@ function ProductsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <CategoryManagerDialog open={manageCatOpen} onOpenChange={setManageCatOpen} />
     </div>
   );
 }
