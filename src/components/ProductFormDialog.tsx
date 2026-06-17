@@ -270,7 +270,12 @@ export function ProductFormDialog({
           </div>
           {sett.itemCategory && (
             <div className="space-y-1.5">
-              <Label>{t("category")}</Label>
+              <div className="flex items-center justify-between">
+                <Label>{t("category")}</Label>
+                <Button type="button" variant="ghost" size="sm" className="h-7 px-2" onClick={() => setManageCatOpen(true)}>
+                  <Settings2 className="h-3.5 w-3.5 mr-1" />{t("manageCategories")}
+                </Button>
+              </div>
               <Select value={form.category_id || "none"} onValueChange={(v) => setForm({ ...form, category_id: v === "none" ? "" : v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
