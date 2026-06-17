@@ -336,6 +336,7 @@ export function ProductFormDialog({
           </DialogFooter>
         </form>
       </DialogContent>
+      <CategoryManagerDialog open={manageCatOpen} onOpenChange={setManageCatOpen} />
     </Dialog>
   );
 }
