@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney, fmtDate } from "@/lib/format";
 import { Input } from "@/components/ui/input";
+import { DateInput } from "@/components/DateInput";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
