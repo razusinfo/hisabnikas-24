@@ -37,6 +37,7 @@ export type CreatedProduct = {
   id: string;
   name: string;
   sell_price: number;
+  cost_price: number;
   stock: number;
   category_id: string | null;
 };
@@ -188,7 +189,7 @@ export function ProductFormDialog({
         const { data: row, error } = await supabase
           .from("products")
           .insert({ ...payload, owner_id: u.user!.id })
-          .select("id,name,sell_price,stock,category_id")
+          .select("id,name,sell_price,cost_price,stock,category_id")
           .single();
         if (error) throw error;
         return row as CreatedProduct;

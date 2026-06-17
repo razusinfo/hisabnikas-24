@@ -121,7 +121,7 @@ function SalesPage() {
   const [newPaid, setNewPaid] = useState<string>("");
   const [newNote, setNewNote] = useState("");
   const [newDate, setNewDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
-  const [lines, setLines] = useState<{ product_id: string; name: string; qty: number; unit_price: number; stock: number }[]>([]);
+  const [lines, setLines] = useState<{ product_id: string; name: string; qty: number; unit_price: number; cost_price: number; stock: number }[]>([]);
   const [creating, setCreating] = useState(false);
   const [productSearch, setProductSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -165,7 +165,7 @@ function SalesPage() {
   const { data: productsList = [] } = useQuery({
     queryKey: ["products-list"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("products").select("id,name,sku,sell_price,stock,category_id").order("name");
+      const { data, error } = await supabase.from("products").select("id,name,sku,sell_price,cost_price,stock,category_id").order("name");
       if (error) throw error;
       return (data ?? []).map((p: any) => ({ ...p, price: p.sell_price }));
     },
@@ -244,7 +244,7 @@ function SalesPage() {
       setLines((ls) => ls.map((l) => l.product_id === productId ? { ...l, qty: l.qty + 1 } : l));
       return;
     }
-    setLines((ls) => [...ls, { product_id: p.id, name: p.name, qty: 1, unit_price: Number(p.price || 0), stock: Number(p.stock || 0) }]);
+    setLines((ls) => [...ls, { product_id: p.id, name: p.name, qty: 1, unit_price: Number(p.price || 0), cost_price: Number(p.cost_price || 0), stock: Number(p.stock || 0) }]);
   }
   function updateLine(idx: number, patch: Partial<{ qty: number; unit_price: number }>) {
     setLines((ls) => ls.map((l, i) => (i === idx ? { ...l, ...patch } : l)));
@@ -936,7 +936,7 @@ function SalesPage() {
                         className="w-full text-left px-3 py-2 text-sm hover:bg-accent flex items-center justify-between gap-3"
                       >
                         <span className="truncate">{p.name}{p.sku ? ` · ${p.sku}` : ""}</span>
-                        <span className="text-xs text-muted-foreground shrink-0">{t("stock")}: {p.stock} · {fmtMoney(p.price, lang)}</span>
+                        <span className="text-xs text-muted-foreground shrink-0">{t("stock")}: {p.stock} · {t("cost")}: {fmtMoney(p.cost_price, lang)} · {fmtMoney(p.price, lang)}</span>
                       </button>
                     ))}
                     {filteredP.length === 0 && (
@@ -954,7 +954,8 @@ function SalesPage() {
                     <tr>
                       <th className="text-left p-2">{t("product")}</th>
                       <th className="text-right p-2 w-24">{t("qty")}</th>
-                      <th className="text-right p-2 w-32">{t("price")}</th>
+                      <th className="text-right p-2 w-28">{t("cost")}</th>
+                      <th className="text-right p-2 w-28">{t("price")}</th>
                       <th className="text-right p-2 w-28">{t("total")}</th>
                       <th className="w-10"></th>
                     </tr>
@@ -964,6 +965,7 @@ function SalesPage() {
                       <tr key={idx} className="border-t border-border/40">
                         <td className="p-2">{l.name}</td>
                         <td className="p-2"><Input type="number" min="0" step="0.01" className="h-8 text-right" value={l.qty} onChange={(e) => updateLine(idx, { qty: Number(e.target.value) })} /></td>
+                        <td className="p-2 text-right font-mono text-muted-foreground">{fmtMoney(l.cost_price, lang)}</td>
                         <td className="p-2"><Input type="number" min="0" step="0.01" className="h-8 text-right" value={l.unit_price} onChange={(e) => updateLine(idx, { unit_price: Number(e.target.value) })} /></td>
                         <td className="p-2 text-right font-mono">{fmtMoney(l.qty * l.unit_price, lang)}</td>
                         <td className="p-2"><Button size="icon" variant="ghost" onClick={() => removeLine(idx)}><X className="h-4 w-4" /></Button></td>
@@ -1053,7 +1055,7 @@ function SalesPage() {
         open={openNewProd}
         onOpenChange={setOpenNewProd}
         onCreated={(p: CreatedProduct) => {
-          setLines((ls) => [...ls, { product_id: p.id, name: p.name, qty: 1, unit_price: Number(p.sell_price || 0), stock: Number(p.stock || 0) }]);
+          setLines((ls) => [...ls, { product_id: p.id, name: p.name, qty: 1, unit_price: Number(p.sell_price || 0), cost_price: Number(p.cost_price || 0), stock: Number(p.stock || 0) }]);
         }}
       />
     </div>
