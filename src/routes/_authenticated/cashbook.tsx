@@ -324,8 +324,24 @@ function CashbookPage() {
               </div>
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">{labels.category}</label>
-              <Input value={fCat} onChange={(e) => setFCat(e.target.value)} placeholder={labels.categoryPh} />
+              <div className="flex items-center justify-between">
+                <label className="text-xs text-muted-foreground">{labels.category}</label>
+                <button type="button" onClick={() => setCatMgr(true)} className="text-xs text-primary hover:underline inline-flex items-center gap-1">
+                  <Settings2 className="h-3 w-3" />{bn ? "ম্যানেজ" : "Manage"}
+                </button>
+              </div>
+              <Select value={fCat || "__none__"} onValueChange={(v) => setFCat(v === "__none__" ? "" : v)}>
+                <SelectTrigger><SelectValue placeholder={labels.categoryPh} /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">{bn ? "— কোনটি নয় —" : "— None —"}</SelectItem>
+                  {cats.filter((c) => c.type === fType).map((c) => (
+                    <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
+                  ))}
+                  {fCat && !cats.some((c) => c.type === fType && c.name === fCat) && (
+                    <SelectItem value={fCat}>{fCat}</SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <label className="text-xs text-muted-foreground">{t("description")}</label>
