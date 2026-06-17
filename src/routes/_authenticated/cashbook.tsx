@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Pencil, Trash2, Search, Plus, ArrowDownCircle, ArrowUpCircle, Settings2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { CashbookCategoryManagerDialog, fetchCashbookCategories } from "@/components/CashbookCategoryManagerDialog";
+import { DateInput } from "@/components/DateInput";
 
 export const Route = createFileRoute("/_authenticated/cashbook")({
   loader: async ({ context }) => {
@@ -219,8 +220,8 @@ function CashbookPage() {
             <SelectItem value="expense">{labels.expense}</SelectItem>
           </SelectContent>
         </Select>
-        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full sm:w-[160px]" />
-        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-full sm:w-[160px]" />
+        <DateInput value={from} onChange={setFrom} className="w-full sm:w-[160px]" />
+        <DateInput value={to} onChange={setTo} className="w-full sm:w-[160px]" />
         {(q || typeF !== "all" || from || to) && (
           <Button variant="ghost" onClick={() => { setQ(""); setTypeF("all"); setFrom(""); setTo(""); }}>{t("clear")}</Button>
         )}
@@ -310,7 +311,7 @@ function CashbookPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs text-muted-foreground">{t("date")}</label>
-                <Input type="date" value={fDate} onChange={(e) => setFDate(e.target.value)} />
+                <DateInput value={fDate} onChange={setFDate} clearable={false} />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground">{labels.type}</label>

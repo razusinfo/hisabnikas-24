@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney, fmtDate } from "@/lib/format";
 import { Input } from "@/components/ui/input";
+import { DateInput } from "@/components/DateInput";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -299,8 +300,8 @@ function ExpensesPage() {
             <SelectItem value="settled">{t("settled")}</SelectItem>
           </SelectContent>
         </Select>
-        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full sm:w-[160px]" />
-        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-full sm:w-[160px]" />
+        <DateInput value={from} onChange={setFrom} className="w-full sm:w-[160px]" />
+        <DateInput value={to} onChange={setTo} className="w-full sm:w-[160px]" />
         {(q || pType !== "all" || pStatus !== "all" || from || to) && (
           <Button variant="ghost" onClick={() => { setQ(""); setPType("all"); setPStatus("all"); setFrom(""); setTo(""); }}>{t("clear")}</Button>
         )}
@@ -434,11 +435,11 @@ function ExpensesPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs text-muted-foreground">{t("date")}</label>
-                <Input type="date" value={fDate} onChange={(e) => setFDate(e.target.value)} />
+                <DateInput value={fDate} onChange={setFDate} clearable={false} />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground">{t("dueDate")}</label>
-                <Input type="date" value={fDueDate} onChange={(e) => setFDueDate(e.target.value)} />
+                <DateInput value={fDueDate} onChange={setFDueDate} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">

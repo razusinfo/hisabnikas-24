@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DateInput } from "@/components/DateInput";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -547,7 +548,7 @@ function ProductsPage() {
                   <div className="space-y-1.5"><Label>সাইজ / Size</Label><Input value={form.size} onChange={(e) => setForm({ ...form, size: e.target.value })} /></div>
                 )}
                 {sett.expiryDate && (
-                  <div className="space-y-1.5"><Label>মেয়াদ উত্তীর্ণের তারিখ / Expiry</Label><Input type="date" value={form.expiry_date} onChange={(e) => setForm({ ...form, expiry_date: e.target.value })} /></div>
+                  <div className="space-y-1.5"><Label>মেয়াদ উত্তীর্ণের তারিখ / Expiry</Label><DateInput value={form.expiry_date} onChange={(v) => setForm({ ...form, expiry_date: v })} /></div>
                 )}
               </div>
             )}

@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney, fmtDateTime, fmtDate } from "@/lib/format";
 import { Input } from "@/components/ui/input";
+import { DateInput } from "@/components/DateInput";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -322,8 +323,8 @@ function PurchasesPage() {
             <SelectItem value="due">{t("statusDue")}</SelectItem>
           </SelectContent>
         </Select>
-        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full sm:w-[160px]" />
-        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-full sm:w-[160px]" />
+        <DateInput value={from} onChange={setFrom} className="w-full sm:w-[160px]" />
+        <DateInput value={to} onChange={setTo} className="w-full sm:w-[160px]" />
         {(q || status !== "all" || from || to) && (
           <Button variant="ghost" onClick={() => { setQ(""); setStatus("all"); setFrom(""); setTo(""); }}>{t("clear")}</Button>
         )}
