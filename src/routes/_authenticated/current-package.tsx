@@ -267,7 +267,7 @@ function CurrentPackagePage() {
                         {PLANS.find((p) => p.id === r.plan)?.name ?? r.plan} — ৳{Number(r.amount).toLocaleString("bn-BD")}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        TrxID: {r.trx_id} · {new Date(r.created_at).toLocaleString("bn-BD")}
+                        TrxID: {r.trx_id} · {fmtDateTime(r.created_at, "bn")}
                       </div>
                       {r.note && <div className="text-xs text-destructive mt-1">{r.note}</div>}
                     </div>
