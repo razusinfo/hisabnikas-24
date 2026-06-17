@@ -450,10 +450,11 @@ function SalesPage() {
       void fireSmsAsync({ customerId: paySale.customer_id, phone, body, kind: "payment_receipt" });
     }
     if (opts?.print) {
-      printPaymentReceipt(paySale, amt, newPaid, newDue);
+      printPaymentReceipt(paySale, amt, newPaid, newDue, payDate);
     }
     setPaySale(null);
     setPayAmount("");
+    setPayDate(new Date().toISOString().slice(0, 10));
     qc.invalidateQueries({ queryKey: ["sales"] });
     qc.invalidateQueries({ queryKey: ["customers"] });
   }
