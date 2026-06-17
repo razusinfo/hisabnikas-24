@@ -954,7 +954,8 @@ function SalesPage() {
                     <tr>
                       <th className="text-left p-2">{t("product")}</th>
                       <th className="text-right p-2 w-24">{t("qty")}</th>
-                      <th className="text-right p-2 w-32">{t("price")}</th>
+                      <th className="text-right p-2 w-28">{t("cost")}</th>
+                      <th className="text-right p-2 w-28">{t("price")}</th>
                       <th className="text-right p-2 w-28">{t("total")}</th>
                       <th className="w-10"></th>
                     </tr>
