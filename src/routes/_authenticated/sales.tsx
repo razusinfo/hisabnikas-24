@@ -701,7 +701,7 @@ function SalesPage() {
                         <Button size="icon" variant="ghost" onClick={() => openView(s)} title={t("view")} aria-label={t("view")}><Eye className="h-4 w-4" /></Button>
                       )}
                       {Number(s.due) > 0 && (
-                        <Button size="icon" variant="ghost" onClick={() => { setPaySale(s); setPayAmount(String(s.due)); }} title={t("recordPayment")} aria-label={t("recordPayment")}><CreditCard className="h-4 w-4" /></Button>
+                        <Button size="icon" variant="ghost" onClick={() => { setPaySale(s); setPayAmount(String(s.due)); setPayDate(new Date().toISOString().slice(0, 10)); }} title={t("recordPayment")} aria-label={t("recordPayment")}><CreditCard className="h-4 w-4" /></Button>
                       )}
                       <Button size="icon" variant="ghost" onClick={() => handlePrint(s)} title={t("print")} aria-label={t("print")}><Printer className="h-4 w-4" /></Button>
                       <Button size="icon" variant="ghost" onClick={() => setDelSale(s)} title={t("delete")} aria-label={t("delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>
@@ -751,7 +751,7 @@ function SalesPage() {
                 <Button size="sm" variant="ghost" className="min-h-11 flex-1" onClick={() => openView(s)}><Eye className="h-4 w-4 mr-1" />{t("view")}</Button>
               )}
               {Number(s.due) > 0 && (
-                <Button size="sm" variant="ghost" className="min-h-11 flex-1" onClick={() => { setPaySale(s); setPayAmount(String(s.due)); }}><CreditCard className="h-4 w-4 mr-1" />{t("recordPayment")}</Button>
+                <Button size="sm" variant="ghost" className="min-h-11 flex-1" onClick={() => { setPaySale(s); setPayAmount(String(s.due)); setPayDate(new Date().toISOString().slice(0, 10)); }}><CreditCard className="h-4 w-4 mr-1" />{t("recordPayment")}</Button>
               )}
               <Button size="sm" variant="ghost" className="min-h-11" onClick={() => handlePrint(s)} aria-label={t("print")}><Printer className="h-4 w-4" /></Button>
               <Button size="sm" variant="ghost" className="min-h-11" onClick={() => setDelSale(s)} aria-label={t("delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>
