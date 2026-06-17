@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/AppShell";
+import { fmtDate, fmtDateTime } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -195,7 +196,7 @@ function CurrentPackagePage() {
                 <div className="text-right">
                   <div className="text-xs text-muted-foreground">মেয়াদ শেষ</div>
                   <div className="font-semibold text-sm">
-                    {expiresAt.toLocaleDateString("bn-BD")}{" "}
+                    {fmtDate(expiresAt, "bn")}{" "}
                     {daysLeft !== null && (
                       <span className={daysLeft <= 3 ? "text-destructive" : "text-muted-foreground"}>
                         ({daysLeft} দিন বাকি)
@@ -266,7 +267,7 @@ function CurrentPackagePage() {
                         {PLANS.find((p) => p.id === r.plan)?.name ?? r.plan} — ৳{Number(r.amount).toLocaleString("bn-BD")}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        TrxID: {r.trx_id} · {new Date(r.created_at).toLocaleString("bn-BD")}
+                        TrxID: {r.trx_id} · {fmtDateTime(r.created_at, "bn")}
                       </div>
                       {r.note && <div className="text-xs text-destructive mt-1">{r.note}</div>}
                     </div>

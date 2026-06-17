@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
+import { fmtDateTime } from "@/lib/format";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -155,7 +156,7 @@ function formatBytes(s?: string) {
 }
 
 function BackupRestorePage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const search = useSearch({ from: "/_authenticated/backup-restore" });
   const qc = useQueryClient();
   const [restoring, setRestoring] = useState(false);
@@ -446,7 +447,7 @@ function BackupRestorePage() {
                   <span>
                     {t("lastServerBackup")}:{" "}
                     {serverConn.last_backup_at
-                      ? new Date(serverConn.last_backup_at).toLocaleString()
+                      ? fmtDateTime(serverConn.last_backup_at, lang)
                       : t("never")}
                     {serverConn.last_backup_status === "success" && (
                       <span className="ml-2 text-emerald-600">✓ {t("backupStatusSuccess")}</span>
@@ -523,7 +524,7 @@ function BackupRestorePage() {
                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
                   <span>
                     {t("lastAutoBackup")}:{" "}
-                    {lastAuto ? new Date(lastAuto).toLocaleString() : t("never")}
+                    {lastAuto ? fmtDateTime(new Date(lastAuto), lang) : t("never")}
                   </span>
                   <Button
                     size="sm"
@@ -575,7 +576,7 @@ function BackupRestorePage() {
                         <div className="min-w-0 flex-1">
                           <div className="truncate font-medium">{f.name}</div>
                           <div className="text-xs text-muted-foreground">
-                            {new Date(f.modifiedTime).toLocaleString()}
+                            {fmtDateTime(f.modifiedTime, lang)}
                             {f.size ? ` • ${formatBytes(f.size)}` : ""}
                           </div>
                         </div>

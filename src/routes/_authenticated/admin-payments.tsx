@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/AppShell";
+import { fmtDateTime } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -126,7 +127,7 @@ function AdminPaymentsPage() {
                     TrxID: <span className="font-mono font-semibold text-foreground">{r.trx_id}</span>
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {new Date(r.created_at).toLocaleString("bn-BD")}
+                    {fmtDateTime(r.created_at, "bn")}
                   </div>
                 </div>
                 <Badge
