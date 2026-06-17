@@ -447,7 +447,7 @@ function BackupRestorePage() {
                   <span>
                     {t("lastServerBackup")}:{" "}
                     {serverConn.last_backup_at
-                      ? new Date(serverConn.last_backup_at).toLocaleString()
+                      ? fmtDateTime(serverConn.last_backup_at, lang)
                       : t("never")}
                     {serverConn.last_backup_status === "success" && (
                       <span className="ml-2 text-emerald-600">✓ {t("backupStatusSuccess")}</span>
