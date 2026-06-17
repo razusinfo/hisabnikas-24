@@ -576,7 +576,7 @@ function BackupRestorePage() {
                         <div className="min-w-0 flex-1">
                           <div className="truncate font-medium">{f.name}</div>
                           <div className="text-xs text-muted-foreground">
-                            {new Date(f.modifiedTime).toLocaleString()}
+                            {fmtDateTime(f.modifiedTime, lang)}
                             {f.size ? ` • ${formatBytes(f.size)}` : ""}
                           </div>
                         </div>
