@@ -311,7 +311,7 @@ function CashbookPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-xs text-muted-foreground">{t("date")}</label>
-                <Input type="date" value={fDate} onChange={(e) => setFDate(e.target.value)} />
+                <DateInput value={fDate} onChange={setFDate} clearable={false} />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground">{labels.type}</label>
