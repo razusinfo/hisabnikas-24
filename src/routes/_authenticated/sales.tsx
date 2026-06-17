@@ -876,7 +876,7 @@ function SalesPage() {
               </div>
               <div>
                 <label className="text-xs text-muted-foreground">{t("date")}</label>
-                <Input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} />
+                <DateInput value={newDate} onChange={setNewDate} clearable={false} />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground">{t("method")}</label>
