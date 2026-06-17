@@ -156,7 +156,7 @@ function formatBytes(s?: string) {
 }
 
 function BackupRestorePage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const search = useSearch({ from: "/_authenticated/backup-restore" });
   const qc = useQueryClient();
   const [restoring, setRestoring] = useState(false);
