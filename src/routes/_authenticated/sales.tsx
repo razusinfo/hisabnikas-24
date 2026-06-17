@@ -100,6 +100,7 @@ function SalesPage() {
   const [paySale, setPaySale] = useState<any | null>(null);
   const [delSale, setDelSale] = useState<any | null>(null);
   const [payAmount, setPayAmount] = useState("");
+  const [payDate, setPayDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
   const [items, setItems] = useState<any[] | null>(null);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
