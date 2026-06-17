@@ -300,8 +300,8 @@ function ExpensesPage() {
             <SelectItem value="settled">{t("settled")}</SelectItem>
           </SelectContent>
         </Select>
-        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-full sm:w-[160px]" />
-        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-full sm:w-[160px]" />
+        <DateInput value={from} onChange={setFrom} className="w-full sm:w-[160px]" />
+        <DateInput value={to} onChange={setTo} className="w-full sm:w-[160px]" />
         {(q || pType !== "all" || pStatus !== "all" || from || to) && (
           <Button variant="ghost" onClick={() => { setQ(""); setPType("all"); setPStatus("all"); setFrom(""); setTo(""); }}>{t("clear")}</Button>
         )}
