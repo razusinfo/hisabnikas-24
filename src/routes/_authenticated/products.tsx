@@ -109,6 +109,7 @@ function ProductsPage() {
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [manageCatOpen, setManageCatOpen] = useState(false);
 
   // Stock adjust dialog
   const [stockTarget, setStockTarget] = useState<Product | null>(null);
