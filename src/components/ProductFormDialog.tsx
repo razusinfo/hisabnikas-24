@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Image as ImageIcon, Upload, X, Plus } from "lucide-react";
+import { Image as ImageIcon, Upload, X, Plus, Settings2 } from "lucide-react";
 import { toast } from "sonner";
+import { CategoryManagerDialog } from "@/components/CategoryManagerDialog";
 
 export type ProductFormEditing = {
   id: string;
@@ -84,6 +85,7 @@ export function ProductFormDialog({
 
   const [form, setForm] = useState(emptyForm);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [manageCatOpen, setManageCatOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
@@ -268,7 +270,12 @@ export function ProductFormDialog({
           </div>
           {sett.itemCategory && (
             <div className="space-y-1.5">
-              <Label>{t("category")}</Label>
+              <div className="flex items-center justify-between">
+                <Label>{t("category")}</Label>
+                <Button type="button" variant="ghost" size="sm" className="h-7 px-2" onClick={() => setManageCatOpen(true)}>
+                  <Settings2 className="h-3.5 w-3.5 mr-1" />{t("manageCategories")}
+                </Button>
+              </div>
               <Select value={form.category_id || "none"} onValueChange={(v) => setForm({ ...form, category_id: v === "none" ? "" : v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -329,6 +336,7 @@ export function ProductFormDialog({
           </DialogFooter>
         </form>
       </DialogContent>
+      <CategoryManagerDialog open={manageCatOpen} onOpenChange={setManageCatOpen} />
     </Dialog>
   );
 }

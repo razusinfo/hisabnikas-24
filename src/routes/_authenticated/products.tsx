@@ -14,8 +14,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney, fmtNum } from "@/lib/format";
-import { Plus, Search, Trash2, Package, Pencil, Boxes, AlertTriangle, Image as ImageIcon, Upload, X, ShoppingCart } from "lucide-react";
+import { Plus, Search, Trash2, Package, Pencil, Boxes, AlertTriangle, Image as ImageIcon, Upload, X, ShoppingCart, Settings2 } from "lucide-react";
 import { toast } from "sonner";
+import { CategoryManagerDialog } from "@/components/CategoryManagerDialog";
 
 import { useAppSettings } from "@/lib/app-settings";
 
@@ -108,6 +109,7 @@ function ProductsPage() {
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [manageCatOpen, setManageCatOpen] = useState(false);
 
   // Stock adjust dialog
   const [stockTarget, setStockTarget] = useState<Product | null>(null);
@@ -489,7 +491,12 @@ function ProductsPage() {
             </div>
             {sett.itemCategory && (
             <div className="space-y-1.5">
-              <Label>{t("category")}</Label>
+              <div className="flex items-center justify-between">
+                <Label>{t("category")}</Label>
+                <Button type="button" variant="ghost" size="sm" className="h-7 px-2" onClick={() => setManageCatOpen(true)}>
+                  <Settings2 className="h-3.5 w-3.5 mr-1" />{t("manageCategories")}
+                </Button>
+              </div>
               <Select value={form.category_id || "none"} onValueChange={(v) => setForm({ ...form, category_id: v === "none" ? "" : v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -585,6 +592,8 @@ function ProductsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <CategoryManagerDialog open={manageCatOpen} onOpenChange={setManageCatOpen} />
     </div>
   );
 }
