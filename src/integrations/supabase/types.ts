@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      cashbook: {
+        Row: {
+          amount: number
+          category: string | null
+          created_at: string
+          description: string
+          entry_date: string
+          id: string
+          method: string
+          note: string | null
+          owner_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          category?: string | null
+          created_at?: string
+          description: string
+          entry_date?: string
+          id?: string
+          method?: string
+          note?: string | null
+          owner_id: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          created_at?: string
+          description?: string
+          entry_date?: string
+          id?: string
+          method?: string
+          note?: string | null
+          owner_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string

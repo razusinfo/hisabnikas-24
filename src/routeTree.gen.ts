@@ -24,6 +24,7 @@ import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedCurrentPackageRouteImport } from './routes/_authenticated/current-package'
+import { Route as AuthenticatedCashbookRouteImport } from './routes/_authenticated/cashbook'
 import { Route as AuthenticatedBuyMessagesRouteImport } from './routes/_authenticated/buy-messages'
 import { Route as AuthenticatedBusinessProfileRouteImport } from './routes/_authenticated/business-profile'
 import { Route as AuthenticatedBackupRestoreRouteImport } from './routes/_authenticated/backup-restore'
@@ -108,6 +109,11 @@ const AuthenticatedCurrentPackageRoute =
     path: '/current-package',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedCashbookRoute = AuthenticatedCashbookRouteImport.update({
+  id: '/cashbook',
+  path: '/cashbook',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedBuyMessagesRoute =
   AuthenticatedBuyMessagesRouteImport.update({
     id: '/buy-messages',
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/backup-restore': typeof AuthenticatedBackupRestoreRoute
   '/business-profile': typeof AuthenticatedBusinessProfileRoute
   '/buy-messages': typeof AuthenticatedBuyMessagesRoute
+  '/cashbook': typeof AuthenticatedCashbookRoute
   '/current-package': typeof AuthenticatedCurrentPackageRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -173,6 +180,7 @@ export interface FileRoutesByTo {
   '/backup-restore': typeof AuthenticatedBackupRestoreRoute
   '/business-profile': typeof AuthenticatedBusinessProfileRoute
   '/buy-messages': typeof AuthenticatedBuyMessagesRoute
+  '/cashbook': typeof AuthenticatedCashbookRoute
   '/current-package': typeof AuthenticatedCurrentPackageRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -197,6 +205,7 @@ export interface FileRoutesById {
   '/_authenticated/backup-restore': typeof AuthenticatedBackupRestoreRoute
   '/_authenticated/business-profile': typeof AuthenticatedBusinessProfileRoute
   '/_authenticated/buy-messages': typeof AuthenticatedBuyMessagesRoute
+  '/_authenticated/cashbook': typeof AuthenticatedCashbookRoute
   '/_authenticated/current-package': typeof AuthenticatedCurrentPackageRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -221,6 +230,7 @@ export interface FileRouteTypes {
     | '/backup-restore'
     | '/business-profile'
     | '/buy-messages'
+    | '/cashbook'
     | '/current-package'
     | '/customers'
     | '/dashboard'
@@ -243,6 +253,7 @@ export interface FileRouteTypes {
     | '/backup-restore'
     | '/business-profile'
     | '/buy-messages'
+    | '/cashbook'
     | '/current-package'
     | '/customers'
     | '/dashboard'
@@ -266,6 +277,7 @@ export interface FileRouteTypes {
     | '/_authenticated/backup-restore'
     | '/_authenticated/business-profile'
     | '/_authenticated/buy-messages'
+    | '/_authenticated/cashbook'
     | '/_authenticated/current-package'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
@@ -397,6 +409,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCurrentPackageRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/cashbook': {
+      id: '/_authenticated/cashbook'
+      path: '/cashbook'
+      fullPath: '/cashbook'
+      preLoaderRoute: typeof AuthenticatedCashbookRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/buy-messages': {
       id: '/_authenticated/buy-messages'
       path: '/buy-messages'
@@ -447,6 +466,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBackupRestoreRoute: typeof AuthenticatedBackupRestoreRoute
   AuthenticatedBusinessProfileRoute: typeof AuthenticatedBusinessProfileRoute
   AuthenticatedBuyMessagesRoute: typeof AuthenticatedBuyMessagesRoute
+  AuthenticatedCashbookRoute: typeof AuthenticatedCashbookRoute
   AuthenticatedCurrentPackageRoute: typeof AuthenticatedCurrentPackageRoute
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
@@ -466,6 +486,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBackupRestoreRoute: AuthenticatedBackupRestoreRoute,
   AuthenticatedBusinessProfileRoute: AuthenticatedBusinessProfileRoute,
   AuthenticatedBuyMessagesRoute: AuthenticatedBuyMessagesRoute,
+  AuthenticatedCashbookRoute: AuthenticatedCashbookRoute,
   AuthenticatedCurrentPackageRoute: AuthenticatedCurrentPackageRoute,
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,

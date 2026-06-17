@@ -28,6 +28,7 @@ import {
   Sun,
   Moon,
   Plus,
+  BookOpen,
 } from "lucide-react";
 
 import { useState, useEffect, type ReactNode } from "react";
@@ -101,6 +102,7 @@ const fixedNav = [
 
 const scrollNav = [
   { to: "/customers", icon: Users, key: "customers" as const, color: "cyan" },
+  { to: "/cashbook", icon: BookOpen, key: "cashbook" as const, color: "emerald" },
   { to: "/profit-loss", icon: TrendingUp, key: "profitLoss" as const, color: "teal" },
   { to: "/settings", icon: Settings, key: "settings" as const, color: "slate" },
   { to: "/backup-restore", icon: Database, key: "backupRestore" as const, color: "slate" },
