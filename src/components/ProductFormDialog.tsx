@@ -37,6 +37,7 @@ export type CreatedProduct = {
   id: string;
   name: string;
   sell_price: number;
+  cost_price: number;
   stock: number;
   category_id: string | null;
 };
