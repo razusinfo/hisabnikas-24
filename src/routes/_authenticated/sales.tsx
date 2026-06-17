@@ -936,7 +936,7 @@ function SalesPage() {
                         className="w-full text-left px-3 py-2 text-sm hover:bg-accent flex items-center justify-between gap-3"
                       >
                         <span className="truncate">{p.name}{p.sku ? ` · ${p.sku}` : ""}</span>
-                        <span className="text-xs text-muted-foreground shrink-0">{t("stock")}: {p.stock} · {fmtMoney(p.price, lang)}</span>
+                        <span className="text-xs text-muted-foreground shrink-0">{t("stock")}: {p.stock} · {t("cost")}: {fmtMoney(p.cost_price, lang)} · {fmtMoney(p.price, lang)}</span>
                       </button>
                     ))}
                     {filteredP.length === 0 && (
