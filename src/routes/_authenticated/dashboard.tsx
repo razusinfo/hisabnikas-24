@@ -61,10 +61,13 @@ export async function fetchDashboard() {
     const k = new Date(s.created_at).toISOString().slice(0, 10);
     if (byDay.has(k)) byDay.set(k, (byDay.get(k) ?? 0) + Number(s.total));
   });
-  const chart = Array.from(byDay.entries()).map(([d, v]) => ({
-    day: new Date(d).toLocaleDateString("en", { month: "short", day: "numeric" }),
-    sales: Number(v.toFixed(2)),
-  }));
+  const chart = Array.from(byDay.entries()).map(([d, v]) => {
+    const dt = new Date(d);
+    return {
+      day: `${String(dt.getDate()).padStart(2, "0")}/${String(dt.getMonth() + 1).padStart(2, "0")}`,
+      sales: Number(v.toFixed(2)),
+    };
+  });
 
   const lowStock = (products.data ?? []).filter((p) => Number(p.stock) <= Number(p.low_stock_threshold));
   const dueReceivable = (customers.data ?? []).reduce((s, c) => s + Number(c.due_balance ?? 0), 0);
