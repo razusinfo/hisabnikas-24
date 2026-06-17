@@ -85,6 +85,7 @@ export function ProductFormDialog({
 
   const [form, setForm] = useState(emptyForm);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [manageCatOpen, setManageCatOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
