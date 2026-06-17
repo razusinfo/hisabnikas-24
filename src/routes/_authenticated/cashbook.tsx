@@ -12,7 +12,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Pencil, Trash2, Search, Plus, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
+import { Pencil, Trash2, Search, Plus, ArrowDownCircle, ArrowUpCircle, Settings2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { CashbookCategoryManagerDialog, fetchCashbookCategories } from "@/components/CashbookCategoryManagerDialog";
 
 export const Route = createFileRoute("/_authenticated/cashbook")({
   loader: async ({ context }) => {
