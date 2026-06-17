@@ -826,7 +826,7 @@ function SalesPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!paySale} onOpenChange={(o) => { if (!o) { setPaySale(null); setPayAmount(""); } }}>
+      <Dialog open={!!paySale} onOpenChange={(o) => { if (!o) { setPaySale(null); setPayAmount(""); setPayDate(new Date().toISOString().slice(0, 10)); } }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t("recordPayment")} · {paySale?.invoice_no}</DialogTitle>
@@ -836,14 +836,20 @@ function SalesPage() {
               <div className="flex justify-between"><span className="text-muted-foreground">{t("total")}</span><span className="font-mono">{fmtMoney(paySale.total, lang)}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">{t("alreadyPaid")}</span><span className="font-mono text-success">{fmtMoney(paySale.paid, lang)}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">{t("outstanding")}</span><span className="font-mono text-warning">{fmtMoney(paySale.due, lang)}</span></div>
-              <div>
-                <label className="text-xs text-muted-foreground">{t("amountReceived")}</label>
-                <Input type="number" step="0.01" value={payAmount} onChange={(e) => setPayAmount(e.target.value)} />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground">{t("date")}</label>
+                  <DateInput value={payDate} onChange={setPayDate} clearable={false} />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">{t("amountReceived")}</label>
+                  <Input type="number" step="0.01" value={payAmount} onChange={(e) => setPayAmount(e.target.value)} />
+                </div>
               </div>
             </div>
           )}
           <DialogFooter className="gap-2 sm:gap-2">
-            <Button variant="ghost" onClick={() => { setPaySale(null); setPayAmount(""); }}>{t("cancel")}</Button>
+            <Button variant="ghost" onClick={() => { setPaySale(null); setPayAmount(""); setPayDate(new Date().toISOString().slice(0, 10)); }}>{t("cancel")}</Button>
             <Button variant="outline" onClick={() => recordPayment({ print: true })}><Printer className="h-4 w-4 mr-2" />{lang === "bn" ? "সেভ ও প্রিন্ট" : "Save & Print"}</Button>
             <Button onClick={() => recordPayment()}>{t("save")}</Button>
           </DialogFooter>
