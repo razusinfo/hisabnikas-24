@@ -66,6 +66,9 @@ function CashbookPage() {
   const [openForm, setOpenForm] = useState(false);
   const [edit, setEdit] = useState<Entry | null>(null);
   const [del, setDel] = useState<Entry | null>(null);
+  const [catMgr, setCatMgr] = useState(false);
+
+  const { data: cats = [] } = useQuery({ queryKey: ["cashbook-categories"], queryFn: fetchCashbookCategories });
 
   const [fDate, setFDate] = useState(todayStr());
   const [fType, setFType] = useState<"income" | "expense">("income");
