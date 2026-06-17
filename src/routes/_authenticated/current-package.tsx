@@ -196,7 +196,7 @@ function CurrentPackagePage() {
                 <div className="text-right">
                   <div className="text-xs text-muted-foreground">মেয়াদ শেষ</div>
                   <div className="font-semibold text-sm">
-                    {expiresAt.toLocaleDateString("bn-BD")}{" "}
+                    {fmtDate(expiresAt, "bn")}{" "}
                     {daysLeft !== null && (
                       <span className={daysLeft <= 3 ? "text-destructive" : "text-muted-foreground"}>
                         ({daysLeft} দিন বাকি)
