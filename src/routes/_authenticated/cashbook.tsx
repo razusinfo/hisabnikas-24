@@ -389,6 +389,8 @@ function CashbookPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <CashbookCategoryManagerDialog open={catMgr} onOpenChange={setCatMgr} initialType={fType} />
     </div>
   );
 }
