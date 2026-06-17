@@ -549,12 +549,19 @@ function SalesPage() {
     printInvoice(s, lines);
   }
 
-  function printPaymentReceipt(s: any, amount: number, newPaid: number, newDue: number) {
+  function printPaymentReceipt(s: any, amount: number, newPaid: number, newDue: number, dateStr?: string) {
     const isBn = lang === "bn";
+    const receiptCreatedAt = (() => {
+      if (!dateStr) return new Date().toISOString();
+      const now = new Date();
+      const d = new Date(dateStr + "T00:00:00");
+      d.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+      return d.toISOString();
+    })();
     showInvoicePreview({
       doc: {
         invoice_no: (isBn ? "পরিশোধ • " : "PAY • ") + s.invoice_no,
-        created_at: new Date().toISOString(),
+        created_at: receiptCreatedAt,
         partyName: s.customers?.name ?? t("walkIn"),
         partyPhone: s.customers?.phone ?? "",
         method: s.customers?.address ?? "",
