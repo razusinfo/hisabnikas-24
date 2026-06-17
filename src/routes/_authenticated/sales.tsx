@@ -1053,7 +1053,7 @@ function SalesPage() {
         open={openNewProd}
         onOpenChange={setOpenNewProd}
         onCreated={(p: CreatedProduct) => {
-          setLines((ls) => [...ls, { product_id: p.id, name: p.name, qty: 1, unit_price: Number(p.sell_price || 0), stock: Number(p.stock || 0) }]);
+          setLines((ls) => [...ls, { product_id: p.id, name: p.name, qty: 1, unit_price: Number(p.sell_price || 0), cost_price: Number(p.cost_price || 0), stock: Number(p.stock || 0) }]);
         }}
       />
     </div>
