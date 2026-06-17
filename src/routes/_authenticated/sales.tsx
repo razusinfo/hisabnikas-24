@@ -965,6 +965,7 @@ function SalesPage() {
                       <tr key={idx} className="border-t border-border/40">
                         <td className="p-2">{l.name}</td>
                         <td className="p-2"><Input type="number" min="0" step="0.01" className="h-8 text-right" value={l.qty} onChange={(e) => updateLine(idx, { qty: Number(e.target.value) })} /></td>
+                        <td className="p-2 text-right font-mono text-muted-foreground">{fmtMoney(l.cost_price, lang)}</td>
                         <td className="p-2"><Input type="number" min="0" step="0.01" className="h-8 text-right" value={l.unit_price} onChange={(e) => updateLine(idx, { unit_price: Number(e.target.value) })} /></td>
                         <td className="p-2 text-right font-mono">{fmtMoney(l.qty * l.unit_price, lang)}</td>
                         <td className="p-2"><Button size="icon" variant="ghost" onClick={() => removeLine(idx)}><X className="h-4 w-4" /></Button></td>
