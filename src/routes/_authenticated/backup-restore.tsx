@@ -524,7 +524,7 @@ function BackupRestorePage() {
                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
                   <span>
                     {t("lastAutoBackup")}:{" "}
-                    {lastAuto ? fmtDateTime(lastAuto, lang) : t("never")}
+                    {lastAuto ? fmtDateTime(new Date(lastAuto), lang) : t("never")}
                   </span>
                   <Button
                     size="sm"
