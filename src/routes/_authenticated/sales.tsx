@@ -283,9 +283,8 @@ function SalesPage() {
       const noteWithDelivery = sett.deliveryCharge && Number(newDelivery) > 0
         ? `${newNote ? newNote + " | " : ""}Delivery: ${newDelivery}`
         : newNote;
-      const today = new Date().toISOString().slice(0, 10);
       let saleCreatedAt: string | undefined;
-      if (newDate && newDate !== today) {
+      if (newDate) {
         const now = new Date();
         const d = new Date(newDate + "T00:00:00");
         d.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
