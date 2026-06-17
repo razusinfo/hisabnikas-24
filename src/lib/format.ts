@@ -18,14 +18,20 @@ export const fmtMoney = (
 
 export const fmtDate = (d: string | Date, lang: "en" | "bn" = "en") => {
   const dt = typeof d === "string" ? new Date(d) : d;
-  const locale = lang === "bn" ? "bn-BD" : "en-US";
-  return dt.toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" });
+  const day = String(dt.getDate()).padStart(2, "0");
+  const month = String(dt.getMonth() + 1).padStart(2, "0");
+  const year = dt.getFullYear();
+  return lang === "bn" ? toBnDigits(`${day}/${month}/${year}`) : `${day}/${month}/${year}`;
 };
 
 export const fmtDateTime = (d: string | Date, lang: "en" | "bn" = "en") => {
   const dt = typeof d === "string" ? new Date(d) : d;
-  const locale = lang === "bn" ? "bn-BD" : "en-US";
-  return dt.toLocaleString(locale, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  const day = String(dt.getDate()).padStart(2, "0");
+  const month = String(dt.getMonth() + 1).padStart(2, "0");
+  const year = dt.getFullYear();
+  const hours = String(dt.getHours()).padStart(2, "0");
+  const minutes = String(dt.getMinutes()).padStart(2, "0");
+  return lang === "bn" ? toBnDigits(`${day}/${month}/${year}, ${hours}:${minutes}`) : `${day}/${month}/${year}, ${hours}:${minutes}`;
 };
 
 export const fmtInvoiceDate = (d: string | Date, lang: "en" | "bn" = "en") => {
