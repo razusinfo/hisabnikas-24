@@ -100,6 +100,7 @@ function SalesPage() {
   const [paySale, setPaySale] = useState<any | null>(null);
   const [delSale, setDelSale] = useState<any | null>(null);
   const [payAmount, setPayAmount] = useState("");
+  const [payDate, setPayDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
   const [items, setItems] = useState<any[] | null>(null);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -283,9 +284,8 @@ function SalesPage() {
       const noteWithDelivery = sett.deliveryCharge && Number(newDelivery) > 0
         ? `${newNote ? newNote + " | " : ""}Delivery: ${newDelivery}`
         : newNote;
-      const today = new Date().toISOString().slice(0, 10);
       let saleCreatedAt: string | undefined;
-      if (newDate && newDate !== today) {
+      if (newDate) {
         const now = new Date();
         const d = new Date(newDate + "T00:00:00");
         d.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
@@ -450,10 +450,11 @@ function SalesPage() {
       void fireSmsAsync({ customerId: paySale.customer_id, phone, body, kind: "payment_receipt" });
     }
     if (opts?.print) {
-      printPaymentReceipt(paySale, amt, newPaid, newDue);
+      printPaymentReceipt(paySale, amt, newPaid, newDue, payDate);
     }
     setPaySale(null);
     setPayAmount("");
+    setPayDate(new Date().toISOString().slice(0, 10));
     qc.invalidateQueries({ queryKey: ["sales"] });
     qc.invalidateQueries({ queryKey: ["customers"] });
   }
@@ -548,12 +549,19 @@ function SalesPage() {
     printInvoice(s, lines);
   }
 
-  function printPaymentReceipt(s: any, amount: number, newPaid: number, newDue: number) {
+  function printPaymentReceipt(s: any, amount: number, newPaid: number, newDue: number, dateStr?: string) {
     const isBn = lang === "bn";
+    const receiptCreatedAt = (() => {
+      if (!dateStr) return new Date().toISOString();
+      const now = new Date();
+      const d = new Date(dateStr + "T00:00:00");
+      d.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+      return d.toISOString();
+    })();
     showInvoicePreview({
       doc: {
         invoice_no: (isBn ? "পরিশোধ • " : "PAY • ") + s.invoice_no,
-        created_at: new Date().toISOString(),
+        created_at: receiptCreatedAt,
         partyName: s.customers?.name ?? t("walkIn"),
         partyPhone: s.customers?.phone ?? "",
         method: s.customers?.address ?? "",
@@ -693,7 +701,7 @@ function SalesPage() {
                         <Button size="icon" variant="ghost" onClick={() => openView(s)} title={t("view")} aria-label={t("view")}><Eye className="h-4 w-4" /></Button>
                       )}
                       {Number(s.due) > 0 && (
-                        <Button size="icon" variant="ghost" onClick={() => { setPaySale(s); setPayAmount(String(s.due)); }} title={t("recordPayment")} aria-label={t("recordPayment")}><CreditCard className="h-4 w-4" /></Button>
+                        <Button size="icon" variant="ghost" onClick={() => { setPaySale(s); setPayAmount(String(s.due)); setPayDate(new Date().toISOString().slice(0, 10)); }} title={t("recordPayment")} aria-label={t("recordPayment")}><CreditCard className="h-4 w-4" /></Button>
                       )}
                       <Button size="icon" variant="ghost" onClick={() => handlePrint(s)} title={t("print")} aria-label={t("print")}><Printer className="h-4 w-4" /></Button>
                       <Button size="icon" variant="ghost" onClick={() => setDelSale(s)} title={t("delete")} aria-label={t("delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>
@@ -743,7 +751,7 @@ function SalesPage() {
                 <Button size="sm" variant="ghost" className="min-h-11 flex-1" onClick={() => openView(s)}><Eye className="h-4 w-4 mr-1" />{t("view")}</Button>
               )}
               {Number(s.due) > 0 && (
-                <Button size="sm" variant="ghost" className="min-h-11 flex-1" onClick={() => { setPaySale(s); setPayAmount(String(s.due)); }}><CreditCard className="h-4 w-4 mr-1" />{t("recordPayment")}</Button>
+                <Button size="sm" variant="ghost" className="min-h-11 flex-1" onClick={() => { setPaySale(s); setPayAmount(String(s.due)); setPayDate(new Date().toISOString().slice(0, 10)); }}><CreditCard className="h-4 w-4 mr-1" />{t("recordPayment")}</Button>
               )}
               <Button size="sm" variant="ghost" className="min-h-11" onClick={() => handlePrint(s)} aria-label={t("print")}><Printer className="h-4 w-4" /></Button>
               <Button size="sm" variant="ghost" className="min-h-11" onClick={() => setDelSale(s)} aria-label={t("delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>
@@ -818,7 +826,7 @@ function SalesPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!paySale} onOpenChange={(o) => { if (!o) { setPaySale(null); setPayAmount(""); } }}>
+      <Dialog open={!!paySale} onOpenChange={(o) => { if (!o) { setPaySale(null); setPayAmount(""); setPayDate(new Date().toISOString().slice(0, 10)); } }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t("recordPayment")} · {paySale?.invoice_no}</DialogTitle>
@@ -828,14 +836,20 @@ function SalesPage() {
               <div className="flex justify-between"><span className="text-muted-foreground">{t("total")}</span><span className="font-mono">{fmtMoney(paySale.total, lang)}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">{t("alreadyPaid")}</span><span className="font-mono text-success">{fmtMoney(paySale.paid, lang)}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">{t("outstanding")}</span><span className="font-mono text-warning">{fmtMoney(paySale.due, lang)}</span></div>
-              <div>
-                <label className="text-xs text-muted-foreground">{t("amountReceived")}</label>
-                <Input type="number" step="0.01" value={payAmount} onChange={(e) => setPayAmount(e.target.value)} />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground">{t("date")}</label>
+                  <DateInput value={payDate} onChange={setPayDate} clearable={false} />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">{t("amountReceived")}</label>
+                  <Input type="number" step="0.01" value={payAmount} onChange={(e) => setPayAmount(e.target.value)} />
+                </div>
               </div>
             </div>
           )}
           <DialogFooter className="gap-2 sm:gap-2">
-            <Button variant="ghost" onClick={() => { setPaySale(null); setPayAmount(""); }}>{t("cancel")}</Button>
+            <Button variant="ghost" onClick={() => { setPaySale(null); setPayAmount(""); setPayDate(new Date().toISOString().slice(0, 10)); }}>{t("cancel")}</Button>
             <Button variant="outline" onClick={() => recordPayment({ print: true })}><Printer className="h-4 w-4 mr-2" />{lang === "bn" ? "সেভ ও প্রিন্ট" : "Save & Print"}</Button>
             <Button onClick={() => recordPayment()}>{t("save")}</Button>
           </DialogFooter>
