@@ -244,7 +244,7 @@ function SalesPage() {
       setLines((ls) => ls.map((l) => l.product_id === productId ? { ...l, qty: l.qty + 1 } : l));
       return;
     }
-    setLines((ls) => [...ls, { product_id: p.id, name: p.name, qty: 1, unit_price: Number(p.price || 0), stock: Number(p.stock || 0) }]);
+    setLines((ls) => [...ls, { product_id: p.id, name: p.name, qty: 1, unit_price: Number(p.price || 0), cost_price: Number(p.cost_price || 0), stock: Number(p.stock || 0) }]);
   }
   function updateLine(idx: number, patch: Partial<{ qty: number; unit_price: number }>) {
     setLines((ls) => ls.map((l, i) => (i === idx ? { ...l, ...patch } : l)));
