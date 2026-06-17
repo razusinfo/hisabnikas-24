@@ -242,7 +242,7 @@ function BuyMessagesPage() {
                   </div>
                   <div className="text-xs text-muted-foreground">
                     TrxID: {r.trx_id} ·{" "}
-                    {new Date(r.created_at).toLocaleString("bn-BD")}
+                    {fmtDateTime(r.created_at, "bn")}
                   </div>
                   {r.note && (
                     <div className="text-xs text-destructive mt-1">{r.note}</div>
