@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Pencil, Trash2, Search, Plus, ArrowDownCircle, ArrowUpCircle, Settings2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { CashbookCategoryManagerDialog, fetchCashbookCategories } from "@/components/CashbookCategoryManagerDialog";
+import { DateInput } from "@/components/DateInput";
 
 export const Route = createFileRoute("/_authenticated/cashbook")({
   loader: async ({ context }) => {
