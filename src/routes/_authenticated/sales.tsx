@@ -165,7 +165,7 @@ function SalesPage() {
   const { data: productsList = [] } = useQuery({
     queryKey: ["products-list"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("products").select("id,name,sku,sell_price,stock,category_id").order("name");
+      const { data, error } = await supabase.from("products").select("id,name,sku,sell_price,cost_price,stock,category_id").order("name");
       if (error) throw error;
       return (data ?? []).map((p: any) => ({ ...p, price: p.sell_price }));
     },
