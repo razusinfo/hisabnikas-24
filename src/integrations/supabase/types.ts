@@ -56,6 +56,33 @@ export type Database = {
         }
         Relationships: []
       }
+      cashbook_categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          owner_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          owner_id: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          owner_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
