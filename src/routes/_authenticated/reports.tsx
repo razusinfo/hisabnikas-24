@@ -19,6 +19,7 @@ import {
   Tags,
   Layers,
   CreditCard,
+  FileText,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/reports")({
