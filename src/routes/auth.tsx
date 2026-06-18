@@ -200,6 +200,14 @@ function AuthPage() {
                   <Input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
                 <Button disabled={loading} className="w-full h-11 mt-2">{t("signIn")}</Button>
+                <button
+                  type="button"
+                  onClick={onForgotPassword}
+                  disabled={loading}
+                  className="text-xs text-muted-foreground hover:text-foreground w-full text-center mt-1"
+                >
+                  পাসওয়ার্ড ভুলে গেছেন?
+                </button>
               </form>
             </TabsContent>
             <TabsContent value="otp">
