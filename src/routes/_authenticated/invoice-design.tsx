@@ -487,20 +487,31 @@ function InvoiceDesignPage() {
                     key={f.value}
                     type="button"
                     onClick={() => {
-                      if (!isPackageActive) { showUpgradeToast(); return; }
+                      if (!isPackageActive) {
+                        setLockedTitle(tr("ফন্ট সাইজ", "Font Size"));
+                        setLockedOpen(true);
+                        return;
+                      }
                       setFontSize(f.value); persist({ invoiceFontSize: f.value });
                     }}
-                    style={active ? { backgroundColor: theme, color: "#fff" } : undefined}
+                    style={active && isPackageActive ? { backgroundColor: theme, color: "#fff" } : undefined}
                     className={cn(
-                      "relative h-11 rounded-lg border text-sm font-medium transition",
-                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
+                      "relative h-11 rounded-lg border text-sm font-medium transition overflow-hidden",
+                      active && isPackageActive ? "border-transparent" : "bg-background hover:bg-muted border-border"
                     )}
                   >
-                    <span>{f.label[lang === "bn" ? "bn" : "en"]}</span>
+                    <span className={cn(!isPackageActive && "opacity-40")}>{f.label[lang === "bn" ? "bn" : "en"]}</span>
                     {!isPackageActive && (
-                      <div className="absolute inset-0 flex items-center justify-center rounded-lg">
-                        <Lock className="h-4 w-4 text-foreground drop-shadow" />
-                      </div>
+                      <>
+                        <div className="absolute top-0 right-0 z-10 pointer-events-none">
+                          <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[8px] font-bold py-0.5 w-16 text-center shadow-sm rotate-45 translate-x-5 -translate-y-0.5">
+                            প্যাকেজ
+                          </div>
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center z-[1]">
+                          <Lock className="h-4 w-4 text-foreground/70" />
+                        </div>
+                      </>
                     )}
                   </button>
                 );
