@@ -19,6 +19,7 @@ import {
   Tags,
   Layers,
   CreditCard,
+  FileText,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/reports")({
@@ -27,13 +28,13 @@ export const Route = createFileRoute("/_authenticated/reports")({
 
 const reportCards = [
   {
-    title: "লাভ ক্ষতি",
-    titleEn: "Profit & Loss",
-    description: "বিক্রয়, ক্রয় ও খরচের ভিত্তিকে লাভ-ক্ষতির বিস্তারিত বিবরণ।",
-    to: "/profit-loss",
-    icon: TrendingUp,
-    color: "text-teal-600",
-    bg: "bg-teal-50",
+    title: "ক্রয় রিপোর্ট",
+    titleEn: "Purchase Report",
+    description: "সরবরাহকারী ও তারিখ অনুযায়ী ক্রয়ের বিবরণ।",
+    to: "/purchases",
+    icon: ShoppingCart,
+    color: "text-amber-600",
+    bg: "bg-amber-50",
   },
   {
     title: "বিক্রয় রিপোর্ট",
@@ -43,15 +44,6 @@ const reportCards = [
     icon: Receipt,
     color: "text-emerald-600",
     bg: "bg-emerald-50",
-  },
-  {
-    title: "ক্রয় রিপোর্ট",
-    titleEn: "Purchase Report",
-    description: "সরবরাহকারী ও তারিখ অনুযায়ী ক্রয়ের বিবরণ।",
-    to: "/purchases",
-    icon: ShoppingCart,
-    color: "text-amber-600",
-    bg: "bg-amber-50",
   },
   {
     title: "পণ্যের রিপোর্ট",
@@ -81,6 +73,24 @@ const reportCards = [
     bg: "bg-rose-50",
   },
   {
+    title: "বিক্রয় অনুযায়ী লাভ ক্ষতি",
+    titleEn: "Sales-wise Profit & Loss",
+    description: "প্রতিটি বিক্রয় অনুযায়ী লাভ ও ক্ষতির বিশ্লেষণ।",
+    to: "/profit-loss",
+    icon: PieChart,
+    color: "text-green-600",
+    bg: "bg-green-50",
+  },
+  {
+    title: "লাভ ক্ষতি",
+    titleEn: "Profit & Loss",
+    description: "বিক্রয়, ক্রয় ও খরচের ভিত্তিকে লাভ-ক্ষতির বিস্তারিত বিবরণ।",
+    to: "/profit-loss",
+    icon: TrendingUp,
+    color: "text-teal-600",
+    bg: "bg-teal-50",
+  },
+  {
     title: "মোবাইল ব্যাংকিং রিপোর্ট",
     titleEn: "Mobile Banking Report",
     description: "বিকাশ, নগদ, রকেট ইত্যাদি মোবাইল ব্যাংকিং লেনদেনের বিবরণ।",
@@ -99,13 +109,31 @@ const reportCards = [
     bg: "bg-blue-50",
   },
   {
-    title: "বিক্রয় অনুযায়ী লাভ ক্ষতি",
-    titleEn: "Sales-wise Profit & Loss",
-    description: "প্রতিটি বিক্রয় অনুযায়ী লাভ ও ক্ষতির বিশ্লেষণ।",
-    to: "/profit-loss",
-    icon: PieChart,
-    color: "text-green-600",
-    bg: "bg-green-50",
+    title: "খরচ",
+    titleEn: "Expenses",
+    description: "সকল খরচের বিস্তারিত বিবরণ ও বিশ্লেষণ।",
+    to: "/expenses",
+    icon: CreditCard,
+    color: "text-red-600",
+    bg: "bg-red-50",
+  },
+  {
+    title: "খরচের ধরন",
+    titleEn: "Expense Type",
+    description: "ধরন অনুযায়ী খরচের বিস্তারিত বিশ্লেষণ।",
+    to: "/expenses",
+    icon: Layers,
+    color: "text-yellow-600",
+    bg: "bg-yellow-50",
+  },
+  {
+    title: "খরচের ক্যাটাগরি",
+    titleEn: "Expense Category",
+    description: "ক্যাটাগরি অনুযায়ী খরচের সংক্ষিপ্ত বিবরণ।",
+    to: "/expenses",
+    icon: Tags,
+    color: "text-fuchsia-600",
+    bg: "bg-fuchsia-50",
   },
   {
     title: "স্টক সামারী",
@@ -126,31 +154,13 @@ const reportCards = [
     bg: "bg-orange-50",
   },
   {
-    title: "খরচের ক্যাটাগরি",
-    titleEn: "Expense Category",
-    description: "ক্যাটাগরি অনুযায়ী খরচের সংক্ষিপ্ত বিবরণ।",
-    to: "/expenses",
-    icon: Tags,
-    color: "text-fuchsia-600",
-    bg: "bg-fuchsia-50",
-  },
-  {
-    title: "খরচের ধরন",
-    titleEn: "Expense Type",
-    description: "ধরন অনুযায়ী খরচের বিস্তারিত বিশ্লেষণ।",
-    to: "/expenses",
-    icon: Layers,
-    color: "text-yellow-600",
-    bg: "bg-yellow-50",
-  },
-  {
-    title: "খরচ",
-    titleEn: "Expenses",
-    description: "সকল খরচের বিস্তারিত বিবরণ ও বিশ্লেষণ।",
-    to: "/expenses",
-    icon: CreditCard,
-    color: "text-red-600",
-    bg: "bg-red-50",
+    title: "আইটেমের বিস্তারিত রিপোর্ট",
+    titleEn: "Item Detail Report",
+    description: "প্রতিটি আইটেমের বিস্তারিত তথ্য ও লেনদেনের বিবরণ।",
+    to: "/products",
+    icon: FileText,
+    color: "text-slate-600",
+    bg: "bg-slate-50",
   },
 ];
 
@@ -167,7 +177,7 @@ function ReportsPage() {
           const Icon = card.icon;
           return (
             <Link
-              key={card.to}
+              key={card.title}
               to={card.to}
               className="group block rounded-2xl border border-border bg-card hover:shadow-md transition-all hover:border-primary/30"
             >
