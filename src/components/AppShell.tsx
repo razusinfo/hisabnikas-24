@@ -104,7 +104,6 @@ const fixedNav = [
 const scrollNav = [
   { to: "/customers", icon: Users, key: "customers" as const, color: "cyan" },
   { to: "/cashbook", icon: BookOpen, key: "cashbook" as const, color: "emerald" },
-  { to: "/profit-loss", icon: TrendingUp, key: "profitLoss" as const, color: "teal" },
   { to: "/settings", icon: Settings, key: "settings" as const, color: "slate" },
   { to: "/reports", icon: BarChart3, key: "reports" as const, color: "indigo" },
   { to: "/backup-restore", icon: Database, key: "backupRestore" as const, color: "slate" },
