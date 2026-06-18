@@ -162,6 +162,8 @@ function InvoiceDesignPage() {
   const [template, setTemplate] = useState<number>(1);
   const [fontFamily, setFontFamily] = useState<InvoiceFontKey>("serif");
   const [fontWeight, setFontWeight] = useState<InvoiceFontWeight>(700);
+  const [lockedOpen, setLockedOpen] = useState(false);
+  const [lockedTitle, setLockedTitle] = useState("");
 
   useEffect(() => {
     const s = (profileQuery.data?.invoice_settings ?? {}) as DesignSettings;
