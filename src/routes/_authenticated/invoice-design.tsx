@@ -359,7 +359,32 @@ function InvoiceDesignPage() {
         </Card>
 
         {/* Right: Options */}
-        <div className="space-y-6">
+        <div className="space-y-6 relative">
+          {!isPackageActive && !subQuery.isLoading && (
+            <div className="absolute inset-0 z-20 bg-background/70 backdrop-blur-sm rounded-lg flex items-center justify-center p-6">
+              <Card className="max-w-sm w-full p-6 text-center space-y-3 shadow-lg border-primary/30">
+                <div className="mx-auto h-12 w-12 rounded-full bg-primary/15 flex items-center justify-center">
+                  <Lock className="h-6 w-6 text-primary" />
+                </div>
+                <div className="font-semibold text-lg">
+                  {tr("সক্রিয় প্যাকেজ প্রয়োজন", "Active Package Required")}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {tr(
+                    "ইনভয়েস ডিজাইন পরিবর্তন করতে একটি সক্রিয় প্যাকেজ থাকা আবশ্যক। অনুগ্রহ করে একটি প্যাকেজ ক্রয় করুন।",
+                    "An active package is required to change the invoice design. Please purchase a package.",
+                  )}
+                </div>
+                <Button asChild className="w-full">
+                  <Link to="/current-package">
+                    <Sparkles className="h-4 w-4 mr-1.5" />
+                    {tr("প্যাকেজ কিনুন", "Buy Package")}
+                  </Link>
+                </Button>
+              </Card>
+            </div>
+          )}
+
           <section>
             <h3 className="text-base font-semibold mb-3">{tr("রঙ", "Color")}</h3>
             <div className="grid grid-cols-6 gap-3">
