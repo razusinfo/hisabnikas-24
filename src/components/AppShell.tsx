@@ -14,6 +14,7 @@ import {
   Sparkles,
   Wallet,
   Settings,
+  BarChart3,
   HelpCircle,
   MessageSquare,
   Menu,
