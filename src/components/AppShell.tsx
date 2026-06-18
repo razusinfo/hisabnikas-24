@@ -449,7 +449,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   });
 
   const brandName = brandQuery.data?.name || t("appName");
-  const brandLogo = brandQuery.data?.logoUrl;
+  const brandLogo = brandQuery.data?.logoUrl || appLogo.url;
   const proprietorAvatar = brandQuery.data?.avatarUrl;
 
   return (
