@@ -450,8 +450,10 @@ function InvoiceDesignPage() {
                 <button
                   key={c}
                   type="button"
-                  disabled={!isPackageActive}
-                  onClick={() => { setTheme(c); persist({ invoiceTheme: c }); }}
+                  onClick={() => {
+                    if (!isPackageActive) { showUpgradeToast(); return; }
+                    setTheme(c); persist({ invoiceTheme: c });
+                  }}
                   style={{ backgroundColor: c }}
                   className={cn(
                     "relative h-12 rounded-lg flex items-center justify-center transition ring-offset-2",
