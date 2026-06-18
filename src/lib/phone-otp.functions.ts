@@ -64,7 +64,7 @@ export const requestPhoneOtp = createServerFn({ method: "POST" })
       .insert({ phone, code_hash, expires_at });
     if (insErr) throw new Error(insErr.message);
 
-    const body = `হিসাব নিকাশ-২৪: আপনার লগইন OTP কোড ${code}। ৫ মিনিটে মেয়াদ শেষ হবে।`;
+    const body = `হিসব নিকাশ-২৪: আপনার লগইন OTP কোড ${code}। ৫ মিনিটে মেয়াদ শেষ হবে।`;
     const url =
       `http://bulksmsbd.net/api/smsapi?api_key=${encodeURIComponent(apiKey)}` +
       `&type=text&number=${encodeURIComponent(phone)}` +

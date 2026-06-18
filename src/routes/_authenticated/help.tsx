@@ -91,7 +91,7 @@ function HelpPage() {
 
   const openWhatsApp = () => {
     const text = encodeURIComponent(
-      tr("Hello, I need help with হিসাব নিকাশ-২৪.", "হ্যালো, আমার হিসাব নিকাশ-২৪ এ সাহায্য দরকার।"),
+      tr("Hello, I need help with হিসব নিকাশ-২৪.", "হ্যালো, আমার হিসব নিকাশ-২৪ এ সাহায্য দরকার।"),
     );
     window.open(`https://wa.me/${SUPPORT.whatsapp}?text=${text}`, "_blank");
   };
