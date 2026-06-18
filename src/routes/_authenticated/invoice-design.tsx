@@ -1,11 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { ArrowLeft, Check, Loader2, Lock, Printer, Share2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -154,6 +162,8 @@ function InvoiceDesignPage() {
   const [template, setTemplate] = useState<number>(1);
   const [fontFamily, setFontFamily] = useState<InvoiceFontKey>("serif");
   const [fontWeight, setFontWeight] = useState<InvoiceFontWeight>(700);
+  const [lockedOpen, setLockedOpen] = useState(false);
+  const [lockedTitle, setLockedTitle] = useState("");
 
   useEffect(() => {
     const s = (profileQuery.data?.invoice_settings ?? {}) as DesignSettings;
@@ -188,10 +198,11 @@ function InvoiceDesignPage() {
   const showUpgradeToast = () =>
     toast.error(tr("এই ফিচারটি ব্যবহার করতে প্যাকেজ আপগ্রেড করুন", "Upgrade your package to use this feature"));
 
-  const persist = (patch: Partial<DesignSettings>) => {
+  const persist = (patch: Partial<DesignSettings>, skipCheck?: boolean) => {
     if (!profile) return;
-    if (!isPackageActive) {
-      showUpgradeToast();
+    if (!skipCheck && !isPackageActive) {
+      setLockedTitle(tr("প্যাকেজ প্রয়োজন", "Package Required"));
+      setLockedOpen(true);
       return;
     }
     const prev = (profile.invoice_settings ?? {}) as Record<string, unknown>;
@@ -430,8 +441,8 @@ function InvoiceDesignPage() {
               </div>
               <div className="text-sm text-muted-foreground">
                 {tr(
-                  "ইনভয়েস ডিজাইন পরিবর্তন করতে একটি সক্রিয় প্যাকেজ থাকা আবশ্যক।",
-                  "An active package is required to change the invoice design.",
+                  "প্রিমিয়াম ডিজাইন ফিচার ব্যবহার করতে প্যাকেজ ক্রয় করুন।",
+                  "Purchase a package to use premium design features.",
                 )}
               </div>
               <Button asChild size="sm">
@@ -451,8 +462,7 @@ function InvoiceDesignPage() {
                   key={c}
                   type="button"
                   onClick={() => {
-                    if (!isPackageActive) { showUpgradeToast(); return; }
-                    setTheme(c); persist({ invoiceTheme: c });
+                    setTheme(c); persist({ invoiceTheme: c }, true);
                   }}
                   style={{ backgroundColor: c }}
                   className={cn(
@@ -462,11 +472,6 @@ function InvoiceDesignPage() {
                   aria-label={c}
                 >
                   {theme === c && <Check className="h-5 w-5 text-white" />}
-                  {!isPackageActive && (
-                    <div className="absolute inset-0 flex items-center justify-center rounded-lg">
-                      <Lock className="h-4 w-4 text-white drop-shadow" />
-                    </div>
-                  )}
                 </button>
               ))}
             </div>
@@ -482,20 +487,31 @@ function InvoiceDesignPage() {
                     key={f.value}
                     type="button"
                     onClick={() => {
-                      if (!isPackageActive) { showUpgradeToast(); return; }
+                      if (!isPackageActive) {
+                        setLockedTitle(tr("ফন্ট সাইজ", "Font Size"));
+                        setLockedOpen(true);
+                        return;
+                      }
                       setFontSize(f.value); persist({ invoiceFontSize: f.value });
                     }}
-                    style={active ? { backgroundColor: theme, color: "#fff" } : undefined}
+                    style={active && isPackageActive ? { backgroundColor: theme, color: "#fff" } : undefined}
                     className={cn(
-                      "relative h-11 rounded-lg border text-sm font-medium transition",
-                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
+                      "relative h-11 rounded-lg border text-sm font-medium transition overflow-hidden",
+                      active && isPackageActive ? "border-transparent" : "bg-background hover:bg-muted border-border"
                     )}
                   >
-                    <span>{f.label[lang === "bn" ? "bn" : "en"]}</span>
+                    <span className={cn(!isPackageActive && "opacity-40")}>{f.label[lang === "bn" ? "bn" : "en"]}</span>
                     {!isPackageActive && (
-                      <div className="absolute inset-0 flex items-center justify-center rounded-lg">
-                        <Lock className="h-4 w-4 text-foreground drop-shadow" />
-                      </div>
+                      <>
+                        <div className="absolute top-0 right-0 z-10 pointer-events-none">
+                          <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[8px] font-bold py-0.5 w-16 text-center shadow-sm rotate-45 translate-x-5 -translate-y-0.5">
+                            প্যাকেজ
+                          </div>
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center z-[1]">
+                          <Lock className="h-4 w-4 text-foreground/70" />
+                        </div>
+                      </>
                     )}
                   </button>
                 );
@@ -513,20 +529,31 @@ function InvoiceDesignPage() {
                     key={f.value}
                     type="button"
                     onClick={() => {
-                      if (!isPackageActive) { showUpgradeToast(); return; }
+                      if (!isPackageActive) {
+                        setLockedTitle(tr("ফন্ট স্টাইল", "Font Style"));
+                        setLockedOpen(true);
+                        return;
+                      }
                       setFontFamily(f.value); persist({ invoiceFontFamily: f.value });
                     }}
-                    style={active ? { backgroundColor: theme, color: "#fff", fontFamily: f.css } : { fontFamily: f.css }}
+                    style={active && isPackageActive ? { backgroundColor: theme, color: "#fff", fontFamily: f.css } : { fontFamily: f.css }}
                     className={cn(
-                      "relative h-14 rounded-lg border text-sm font-semibold transition flex items-center justify-center px-2 text-center",
-                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
+                      "relative h-14 rounded-lg border text-sm font-semibold transition flex items-center justify-center px-2 text-center overflow-hidden",
+                      active && isPackageActive ? "border-transparent" : "bg-background hover:bg-muted border-border"
                     )}
                   >
-                    <span>{f.label[lang === "bn" ? "bn" : "en"]}</span>
+                    <span className={cn(!isPackageActive && "opacity-40")}>{f.label[lang === "bn" ? "bn" : "en"]}</span>
                     {!isPackageActive && (
-                      <div className="absolute inset-0 flex items-center justify-center rounded-lg">
-                        <Lock className="h-4 w-4 text-foreground drop-shadow" />
-                      </div>
+                      <>
+                        <div className="absolute top-0 right-0 z-10 pointer-events-none">
+                          <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[8px] font-bold py-0.5 w-16 text-center shadow-sm rotate-45 translate-x-5 -translate-y-0.5">
+                            প্যাকেজ
+                          </div>
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center z-[1]">
+                          <Lock className="h-4 w-4 text-foreground/70" />
+                        </div>
+                      </>
                     )}
                   </button>
                 );
@@ -544,22 +571,33 @@ function InvoiceDesignPage() {
                     key={w.value}
                     type="button"
                     onClick={() => {
-                      if (!isPackageActive) { showUpgradeToast(); return; }
+                      if (!isPackageActive) {
+                        setLockedTitle(tr("ফন্ট ওয়েট", "Font Weight"));
+                        setLockedOpen(true);
+                        return;
+                      }
                       setFontWeight(w.value); persist({ invoiceFontWeight: w.value });
                     }}
-                    style={active
+                    style={active && isPackageActive
                       ? { backgroundColor: theme, color: "#fff", fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }
                       : { fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }}
                     className={cn(
-                      "relative h-12 rounded-lg border text-sm transition flex items-center justify-center px-1 text-center",
-                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
+                      "relative h-12 rounded-lg border text-sm transition flex items-center justify-center px-1 text-center overflow-hidden",
+                      active && isPackageActive ? "border-transparent" : "bg-background hover:bg-muted border-border"
                     )}
                   >
-                    <span>{w.label[lang === "bn" ? "bn" : "en"]}</span>
+                    <span className={cn(!isPackageActive && "opacity-40")}>{w.label[lang === "bn" ? "bn" : "en"]}</span>
                     {!isPackageActive && (
-                      <div className="absolute inset-0 flex items-center justify-center rounded-lg">
-                        <Lock className="h-4 w-4 text-foreground drop-shadow" />
-                      </div>
+                      <>
+                        <div className="absolute top-0 right-0 z-10 pointer-events-none">
+                          <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[8px] font-bold py-0.5 w-16 text-center shadow-sm rotate-45 translate-x-5 -translate-y-0.5">
+                            প্যাকেজ
+                          </div>
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center z-[1]">
+                          <Lock className="h-4 w-4 text-foreground/70" />
+                        </div>
+                      </>
                     )}
                   </button>
                 );
@@ -577,28 +615,39 @@ function InvoiceDesignPage() {
                     key={n}
                     type="button"
                     onClick={() => {
-                      if (!isPackageActive) { showUpgradeToast(); return; }
+                      if (!isPackageActive) {
+                        setLockedTitle(tr("টেমপ্লেট", "Template"));
+                        setLockedOpen(true);
+                        return;
+                      }
                       setTemplate(n); persist({ invoiceTemplate: n });
                     }}
                     className={cn(
-                      "relative rounded-lg border-2 p-2 transition text-center space-y-2 bg-background",
-                      active ? "shadow-md" : "border-border hover:border-foreground/30"
+                      "relative rounded-lg border-2 p-2 transition text-center space-y-2 bg-background overflow-hidden",
+                      active && isPackageActive ? "shadow-md" : "border-border hover:border-foreground/30"
                     )}
-                    style={active ? { borderColor: theme } : undefined}
+                    style={active && isPackageActive ? { borderColor: theme } : undefined}
                   >
-                    <div className="aspect-[3/4] rounded overflow-hidden border bg-white">
+                    <div className={cn("aspect-[3/4] rounded overflow-hidden border bg-white", !isPackageActive && "opacity-40")}>
                       <TemplateThumbnail n={n} theme={theme} />
                     </div>
                     <div
-                      className="text-sm font-medium"
-                      style={active ? { color: theme } : undefined}
+                      className={cn("text-sm font-medium", !isPackageActive && "opacity-40")}
+                      style={active && isPackageActive ? { color: theme } : undefined}
                     >
                       {tr("টেমপ্লেট", "Template")} {lang === "bn" ? toBn(n) : n}
                     </div>
                     {!isPackageActive && (
-                      <div className="absolute inset-0 flex items-center justify-center rounded-lg">
-                        <Lock className="h-5 w-5 text-foreground drop-shadow" />
-                      </div>
+                      <>
+                        <div className="absolute top-0 right-0 z-10 pointer-events-none">
+                          <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] font-bold py-1 w-24 text-center shadow-md rotate-45 translate-x-8 translate-y-1">
+                            প্যাকেজ
+                          </div>
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center z-[1]">
+                          <Lock className="h-5 w-5 text-foreground/70" />
+                        </div>
+                      </>
                     )}
                   </button>
                 );
@@ -619,6 +668,34 @@ function InvoiceDesignPage() {
           </div>
         </div>
       </div>
+
+      <Dialog open={lockedOpen} onOpenChange={setLockedOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="mx-auto mb-2 h-14 w-14 rounded-full bg-amber-50 flex items-center justify-center">
+              <Lock className="h-7 w-7 text-amber-600" />
+            </div>
+            <DialogTitle className="text-center">
+              {lang === "bn" ? "এই ফিচারটি প্যাকেজের অন্তর্ভুক্ত" : "This feature is part of a package"}
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              {lang === "bn"
+                ? `"${lockedTitle}" ব্যবহার করতে অনুগ্রহ করে প্যাকেজ ক্রয় করুন। প্যাকেজ ক্রয়ের পর আপনি এই ফিচারসহ অন্যান্য প্রিমিয়াম ডিজাইন অপশন ব্যবহার করতে পারবেন।`
+                : `To use "${lockedTitle}", please purchase a package. After purchase, you will get access to this feature and other premium design options.`}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center gap-2">
+            <Button variant="outline" onClick={() => setLockedOpen(false)}>
+              {lang === "bn" ? "বন্ধ করুন" : "Close"}
+            </Button>
+            <Button asChild>
+              <Link to="/current-package" onClick={() => setLockedOpen(false)}>
+                {lang === "bn" ? "প্যাকেজ ক্রয় করুন" : "Buy Package"}
+              </Link>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
