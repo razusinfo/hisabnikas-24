@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import { ArrowLeft, Check, Loader2, Printer, Share2, Sparkles } from "lucide-react";
+import { ArrowLeft, Check, Loader2, Lock, Printer, Share2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useInvoicePreview } from "@/components/InvoicePreviewProvider";
 
