@@ -68,6 +68,29 @@ function InvoiceDesignPage() {
     },
   });
 
+  const subQuery = useQuery({
+    queryKey: ["subscription"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return null;
+      const { data } = await supabase
+        .from("subscriptions")
+        .select("plan, expires_at")
+        .eq("user_id", u.user.id)
+        .maybeSingle();
+      return data;
+    },
+  });
+
+  const isPackageActive = (() => {
+    const s = subQuery.data;
+    if (!s) return false;
+    if (s.plan === "trial") return false;
+    if (!s.expires_at) return false;
+    return new Date(s.expires_at).getTime() > Date.now();
+  })();
+
+
   const [theme, setTheme] = useState<string>(THEMES[0]);
   const [fontSize, setFontSize] = useState<"sm" | "md" | "lg" | "xl">("md");
   const [template, setTemplate] = useState<number>(1);
