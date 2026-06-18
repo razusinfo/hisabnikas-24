@@ -441,8 +441,8 @@ function InvoiceDesignPage() {
               </div>
               <div className="text-sm text-muted-foreground">
                 {tr(
-                  "ইনভয়েস ডিজাইন পরিবর্তন করতে একটি সক্রিয় প্যাকেজ থাকা আবশ্যক।",
-                  "An active package is required to change the invoice design.",
+                  "প্রিমিয়াম ডিজাইন ফিচার ব্যবহার করতে প্যাকেজ ক্রয় করুন।",
+                  "Purchase a package to use premium design features.",
                 )}
               </div>
               <Button asChild size="sm">
