@@ -479,16 +479,23 @@ function InvoiceDesignPage() {
                   <button
                     key={w.value}
                     type="button"
+                    disabled={!isPackageActive}
                     onClick={() => { setFontWeight(w.value); persist({ invoiceFontWeight: w.value }); }}
                     style={active
                       ? { backgroundColor: theme, color: "#fff", fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }
                       : { fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }}
                     className={cn(
-                      "h-12 rounded-lg border text-sm transition flex items-center justify-center px-1 text-center",
-                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
+                      "relative h-12 rounded-lg border text-sm transition flex items-center justify-center px-1 text-center",
+                      active ? "border-transparent" : "bg-background hover:bg-muted border-border",
+                      !isPackageActive && "opacity-60 cursor-not-allowed"
                     )}
                   >
-                    {w.label[lang === "bn" ? "bn" : "en"]}
+                    <span className={cn(!isPackageActive && "opacity-40")}>{w.label[lang === "bn" ? "bn" : "en"]}</span>
+                    {!isPackageActive && (
+                      <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/10">
+                        <Lock className="h-4 w-4 text-foreground drop-shadow" />
+                      </div>
+                    )}
                   </button>
                 );
               })}
