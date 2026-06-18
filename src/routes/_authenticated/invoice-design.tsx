@@ -128,6 +128,10 @@ function InvoiceDesignPage() {
 
   const persist = (patch: Partial<DesignSettings>) => {
     if (!profile) return;
+    if (!isPackageActive) {
+      toast.error(tr("ডিজাইন পরিবর্তন করতে সক্রিয় প্যাকেজ প্রয়োজন", "An active package is required to change the design"));
+      return;
+    }
     const prev = (profile.invoice_settings ?? {}) as Record<string, unknown>;
     const next = {
       ...prev,
