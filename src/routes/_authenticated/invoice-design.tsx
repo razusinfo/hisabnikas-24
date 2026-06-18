@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import { ArrowLeft, Check, Loader2, Printer, Share2, Sparkles } from "lucide-react";
+import { ArrowLeft, Check, Loader2, Lock, Printer, Share2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useInvoicePreview } from "@/components/InvoicePreviewProvider";
 
@@ -68,6 +68,29 @@ function InvoiceDesignPage() {
     },
   });
 
+  const subQuery = useQuery({
+    queryKey: ["subscription"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return null;
+      const { data } = await supabase
+        .from("subscriptions")
+        .select("plan, expires_at")
+        .eq("user_id", u.user.id)
+        .maybeSingle();
+      return data;
+    },
+  });
+
+  const isPackageActive = (() => {
+    const s = subQuery.data;
+    if (!s) return false;
+    if (s.plan === "trial") return false;
+    if (!s.expires_at) return false;
+    return new Date(s.expires_at).getTime() > Date.now();
+  })();
+
+
   const [theme, setTheme] = useState<string>(THEMES[0]);
   const [fontSize, setFontSize] = useState<"sm" | "md" | "lg" | "xl">("md");
   const [template, setTemplate] = useState<number>(1);
@@ -86,6 +109,7 @@ function InvoiceDesignPage() {
   const save = useMutation({
     mutationFn: async () => {
       if (!profileQuery.data) throw new Error("No profile");
+      if (!isPackageActive) throw new Error(tr("ডিজাইন পরিবর্তন করতে সক্রিয় প্যাকেজ প্রয়োজন", "An active package is required to change the design"));
       const prev = (profileQuery.data.invoice_settings ?? {}) as Record<string, unknown>;
       const next = { ...prev, invoiceTheme: theme, invoiceFontSize: fontSize, invoiceTemplate: template, invoiceFontFamily: fontFamily, invoiceFontWeight: fontWeight };
       const { error } = await supabase
@@ -105,6 +129,10 @@ function InvoiceDesignPage() {
 
   const persist = (patch: Partial<DesignSettings>) => {
     if (!profile) return;
+    if (!isPackageActive) {
+      toast.error(tr("ডিজাইন পরিবর্তন করতে সক্রিয় প্যাকেজ প্রয়োজন", "An active package is required to change the design"));
+      return;
+    }
     const prev = (profile.invoice_settings ?? {}) as Record<string, unknown>;
     const next = {
       ...prev,
@@ -332,7 +360,32 @@ function InvoiceDesignPage() {
         </Card>
 
         {/* Right: Options */}
-        <div className="space-y-6">
+        <div className="space-y-6 relative">
+          {!isPackageActive && !subQuery.isLoading && (
+            <div className="absolute inset-0 z-20 bg-background/70 backdrop-blur-sm rounded-lg flex items-center justify-center p-6">
+              <Card className="max-w-sm w-full p-6 text-center space-y-3 shadow-lg border-primary/30">
+                <div className="mx-auto h-12 w-12 rounded-full bg-primary/15 flex items-center justify-center">
+                  <Lock className="h-6 w-6 text-primary" />
+                </div>
+                <div className="font-semibold text-lg">
+                  {tr("সক্রিয় প্যাকেজ প্রয়োজন", "Active Package Required")}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {tr(
+                    "ইনভয়েস ডিজাইন পরিবর্তন করতে একটি সক্রিয় প্যাকেজ থাকা আবশ্যক। অনুগ্রহ করে একটি প্যাকেজ ক্রয় করুন।",
+                    "An active package is required to change the invoice design. Please purchase a package.",
+                  )}
+                </div>
+                <Button asChild className="w-full">
+                  <Link to="/current-package">
+                    <Sparkles className="h-4 w-4 mr-1.5" />
+                    {tr("প্যাকেজ কিনুন", "Buy Package")}
+                  </Link>
+                </Button>
+              </Card>
+            </div>
+          )}
+
           <section>
             <h3 className="text-base font-semibold mb-3">{tr("রঙ", "Color")}</h3>
             <div className="grid grid-cols-6 gap-3">
