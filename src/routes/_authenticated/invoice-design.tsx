@@ -668,6 +668,34 @@ function InvoiceDesignPage() {
           </div>
         </div>
       </div>
+
+      <Dialog open={lockedOpen} onOpenChange={setLockedOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="mx-auto mb-2 h-14 w-14 rounded-full bg-amber-50 flex items-center justify-center">
+              <Lock className="h-7 w-7 text-amber-600" />
+            </div>
+            <DialogTitle className="text-center">
+              {lang === "bn" ? "এই ফিচারটি প্যাকেজের অন্তর্ভুক্ত" : "This feature is part of a package"}
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              {lang === "bn"
+                ? `"${lockedTitle}" ব্যবহার করতে অনুগ্রহ করে প্যাকেজ ক্রয় করুন। প্যাকেজ ক্রয়ের পর আপনি এই ফিচারসহ অন্যান্য প্রিমিয়াম ডিজাইন অপশন ব্যবহার করতে পারবেন।`
+                : `To use "${lockedTitle}", please purchase a package. After purchase, you will get access to this feature and other premium design options.`}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center gap-2">
+            <Button variant="outline" onClick={() => setLockedOpen(false)}>
+              {lang === "bn" ? "বন্ধ করুন" : "Close"}
+            </Button>
+            <Button asChild>
+              <Link to="/current-package" onClick={() => setLockedOpen(false)}>
+                {lang === "bn" ? "প্যাকেজ ক্রয় করুন" : "Buy Package"}
+              </Link>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
