@@ -32,6 +32,8 @@ import { Route as AuthenticatedBuyMessagesRouteImport } from './routes/_authenti
 import { Route as AuthenticatedBusinessProfileRouteImport } from './routes/_authenticated/business-profile'
 import { Route as AuthenticatedBackupRestoreRouteImport } from './routes/_authenticated/backup-restore'
 import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authenticated/admin-payments'
+import { Route as AuthenticatedReportsIndexRouteImport } from './routes/_authenticated/reports.index'
+import { Route as AuthenticatedReportsSlugRouteImport } from './routes/_authenticated/reports.$slug'
 import { Route as ApiPublicHooksDailyBackupRouteImport } from './routes/api/public/hooks/daily-backup'
 import { Route as ApiPublicGoogleCallbackRouteImport } from './routes/api/public/google/callback'
 
@@ -156,6 +158,18 @@ const AuthenticatedAdminPaymentsRoute =
     path: '/admin-payments',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedReportsIndexRoute =
+  AuthenticatedReportsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedReportsRoute,
+  } as any)
+const AuthenticatedReportsSlugRoute =
+  AuthenticatedReportsSlugRouteImport.update({
+    id: '/$slug',
+    path: '/$slug',
+    getParentRoute: () => AuthenticatedReportsRoute,
+  } as any)
 const ApiPublicHooksDailyBackupRoute =
   ApiPublicHooksDailyBackupRouteImport.update({
     id: '/api/public/hooks/daily-backup',
@@ -188,9 +202,11 @@ export interface FileRoutesByFullPath {
   '/profit-loss': typeof AuthenticatedProfitLossRoute
   '/proprietor-profile': typeof AuthenticatedProprietorProfileRoute
   '/purchases': typeof AuthenticatedPurchasesRoute
-  '/reports': typeof AuthenticatedReportsRoute
+  '/reports': typeof AuthenticatedReportsRouteWithChildren
   '/sales': typeof AuthenticatedSalesRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/reports/$slug': typeof AuthenticatedReportsSlugRoute
+  '/reports/': typeof AuthenticatedReportsIndexRoute
   '/api/public/google/callback': typeof ApiPublicGoogleCallbackRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
 }
@@ -214,9 +230,10 @@ export interface FileRoutesByTo {
   '/profit-loss': typeof AuthenticatedProfitLossRoute
   '/proprietor-profile': typeof AuthenticatedProprietorProfileRoute
   '/purchases': typeof AuthenticatedPurchasesRoute
-  '/reports': typeof AuthenticatedReportsRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/reports/$slug': typeof AuthenticatedReportsSlugRoute
+  '/reports': typeof AuthenticatedReportsIndexRoute
   '/api/public/google/callback': typeof ApiPublicGoogleCallbackRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
 }
@@ -242,9 +259,11 @@ export interface FileRoutesById {
   '/_authenticated/profit-loss': typeof AuthenticatedProfitLossRoute
   '/_authenticated/proprietor-profile': typeof AuthenticatedProprietorProfileRoute
   '/_authenticated/purchases': typeof AuthenticatedPurchasesRoute
-  '/_authenticated/reports': typeof AuthenticatedReportsRoute
+  '/_authenticated/reports': typeof AuthenticatedReportsRouteWithChildren
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/reports/$slug': typeof AuthenticatedReportsSlugRoute
+  '/_authenticated/reports/': typeof AuthenticatedReportsIndexRoute
   '/api/public/google/callback': typeof ApiPublicGoogleCallbackRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
 }
@@ -273,6 +292,8 @@ export interface FileRouteTypes {
     | '/reports'
     | '/sales'
     | '/settings'
+    | '/reports/$slug'
+    | '/reports/'
     | '/api/public/google/callback'
     | '/api/public/hooks/daily-backup'
   fileRoutesByTo: FileRoutesByTo
@@ -296,9 +317,10 @@ export interface FileRouteTypes {
     | '/profit-loss'
     | '/proprietor-profile'
     | '/purchases'
-    | '/reports'
     | '/sales'
     | '/settings'
+    | '/reports/$slug'
+    | '/reports'
     | '/api/public/google/callback'
     | '/api/public/hooks/daily-backup'
   id:
@@ -326,6 +348,8 @@ export interface FileRouteTypes {
     | '/_authenticated/reports'
     | '/_authenticated/sales'
     | '/_authenticated/settings'
+    | '/_authenticated/reports/$slug'
+    | '/_authenticated/reports/'
     | '/api/public/google/callback'
     | '/api/public/hooks/daily-backup'
   fileRoutesById: FileRoutesById
@@ -503,6 +527,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminPaymentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/reports/': {
+      id: '/_authenticated/reports/'
+      path: '/'
+      fullPath: '/reports/'
+      preLoaderRoute: typeof AuthenticatedReportsIndexRouteImport
+      parentRoute: typeof AuthenticatedReportsRoute
+    }
+    '/_authenticated/reports/$slug': {
+      id: '/_authenticated/reports/$slug'
+      path: '/$slug'
+      fullPath: '/reports/$slug'
+      preLoaderRoute: typeof AuthenticatedReportsSlugRouteImport
+      parentRoute: typeof AuthenticatedReportsRoute
+    }
     '/api/public/hooks/daily-backup': {
       id: '/api/public/hooks/daily-backup'
       path: '/api/public/hooks/daily-backup'
@@ -520,6 +558,19 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedReportsRouteChildren {
+  AuthenticatedReportsSlugRoute: typeof AuthenticatedReportsSlugRoute
+  AuthenticatedReportsIndexRoute: typeof AuthenticatedReportsIndexRoute
+}
+
+const AuthenticatedReportsRouteChildren: AuthenticatedReportsRouteChildren = {
+  AuthenticatedReportsSlugRoute: AuthenticatedReportsSlugRoute,
+  AuthenticatedReportsIndexRoute: AuthenticatedReportsIndexRoute,
+}
+
+const AuthenticatedReportsRouteWithChildren =
+  AuthenticatedReportsRoute._addFileChildren(AuthenticatedReportsRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminPaymentsRoute: typeof AuthenticatedAdminPaymentsRoute
   AuthenticatedBackupRestoreRoute: typeof AuthenticatedBackupRestoreRoute
@@ -536,7 +587,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfitLossRoute: typeof AuthenticatedProfitLossRoute
   AuthenticatedProprietorProfileRoute: typeof AuthenticatedProprietorProfileRoute
   AuthenticatedPurchasesRoute: typeof AuthenticatedPurchasesRoute
-  AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
+  AuthenticatedReportsRoute: typeof AuthenticatedReportsRouteWithChildren
   AuthenticatedSalesRoute: typeof AuthenticatedSalesRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
 }
@@ -557,7 +608,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfitLossRoute: AuthenticatedProfitLossRoute,
   AuthenticatedProprietorProfileRoute: AuthenticatedProprietorProfileRoute,
   AuthenticatedPurchasesRoute: AuthenticatedPurchasesRoute,
-  AuthenticatedReportsRoute: AuthenticatedReportsRoute,
+  AuthenticatedReportsRoute: AuthenticatedReportsRouteWithChildren,
   AuthenticatedSalesRoute: AuthenticatedSalesRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
 }
