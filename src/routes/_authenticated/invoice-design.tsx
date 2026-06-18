@@ -362,28 +362,24 @@ function InvoiceDesignPage() {
         {/* Right: Options */}
         <div className="space-y-6 relative">
           {!isPackageActive && !subQuery.isLoading && (
-            <div className="absolute inset-0 z-20 bg-background/70 backdrop-blur-sm rounded-lg flex items-center justify-center p-6">
-              <Card className="max-w-sm w-full p-6 text-center space-y-3 shadow-lg border-primary/30">
-                <div className="mx-auto h-12 w-12 rounded-full bg-primary/15 flex items-center justify-center">
-                  <Lock className="h-6 w-6 text-primary" />
-                </div>
-                <div className="font-semibold text-lg">
-                  {tr("সক্রিয় প্যাকেজ প্রয়োজন", "Active Package Required")}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {tr(
-                    "ইনভয়েস ডিজাইন পরিবর্তন করতে একটি সক্রিয় প্যাকেজ থাকা আবশ্যক। অনুগ্রহ করে একটি প্যাকেজ ক্রয় করুন।",
-                    "An active package is required to change the invoice design. Please purchase a package.",
-                  )}
-                </div>
-                <Button asChild className="w-full">
-                  <Link to="/current-package">
-                    <Sparkles className="h-4 w-4 mr-1.5" />
-                    {tr("প্যাকেজ কিনুন", "Buy Package")}
-                  </Link>
-                </Button>
-              </Card>
-            </div>
+            <Card className="p-4 text-center space-y-2 shadow-sm border-primary/30 mb-4">
+              <div className="flex items-center justify-center gap-2 text-primary font-semibold">
+                <Lock className="h-4 w-4" />
+                {tr("সক্রিয় প্যাকেজ প্রয়োজন", "Active Package Required")}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                {tr(
+                  "ইনভয়েস ডিজাইন পরিবর্তন করতে একটি সক্রিয় প্যাকেজ থাকা আবশ্যক।",
+                  "An active package is required to change the invoice design.",
+                )}
+              </div>
+              <Button asChild size="sm">
+                <Link to="/current-package">
+                  <Sparkles className="h-4 w-4 mr-1.5" />
+                  {tr("প্যাকেজ কিনুন", "Buy Package")}
+                </Link>
+              </Button>
+            </Card>
           )}
 
           <section>
@@ -393,15 +389,22 @@ function InvoiceDesignPage() {
                 <button
                   key={c}
                   type="button"
+                  disabled={!isPackageActive}
                   onClick={() => { setTheme(c); persist({ invoiceTheme: c }); }}
                   style={{ backgroundColor: c }}
                   className={cn(
-                    "h-12 rounded-lg flex items-center justify-center transition ring-offset-2",
-                    theme === c ? "ring-2 ring-offset-background ring-foreground/40 scale-105" : "hover:scale-105"
+                    "relative h-12 rounded-lg flex items-center justify-center transition ring-offset-2",
+                    theme === c ? "ring-2 ring-offset-background ring-foreground/40 scale-105" : "hover:scale-105",
+                    !isPackageActive && "opacity-60 cursor-not-allowed"
                   )}
                   aria-label={c}
                 >
                   {theme === c && <Check className="h-5 w-5 text-white" />}
+                  {!isPackageActive && (
+                    <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/20">
+                      <Lock className="h-4 w-4 text-white drop-shadow" />
+                    </div>
+                  )}
                 </button>
               ))}
             </div>
@@ -416,14 +419,21 @@ function InvoiceDesignPage() {
                   <button
                     key={f.value}
                     type="button"
+                    disabled={!isPackageActive}
                     onClick={() => { setFontSize(f.value); persist({ invoiceFontSize: f.value }); }}
                     style={active ? { backgroundColor: theme, color: "#fff" } : undefined}
                     className={cn(
-                      "h-11 rounded-lg border text-sm font-medium transition",
-                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
+                      "relative h-11 rounded-lg border text-sm font-medium transition",
+                      active ? "border-transparent" : "bg-background hover:bg-muted border-border",
+                      !isPackageActive && "opacity-60 cursor-not-allowed"
                     )}
                   >
-                    {f.label[lang === "bn" ? "bn" : "en"]}
+                    <span className={cn(!isPackageActive && "opacity-40")}>{f.label[lang === "bn" ? "bn" : "en"]}</span>
+                    {!isPackageActive && (
+                      <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/10">
+                        <Lock className="h-4 w-4 text-foreground drop-shadow" />
+                      </div>
+                    )}
                   </button>
                 );
               })}
@@ -439,14 +449,21 @@ function InvoiceDesignPage() {
                   <button
                     key={f.value}
                     type="button"
+                    disabled={!isPackageActive}
                     onClick={() => { setFontFamily(f.value); persist({ invoiceFontFamily: f.value }); }}
                     style={active ? { backgroundColor: theme, color: "#fff", fontFamily: f.css } : { fontFamily: f.css }}
                     className={cn(
-                      "h-14 rounded-lg border text-sm font-semibold transition flex items-center justify-center px-2 text-center",
-                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
+                      "relative h-14 rounded-lg border text-sm font-semibold transition flex items-center justify-center px-2 text-center",
+                      active ? "border-transparent" : "bg-background hover:bg-muted border-border",
+                      !isPackageActive && "opacity-60 cursor-not-allowed"
                     )}
                   >
-                    {f.label[lang === "bn" ? "bn" : "en"]}
+                    <span className={cn(!isPackageActive && "opacity-40")}>{f.label[lang === "bn" ? "bn" : "en"]}</span>
+                    {!isPackageActive && (
+                      <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/10">
+                        <Lock className="h-4 w-4 text-foreground drop-shadow" />
+                      </div>
+                    )}
                   </button>
                 );
               })}
@@ -462,16 +479,23 @@ function InvoiceDesignPage() {
                   <button
                     key={w.value}
                     type="button"
+                    disabled={!isPackageActive}
                     onClick={() => { setFontWeight(w.value); persist({ invoiceFontWeight: w.value }); }}
                     style={active
                       ? { backgroundColor: theme, color: "#fff", fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }
                       : { fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }}
                     className={cn(
-                      "h-12 rounded-lg border text-sm transition flex items-center justify-center px-1 text-center",
-                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
+                      "relative h-12 rounded-lg border text-sm transition flex items-center justify-center px-1 text-center",
+                      active ? "border-transparent" : "bg-background hover:bg-muted border-border",
+                      !isPackageActive && "opacity-60 cursor-not-allowed"
                     )}
                   >
-                    {w.label[lang === "bn" ? "bn" : "en"]}
+                    <span className={cn(!isPackageActive && "opacity-40")}>{w.label[lang === "bn" ? "bn" : "en"]}</span>
+                    {!isPackageActive && (
+                      <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/10">
+                        <Lock className="h-4 w-4 text-foreground drop-shadow" />
+                      </div>
+                    )}
                   </button>
                 );
               })}
@@ -487,22 +511,29 @@ function InvoiceDesignPage() {
                   <button
                     key={n}
                     type="button"
+                    disabled={!isPackageActive}
                     onClick={() => { setTemplate(n); persist({ invoiceTemplate: n }); }}
                     className={cn(
-                      "rounded-lg border-2 p-2 transition text-center space-y-2 bg-background",
-                      active ? "shadow-md" : "border-border hover:border-foreground/30"
+                      "relative rounded-lg border-2 p-2 transition text-center space-y-2 bg-background",
+                      active ? "shadow-md" : "border-border hover:border-foreground/30",
+                      !isPackageActive && "opacity-60 cursor-not-allowed"
                     )}
                     style={active ? { borderColor: theme } : undefined}
                   >
-                    <div className="aspect-[3/4] rounded overflow-hidden border bg-white">
+                    <div className={cn("aspect-[3/4] rounded overflow-hidden border bg-white", !isPackageActive && "opacity-40")}>
                       <TemplateThumbnail n={n} theme={theme} />
                     </div>
                     <div
-                      className="text-sm font-medium"
+                      className={cn("text-sm font-medium", !isPackageActive && "opacity-40")}
                       style={active ? { color: theme } : undefined}
                     >
                       {tr("টেমপ্লেট", "Template")} {lang === "bn" ? toBn(n) : n}
                     </div>
+                    {!isPackageActive && (
+                      <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/10">
+                        <Lock className="h-5 w-5 text-foreground drop-shadow" />
+                      </div>
+                    )}
                   </button>
                 );
               })}
