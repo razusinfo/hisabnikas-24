@@ -177,7 +177,7 @@ function ReportsPage() {
           const Icon = card.icon;
           return (
             <Link
-              key={card.to}
+              key={card.title}
               to={card.to}
               className="group block rounded-2xl border border-border bg-card hover:shadow-md transition-all hover:border-primary/30"
             >
