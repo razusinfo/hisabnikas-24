@@ -482,8 +482,10 @@ function InvoiceDesignPage() {
                   <button
                     key={f.value}
                     type="button"
-                    disabled={!isPackageActive}
-                    onClick={() => { setFontSize(f.value); persist({ invoiceFontSize: f.value }); }}
+                    onClick={() => {
+                      if (!isPackageActive) { showUpgradeToast(); return; }
+                      setFontSize(f.value); persist({ invoiceFontSize: f.value });
+                    }}
                     style={active ? { backgroundColor: theme, color: "#fff" } : undefined}
                     className={cn(
                       "relative h-11 rounded-lg border text-sm font-medium transition",
