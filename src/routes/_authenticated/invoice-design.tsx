@@ -462,8 +462,7 @@ function InvoiceDesignPage() {
                   key={c}
                   type="button"
                   onClick={() => {
-                    if (!isPackageActive) { showUpgradeToast(); return; }
-                    setTheme(c); persist({ invoiceTheme: c });
+                    setTheme(c); persist({ invoiceTheme: c }, true);
                   }}
                   style={{ backgroundColor: c }}
                   className={cn(
@@ -473,11 +472,6 @@ function InvoiceDesignPage() {
                   aria-label={c}
                 >
                   {theme === c && <Check className="h-5 w-5 text-white" />}
-                  {!isPackageActive && (
-                    <div className="absolute inset-0 flex items-center justify-center rounded-lg">
-                      <Lock className="h-4 w-4 text-white drop-shadow" />
-                    </div>
-                  )}
                 </button>
               ))}
             </div>
