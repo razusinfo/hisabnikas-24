@@ -389,15 +389,22 @@ function InvoiceDesignPage() {
                 <button
                   key={c}
                   type="button"
+                  disabled={!isPackageActive}
                   onClick={() => { setTheme(c); persist({ invoiceTheme: c }); }}
                   style={{ backgroundColor: c }}
                   className={cn(
-                    "h-12 rounded-lg flex items-center justify-center transition ring-offset-2",
-                    theme === c ? "ring-2 ring-offset-background ring-foreground/40 scale-105" : "hover:scale-105"
+                    "relative h-12 rounded-lg flex items-center justify-center transition ring-offset-2",
+                    theme === c ? "ring-2 ring-offset-background ring-foreground/40 scale-105" : "hover:scale-105",
+                    !isPackageActive && "opacity-60 cursor-not-allowed"
                   )}
                   aria-label={c}
                 >
                   {theme === c && <Check className="h-5 w-5 text-white" />}
+                  {!isPackageActive && (
+                    <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/20">
+                      <Lock className="h-4 w-4 text-white drop-shadow" />
+                    </div>
+                  )}
                 </button>
               ))}
             </div>
