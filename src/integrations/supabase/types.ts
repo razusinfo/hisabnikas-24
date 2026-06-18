@@ -440,7 +440,6 @@ export type Database = {
           full_name: string | null
           id: string
           invoice_settings: Json
-          is_super_admin: boolean
           language: string
           logo_url: string | null
           message_credits: number
@@ -456,7 +455,6 @@ export type Database = {
           full_name?: string | null
           id: string
           invoice_settings?: Json
-          is_super_admin?: boolean
           language?: string
           logo_url?: string | null
           message_credits?: number
@@ -472,7 +470,6 @@ export type Database = {
           full_name?: string | null
           id?: string
           invoice_settings?: Json
-          is_super_admin?: boolean
           language?: string
           logo_url?: string | null
           message_credits?: number
