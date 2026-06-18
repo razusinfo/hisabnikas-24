@@ -362,28 +362,24 @@ function InvoiceDesignPage() {
         {/* Right: Options */}
         <div className="space-y-6 relative">
           {!isPackageActive && !subQuery.isLoading && (
-            <div className="absolute inset-0 z-20 bg-background/70 backdrop-blur-sm rounded-lg flex items-center justify-center p-6">
-              <Card className="max-w-sm w-full p-6 text-center space-y-3 shadow-lg border-primary/30">
-                <div className="mx-auto h-12 w-12 rounded-full bg-primary/15 flex items-center justify-center">
-                  <Lock className="h-6 w-6 text-primary" />
-                </div>
-                <div className="font-semibold text-lg">
-                  {tr("সক্রিয় প্যাকেজ প্রয়োজন", "Active Package Required")}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {tr(
-                    "ইনভয়েস ডিজাইন পরিবর্তন করতে একটি সক্রিয় প্যাকেজ থাকা আবশ্যক। অনুগ্রহ করে একটি প্যাকেজ ক্রয় করুন।",
-                    "An active package is required to change the invoice design. Please purchase a package.",
-                  )}
-                </div>
-                <Button asChild className="w-full">
-                  <Link to="/current-package">
-                    <Sparkles className="h-4 w-4 mr-1.5" />
-                    {tr("প্যাকেজ কিনুন", "Buy Package")}
-                  </Link>
-                </Button>
-              </Card>
-            </div>
+            <Card className="p-4 text-center space-y-2 shadow-sm border-primary/30 mb-4">
+              <div className="flex items-center justify-center gap-2 text-primary font-semibold">
+                <Lock className="h-4 w-4" />
+                {tr("সক্রিয় প্যাকেজ প্রয়োজন", "Active Package Required")}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                {tr(
+                  "ইনভয়েস ডিজাইন পরিবর্তন করতে একটি সক্রিয় প্যাকেজ থাকা আবশ্যক।",
+                  "An active package is required to change the invoice design.",
+                )}
+              </div>
+              <Button asChild size="sm">
+                <Link to="/current-package">
+                  <Sparkles className="h-4 w-4 mr-1.5" />
+                  {tr("প্যাকেজ কিনুন", "Buy Package")}
+                </Link>
+              </Button>
+            </Card>
           )}
 
           <section>
