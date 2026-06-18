@@ -198,10 +198,11 @@ function InvoiceDesignPage() {
   const showUpgradeToast = () =>
     toast.error(tr("এই ফিচারটি ব্যবহার করতে প্যাকেজ আপগ্রেড করুন", "Upgrade your package to use this feature"));
 
-  const persist = (patch: Partial<DesignSettings>) => {
+  const persist = (patch: Partial<DesignSettings>, skipCheck?: boolean) => {
     if (!profile) return;
-    if (!isPackageActive) {
-      showUpgradeToast();
+    if (!skipCheck && !isPackageActive) {
+      setLockedTitle(tr("প্যাকেজ প্রয়োজন", "Package Required"));
+      setLockedOpen(true);
       return;
     }
     const prev = (profile.invoice_settings ?? {}) as Record<string, unknown>;
