@@ -106,11 +106,11 @@ function AuthPage() {
       <div className="hidden lg:flex flex-col justify-between flex-1 p-12 relative overflow-hidden border-r border-border">
         <div className="absolute inset-0" style={{ background: "var(--gradient-glow)" }} />
         <div className="relative flex items-center">
-          <img src={appLogo.url} alt="হিসাব নিকাশ-২৪" className="h-36 w-auto" />
+          <img src={appLogo.url} alt="হিসব নিকাশ-২৪" className="h-36 w-auto" />
         </div>
         <div className="relative max-w-md space-y-6">
           <h1 className="text-5xl font-display font-semibold leading-[1.05] tracking-tight">
-            ব্যবসা করবেন আপনি আর হিসাব রাখবে <span className="text-gradient">হিসাব নিকাশ-২৪</span>
+            ব্যবসা করবেন আপনি আর হিসাব রাখবে <span className="text-gradient">হিসব নিকাশ-২৪</span>
           </h1>
           <p className="text-muted-foreground text-lg leading-relaxed">
             POS, inventory, customers, dues, and live analytics — in one premium dashboard built for retail and wholesale.
@@ -128,7 +128,7 @@ function AuthPage() {
             ))}
           </div>
         </div>
-        <div className="relative text-xs text-muted-foreground">© হিসাব নিকাশ-২৪</div>
+        <div className="relative text-xs text-muted-foreground">© হিসব নিকাশ-২৪</div>
       </div>
 
       <div className="flex-1 flex items-center justify-center p-4 sm:p-6">
@@ -152,7 +152,7 @@ function AuthPage() {
             </div>
           </div>
           <div className="lg:hidden flex items-center justify-center mb-6">
-            <img src={appLogo.url} alt="হিসাব নিকাশ-২৪" className="h-24 w-auto" />
+            <img src={appLogo.url} alt="হিসব নিকাশ-২৪" className="h-24 w-auto" />
           </div>
 
           <h2 className="text-2xl font-display font-semibold text-center lg:text-left">Welcome</h2>
