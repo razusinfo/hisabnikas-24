@@ -1,7 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import {
   TrendingUp,
   ShoppingCart,
@@ -19,11 +29,15 @@ import {
   Layers,
   CreditCard,
   FileText,
+  Lock,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/reports/")({
   component: ReportsIndexPage,
 });
+
+// Only these 4 are free; everything else is locked behind a package.
+const FREE_SLUGS = new Set(["purchase", "sales", "expenses", "stock-summary"]);
 
 const reportCards = [
   { slug: "purchase", title: "ক্রয় রিপোর্ট", titleEn: "Purchase Report", description: "সরবরাহকারী ও তারিখ অনুযায়ী ক্রয়ের বিবরণ।", icon: ShoppingCart, color: "text-amber-600", bg: "bg-amber-50" },
@@ -46,6 +60,43 @@ const reportCards = [
 function ReportsIndexPage() {
   const { t, lang } = useI18n();
   const bn = lang === "bn";
+  const [lockedOpen, setLockedOpen] = useState(false);
+  const [lockedTitle, setLockedTitle] = useState("");
+
+  const cardInner = (card: (typeof reportCards)[number], locked: boolean) => {
+    const Icon = card.icon;
+    return (
+      <Card className="border-0 shadow-none bg-transparent relative overflow-hidden">
+        {locked && (
+          <div className="absolute top-0 right-0 z-10 pointer-events-none">
+            <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] font-bold py-1 w-32 text-center shadow-md rotate-45 translate-x-8 translate-y-3">
+              {bn ? "প্যাকেজ" : "PACKAGE"}
+            </div>
+          </div>
+        )}
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div className={`h-10 w-10 rounded-xl ${card.bg} flex items-center justify-center`}>
+              <Icon className={`h-5 w-5 ${card.color}`} />
+            </div>
+            {locked ? (
+              <Lock className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+            )}
+          </div>
+          <CardTitle className="text-base mt-3">
+            {bn ? card.title : card.titleEn}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {card.description}
+          </p>
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
@@ -53,36 +104,62 @@ function ReportsIndexPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {reportCards.map((card) => {
-          const Icon = card.icon;
+          const isFree = FREE_SLUGS.has(card.slug);
+          if (isFree) {
+            return (
+              <Link
+                key={card.slug}
+                to="/reports/$slug"
+                params={{ slug: card.slug }}
+                className="group block rounded-2xl border border-border bg-card hover:shadow-md transition-all hover:border-primary/30"
+              >
+                {cardInner(card, false)}
+              </Link>
+            );
+          }
           return (
-            <Link
+            <button
               key={card.slug}
-              to="/reports/$slug"
-              params={{ slug: card.slug }}
-              className="group block rounded-2xl border border-border bg-card hover:shadow-md transition-all hover:border-primary/30"
+              type="button"
+              onClick={() => {
+                setLockedTitle(bn ? card.title : card.titleEn);
+                setLockedOpen(true);
+              }}
+              className="group block text-left rounded-2xl border border-border bg-card hover:shadow-md transition-all hover:border-primary/30"
             >
-              <Card className="border-0 shadow-none bg-transparent">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className={`h-10 w-10 rounded-xl ${card.bg} flex items-center justify-center`}>
-                      <Icon className={`h-5 w-5 ${card.color}`} />
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
-                  </div>
-                  <CardTitle className="text-base mt-3">
-                    {bn ? card.title : card.titleEn}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {card.description}
-                  </p>
-                </CardContent>
-              </Card>
-            </Link>
+              {cardInner(card, true)}
+            </button>
           );
         })}
       </div>
+
+      <Dialog open={lockedOpen} onOpenChange={setLockedOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="mx-auto mb-2 h-14 w-14 rounded-full bg-amber-50 flex items-center justify-center">
+              <Lock className="h-7 w-7 text-amber-600" />
+            </div>
+            <DialogTitle className="text-center">
+              {bn ? "এই রিপোর্টটি প্যাকেজের অন্তর্ভুক্ত" : "This report is part of a package"}
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              {bn
+                ? `"${lockedTitle}" ব্যবহার করতে অনুগ্রহ করে প্যাকেজ ক্রয় করুন। প্যাকেজ ক্রয়ের পর আপনি এই রিপোর্টসহ অন্যান্য প্রিমিয়াম ফিচার ব্যবহার করতে পারবেন।`
+                : `To use "${lockedTitle}", please purchase a package. After purchase, you will get access to this report and other premium features.`}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center gap-2">
+            <Button variant="outline" onClick={() => setLockedOpen(false)}>
+              {bn ? "বন্ধ করুন" : "Close"}
+            </Button>
+            <Button asChild>
+              <Link to="/buy-messages" onClick={() => setLockedOpen(false)}>
+                {bn ? "প্যাকেজ ক্রয় করুন" : "Buy Package"}
+              </Link>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
