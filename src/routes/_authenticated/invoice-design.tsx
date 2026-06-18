@@ -580,8 +580,10 @@ function InvoiceDesignPage() {
                   <button
                     key={n}
                     type="button"
-                    disabled={!isPackageActive}
-                    onClick={() => { setTemplate(n); persist({ invoiceTemplate: n }); }}
+                    onClick={() => {
+                      if (!isPackageActive) { showUpgradeToast(); return; }
+                      setTemplate(n); persist({ invoiceTemplate: n });
+                    }}
                     className={cn(
                       "relative rounded-lg border-2 p-2 transition text-center space-y-2 bg-background",
                       active ? "shadow-md" : "border-border hover:border-foreground/30",
