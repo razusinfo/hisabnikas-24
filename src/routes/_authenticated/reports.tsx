@@ -102,7 +102,7 @@ const reportCards = [
   {
     title: "ব্যাংক লেনদেন রিপোর্ট",
     titleEn: "Bank Transaction Report",
-    description: "ব্যাংক অ্যাকাউন্টে�র জমা ও উত্তোলনের সম্পূর্ণ বিবরণ।",
+    description: "ব্যাংক অ্যাকাউন্টের জমা ও উত্তোলনের সম্পূর্ণ বিবরণ।",
     to: "/cashbook",
     icon: Landmark,
     color: "text-blue-600",
