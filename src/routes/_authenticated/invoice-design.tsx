@@ -511,22 +511,29 @@ function InvoiceDesignPage() {
                   <button
                     key={n}
                     type="button"
+                    disabled={!isPackageActive}
                     onClick={() => { setTemplate(n); persist({ invoiceTemplate: n }); }}
                     className={cn(
-                      "rounded-lg border-2 p-2 transition text-center space-y-2 bg-background",
-                      active ? "shadow-md" : "border-border hover:border-foreground/30"
+                      "relative rounded-lg border-2 p-2 transition text-center space-y-2 bg-background",
+                      active ? "shadow-md" : "border-border hover:border-foreground/30",
+                      !isPackageActive && "opacity-60 cursor-not-allowed"
                     )}
                     style={active ? { borderColor: theme } : undefined}
                   >
-                    <div className="aspect-[3/4] rounded overflow-hidden border bg-white">
+                    <div className={cn("aspect-[3/4] rounded overflow-hidden border bg-white", !isPackageActive && "opacity-40")}>
                       <TemplateThumbnail n={n} theme={theme} />
                     </div>
                     <div
-                      className="text-sm font-medium"
+                      className={cn("text-sm font-medium", !isPackageActive && "opacity-40")}
                       style={active ? { color: theme } : undefined}
                     >
                       {tr("টেমপ্লেট", "Template")} {lang === "bn" ? toBn(n) : n}
                     </div>
+                    {!isPackageActive && (
+                      <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/10">
+                        <Lock className="h-5 w-5 text-foreground drop-shadow" />
+                      </div>
+                    )}
                   </button>
                 );
               })}
