@@ -95,6 +95,20 @@ function AuthPage() {
     toast.success("Account created. You can sign in now.");
   };
 
+  const onForgotPassword = async () => {
+    if (!email) {
+      toast.error("আগে আপনার ইমেইল লিখুন");
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setLoading(false);
+    if (error) return toast.error(error.message);
+    toast.success("পাসওয়ার্ড রিসেট লিংক ইমেইলে পাঠানো হয়েছে");
+  };
+
   const onGoogle = async () => {
     const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/dashboard" });
     if (r.error) toast.error(r.error.message);
@@ -186,6 +200,14 @@ function AuthPage() {
                   <Input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
                 <Button disabled={loading} className="w-full h-11 mt-2">{t("signIn")}</Button>
+                <button
+                  type="button"
+                  onClick={onForgotPassword}
+                  disabled={loading}
+                  className="text-xs text-muted-foreground hover:text-foreground w-full text-center mt-1"
+                >
+                  পাসওয়ার্ড ভুলে গেছেন?
+                </button>
               </form>
             </TabsContent>
             <TabsContent value="otp">
