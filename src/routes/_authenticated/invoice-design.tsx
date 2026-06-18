@@ -546,8 +546,10 @@ function InvoiceDesignPage() {
                   <button
                     key={w.value}
                     type="button"
-                    disabled={!isPackageActive}
-                    onClick={() => { setFontWeight(w.value); persist({ invoiceFontWeight: w.value }); }}
+                    onClick={() => {
+                      if (!isPackageActive) { showUpgradeToast(); return; }
+                      setFontWeight(w.value); persist({ invoiceFontWeight: w.value });
+                    }}
                     style={active
                       ? { backgroundColor: theme, color: "#fff", fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }
                       : { fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }}
