@@ -514,8 +514,10 @@ function InvoiceDesignPage() {
                   <button
                     key={f.value}
                     type="button"
-                    disabled={!isPackageActive}
-                    onClick={() => { setFontFamily(f.value); persist({ invoiceFontFamily: f.value }); }}
+                    onClick={() => {
+                      if (!isPackageActive) { showUpgradeToast(); return; }
+                      setFontFamily(f.value); persist({ invoiceFontFamily: f.value });
+                    }}
                     style={active ? { backgroundColor: theme, color: "#fff", fontFamily: f.css } : { fontFamily: f.css }}
                     className={cn(
                       "relative h-14 rounded-lg border text-sm font-semibold transition flex items-center justify-center px-2 text-center",
