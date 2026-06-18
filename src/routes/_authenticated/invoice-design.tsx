@@ -185,10 +185,13 @@ function InvoiceDesignPage() {
 
   const profile = profileQuery.data;
 
+  const showUpgradeToast = () =>
+    toast.error(tr("এই ফিচারটি ব্যবহার করতে প্যাকেজ আপগ্রেড করুন", "Upgrade your package to use this feature"));
+
   const persist = (patch: Partial<DesignSettings>) => {
     if (!profile) return;
     if (!isPackageActive) {
-      toast.error(tr("ডিজাইন পরিবর্তন করতে সক্রিয় প্যাকেজ প্রয়োজন", "An active package is required to change the design"));
+      showUpgradeToast();
       return;
     }
     const prev = (profile.invoice_settings ?? {}) as Record<string, unknown>;
@@ -447,8 +450,10 @@ function InvoiceDesignPage() {
                 <button
                   key={c}
                   type="button"
-                  disabled={!isPackageActive}
-                  onClick={() => { setTheme(c); persist({ invoiceTheme: c }); }}
+                  onClick={() => {
+                    if (!isPackageActive) { showUpgradeToast(); return; }
+                    setTheme(c); persist({ invoiceTheme: c });
+                  }}
                   style={{ backgroundColor: c }}
                   className={cn(
                     "relative h-12 rounded-lg flex items-center justify-center transition ring-offset-2",
@@ -477,8 +482,10 @@ function InvoiceDesignPage() {
                   <button
                     key={f.value}
                     type="button"
-                    disabled={!isPackageActive}
-                    onClick={() => { setFontSize(f.value); persist({ invoiceFontSize: f.value }); }}
+                    onClick={() => {
+                      if (!isPackageActive) { showUpgradeToast(); return; }
+                      setFontSize(f.value); persist({ invoiceFontSize: f.value });
+                    }}
                     style={active ? { backgroundColor: theme, color: "#fff" } : undefined}
                     className={cn(
                       "relative h-11 rounded-lg border text-sm font-medium transition",
@@ -507,8 +514,10 @@ function InvoiceDesignPage() {
                   <button
                     key={f.value}
                     type="button"
-                    disabled={!isPackageActive}
-                    onClick={() => { setFontFamily(f.value); persist({ invoiceFontFamily: f.value }); }}
+                    onClick={() => {
+                      if (!isPackageActive) { showUpgradeToast(); return; }
+                      setFontFamily(f.value); persist({ invoiceFontFamily: f.value });
+                    }}
                     style={active ? { backgroundColor: theme, color: "#fff", fontFamily: f.css } : { fontFamily: f.css }}
                     className={cn(
                       "relative h-14 rounded-lg border text-sm font-semibold transition flex items-center justify-center px-2 text-center",
@@ -537,8 +546,10 @@ function InvoiceDesignPage() {
                   <button
                     key={w.value}
                     type="button"
-                    disabled={!isPackageActive}
-                    onClick={() => { setFontWeight(w.value); persist({ invoiceFontWeight: w.value }); }}
+                    onClick={() => {
+                      if (!isPackageActive) { showUpgradeToast(); return; }
+                      setFontWeight(w.value); persist({ invoiceFontWeight: w.value });
+                    }}
                     style={active
                       ? { backgroundColor: theme, color: "#fff", fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }
                       : { fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }}
@@ -569,8 +580,10 @@ function InvoiceDesignPage() {
                   <button
                     key={n}
                     type="button"
-                    disabled={!isPackageActive}
-                    onClick={() => { setTemplate(n); persist({ invoiceTemplate: n }); }}
+                    onClick={() => {
+                      if (!isPackageActive) { showUpgradeToast(); return; }
+                      setTemplate(n); persist({ invoiceTemplate: n });
+                    }}
                     className={cn(
                       "relative rounded-lg border-2 p-2 transition text-center space-y-2 bg-background",
                       active ? "shadow-md" : "border-border hover:border-foreground/30",
