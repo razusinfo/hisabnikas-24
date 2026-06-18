@@ -552,13 +552,12 @@ function InvoiceDesignPage() {
                       : { fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }}
                     className={cn(
                       "relative h-12 rounded-lg border text-sm transition flex items-center justify-center px-1 text-center",
-                      active ? "border-transparent" : "bg-background hover:bg-muted border-border",
-                      !isPackageActive && "opacity-60 cursor-not-allowed"
+                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
                     )}
                   >
-                    <span className={cn(!isPackageActive && "opacity-40")}>{w.label[lang === "bn" ? "bn" : "en"]}</span>
+                    <span>{w.label[lang === "bn" ? "bn" : "en"]}</span>
                     {!isPackageActive && (
-                      <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/10">
+                      <div className="absolute inset-0 flex items-center justify-center rounded-lg">
                         <Lock className="h-4 w-4 text-foreground drop-shadow" />
                       </div>
                     )}
