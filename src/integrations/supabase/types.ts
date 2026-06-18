@@ -440,7 +440,6 @@ export type Database = {
           full_name: string | null
           id: string
           invoice_settings: Json
-          is_super_admin: boolean
           language: string
           logo_url: string | null
           message_credits: number
@@ -456,7 +455,6 @@ export type Database = {
           full_name?: string | null
           id: string
           invoice_settings?: Json
-          is_super_admin?: boolean
           language?: string
           logo_url?: string | null
           message_credits?: number
@@ -472,7 +470,6 @@ export type Database = {
           full_name?: string | null
           id?: string
           invoice_settings?: Json
-          is_super_admin?: boolean
           language?: string
           logo_url?: string | null
           message_credits?: number
@@ -832,7 +829,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "manager" | "staff"
+      app_role: "admin" | "manager" | "staff" | "super_admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -960,7 +957,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "manager", "staff"],
+      app_role: ["admin", "manager", "staff", "super_admin"],
     },
   },
 } as const

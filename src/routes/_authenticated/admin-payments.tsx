@@ -24,12 +24,8 @@ function AdminPaymentsPage() {
     queryFn: async () => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) return false;
-      const { data } = await supabase
-        .from("profiles")
-        .select("is_super_admin")
-        .eq("id", u.user.id)
-        .maybeSingle();
-      return !!(data as any)?.is_super_admin;
+      const { data } = await supabase.rpc("is_super_admin", { _uid: u.user.id });
+      return !!data;
     },
   });
 
