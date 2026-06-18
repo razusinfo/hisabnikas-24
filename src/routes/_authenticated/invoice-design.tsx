@@ -109,6 +109,7 @@ function InvoiceDesignPage() {
   const save = useMutation({
     mutationFn: async () => {
       if (!profileQuery.data) throw new Error("No profile");
+      if (!isPackageActive) throw new Error(tr("ডিজাইন পরিবর্তন করতে সক্রিয় প্যাকেজ প্রয়োজন", "An active package is required to change the design"));
       const prev = (profileQuery.data.invoice_settings ?? {}) as Record<string, unknown>;
       const next = { ...prev, invoiceTheme: theme, invoiceFontSize: fontSize, invoiceTemplate: template, invoiceFontFamily: fontFamily, invoiceFontWeight: fontWeight };
       const { error } = await supabase
