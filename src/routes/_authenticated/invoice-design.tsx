@@ -457,14 +457,13 @@ function InvoiceDesignPage() {
                   style={{ backgroundColor: c }}
                   className={cn(
                     "relative h-12 rounded-lg flex items-center justify-center transition ring-offset-2",
-                    theme === c ? "ring-2 ring-offset-background ring-foreground/40 scale-105" : "hover:scale-105",
-                    !isPackageActive && "opacity-60 cursor-not-allowed"
+                    theme === c ? "ring-2 ring-offset-background ring-foreground/40 scale-105" : "hover:scale-105"
                   )}
                   aria-label={c}
                 >
                   {theme === c && <Check className="h-5 w-5 text-white" />}
                   {!isPackageActive && (
-                    <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/20">
+                    <div className="absolute inset-0 flex items-center justify-center rounded-lg">
                       <Lock className="h-4 w-4 text-white drop-shadow" />
                     </div>
                   )}
@@ -489,13 +488,12 @@ function InvoiceDesignPage() {
                     style={active ? { backgroundColor: theme, color: "#fff" } : undefined}
                     className={cn(
                       "relative h-11 rounded-lg border text-sm font-medium transition",
-                      active ? "border-transparent" : "bg-background hover:bg-muted border-border",
-                      !isPackageActive && "opacity-60 cursor-not-allowed"
+                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
                     )}
                   >
-                    <span className={cn(!isPackageActive && "opacity-40")}>{f.label[lang === "bn" ? "bn" : "en"]}</span>
+                    <span>{f.label[lang === "bn" ? "bn" : "en"]}</span>
                     {!isPackageActive && (
-                      <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/10">
+                      <div className="absolute inset-0 flex items-center justify-center rounded-lg">
                         <Lock className="h-4 w-4 text-foreground drop-shadow" />
                       </div>
                     )}
@@ -521,13 +519,12 @@ function InvoiceDesignPage() {
                     style={active ? { backgroundColor: theme, color: "#fff", fontFamily: f.css } : { fontFamily: f.css }}
                     className={cn(
                       "relative h-14 rounded-lg border text-sm font-semibold transition flex items-center justify-center px-2 text-center",
-                      active ? "border-transparent" : "bg-background hover:bg-muted border-border",
-                      !isPackageActive && "opacity-60 cursor-not-allowed"
+                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
                     )}
                   >
-                    <span className={cn(!isPackageActive && "opacity-40")}>{f.label[lang === "bn" ? "bn" : "en"]}</span>
+                    <span>{f.label[lang === "bn" ? "bn" : "en"]}</span>
                     {!isPackageActive && (
-                      <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/10">
+                      <div className="absolute inset-0 flex items-center justify-center rounded-lg">
                         <Lock className="h-4 w-4 text-foreground drop-shadow" />
                       </div>
                     )}
@@ -555,13 +552,12 @@ function InvoiceDesignPage() {
                       : { fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }}
                     className={cn(
                       "relative h-12 rounded-lg border text-sm transition flex items-center justify-center px-1 text-center",
-                      active ? "border-transparent" : "bg-background hover:bg-muted border-border",
-                      !isPackageActive && "opacity-60 cursor-not-allowed"
+                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
                     )}
                   >
-                    <span className={cn(!isPackageActive && "opacity-40")}>{w.label[lang === "bn" ? "bn" : "en"]}</span>
+                    <span>{w.label[lang === "bn" ? "bn" : "en"]}</span>
                     {!isPackageActive && (
-                      <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/10">
+                      <div className="absolute inset-0 flex items-center justify-center rounded-lg">
                         <Lock className="h-4 w-4 text-foreground drop-shadow" />
                       </div>
                     )}
@@ -586,22 +582,21 @@ function InvoiceDesignPage() {
                     }}
                     className={cn(
                       "relative rounded-lg border-2 p-2 transition text-center space-y-2 bg-background",
-                      active ? "shadow-md" : "border-border hover:border-foreground/30",
-                      !isPackageActive && "opacity-60 cursor-not-allowed"
+                      active ? "shadow-md" : "border-border hover:border-foreground/30"
                     )}
                     style={active ? { borderColor: theme } : undefined}
                   >
-                    <div className={cn("aspect-[3/4] rounded overflow-hidden border bg-white", !isPackageActive && "opacity-40")}>
+                    <div className="aspect-[3/4] rounded overflow-hidden border bg-white">
                       <TemplateThumbnail n={n} theme={theme} />
                     </div>
                     <div
-                      className={cn("text-sm font-medium", !isPackageActive && "opacity-40")}
+                      className="text-sm font-medium"
                       style={active ? { color: theme } : undefined}
                     >
                       {tr("টেমপ্লেট", "Template")} {lang === "bn" ? toBn(n) : n}
                     </div>
                     {!isPackageActive && (
-                      <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/10">
+                      <div className="absolute inset-0 flex items-center justify-center rounded-lg">
                         <Lock className="h-5 w-5 text-foreground drop-shadow" />
                       </div>
                     )}
