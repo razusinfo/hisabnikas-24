@@ -80,7 +80,65 @@ function InvoiceDesignPage() {
         .maybeSingle();
       return data;
     },
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
+
+  // Sync package status across tabs, on login, and via realtime updates
+  useEffect(() => {
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let cancelled = false;
+
+    const invalidate = () => {
+      qc.invalidateQueries({ queryKey: ["subscription"] });
+      qc.invalidateQueries({ queryKey: ["profile", "me"] });
+    };
+
+    const subscribeRealtime = async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (cancelled || !u.user) return;
+      channel = supabase
+        .channel(`sub-status-${u.user.id}`)
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "subscriptions", filter: `user_id=eq.${u.user.id}` },
+          () => invalidate(),
+        )
+        .subscribe();
+    };
+    subscribeRealtime();
+
+    // Cross-tab sync
+    const bc = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("package-status") : null;
+    if (bc) bc.onmessage = () => invalidate();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "package-status-updated") invalidate();
+    };
+    window.addEventListener("storage", onStorage);
+
+    // Refetch on visibility change (covers tabs returning to foreground)
+    const onVisible = () => {
+      if (document.visibilityState === "visible") invalidate();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
+    // Refetch after login / token refresh
+    const { data: authSub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "USER_UPDATED") {
+        invalidate();
+        if (!channel) subscribeRealtime();
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      if (channel) supabase.removeChannel(channel);
+      if (bc) bc.close();
+      window.removeEventListener("storage", onStorage);
+      document.removeEventListener("visibilitychange", onVisible);
+      authSub.subscription.unsubscribe();
+    };
+  }, [qc]);
 
   const isPackageActive = (() => {
     const s = subQuery.data;
