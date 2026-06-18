@@ -347,7 +347,7 @@ const dict = {
     profitLoss: "লাভ ক্ষতি",
     purchases: "ক্রয় সমূহ",
     inventory: "ইনভেন্টরি",
-    reports: "রিপোর্ট",
+    reports: "রিপোর্টস",
     settings: "সেটিংস",
     buyMessages: "মেসেজ কিনি",
     helpSupport: "হেল্প এন্ড সাপোর্ট",
