@@ -615,28 +615,39 @@ function InvoiceDesignPage() {
                     key={n}
                     type="button"
                     onClick={() => {
-                      if (!isPackageActive) { showUpgradeToast(); return; }
+                      if (!isPackageActive) {
+                        setLockedTitle(tr("টেমপ্লেট", "Template"));
+                        setLockedOpen(true);
+                        return;
+                      }
                       setTemplate(n); persist({ invoiceTemplate: n });
                     }}
                     className={cn(
-                      "relative rounded-lg border-2 p-2 transition text-center space-y-2 bg-background",
-                      active ? "shadow-md" : "border-border hover:border-foreground/30"
+                      "relative rounded-lg border-2 p-2 transition text-center space-y-2 bg-background overflow-hidden",
+                      active && isPackageActive ? "shadow-md" : "border-border hover:border-foreground/30"
                     )}
-                    style={active ? { borderColor: theme } : undefined}
+                    style={active && isPackageActive ? { borderColor: theme } : undefined}
                   >
-                    <div className="aspect-[3/4] rounded overflow-hidden border bg-white">
+                    <div className={cn("aspect-[3/4] rounded overflow-hidden border bg-white", !isPackageActive && "opacity-40")}>
                       <TemplateThumbnail n={n} theme={theme} />
                     </div>
                     <div
-                      className="text-sm font-medium"
-                      style={active ? { color: theme } : undefined}
+                      className={cn("text-sm font-medium", !isPackageActive && "opacity-40")}
+                      style={active && isPackageActive ? { color: theme } : undefined}
                     >
                       {tr("টেমপ্লেট", "Template")} {lang === "bn" ? toBn(n) : n}
                     </div>
                     {!isPackageActive && (
-                      <div className="absolute inset-0 flex items-center justify-center rounded-lg">
-                        <Lock className="h-5 w-5 text-foreground drop-shadow" />
-                      </div>
+                      <>
+                        <div className="absolute top-0 right-0 z-10 pointer-events-none">
+                          <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] font-bold py-1 w-24 text-center shadow-md rotate-45 translate-x-8 translate-y-1">
+                            প্যাকেজ
+                          </div>
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center z-[1]">
+                          <Lock className="h-5 w-5 text-foreground/70" />
+                        </div>
+                      </>
                     )}
                   </button>
                 );
