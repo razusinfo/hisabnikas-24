@@ -185,10 +185,13 @@ function InvoiceDesignPage() {
 
   const profile = profileQuery.data;
 
+  const showUpgradeToast = () =>
+    toast.error(tr("এই ফিচারটি ব্যবহার করতে প্যাকেজ আপগ্রেড করুন", "Upgrade your package to use this feature"));
+
   const persist = (patch: Partial<DesignSettings>) => {
     if (!profile) return;
     if (!isPackageActive) {
-      toast.error(tr("ডিজাইন পরিবর্তন করতে সক্রিয় প্যাকেজ প্রয়োজন", "An active package is required to change the design"));
+      showUpgradeToast();
       return;
     }
     const prev = (profile.invoice_settings ?? {}) as Record<string, unknown>;
