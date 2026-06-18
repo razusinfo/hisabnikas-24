@@ -16,6 +16,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSalesRouteImport } from './routes/_authenticated/sales'
+import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedPurchasesRouteImport } from './routes/_authenticated/purchases'
 import { Route as AuthenticatedProprietorProfileRouteImport } from './routes/_authenticated/proprietor-profile'
 import { Route as AuthenticatedProfitLossRouteImport } from './routes/_authenticated/profit-loss'
@@ -66,6 +67,11 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
 const AuthenticatedSalesRoute = AuthenticatedSalesRouteImport.update({
   id: '/sales',
   path: '/sales',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPurchasesRoute = AuthenticatedPurchasesRouteImport.update({
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/profit-loss': typeof AuthenticatedProfitLossRoute
   '/proprietor-profile': typeof AuthenticatedProprietorProfileRoute
   '/purchases': typeof AuthenticatedPurchasesRoute
+  '/reports': typeof AuthenticatedReportsRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/public/google/callback': typeof ApiPublicGoogleCallbackRoute
@@ -207,6 +214,7 @@ export interface FileRoutesByTo {
   '/profit-loss': typeof AuthenticatedProfitLossRoute
   '/proprietor-profile': typeof AuthenticatedProprietorProfileRoute
   '/purchases': typeof AuthenticatedPurchasesRoute
+  '/reports': typeof AuthenticatedReportsRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/public/google/callback': typeof ApiPublicGoogleCallbackRoute
@@ -234,6 +242,7 @@ export interface FileRoutesById {
   '/_authenticated/profit-loss': typeof AuthenticatedProfitLossRoute
   '/_authenticated/proprietor-profile': typeof AuthenticatedProprietorProfileRoute
   '/_authenticated/purchases': typeof AuthenticatedPurchasesRoute
+  '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/api/public/google/callback': typeof ApiPublicGoogleCallbackRoute
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/profit-loss'
     | '/proprietor-profile'
     | '/purchases'
+    | '/reports'
     | '/sales'
     | '/settings'
     | '/api/public/google/callback'
@@ -286,6 +296,7 @@ export interface FileRouteTypes {
     | '/profit-loss'
     | '/proprietor-profile'
     | '/purchases'
+    | '/reports'
     | '/sales'
     | '/settings'
     | '/api/public/google/callback'
@@ -312,6 +323,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profit-loss'
     | '/_authenticated/proprietor-profile'
     | '/_authenticated/purchases'
+    | '/_authenticated/reports'
     | '/_authenticated/sales'
     | '/_authenticated/settings'
     | '/api/public/google/callback'
@@ -377,6 +389,13 @@ declare module '@tanstack/react-router' {
       path: '/sales'
       fullPath: '/sales'
       preLoaderRoute: typeof AuthenticatedSalesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/reports': {
+      id: '/_authenticated/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof AuthenticatedReportsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/purchases': {
@@ -517,6 +536,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfitLossRoute: typeof AuthenticatedProfitLossRoute
   AuthenticatedProprietorProfileRoute: typeof AuthenticatedProprietorProfileRoute
   AuthenticatedPurchasesRoute: typeof AuthenticatedPurchasesRoute
+  AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedSalesRoute: typeof AuthenticatedSalesRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
 }
@@ -537,6 +557,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfitLossRoute: AuthenticatedProfitLossRoute,
   AuthenticatedProprietorProfileRoute: AuthenticatedProprietorProfileRoute,
   AuthenticatedPurchasesRoute: AuthenticatedPurchasesRoute,
+  AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedSalesRoute: AuthenticatedSalesRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
 }
