@@ -143,6 +143,15 @@ const reportCards = [
     color: "text-yellow-600",
     bg: "bg-yellow-50",
   },
+  {
+    title: "খরচ",
+    titleEn: "Expenses",
+    description: "সকল খরচের বিস্তারিত বিবরণ ও বিশ্লেষণ।",
+    to: "/expenses",
+    icon: CreditCard,
+    color: "text-red-600",
+    bg: "bg-red-50",
+  },
 ];
 
 function ReportsPage() {
