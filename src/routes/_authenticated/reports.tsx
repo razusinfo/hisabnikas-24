@@ -12,6 +12,13 @@ import {
   Receipt,
   BarChart3,
   ArrowRight,
+  Smartphone,
+  Landmark,
+  PieChart,
+  Boxes,
+  Repeat,
+  Tags,
+  Layers,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/reports")({
