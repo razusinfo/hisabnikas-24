@@ -10,7 +10,6 @@ import {
   Users,
   Wallet,
   Receipt,
-  BarChart3,
   ArrowRight,
   Smartphone,
   Landmark,
@@ -19,6 +18,7 @@ import {
   Repeat,
   Tags,
   Layers,
+  CreditCard,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/reports")({
@@ -142,6 +142,15 @@ const reportCards = [
     icon: Layers,
     color: "text-yellow-600",
     bg: "bg-yellow-50",
+  },
+  {
+    title: "খরচ",
+    titleEn: "Expenses",
+    description: "সকল খরচের বিস্তারিত বিবরণ ও বিশ্লেষণ।",
+    to: "/expenses",
+    icon: CreditCard,
+    color: "text-red-600",
+    bg: "bg-red-50",
   },
 ];
 
