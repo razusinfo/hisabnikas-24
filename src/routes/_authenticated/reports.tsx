@@ -10,7 +10,6 @@ import {
   Users,
   Wallet,
   Receipt,
-  BarChart3,
   ArrowRight,
   Smartphone,
   Landmark,
@@ -19,6 +18,7 @@ import {
   Repeat,
   Tags,
   Layers,
+  CreditCard,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/reports")({
