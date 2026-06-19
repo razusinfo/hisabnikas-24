@@ -177,7 +177,6 @@ function InvoiceDesignPage() {
   const save = useMutation({
     mutationFn: async () => {
       if (!profileQuery.data) throw new Error("No profile");
-      if (!isPackageActive) throw new Error(tr("ডিজাইন পরিবর্তন করতে সক্রিয় প্যাকেজ প্রয়োজন", "An active package is required to change the design"));
       const prev = (profileQuery.data.invoice_settings ?? {}) as Record<string, unknown>;
       const next = { ...prev, invoiceTheme: theme, invoiceFontSize: fontSize, invoiceTemplate: template, invoiceFontFamily: fontFamily, invoiceFontWeight: fontWeight };
       const { error } = await supabase
@@ -457,51 +456,72 @@ function InvoiceDesignPage() {
           <section>
             <h3 className="text-base font-semibold mb-3">{tr("রঙ", "Color")}</h3>
             <div className="grid grid-cols-6 gap-3">
-              {THEMES.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => {
-                    setTheme(c); persist({ invoiceTheme: c }, true);
-                  }}
-                  style={{ backgroundColor: c }}
-                  className={cn(
-                    "relative h-12 rounded-lg flex items-center justify-center transition ring-offset-2",
-                    theme === c ? "ring-2 ring-offset-background ring-foreground/40 scale-105" : "hover:scale-105"
-                  )}
-                  aria-label={c}
-                >
-                  {theme === c && <Check className="h-5 w-5 text-white" />}
-                </button>
-              ))}
+              {THEMES.map((c, idx) => {
+                const isLocked = idx !== 0 && !isPackageActive;
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => {
+                      if (isLocked) {
+                        setLockedTitle(tr("রঙ", "Color"));
+                        setLockedOpen(true);
+                        return;
+                      }
+                      setTheme(c); persist({ invoiceTheme: c }, true);
+                    }}
+                    style={{ backgroundColor: c }}
+                    className={cn(
+                      "relative h-12 rounded-lg flex items-center justify-center transition ring-offset-2 overflow-hidden",
+                      theme === c ? "ring-2 ring-offset-background ring-foreground/40 scale-105" : "hover:scale-105"
+                    )}
+                    aria-label={c}
+                  >
+                    {theme === c && <Check className="h-5 w-5 text-white" />}
+                    {isLocked && (
+                      <>
+                        <div className="absolute top-0 right-0 z-10 pointer-events-none">
+                          <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[8px] font-bold py-0.5 w-16 text-center shadow-sm rotate-45 translate-x-5 -translate-y-0.5">
+                            প্যাকেজ
+                          </div>
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center z-[1]">
+                          <Lock className="h-4 w-4 text-foreground/70" />
+                        </div>
+                      </>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </section>
 
           <section>
             <h3 className="text-base font-semibold mb-3">{tr("ফন্ট সাইজ", "Font Size")}</h3>
             <div className="grid grid-cols-4 gap-3">
-              {FONT_SIZES.map((f) => {
+              {FONT_SIZES.map((f, idx) => {
                 const active = fontSize === f.value;
+                const isLocked = idx !== 0 && !isPackageActive;
                 return (
                   <button
                     key={f.value}
                     type="button"
                     onClick={() => {
-                      if (!isPackageActive) {
+                      if (isLocked) {
                         setLockedTitle(tr("ফন্ট সাইজ", "Font Size"));
                         setLockedOpen(true);
                         return;
                       }
-                      setFontSize(f.value); persist({ invoiceFontSize: f.value });
+                      setFontSize(f.value); persist({ invoiceFontSize: f.value }, true);
                     }}
-                    style={active && isPackageActive ? { backgroundColor: theme, color: "#fff" } : undefined}
+                    style={active ? { backgroundColor: theme, color: "#fff" } : undefined}
                     className={cn(
                       "relative h-11 rounded-lg border text-sm font-medium transition overflow-hidden",
-                      active && isPackageActive ? "border-transparent" : "bg-background hover:bg-muted border-border"
+                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
                     )}
                   >
-                    <span className={cn(!isPackageActive && "opacity-40")}>{f.label[lang === "bn" ? "bn" : "en"]}</span>
-                    {!isPackageActive && (
+                    <span className={cn(isLocked && "opacity-40")}>{f.label[lang === "bn" ? "bn" : "en"]}</span>
+                    {isLocked && (
                       <>
                         <div className="absolute top-0 right-0 z-10 pointer-events-none">
                           <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[8px] font-bold py-0.5 w-16 text-center shadow-sm rotate-45 translate-x-5 -translate-y-0.5">
@@ -522,28 +542,29 @@ function InvoiceDesignPage() {
           <section>
             <h3 className="text-base font-semibold mb-3">{tr("ফন্ট স্টাইল", "Font Style")}</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {INVOICE_FONT_FAMILIES.map((f) => {
+              {INVOICE_FONT_FAMILIES.map((f, idx) => {
                 const active = fontFamily === f.value;
+                const isLocked = idx !== 0 && !isPackageActive;
                 return (
                   <button
                     key={f.value}
                     type="button"
                     onClick={() => {
-                      if (!isPackageActive) {
+                      if (isLocked) {
                         setLockedTitle(tr("ফন্ট স্টাইল", "Font Style"));
                         setLockedOpen(true);
                         return;
                       }
-                      setFontFamily(f.value); persist({ invoiceFontFamily: f.value });
+                      setFontFamily(f.value); persist({ invoiceFontFamily: f.value }, true);
                     }}
-                    style={active && isPackageActive ? { backgroundColor: theme, color: "#fff", fontFamily: f.css } : { fontFamily: f.css }}
+                    style={active ? { backgroundColor: theme, color: "#fff", fontFamily: f.css } : { fontFamily: f.css }}
                     className={cn(
                       "relative h-14 rounded-lg border text-sm font-semibold transition flex items-center justify-center px-2 text-center overflow-hidden",
-                      active && isPackageActive ? "border-transparent" : "bg-background hover:bg-muted border-border"
+                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
                     )}
                   >
-                    <span className={cn(!isPackageActive && "opacity-40")}>{f.label[lang === "bn" ? "bn" : "en"]}</span>
-                    {!isPackageActive && (
+                    <span className={cn(isLocked && "opacity-40")}>{f.label[lang === "bn" ? "bn" : "en"]}</span>
+                    {isLocked && (
                       <>
                         <div className="absolute top-0 right-0 z-10 pointer-events-none">
                           <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[8px] font-bold py-0.5 w-16 text-center shadow-sm rotate-45 translate-x-5 -translate-y-0.5">
@@ -564,30 +585,31 @@ function InvoiceDesignPage() {
           <section>
             <h3 className="text-base font-semibold mb-3">{tr("ফন্ট ওয়েট", "Font Weight")}</h3>
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-              {INVOICE_FONT_WEIGHTS.map((w) => {
+              {INVOICE_FONT_WEIGHTS.map((w, idx) => {
                 const active = fontWeight === w.value;
+                const isLocked = idx !== 0 && !isPackageActive;
                 return (
                   <button
                     key={w.value}
                     type="button"
                     onClick={() => {
-                      if (!isPackageActive) {
+                      if (isLocked) {
                         setLockedTitle(tr("ফন্ট ওয়েট", "Font Weight"));
                         setLockedOpen(true);
                         return;
                       }
-                      setFontWeight(w.value); persist({ invoiceFontWeight: w.value });
+                      setFontWeight(w.value); persist({ invoiceFontWeight: w.value }, true);
                     }}
-                    style={active && isPackageActive
+                    style={active
                       ? { backgroundColor: theme, color: "#fff", fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }
                       : { fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }}
                     className={cn(
                       "relative h-12 rounded-lg border text-sm transition flex items-center justify-center px-1 text-center overflow-hidden",
-                      active && isPackageActive ? "border-transparent" : "bg-background hover:bg-muted border-border"
+                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
                     )}
                   >
-                    <span className={cn(!isPackageActive && "opacity-40")}>{w.label[lang === "bn" ? "bn" : "en"]}</span>
-                    {!isPackageActive && (
+                    <span className={cn(isLocked && "opacity-40")}>{w.label[lang === "bn" ? "bn" : "en"]}</span>
+                    {isLocked && (
                       <>
                         <div className="absolute top-0 right-0 z-10 pointer-events-none">
                           <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[8px] font-bold py-0.5 w-16 text-center shadow-sm rotate-45 translate-x-5 -translate-y-0.5">
@@ -608,36 +630,37 @@ function InvoiceDesignPage() {
           <section>
             <h3 className="text-base font-semibold mb-3">{tr("টেমপ্লেট", "Template")}</h3>
             <div className="grid grid-cols-3 gap-4">
-              {TEMPLATES.map((n) => {
+              {TEMPLATES.map((n, idx) => {
                 const active = template === n;
+                const isLocked = idx !== 0 && !isPackageActive;
                 return (
                   <button
                     key={n}
                     type="button"
                     onClick={() => {
-                      if (!isPackageActive) {
+                      if (isLocked) {
                         setLockedTitle(tr("টেমপ্লেট", "Template"));
                         setLockedOpen(true);
                         return;
                       }
-                      setTemplate(n); persist({ invoiceTemplate: n });
+                      setTemplate(n); persist({ invoiceTemplate: n }, true);
                     }}
                     className={cn(
                       "relative rounded-lg border-2 p-2 transition text-center space-y-2 bg-background overflow-hidden",
-                      active && isPackageActive ? "shadow-md" : "border-border hover:border-foreground/30"
+                      active ? "shadow-md" : "border-border hover:border-foreground/30"
                     )}
-                    style={active && isPackageActive ? { borderColor: theme } : undefined}
+                    style={active ? { borderColor: theme } : undefined}
                   >
-                    <div className={cn("aspect-[3/4] rounded overflow-hidden border bg-white", !isPackageActive && "opacity-40")}>
+                    <div className={cn("aspect-[3/4] rounded overflow-hidden border bg-white", isLocked && "opacity-40")}>
                       <TemplateThumbnail n={n} theme={theme} />
                     </div>
                     <div
-                      className={cn("text-sm font-medium", !isPackageActive && "opacity-40")}
-                      style={active && isPackageActive ? { color: theme } : undefined}
+                      className={cn("text-sm font-medium", isLocked && "opacity-40")}
+                      style={active ? { color: theme } : undefined}
                     >
                       {tr("টেমপ্লেট", "Template")} {lang === "bn" ? toBn(n) : n}
                     </div>
-                    {!isPackageActive && (
+                    {isLocked && (
                       <>
                         <div className="absolute top-0 right-0 z-10 pointer-events-none">
                           <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] font-bold py-1 w-24 text-center shadow-md rotate-45 translate-x-8 translate-y-1">
