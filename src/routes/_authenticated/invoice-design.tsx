@@ -630,36 +630,37 @@ function InvoiceDesignPage() {
           <section>
             <h3 className="text-base font-semibold mb-3">{tr("টেমপ্লেট", "Template")}</h3>
             <div className="grid grid-cols-3 gap-4">
-              {TEMPLATES.map((n) => {
+              {TEMPLATES.map((n, idx) => {
                 const active = template === n;
+                const isLocked = idx !== 0 && !isPackageActive;
                 return (
                   <button
                     key={n}
                     type="button"
                     onClick={() => {
-                      if (!isPackageActive) {
+                      if (isLocked) {
                         setLockedTitle(tr("টেমপ্লেট", "Template"));
                         setLockedOpen(true);
                         return;
                       }
-                      setTemplate(n); persist({ invoiceTemplate: n });
+                      setTemplate(n); persist({ invoiceTemplate: n }, true);
                     }}
                     className={cn(
                       "relative rounded-lg border-2 p-2 transition text-center space-y-2 bg-background overflow-hidden",
-                      active && isPackageActive ? "shadow-md" : "border-border hover:border-foreground/30"
+                      active ? "shadow-md" : "border-border hover:border-foreground/30"
                     )}
-                    style={active && isPackageActive ? { borderColor: theme } : undefined}
+                    style={active ? { borderColor: theme } : undefined}
                   >
-                    <div className={cn("aspect-[3/4] rounded overflow-hidden border bg-white", !isPackageActive && "opacity-40")}>
+                    <div className={cn("aspect-[3/4] rounded overflow-hidden border bg-white", isLocked && "opacity-40")}>
                       <TemplateThumbnail n={n} theme={theme} />
                     </div>
                     <div
-                      className={cn("text-sm font-medium", !isPackageActive && "opacity-40")}
-                      style={active && isPackageActive ? { color: theme } : undefined}
+                      className={cn("text-sm font-medium", isLocked && "opacity-40")}
+                      style={active ? { color: theme } : undefined}
                     >
                       {tr("টেমপ্লেট", "Template")} {lang === "bn" ? toBn(n) : n}
                     </div>
-                    {!isPackageActive && (
+                    {isLocked && (
                       <>
                         <div className="absolute top-0 right-0 z-10 pointer-events-none">
                           <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] font-bold py-1 w-24 text-center shadow-md rotate-45 translate-x-8 translate-y-1">
