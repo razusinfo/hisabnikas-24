@@ -542,28 +542,29 @@ function InvoiceDesignPage() {
           <section>
             <h3 className="text-base font-semibold mb-3">{tr("ফন্ট স্টাইল", "Font Style")}</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {INVOICE_FONT_FAMILIES.map((f) => {
+              {INVOICE_FONT_FAMILIES.map((f, idx) => {
                 const active = fontFamily === f.value;
+                const isLocked = idx !== 0 && !isPackageActive;
                 return (
                   <button
                     key={f.value}
                     type="button"
                     onClick={() => {
-                      if (!isPackageActive) {
+                      if (isLocked) {
                         setLockedTitle(tr("ফন্ট স্টাইল", "Font Style"));
                         setLockedOpen(true);
                         return;
                       }
-                      setFontFamily(f.value); persist({ invoiceFontFamily: f.value });
+                      setFontFamily(f.value); persist({ invoiceFontFamily: f.value }, true);
                     }}
-                    style={active && isPackageActive ? { backgroundColor: theme, color: "#fff", fontFamily: f.css } : { fontFamily: f.css }}
+                    style={active ? { backgroundColor: theme, color: "#fff", fontFamily: f.css } : { fontFamily: f.css }}
                     className={cn(
                       "relative h-14 rounded-lg border text-sm font-semibold transition flex items-center justify-center px-2 text-center overflow-hidden",
-                      active && isPackageActive ? "border-transparent" : "bg-background hover:bg-muted border-border"
+                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
                     )}
                   >
-                    <span className={cn(!isPackageActive && "opacity-40")}>{f.label[lang === "bn" ? "bn" : "en"]}</span>
-                    {!isPackageActive && (
+                    <span className={cn(isLocked && "opacity-40")}>{f.label[lang === "bn" ? "bn" : "en"]}</span>
+                    {isLocked && (
                       <>
                         <div className="absolute top-0 right-0 z-10 pointer-events-none">
                           <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[8px] font-bold py-0.5 w-16 text-center shadow-sm rotate-45 translate-x-5 -translate-y-0.5">
