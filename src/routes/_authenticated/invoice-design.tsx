@@ -585,30 +585,31 @@ function InvoiceDesignPage() {
           <section>
             <h3 className="text-base font-semibold mb-3">{tr("ফন্ট ওয়েট", "Font Weight")}</h3>
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-              {INVOICE_FONT_WEIGHTS.map((w) => {
+              {INVOICE_FONT_WEIGHTS.map((w, idx) => {
                 const active = fontWeight === w.value;
+                const isLocked = idx !== 0 && !isPackageActive;
                 return (
                   <button
                     key={w.value}
                     type="button"
                     onClick={() => {
-                      if (!isPackageActive) {
+                      if (isLocked) {
                         setLockedTitle(tr("ফন্ট ওয়েট", "Font Weight"));
                         setLockedOpen(true);
                         return;
                       }
-                      setFontWeight(w.value); persist({ invoiceFontWeight: w.value });
+                      setFontWeight(w.value); persist({ invoiceFontWeight: w.value }, true);
                     }}
-                    style={active && isPackageActive
+                    style={active
                       ? { backgroundColor: theme, color: "#fff", fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }
                       : { fontWeight: w.value, fontFamily: getInvoiceFontCss(fontFamily) }}
                     className={cn(
                       "relative h-12 rounded-lg border text-sm transition flex items-center justify-center px-1 text-center overflow-hidden",
-                      active && isPackageActive ? "border-transparent" : "bg-background hover:bg-muted border-border"
+                      active ? "border-transparent" : "bg-background hover:bg-muted border-border"
                     )}
                   >
-                    <span className={cn(!isPackageActive && "opacity-40")}>{w.label[lang === "bn" ? "bn" : "en"]}</span>
-                    {!isPackageActive && (
+                    <span className={cn(isLocked && "opacity-40")}>{w.label[lang === "bn" ? "bn" : "en"]}</span>
+                    {isLocked && (
                       <>
                         <div className="absolute top-0 right-0 z-10 pointer-events-none">
                           <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[8px] font-bold py-0.5 w-16 text-center shadow-sm rotate-45 translate-x-5 -translate-y-0.5">
