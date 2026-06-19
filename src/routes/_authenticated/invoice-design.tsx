@@ -456,23 +456,43 @@ function InvoiceDesignPage() {
           <section>
             <h3 className="text-base font-semibold mb-3">{tr("রঙ", "Color")}</h3>
             <div className="grid grid-cols-6 gap-3">
-              {THEMES.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => {
-                    setTheme(c); persist({ invoiceTheme: c }, true);
-                  }}
-                  style={{ backgroundColor: c }}
-                  className={cn(
-                    "relative h-12 rounded-lg flex items-center justify-center transition ring-offset-2",
-                    theme === c ? "ring-2 ring-offset-background ring-foreground/40 scale-105" : "hover:scale-105"
-                  )}
-                  aria-label={c}
-                >
-                  {theme === c && <Check className="h-5 w-5 text-white" />}
-                </button>
-              ))}
+              {THEMES.map((c, idx) => {
+                const isLocked = idx !== 0 && !isPackageActive;
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => {
+                      if (isLocked) {
+                        setLockedTitle(tr("রঙ", "Color"));
+                        setLockedOpen(true);
+                        return;
+                      }
+                      setTheme(c); persist({ invoiceTheme: c }, true);
+                    }}
+                    style={{ backgroundColor: c }}
+                    className={cn(
+                      "relative h-12 rounded-lg flex items-center justify-center transition ring-offset-2 overflow-hidden",
+                      theme === c ? "ring-2 ring-offset-background ring-foreground/40 scale-105" : "hover:scale-105"
+                    )}
+                    aria-label={c}
+                  >
+                    {theme === c && <Check className="h-5 w-5 text-white" />}
+                    {isLocked && (
+                      <>
+                        <div className="absolute top-0 right-0 z-10 pointer-events-none">
+                          <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[8px] font-bold py-0.5 w-16 text-center shadow-sm rotate-45 translate-x-5 -translate-y-0.5">
+                            প্যাকেজ
+                          </div>
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center z-[1]">
+                          <Lock className="h-4 w-4 text-foreground/70" />
+                        </div>
+                      </>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </section>
 
