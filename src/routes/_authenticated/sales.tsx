@@ -104,6 +104,8 @@ function SalesPage() {
   const [items, setItems] = useState<any[] | null>(null);
   const [editing, setEditing] = useState(false);
   const [editDate, setEditDate] = useState<string>("");
+  const [editCustomerName, setEditCustomerName] = useState<string>("");
+  const [editMethod, setEditMethod] = useState<string>("cash");
   const [saving, setSaving] = useState(false);
 
   // New sale dialog state
