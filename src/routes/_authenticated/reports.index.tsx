@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
@@ -36,7 +38,7 @@ export const Route = createFileRoute("/_authenticated/reports/")({
   component: ReportsIndexPage,
 });
 
-// Only these 4 are free; everything else is locked behind a package.
+// Free for everyone; others unlocked for users with an active paid package.
 const FREE_SLUGS = new Set(["purchase", "sales", "expenses", "stock-summary"]);
 
 const reportCards = [
@@ -62,6 +64,31 @@ function ReportsIndexPage() {
   const bn = lang === "bn";
   const [lockedOpen, setLockedOpen] = useState(false);
   const [lockedTitle, setLockedTitle] = useState("");
+
+  const subQuery = useQuery({
+    queryKey: ["my-subscription"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      const uid = u.user?.id;
+      if (!uid) return null;
+      const { data } = await supabase
+        .from("subscriptions")
+        .select("plan,status,expires_at")
+        .eq("user_id", uid)
+        .maybeSingle();
+      return data;
+    },
+  });
+
+  const isPackageActive = (() => {
+    const s = subQuery.data;
+    if (!s) return false;
+    if (s.status !== "active") return false;
+    if (s.plan === "trial" || s.plan === "free") return false;
+    if (!s.expires_at) return false;
+    return new Date(s.expires_at).getTime() > Date.now();
+  })();
+
 
   const cardInner = (card: (typeof reportCards)[number], locked: boolean) => {
     const Icon = card.icon;
@@ -104,7 +131,7 @@ function ReportsIndexPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {reportCards.map((card) => {
-          const isFree = FREE_SLUGS.has(card.slug);
+          const isFree = FREE_SLUGS.has(card.slug) || isPackageActive;
           if (isFree) {
             return (
               <Link
