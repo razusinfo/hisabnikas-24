@@ -1,81 +1,43 @@
-## লক্ষ্য
+আপনি ৪টা বড় feature চেয়েছেন। সবকিছু একসাথে এক message এ করলে existing data ভাঙবে এবং review করা যাবে না। তাই ধাপে ধাপে — প্রতি phase শেষে আপনি verify করবেন, তারপর পরের phase।
 
-Android ফোনের bKash/Nagad/Rocket/Upay SMS → SMS Forwarder অ্যাপ → Lovable Cloud public API → ডাটাবেস → POS-এ অটো পেমেন্ট এন্ট্রি (cashbook-এ income)।
+## Phase 1 — Multi-branch foundation (এই turn এ শুরু)
 
-## ১. ডাটাবেস (migration)
+**Database**
+- `companies` table (owner_id, name, address, logo)
+- `branches` table (company_id, name, code, address, phone, is_main, is_active)
+- `branch_users` table (branch_id, user_id, role) — কোন user কোন branch এ কাজ করতে পারবে
+- সব existing transactional table এ `branch_id uuid` যোগ:
+  `sales`, `purchases`, `expenses`, `cashbook`, `customers`, `products`, `mfs_sms_inbox`, `mfs_accounts`
+- প্রতি owner এর জন্য default "Main Branch" auto-create করে existing rows backfill
+- Helper functions: `user_branches(uid)`, `current_branch_id()` (session setting), `user_can_access_branch(uid, branch_id)`
+- RLS update: super_admin → সব branch; অন্যরা → শুধু own branch (via `branch_users`)
 
-নতুন টেবিল `mfs_sms_inbox`:
-- `owner_id` (uuid) — কোন ইউজারের
-- `device_secret_hash` — কোন ফোন থেকে এসেছে যাচাইয়ের জন্য
-- `raw_body` (text) — পুরো SMS
-- `sender` (text) — যেমন `bKash`, `NAGAD`
-- `received_at` (timestamptz)
-- `provider` (bkash/nagad/rocket/upay/unknown) — পার্স করে বসানো
-- `txn_id` (text, unique per owner) — ডুপ্লিকেট ঠেকাতে
-- `amount` (numeric)
-- `sender_msisdn` (text) — যিনি পাঠিয়েছেন
-- `account_number` (text) — কোন মার্চেন্ট/পার্সোনালে এসেছে (মিল গেলে `mfs_accounts` থেকে)
-- `status` — `pending` / `posted` / `ignored` / `duplicate`
-- `cashbook_id` (uuid, nullable) — যে cashbook এন্ট্রি বানানো হয়েছে
-- `error` (text)
+**UI**
+- `/branches` page — branch list, create/edit/deactivate
+- AppShell এ Branch Switcher dropdown (top bar) — selected branch localStorage এ save, সব query এ filter
+- নতুন Sale/Purchase/Expense entry এ auto `branch_id = current branch`
 
-আরও:
-- `profiles` টেবিলে `sms_device_secret_hash` ও `sms_auto_post` (boolean, default true) কলাম যোগ।
-- RLS: শুধু owner দেখতে/মুছতে/আপডেট পারবেন; insert হবে শুধু service role দিয়ে (edge function)।
-- GRANT যথাযথভাবে।
+## Phase 2 — Roles & Permissions
+- `app_role` enum extend: `owner`, `manager`, `cashier`, `store_manager`, `accountant`, `salesman`
+- `permissions` + `role_permissions` table (granular: `sales.create`, `purchase.delete`, `report.view` etc.)
+- `/users` page — invite user, assign role per branch
+- Frontend route guard + button-level permission check via `hasPermission(key)` hook
 
-## ২. Public API endpoint
+## Phase 3 — Audit Log
+- `audit_logs` table (actor, branch_id, table_name, row_id, action, old_data, new_data, ip, ua, created_at)
+- Generic Postgres trigger function attached to all main tables (INSERT/UPDATE/DELETE)
+- `/audit-log` page — filterable timeline (Super Admin/Owner only)
 
-`src/routes/api/public/mfs-sms.ts` — `POST` হ্যান্ডলার:
-1. Body: `{ device_secret, sender, body, received_at }`
-2. `device_secret` থেকে hash বানিয়ে `profiles.sms_device_secret_hash` মিলিয়ে owner খুঁজে বের করব। না পেলে 401।
-3. SMS body পার্সার (নিচে): provider, amount, txn_id, sender_msisdn, account_number বের করে।
-4. `mfs_sms_inbox`-এ insert (txn_id ডুপ্লিকেট হলে `duplicate` স্ট্যাটাস)।
-5. `profiles.sms_auto_post = true` হলে `cashbook`-এ income এন্ট্রি বানিয়ে `cashbook_id` সেট ও `status='posted'`।
-6. `supabaseAdmin` ব্যবহার (verified caller, RLS bypass প্রয়োজন)।
-7. JSON রেসপন্স: `{ ok, status, txn_id, cashbook_id }`।
+## Phase 4 — Warehouse + Stock transfer
+- `warehouses` table (branch_id, name, code)
+- `product_stock` table (product_id, warehouse_id, qty) — replaces single `products.stock`
+- `stock_transfers` + `stock_transfer_items` (from_warehouse, to_warehouse, status: draft/in_transit/received)
+- Sale/Purchase এ warehouse picker
+- `/warehouses` + `/stock-transfer` pages
 
-### SMS parser (provider-specific regex)
+## Notes
+- কোনো existing data মুছবে না — শুধু `branch_id` যোগ করে default branch এ backfill
+- প্রতিটা migration আপনাকে approve করতে হবে
+- প্রতিটা phase এর পর verify করে বলবেন → পরের phase শুরু হবে
 
-- **bKash**: `Cash In Tk 500.00 from 0171XXXXXXX ... TrxID ABC123 at 12/06/2026 ...`
-- **Nagad**: `Money Received. Amount: Tk 500.00 ... Sender: 0171... TxnID: XYZ`
-- **Rocket / Upay**: similar regex প্যাটার্ন।
-ম্যাচ না হলে provider='unknown', status='ignored'।
-
-## ৩. ইউজার সেটিংস UI
-
-`/mobile-banking` পৃষ্ঠায় নতুন কার্ড "SMS Auto-Capture":
-- "ডিভাইস সিক্রেট তৈরি করুন" বাটন → র‌্যান্ডম টোকেন জেনারেট, hash সেইভ, প্লেইন টোকেন একবার দেখানো হবে copy করার জন্য।
-- POST URL দেখানো হবে: `https://{published}/api/public/mfs-sms`
-- SMS Forwarder অ্যাপে কীভাবে সেট করতে হয় তার সংক্ষিপ্ত নির্দেশনা (URL, JSON template, header)।
-- Auto-post toggle (`sms_auto_post`)।
-
-## ৪. Inbox UI
-
-`/mobile-banking`-এ নতুন কার্ড "সাম্প্রতিক SMS লেনদেন":
-- `mfs_sms_inbox` থেকে সর্বশেষ ৫০টি দেখাবে: তারিখ, provider, amount, txn_id, sender, status।
-- pending/ignored row-এ "ম্যানুয়ালি পোস্ট করুন" বা "ডিলিট" বাটন।
-
-## ৫. টেকনিক্যাল বিস্তারিত
-
-- Edge endpoint পাবলিক — `/api/public/mfs-sms`। নিরাপত্তা: `device_secret` SHA-256 hash মিলিয়ে owner verify। Rate-limit আপাতত নেই (ফোন থেকে কম ভলিউম)।
-- Cashbook insert: `type='income'`, `method=` provider, `amount`, `description='SMS: '+raw[:60]`, `note='TrxID '+txn_id`, `entry_date=received_at::date`, `owner_id=owner`।
-- Idempotency: `mfs_sms_inbox` এ unique `(owner_id, txn_id)` constraint।
-- Time zone: SMS সময় Bangladesh time — `received_at` ISO-8601 হিসেবে নেব; না দিলে `now()`।
-
-## ডেলিভারেবল
-
-1. মাইগ্রেশন: টেবিল + কলাম + RLS + GRANT।
-2. `src/routes/api/public/mfs-sms.ts` — parser সহ public POST endpoint।
-3. `src/routes/_authenticated/mobile-banking.tsx`-এ Setup কার্ড + Inbox কার্ড।
-4. একটি ছোট server function `generate_sms_device_secret` যা নতুন secret তৈরি করে hash সেইভ করবে এবং প্লেইন টোকেন রিটার্ন করবে।
-
-## আপনাকে যা করতে হবে
-
-প্লেস্টোরের কোনো SMS Forwarder অ্যাপ (যেমন "SMS Forwarder" / "SMS to URL") ইনস্টল করে:
-- POST URL: পাবলিশড URL
-- Body template: `{"device_secret":"…","sender":"{sender}","body":"{message}","received_at":"{timestamp}"}`
-- Header: `Content-Type: application/json`
-- Trigger: bKash/Nagad/Rocket/Upay sender filter
-
-## অনুমোদন দিলে শুরু করব। কিছু পরিবর্তন চান?
+এই plan ঠিক থাকলে আমি **Phase 1 (Multi-branch)** এর migration এখনই তৈরি করব।
