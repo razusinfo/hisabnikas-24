@@ -134,11 +134,11 @@ function ReportsIndexPage() {
         {reportCards.map((card) => {
           const isFree = FREE_SLUGS.has(card.slug) || isPackageActive;
           if (isFree) {
-            if (card.slug === "mobile-banking") {
+            if (card.slug === "mobile-banking" || card.slug === "unmatched-payments") {
               return (
                 <Link
                   key={card.slug}
-                  to="/mobile-banking"
+                  to={card.slug === "mobile-banking" ? "/mobile-banking" : "/unmatched-payments"}
                   className="group block rounded-2xl border border-border bg-card hover:shadow-md transition-all hover:border-primary/30"
                 >
                   {cardInner(card, false)}
