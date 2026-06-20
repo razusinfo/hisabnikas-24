@@ -195,6 +195,118 @@ function MobileBankingDashboard() {
     onError: (e: any) => toast.error(e?.message ?? "মুছতে পারিনি"),
   });
 
+  // ============ SMS Auto-Capture ============
+  const [newSecret, setNewSecret] = useState<string | null>(null);
+  const profileQ = useQuery({
+    queryKey: ["mfs-sms-profile"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      const uid = u.user?.id;
+      if (!uid) return null;
+      const { data, error } = await (supabase as any)
+        .from("profiles")
+        .select("sms_device_secret_hash, sms_auto_post")
+        .eq("id", uid)
+        .maybeSingle();
+      if (error) throw error;
+      return data as { sms_device_secret_hash: string | null; sms_auto_post: boolean } | null;
+    },
+  });
+
+  const genSecret = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await (supabase as any).rpc("generate_sms_device_secret");
+      if (error) throw error;
+      return data as string;
+    },
+    onSuccess: (token) => {
+      setNewSecret(token);
+      toast.success("নতুন সিক্রেট তৈরি হয়েছে। কপি করে রাখুন।");
+      qc.invalidateQueries({ queryKey: ["mfs-sms-profile"] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "সিক্রেট তৈরি করা যায়নি"),
+  });
+
+  const toggleAutoPost = useMutation({
+    mutationFn: async (enabled: boolean) => {
+      const { error } = await (supabase as any).rpc("set_sms_auto_post", { _enabled: enabled });
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["mfs-sms-profile"] }),
+    onError: (e: any) => toast.error(e?.message ?? "আপডেট করা যায়নি"),
+  });
+
+  const smsInboxQ = useQuery({
+    queryKey: ["mfs-sms-inbox"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("mfs_sms_inbox")
+        .select("id,raw_body,sender,received_at,provider,txn_id,amount,sender_msisdn,status,cashbook_id,error,created_at")
+        .order("received_at", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return (data ?? []) as Array<any>;
+    },
+  });
+
+  const deleteSms = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await (supabase as any).from("mfs_sms_inbox").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("মুছে ফেলা হয়েছে");
+      qc.invalidateQueries({ queryKey: ["mfs-sms-inbox"] });
+    },
+  });
+
+  const postSms = useMutation({
+    mutationFn: async (row: any) => {
+      if (row.amount == null || row.provider === "unknown") {
+        throw new Error("পরিমাণ বা প্রোভাইডার পার্স করা যায়নি");
+      }
+      const { data: u } = await supabase.auth.getUser();
+      const uid = u.user?.id;
+      if (!uid) throw new Error("লগইন প্রয়োজন");
+      const providerLabel: Record<string, string> = {
+        bkash: "bKash", nagad: "Nagad", rocket: "Rocket", upay: "Upay",
+      };
+      const { data: cb, error: cbErr } = await (supabase as any)
+        .from("cashbook")
+        .insert({
+          owner_id: uid,
+          entry_date: String(row.received_at).slice(0, 10),
+          type: "income",
+          category: "Mobile Banking",
+          description: `SMS: ${providerLabel[row.provider] ?? row.provider}${row.sender_msisdn ? ` from ${row.sender_msisdn}` : ""}`.slice(0, 200),
+          amount: row.amount,
+          method: providerLabel[row.provider] ?? row.provider,
+          note: row.txn_id ? `TrxID ${row.txn_id}` : null,
+        })
+        .select("id")
+        .single();
+      if (cbErr) throw cbErr;
+      const { error: upErr } = await (supabase as any)
+        .from("mfs_sms_inbox")
+        .update({ status: "posted", cashbook_id: cb.id, error: null })
+        .eq("id", row.id);
+      if (upErr) throw upErr;
+    },
+    onSuccess: () => {
+      toast.success("পোস্ট হয়েছে");
+      qc.invalidateQueries({ queryKey: ["mfs-sms-inbox"] });
+      qc.invalidateQueries({ queryKey: ["mobile-banking-entries"] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "পোস্ট করা যায়নি"),
+  });
+
+  const postUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/api/public/mfs-sms`
+      : "/api/public/mfs-sms";
+
+
+
 
 
 
