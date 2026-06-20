@@ -383,7 +383,7 @@ function CurrentPackagePage() {
                   )}
                 </div>
               );
-            })}
+            }); })()}
           </div>
 
           {(myRequests.data?.length ?? 0) > 0 && (
