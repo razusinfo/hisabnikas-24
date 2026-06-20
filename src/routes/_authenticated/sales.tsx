@@ -780,7 +780,7 @@ function SalesPage() {
           {viewSale && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div><div className="text-muted-foreground text-xs">{t("date")}</div>{fmtDate(viewSale.created_at, lang)}</div>
+                <div><div className="text-muted-foreground text-xs">{t("date")}</div>{editing ? <DateInput value={editDate} onChange={setEditDate} clearable={false} className="h-8" /> : fmtDate(viewSale.created_at, lang)}</div>
                 <div><div className="text-muted-foreground text-xs">{t("customer")}</div>{viewSale.customers?.name ?? t("walkIn")}</div>
                 <div><div className="text-muted-foreground text-xs">{t("method")}</div>{methodLabel(viewSale.payment_method)}</div>
                 <div><div className="text-muted-foreground text-xs">{t("status")}</div>{statusBadge(viewSale)}</div>
