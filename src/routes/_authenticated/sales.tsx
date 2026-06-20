@@ -405,7 +405,7 @@ function SalesPage() {
       for (const i of items) {
         const { error } = await supabase
           .from("sale_items")
-          .update({ qty: Number(i.qty), unit_price: Number(i.unit_price), line_total: Number(i.qty) * Number(i.unit_price) })
+          .update({ qty: Number(i.qty), unit_price: Number(i.unit_price), line_total: Number(i.qty) * Number(i.unit_price), product_id: i.product_id ?? null, product_name: i.product_name })
           .eq("id", i.id);
         if (error) throw error;
       }
