@@ -165,7 +165,8 @@ function CashbookPage() {
       toast.success(labels.updated);
     } else {
       const { data: u } = await supabase.auth.getUser();
-      const { error } = await (supabase as any).from("cashbook").insert({ ...payload, owner_id: u.user!.id });
+      const branch_id = await resolveBranchIdForInsert();
+      const { error } = await (supabase as any).from("cashbook").insert({ ...payload, owner_id: u.user!.id, branch_id });
       if (error) return toast.error(error.message);
       toast.success(labels.created);
     }
