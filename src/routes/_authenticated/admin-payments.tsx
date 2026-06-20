@@ -38,6 +38,20 @@ type Sub = {
   expires_at: string | null;
 };
 
+type UserRow = {
+  user_id: string;
+  full_name: string | null;
+  company_name: string | null;
+  phone: string | null;
+  email: string | null;
+  created_at: string | null;
+  plan: string | null;
+  status: string | null;
+  expires_at: string | null;
+  message_credits: number;
+  roles: string[];
+};
+
 function AdminPaymentsPage() {
   const qc = useQueryClient();
   const [rejectNote, setRejectNote] = useState<Record<string, string>>({});
