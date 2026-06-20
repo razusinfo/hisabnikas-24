@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Image as ImageIcon, Upload, X, Plus, Settings2 } from "lucide-react";
 import { toast } from "sonner";
 import { CategoryManagerDialog } from "@/components/CategoryManagerDialog";
+import { resolveBranchIdForInsert } from "@/lib/current-branch";
 
 export type ProductFormEditing = {
   id: string;
@@ -187,9 +188,10 @@ export function ProductFormDialog({
         return null;
       } else {
         const { data: u } = await supabase.auth.getUser();
+        const branch_id = await resolveBranchIdForInsert();
         const { data: row, error } = await supabase
           .from("products")
-          .insert({ ...payload, owner_id: u.user!.id })
+          .insert({ ...payload, owner_id: u.user!.id, branch_id } as any)
           .select("id,name,sell_price,cost_price,stock,category_id")
           .single();
         if (error) throw error;

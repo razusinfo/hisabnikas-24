@@ -17,6 +17,7 @@ import { Eye, CreditCard, Printer, Trash2, Search, Plus, Pencil, Save as SaveIco
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
+import { resolveBranchIdForInsert } from "@/lib/current-branch";
 import { useInvoicePreview } from "@/components/InvoicePreviewProvider";
 import { ProductFormDialog, type CreatedProduct } from "@/components/ProductFormDialog";
 
@@ -243,12 +244,14 @@ function SalesPage() {
     setNcSaving(true);
     try {
       const { data: u } = await supabase.auth.getUser();
+      const branch_id = await resolveBranchIdForInsert();
       const { data, error } = await supabase.from("customers").insert({
         owner_id: u.user!.id,
+        branch_id,
         name: ncName.trim(),
         phone: ncPhone.trim() || null,
         address: ncAddress.trim() || null,
-      }).select("id,name,phone").single();
+      } as any).select("id,name,phone").single();
       if (error) throw error;
       qc.invalidateQueries({ queryKey: ["customers-list"] });
       qc.invalidateQueries({ queryKey: ["customers"] });
@@ -317,8 +320,10 @@ function SalesPage() {
         d.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
         saleCreatedAt = d.toISOString();
       }
+      const branch_id = await resolveBranchIdForInsert();
       const { data: sale, error } = await supabase.from("sales").insert({
         owner_id: u.user!.id,
+        branch_id,
         customer_id: customerId === "walkin" ? null : customerId,
         invoice_no,
         subtotal: newSubtotal,
@@ -331,7 +336,7 @@ function SalesPage() {
         status,
         note: noteWithDelivery || null,
         ...(saleCreatedAt ? { created_at: saleCreatedAt } : {}),
-      }).select().single();
+      } as any).select().single();
       if (error) throw error;
       const rows = lines.map((l) => ({
         sale_id: sale.id,

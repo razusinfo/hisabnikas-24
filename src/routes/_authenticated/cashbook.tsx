@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney, fmtDate } from "@/lib/format";
+import { resolveBranchIdForInsert } from "@/lib/current-branch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -164,7 +165,8 @@ function CashbookPage() {
       toast.success(labels.updated);
     } else {
       const { data: u } = await supabase.auth.getUser();
-      const { error } = await (supabase as any).from("cashbook").insert({ ...payload, owner_id: u.user!.id });
+      const branch_id = await resolveBranchIdForInsert();
+      const { error } = await (supabase as any).from("cashbook").insert({ ...payload, owner_id: u.user!.id, branch_id });
       if (error) return toast.error(error.message);
       toast.success(labels.created);
     }
