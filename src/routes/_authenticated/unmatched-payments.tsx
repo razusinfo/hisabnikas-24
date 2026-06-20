@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { fmtMoney, fmtDate } from "@/lib/format";
 import { toast } from "sonner";
-import { Inbox, Search, Link2, X, Eye, RefreshCw } from "lucide-react";
+import { Search, Link2, X, Eye, RefreshCw } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/unmatched-payments")({
   component: UnmatchedPayments,
