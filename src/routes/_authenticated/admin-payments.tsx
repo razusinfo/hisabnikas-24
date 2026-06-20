@@ -157,6 +157,19 @@ function AdminPaymentsPage() {
     );
   }, [subsList.data, q]);
 
+  const filteredUsers = useMemo(() => {
+    const s = userQ.trim().toLowerCase();
+    const rows = usersList.data ?? [];
+    if (!s) return rows;
+    return rows.filter(
+      (r) =>
+        (r.full_name ?? "").toLowerCase().includes(s) ||
+        (r.company_name ?? "").toLowerCase().includes(s) ||
+        (r.phone ?? "").toLowerCase().includes(s) ||
+        (r.email ?? "").toLowerCase().includes(s),
+    );
+  }, [usersList.data, userQ]);
+
   if (meAdmin.isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
