@@ -378,7 +378,7 @@ function CurrentPackagePage() {
                         setSelected({ tier, price: pricing.price, id: pricing.id, days: pricing.days })
                       }
                     >
-                      {isHighlight ? "এখনই নিন" : "শুরু করুন"}
+                      প্যাকেজ কিনুন
                     </Button>
                   )}
                 </div>
