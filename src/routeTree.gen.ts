@@ -14,6 +14,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedUnmatchedPaymentsRouteImport } from './routes/_authenticated/unmatched-payments'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSalesRouteImport } from './routes/_authenticated/sales'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
@@ -64,6 +65,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedUnmatchedPaymentsRoute =
+  AuthenticatedUnmatchedPaymentsRouteImport.update({
+    id: '/unmatched-payments',
+    path: '/unmatched-payments',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -226,6 +233,7 @@ export interface FileRoutesByFullPath {
   '/reports': typeof AuthenticatedReportsRouteWithChildren
   '/sales': typeof AuthenticatedSalesRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/unmatched-payments': typeof AuthenticatedUnmatchedPaymentsRoute
   '/reports/$slug': typeof AuthenticatedReportsSlugRoute
   '/api/public/mfs-sms': typeof ApiPublicMfsSmsRoute
   '/reports/': typeof AuthenticatedReportsIndexRoute
@@ -256,6 +264,7 @@ export interface FileRoutesByTo {
   '/purchases': typeof AuthenticatedPurchasesRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/unmatched-payments': typeof AuthenticatedUnmatchedPaymentsRoute
   '/reports/$slug': typeof AuthenticatedReportsSlugRoute
   '/api/public/mfs-sms': typeof ApiPublicMfsSmsRoute
   '/reports': typeof AuthenticatedReportsIndexRoute
@@ -289,6 +298,7 @@ export interface FileRoutesById {
   '/_authenticated/reports': typeof AuthenticatedReportsRouteWithChildren
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/unmatched-payments': typeof AuthenticatedUnmatchedPaymentsRoute
   '/_authenticated/reports/$slug': typeof AuthenticatedReportsSlugRoute
   '/api/public/mfs-sms': typeof ApiPublicMfsSmsRoute
   '/_authenticated/reports/': typeof AuthenticatedReportsIndexRoute
@@ -322,6 +332,7 @@ export interface FileRouteTypes {
     | '/reports'
     | '/sales'
     | '/settings'
+    | '/unmatched-payments'
     | '/reports/$slug'
     | '/api/public/mfs-sms'
     | '/reports/'
@@ -352,6 +363,7 @@ export interface FileRouteTypes {
     | '/purchases'
     | '/sales'
     | '/settings'
+    | '/unmatched-payments'
     | '/reports/$slug'
     | '/api/public/mfs-sms'
     | '/reports'
@@ -384,6 +396,7 @@ export interface FileRouteTypes {
     | '/_authenticated/reports'
     | '/_authenticated/sales'
     | '/_authenticated/settings'
+    | '/_authenticated/unmatched-payments'
     | '/_authenticated/reports/$slug'
     | '/api/public/mfs-sms'
     | '/_authenticated/reports/'
@@ -438,6 +451,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/unmatched-payments': {
+      id: '/_authenticated/unmatched-payments'
+      path: '/unmatched-payments'
+      fullPath: '/unmatched-payments'
+      preLoaderRoute: typeof AuthenticatedUnmatchedPaymentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
@@ -651,6 +671,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRouteWithChildren
   AuthenticatedSalesRoute: typeof AuthenticatedSalesRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedUnmatchedPaymentsRoute: typeof AuthenticatedUnmatchedPaymentsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -674,6 +695,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedReportsRoute: AuthenticatedReportsRouteWithChildren,
   AuthenticatedSalesRoute: AuthenticatedSalesRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedUnmatchedPaymentsRoute: AuthenticatedUnmatchedPaymentsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
