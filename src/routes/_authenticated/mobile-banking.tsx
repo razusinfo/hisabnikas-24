@@ -103,6 +103,99 @@ function MobileBankingDashboard() {
   const [to, setTo] = useState<string>(todayISO());
   const [search, setSearch] = useState("");
 
+  // MFS Accounts state
+  const qc = useQueryClient();
+  const [acctOpen, setAcctOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [acctForm, setAcctForm] = useState<{ provider: Exclude<Method, "all" | "other">; account_name: string; account_number: string; note: string }>({
+    provider: "bkash",
+    account_name: "",
+    account_number: "",
+    note: "",
+  });
+
+  const accountsQ = useQuery({
+    queryKey: ["mfs-accounts"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("mfs_accounts")
+        .select("id,provider,account_name,account_number,note,created_at")
+        .order("provider", { ascending: true })
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as Array<{ id: string; provider: Exclude<Method, "all" | "other">; account_name: string; account_number: string; note: string | null; created_at: string }>;
+    },
+  });
+
+  function openAddAccount(provider?: Exclude<Method, "all" | "other">) {
+    setEditingId(null);
+    setAcctForm({ provider: provider ?? "bkash", account_name: "", account_number: "", note: "" });
+    setAcctOpen(true);
+  }
+  function openEditAccount(a: { id: string; provider: any; account_name: string; account_number: string; note: string | null }) {
+    setEditingId(a.id);
+    setAcctForm({ provider: a.provider, account_name: a.account_name, account_number: a.account_number, note: a.note ?? "" });
+    setAcctOpen(true);
+  }
+
+  const saveAcct = useMutation({
+    mutationFn: async () => {
+      if (!acctForm.account_name.trim() || !acctForm.account_number.trim()) {
+        throw new Error("নাম ও নাম্বার দিন");
+      }
+      const { data: userRes } = await supabase.auth.getUser();
+      const uid = userRes.user?.id;
+      if (!uid) throw new Error("লগইন প্রয়োজন");
+      if (editingId) {
+        const { error } = await (supabase as any)
+          .from("mfs_accounts")
+          .update({
+            provider: acctForm.provider,
+            account_name: acctForm.account_name.trim(),
+            account_number: acctForm.account_number.trim(),
+            note: acctForm.note.trim() || null,
+          })
+          .eq("id", editingId);
+        if (error) throw error;
+      } else {
+        const { error } = await (supabase as any).from("mfs_accounts").insert({
+          owner_id: uid,
+          provider: acctForm.provider,
+          account_name: acctForm.account_name.trim(),
+          account_number: acctForm.account_number.trim(),
+          note: acctForm.note.trim() || null,
+        });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      toast.success(editingId ? "অ্যাকাউন্ট আপডেট হয়েছে" : "অ্যাকাউন্ট যোগ হয়েছে");
+      setAcctOpen(false);
+      qc.invalidateQueries({ queryKey: ["mfs-accounts"] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "সেইভ করা যায়নি"),
+  });
+
+  const deleteAcct = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await (supabase as any).from("mfs_accounts").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("মুছে ফেলা হয়েছে");
+      qc.invalidateQueries({ queryKey: ["mfs-accounts"] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "মুছতে পারিনি"),
+  });
+
+  function applyPreset(p: Preset) {
+    setPreset(p);
+    if (p === "today") {
+      setFrom(todayISO());
+      setTo(todayISO());
+    } else if (p === "week") {
+
+
   function applyPreset(p: Preset) {
     setPreset(p);
     if (p === "today") {
