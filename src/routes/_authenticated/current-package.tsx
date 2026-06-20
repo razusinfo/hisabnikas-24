@@ -49,7 +49,7 @@ const TIERS: Tier[] = [
   {
     key: "basic",
     name: "Basic",
-    monthly: { id: "basic_30", price: 0, days: 30 },
+    monthly: { id: "basic_15", price: 0, days: 15 },
     yearly: { id: "basic_365", price: 0, days: 365 },
   },
   {
