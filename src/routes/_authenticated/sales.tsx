@@ -47,7 +47,7 @@ export async function fetchSales() {
 async function fetchSaleItems(saleId: string) {
   const { data, error } = await supabase
     .from("sale_items")
-    .select("id,product_name,qty,unit_price,line_total")
+    .select("id,product_id,product_name,qty,unit_price,line_total")
     .eq("sale_id", saleId);
   if (error) throw error;
   return data ?? [];
