@@ -104,6 +104,8 @@ function SalesPage() {
   const [items, setItems] = useState<any[] | null>(null);
   const [editing, setEditing] = useState(false);
   const [editDate, setEditDate] = useState<string>("");
+  const [editCustomerName, setEditCustomerName] = useState<string>("");
+  const [editMethod, setEditMethod] = useState<string>("cash");
   const [saving, setSaving] = useState(false);
 
   // New sale dialog state
@@ -377,6 +379,8 @@ function SalesPage() {
     setItems(null);
     setEditing(false);
     setEditDate(s.created_at ? new Date(s.created_at).toISOString().slice(0, 10) : "");
+    setEditCustomerName(s.customers?.name ?? "");
+    setEditMethod(s.payment_method ?? "cash");
     const list = await fetchSaleItems(s.id);
     setItems(list);
   }
@@ -418,12 +422,21 @@ function SalesPage() {
         : viewSale.created_at;
       const { error: e2 } = await supabase
         .from("sales")
-        .update({ subtotal, total, due, status: due <= 0 ? "paid" : paid > 0 ? "partial" : "due", created_at: newCreatedAt })
+        .update({ subtotal, total, due, status: due <= 0 ? "paid" : paid > 0 ? "partial" : "due", created_at: newCreatedAt, payment_method: editMethod })
         .eq("id", viewSale.id);
       if (e2) throw e2;
+      let updatedCustomers = viewSale.customers;
+      if (viewSale.customer_id && editCustomerName.trim() && editCustomerName.trim() !== (viewSale.customers?.name ?? "")) {
+        const { error: e3 } = await supabase
+          .from("customers")
+          .update({ name: editCustomerName.trim() })
+          .eq("id", viewSale.customer_id);
+        if (e3) throw e3;
+        updatedCustomers = { ...(viewSale.customers ?? {}), name: editCustomerName.trim() };
+      }
       toast.success(t("save"));
       setEditing(false);
-      setViewSale({ ...viewSale, subtotal, total, due, created_at: newCreatedAt });
+      setViewSale({ ...viewSale, subtotal, total, due, created_at: newCreatedAt, payment_method: editMethod, customers: updatedCustomers });
       qc.invalidateQueries({ queryKey: ["sales"] });
     } catch (e: any) {
       toast.error(e.message);
@@ -781,8 +794,19 @@ function SalesPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div><div className="text-muted-foreground text-xs">{t("date")}</div>{editing ? <DateInput value={editDate} onChange={setEditDate} clearable={false} className="h-8" /> : fmtDate(viewSale.created_at, lang)}</div>
-                <div><div className="text-muted-foreground text-xs">{t("customer")}</div>{viewSale.customers?.name ?? t("walkIn")}</div>
-                <div><div className="text-muted-foreground text-xs">{t("method")}</div>{methodLabel(viewSale.payment_method)}</div>
+                <div><div className="text-muted-foreground text-xs">{t("customer")}</div>{editing && viewSale.customer_id ? <Input value={editCustomerName} onChange={(e) => setEditCustomerName(e.target.value)} className="h-8" /> : (viewSale.customers?.name ?? t("walkIn"))}</div>
+                <div><div className="text-muted-foreground text-xs">{t("method")}</div>{editing ? (
+                  <Select value={editMethod} onValueChange={setEditMethod}>
+                    <SelectTrigger className="h-8"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cash">{t("methodCash")}</SelectItem>
+                      <SelectItem value="card">{t("methodCard")}</SelectItem>
+                      <SelectItem value="mobile">{t("methodMobile")}</SelectItem>
+                      <SelectItem value="bank">{t("methodBank")}</SelectItem>
+                      <SelectItem value="due">{t("methodDue")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : methodLabel(viewSale.payment_method)}</div>
                 <div><div className="text-muted-foreground text-xs">{t("status")}</div>{statusBadge(viewSale)}</div>
               </div>
               <div className="border rounded-md overflow-x-auto">
