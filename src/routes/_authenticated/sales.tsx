@@ -1056,7 +1056,7 @@ function SalesPage() {
                 else if (categoryFilter !== "all") filteredP = filteredP.filter((p) => p.category_id === categoryFilter);
                 if (q2) filteredP = filteredP.filter((p) => `${p.name} ${p.sku ?? ""}`.toLowerCase().includes(q2));
                 return (
-                  <div className="mt-2 max-h-56 overflow-y-auto border rounded-md divide-y">
+                  <div className="mt-2 max-h-56 overflow-y-auto thin-scrollbar border rounded-md divide-y">
                     {filteredP.slice(0, 50).map((p) => (
                       <button
                         type="button"
