@@ -386,6 +386,99 @@ function AdminPaymentsPage() {
             </div>
           )}
         </TabsContent>
+
+        <TabsContent value="users">
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="নাম, প্রতিষ্ঠান, ফোন বা ইমেইল অনুসারে খুঁজুন"
+              value={userQ}
+              onChange={(e) => setUserQ(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+
+          {usersList.isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : filteredUsers.length === 0 ? (
+            <Card className="p-8 text-center text-muted-foreground">
+              কোনো গ্রাহক পাওয়া যায়নি
+            </Card>
+          ) : (
+            <>
+              <div className="text-xs text-muted-foreground mb-2 flex items-center gap-1.5">
+                <Users className="h-3.5 w-3.5" />
+                মোট {filteredUsers.length.toLocaleString("bn-BD")} জন গ্রাহক
+              </div>
+              <div className="space-y-3">
+                {filteredUsers.map((u) => {
+                  const planLabel = u.status === "active" ? (u.plan ?? "—") : (u.status ?? "—");
+                  const planVariant: "default" | "secondary" | "destructive" =
+                    u.status === "active"
+                      ? "default"
+                      : u.status === "revoked"
+                        ? "destructive"
+                        : "secondary";
+                  return (
+                    <Card key={u.user_id} className="p-4">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="space-y-1.5 text-sm min-w-0 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <div className="font-semibold truncate">
+                              {u.full_name || u.company_name || "—"}
+                            </div>
+                            {u.roles?.map((r) => (
+                              <Badge
+                                key={r}
+                                variant={r === "super_admin" ? "destructive" : "outline"}
+                                className="text-[10px]"
+                              >
+                                {r}
+                              </Badge>
+                            ))}
+                          </div>
+                          {u.company_name && (
+                            <div className="text-muted-foreground flex items-center gap-1.5">
+                              <Building2 className="h-3.5 w-3.5 shrink-0" />
+                              <span className="truncate">{u.company_name}</span>
+                            </div>
+                          )}
+                          {u.phone && (
+                            <div className="text-muted-foreground flex items-center gap-1.5">
+                              <Phone className="h-3.5 w-3.5 shrink-0" />
+                              <span className="font-mono">{u.phone}</span>
+                            </div>
+                          )}
+                          {u.email && (
+                            <div className="text-muted-foreground flex items-center gap-1.5">
+                              <Mail className="h-3.5 w-3.5 shrink-0" />
+                              <span className="truncate">{u.email}</span>
+                            </div>
+                          )}
+                          <div className="text-xs text-muted-foreground pt-1">
+                            যোগদান: {u.created_at ? fmtDateTime(u.created_at, "bn") : "—"}
+                            {u.expires_at && (
+                              <> {" · "}মেয়াদ: {fmtDateTime(u.expires_at, "bn")}</>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-2 shrink-0">
+                          <Badge variant={planVariant}>{planLabel}</Badge>
+                          <div className="text-xs text-muted-foreground flex items-center gap-1">
+                            <MessageSquare className="h-3 w-3" />
+                            {Number(u.message_credits).toLocaleString("bn-BD")} ক্রেডিট
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </TabsContent>
       </Tabs>
     </div>
   );
