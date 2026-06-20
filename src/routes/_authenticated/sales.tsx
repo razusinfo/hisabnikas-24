@@ -121,6 +121,27 @@ function SalesPage() {
       navigate({ to: "/sales", search: {}, replace: true });
     }
   }, [search.new, navigate]);
+
+  // Realtime: refresh sales list when SMS auto-matches a payment or any sale changes
+  useEffect(() => {
+    const channel = supabase
+      .channel("sales-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "sales" }, () => {
+        qc.invalidateQueries({ queryKey: ["sales"] });
+      })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "mfs_sms_inbox" }, (payload: any) => {
+        qc.invalidateQueries({ queryKey: ["sales"] });
+        const row = payload?.new;
+        if (row?.status === "posted" && row?.matched_sale_id) {
+          toast.success(`SMS পেমেন্ট মিলেছে: ৳${row.amount}${row.txn_id ? ` · ${row.txn_id}` : ""}`);
+        }
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [qc]);
+
   const [customerId, setCustomerId] = useState<string>("walkin");
   const [newMethod, setNewMethod] = useState("cash");
   const [newDiscount, setNewDiscount] = useState("0");
