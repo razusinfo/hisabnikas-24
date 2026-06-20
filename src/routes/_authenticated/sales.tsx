@@ -802,7 +802,17 @@ function SalesPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div><div className="text-muted-foreground text-xs">{t("date")}</div>{editing ? <DateInput value={editDate} onChange={setEditDate} clearable={false} className="h-8" /> : fmtDate(viewSale.created_at, lang)}</div>
-                <div><div className="text-muted-foreground text-xs">{t("customer")}</div>{editing && viewSale.customer_id ? <Input value={editCustomerName} onChange={(e) => setEditCustomerName(e.target.value)} className="h-8" /> : (viewSale.customers?.name ?? t("walkIn"))}</div>
+                <div><div className="text-muted-foreground text-xs">{t("customer")}</div>{editing ? (
+                  <Select value={editCustomerId || "__walkin__"} onValueChange={(v) => setEditCustomerId(v === "__walkin__" ? "" : v)}>
+                    <SelectTrigger className="h-8"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__walkin__">{t("walkIn")}</SelectItem>
+                      {(customersList as any[]).map((c) => (
+                        <SelectItem key={c.id} value={c.id}>{c.name}{c.phone ? ` — ${c.phone}` : ""}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (viewSale.customers?.name ?? t("walkIn"))}</div>
                 <div><div className="text-muted-foreground text-xs">{t("method")}</div>{editing ? (
                   <Select value={editMethod} onValueChange={setEditMethod}>
                     <SelectTrigger className="h-8"><SelectValue /></SelectTrigger>
