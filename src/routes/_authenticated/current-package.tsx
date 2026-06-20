@@ -277,7 +277,7 @@ function CurrentPackagePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch pt-4">
-            {TIERS.map((tier) => {
+            {(() => { const FEATURES = getFeatures(billing); return TIERS.map((tier) => {
               const pricing = tier[billing];
               const isFree = pricing.price === 0;
               const isCurrent = currentPlanId === pricing.id || (tier.key === "basic" && isTrial);
