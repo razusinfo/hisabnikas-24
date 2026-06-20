@@ -50,6 +50,7 @@ const reportCards = [
   { slug: "sales-profit", title: "বিক্রয় অনুযায়ী লাভ ক্ষতি", titleEn: "Sales-wise Profit & Loss", description: "প্রতিটি বিক্রয় অনুযায়ী লাভ ও ক্ষতির বিশ্লেষণ।", icon: PieChart, color: "text-green-600", bg: "bg-green-50" },
   { slug: "profit-loss", title: "লাভ ক্ষতি", titleEn: "Profit & Loss", description: "বিক্রয়, ক্রয় ও খরচের ভিত্তিকে লাভ-ক্ষতির বিস্তারিত বিবরণ।", icon: TrendingUp, color: "text-teal-600", bg: "bg-teal-50" },
   { slug: "mobile-banking", title: "মোবাইল ব্যাংকিং রিপোর্ট", titleEn: "Mobile Banking Report", description: "বিকাশ, নগদ, রকেট ইত্যাদি মোবাইল ব্যাংকিং লেনদেনের বিবরণ।", icon: Smartphone, color: "text-pink-600", bg: "bg-pink-50" },
+  { slug: "unmatched-payments", title: "Unmatched Payments", titleEn: "Unmatched Payments", description: "যেসব SMS payment এখনও invoice এর সাথে match হয়নি — manually match করুন।", icon: Smartphone, color: "text-rose-600", bg: "bg-rose-50" },
   { slug: "bank", title: "ব্যাংক লেনদেন রিপোর্ট", titleEn: "Bank Transaction Report", description: "ব্যাংক অ্যাকাউন্টের জমা ও উত্তোলনের সম্পূর্ণ বিবরণ।", icon: Landmark, color: "text-blue-600", bg: "bg-blue-50" },
   { slug: "expenses", title: "খরচ", titleEn: "Expenses", description: "সকল খরচের বিস্তারিত বিবরণ ও বিশ্লেষণ।", icon: CreditCard, color: "text-red-600", bg: "bg-red-50" },
   { slug: "expense-type", title: "খরচের ধরন", titleEn: "Expense Type", description: "ধরন অনুযায়ী খরচের বিস্তারিত বিশ্লেষণ।", icon: Layers, color: "text-yellow-600", bg: "bg-yellow-50" },
