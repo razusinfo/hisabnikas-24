@@ -103,6 +103,7 @@ function SalesPage() {
   const [payDate, setPayDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
   const [items, setItems] = useState<any[] | null>(null);
   const [editing, setEditing] = useState(false);
+  const [editDate, setEditDate] = useState<string>("");
   const [saving, setSaving] = useState(false);
 
   // New sale dialog state
@@ -375,6 +376,7 @@ function SalesPage() {
     setViewSale(s);
     setItems(null);
     setEditing(false);
+    setEditDate(s.created_at ? new Date(s.created_at).toISOString().slice(0, 10) : "");
     const list = await fetchSaleItems(s.id);
     setItems(list);
   }
@@ -405,14 +407,23 @@ function SalesPage() {
       const total = Math.max(0, subtotal - discount + tax);
       const paid = Number(viewSale.paid || 0);
       const due = Math.max(0, total - paid);
+      const newCreatedAt = editDate
+        ? (() => {
+            const orig = viewSale.created_at ? new Date(viewSale.created_at) : new Date();
+            const [y, m, d] = editDate.split("-").map(Number);
+            const dt = new Date(orig);
+            dt.setFullYear(y, (m || 1) - 1, d || 1);
+            return dt.toISOString();
+          })()
+        : viewSale.created_at;
       const { error: e2 } = await supabase
         .from("sales")
-        .update({ subtotal, total, due, status: due <= 0 ? "paid" : paid > 0 ? "partial" : "due" })
+        .update({ subtotal, total, due, status: due <= 0 ? "paid" : paid > 0 ? "partial" : "due", created_at: newCreatedAt })
         .eq("id", viewSale.id);
       if (e2) throw e2;
       toast.success(t("save"));
       setEditing(false);
-      setViewSale({ ...viewSale, subtotal, total, due });
+      setViewSale({ ...viewSale, subtotal, total, due, created_at: newCreatedAt });
       qc.invalidateQueries({ queryKey: ["sales"] });
     } catch (e: any) {
       toast.error(e.message);
@@ -769,7 +780,7 @@ function SalesPage() {
           {viewSale && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div><div className="text-muted-foreground text-xs">{t("date")}</div>{fmtDate(viewSale.created_at, lang)}</div>
+                <div><div className="text-muted-foreground text-xs">{t("date")}</div>{editing ? <DateInput value={editDate} onChange={setEditDate} clearable={false} className="h-8" /> : fmtDate(viewSale.created_at, lang)}</div>
                 <div><div className="text-muted-foreground text-xs">{t("customer")}</div>{viewSale.customers?.name ?? t("walkIn")}</div>
                 <div><div className="text-muted-foreground text-xs">{t("method")}</div>{methodLabel(viewSale.payment_method)}</div>
                 <div><div className="text-muted-foreground text-xs">{t("status")}</div>{statusBadge(viewSale)}</div>
