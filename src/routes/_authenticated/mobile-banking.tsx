@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
 import { Card } from "@/components/ui/card";
@@ -300,7 +300,28 @@ function MobileBankingDashboard() {
     onError: (e: any) => toast.error(e?.message ?? "পোস্ট করা যায়নি"),
   });
 
+  // Realtime: refresh SMS inbox + cashbook entries when new SMS arrives
+  useEffect(() => {
+    const channel = supabase
+      .channel("mfs-sms-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "mfs_sms_inbox" }, (payload: any) => {
+        qc.invalidateQueries({ queryKey: ["mfs-sms-inbox"] });
+        qc.invalidateQueries({ queryKey: ["mobile-banking-entries"] });
+        const row = payload?.new;
+        if (payload?.eventType === "INSERT" && row?.status === "posted") {
+          toast.success(
+            `নতুন SMS পেমেন্ট: ৳${row.amount}${row.matched_sale_id ? " (চালান মিলেছে)" : ""}`,
+          );
+        }
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [qc]);
+
   const postUrl =
+
     typeof window !== "undefined"
       ? `${window.location.origin}/api/public/mfs-sms`
       : "/api/public/mfs-sms";

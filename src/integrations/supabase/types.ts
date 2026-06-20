@@ -304,6 +304,7 @@ export type Database = {
           created_at: string
           error: string | null
           id: string
+          matched_sale_id: string | null
           owner_id: string
           provider: string
           raw_body: string
@@ -321,6 +322,7 @@ export type Database = {
           created_at?: string
           error?: string | null
           id?: string
+          matched_sale_id?: string | null
           owner_id: string
           provider?: string
           raw_body: string
@@ -338,6 +340,7 @@ export type Database = {
           created_at?: string
           error?: string | null
           id?: string
+          matched_sale_id?: string | null
           owner_id?: string
           provider?: string
           raw_body?: string
@@ -348,7 +351,15 @@ export type Database = {
           txn_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "mfs_sms_inbox_matched_sale_id_fkey"
+            columns: ["matched_sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       payment_requests: {
         Row: {
@@ -940,6 +951,18 @@ export type Database = {
           status: string
           user_id: string
         }[]
+      }
+      process_mfs_sms: {
+        Args: {
+          _amount: number
+          _owner_id: string
+          _provider: string
+          _received_at: string
+          _sender_msisdn: string
+          _sms_id: string
+          _txn_id: string
+        }
+        Returns: string
       }
       refund_sms_credit: { Args: { _user_id: string }; Returns: undefined }
       reject_payment_request: {
