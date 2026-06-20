@@ -262,97 +262,115 @@ function CurrentPackagePage() {
             </div>
           </div>
 
-          <Card className="overflow-hidden">
-            {/* Header row */}
-            <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr] sm:grid-cols-[1.5fr_1fr_1fr_1fr] bg-muted/30">
-              <div className="p-3 sm:p-4 flex items-end">
-                <div className="text-sm sm:text-base font-semibold">অফার সমূহ</div>
-              </div>
-              {TIERS.map((tier) => {
-                const pricing = tier[billing];
-                const isFree = pricing.price === 0;
-                const isCurrent = currentPlanId === pricing.id || (tier.key === "basic" && isTrial);
-                return (
-                  <div
-                    key={tier.key}
-                    className={`relative p-3 sm:p-4 text-center ${
-                      tier.highlight
-                        ? "bg-primary text-primary-foreground"
-                        : tier.key === "business"
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-card"
-                    } ${tier.key === "basic" ? "bg-primary text-primary-foreground" : ""}`}
-                  >
-                    {tier.highlight && (
-                      <div className="absolute top-0 left-0 overflow-hidden w-20 h-20 pointer-events-none">
-                        <div className="absolute -left-7 top-3 rotate-[-45deg] bg-amber-400 text-amber-950 text-[10px] font-bold px-7 py-0.5 shadow">
-                          জনপ্রিয়
-                        </div>
-                      </div>
-                    )}
-                    <div className="font-display font-bold text-base sm:text-lg">{tier.name}</div>
-                    <div className="mt-1.5 font-bold text-xl sm:text-2xl">
-                      {isFree ? "Free" : <>৳ {pricing.price.toLocaleString("bn-BD")}.০০</>}
-                    </div>
-                    {!isFree && (
-                      <div className="text-[11px] opacity-90">
-                        {billing === "monthly" ? "প্রতি মাসে" : "প্রতি বছরে"}
-                      </div>
-                    )}
-                    {isCurrent && (
-                      <Badge variant="secondary" className="mt-1 text-[10px]">বর্তমান</Badge>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch pt-4">
+            {TIERS.map((tier) => {
+              const pricing = tier[billing];
+              const isFree = pricing.price === 0;
+              const isCurrent = currentPlanId === pricing.id || (tier.key === "basic" && isTrial);
+              const isHighlight = !!tier.highlight;
+              const tierKey = tier.key;
+              const subtitle =
+                tierKey === "basic"
+                  ? "ক্ষুদ্র ব্যবসার জন্য উপযুক্ত"
+                  : tierKey === "premium"
+                    ? "মাঝারি ব্যবসার জন্য সেরা সমাধান"
+                    : "বড় এন্টারপ্রাইজ লেভেল ব্যবসা";
 
-            {/* Feature rows */}
-            <div>
-              {FEATURES.map((f, i) => (
+              return (
                 <div
-                  key={f.label}
-                  className={`grid grid-cols-[1.2fr_1fr_1fr_1fr] sm:grid-cols-[1.5fr_1fr_1fr_1fr] items-center border-t ${
-                    i % 2 === 1 ? "bg-muted/20" : ""
+                  key={tier.key}
+                  className={`relative bg-card rounded-2xl p-7 flex flex-col transition-shadow ${
+                    isHighlight
+                      ? "border-2 border-primary shadow-xl md:-translate-y-4 shadow-primary/10"
+                      : "border border-border shadow-sm hover:shadow-md"
                   }`}
                 >
-                  <div className="p-3 text-xs sm:text-sm font-medium">{f.label}</div>
-                  <div className="p-3"><CellView cell={f.basic} accent={false} /></div>
-                  <div className="p-3"><CellView cell={f.premium} accent /></div>
-                  <div className="p-3"><CellView cell={f.business} accent /></div>
-                </div>
-              ))}
-            </div>
+                  {isHighlight && (
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-primary-foreground text-[10px] font-bold px-4 py-1 rounded-full uppercase tracking-wider shadow">
+                      জনপ্রিয়
+                    </div>
+                  )}
 
-            {/* CTA row */}
-            <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr] sm:grid-cols-[1.5fr_1fr_1fr_1fr] border-t bg-muted/10">
-              <div className="p-3" />
-              {TIERS.map((tier) => {
-                const pricing = tier[billing];
-                const isFree = pricing.price === 0;
-                const isCurrent = currentPlanId === pricing.id || (tier.key === "basic" && isTrial);
-                return (
-                  <div key={tier.key} className="p-3">
-                    {isFree || isCurrent ? (
-                      <Button variant="outline" disabled className="w-full rounded-full" size="sm">
-                        {isCurrent ? "বর্তমান প্যাকেজ" : "Free"}
-                      </Button>
+                  <h3 className="text-xl font-bold text-foreground mb-1">{tier.name}</h3>
+                  <p className="text-muted-foreground text-sm mb-5">{subtitle}</p>
+
+                  <div className="mb-6">
+                    {isFree ? (
+                      <span className="text-4xl font-bold text-foreground">Free</span>
                     ) : (
-                      <Button
-                        className="w-full rounded-full"
-                        size="sm"
-                        onClick={() =>
-                          setSelected({ tier, price: pricing.price, id: pricing.id, days: pricing.days })
-                        }
-                      >
-                        সাবস্ক্রাইব
-                      </Button>
+                      <>
+                        <span className="text-4xl font-bold text-foreground">
+                          ৳{pricing.price.toLocaleString("bn-BD")}
+                        </span>
+                        <span className="text-muted-foreground text-sm ml-1">
+                          /{billing === "monthly" ? "মাসিক" : "বাৎসরিক"}
+                        </span>
+                      </>
                     )}
                   </div>
-                );
-              })}
-            </div>
-          </Card>
+
+                  <ul className="space-y-3 mb-8 flex-grow">
+                    {FEATURES.map((f) => {
+                      const cell = f[tierKey];
+                      const isCross = cell.kind === "cross";
+                      return (
+                        <li
+                          key={f.label}
+                          className={`flex items-start gap-3 text-sm ${
+                            isCross ? "text-muted-foreground/60" : "text-foreground/85"
+                          }`}
+                        >
+                          {isCross ? (
+                            <X className="w-5 h-5 text-muted-foreground/50 shrink-0 mt-0.5" />
+                          ) : (
+                            <Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                          )}
+                          <span className="leading-snug">
+                            {f.label}
+                            {cell.kind === "text" && (
+                              <span className="text-muted-foreground">
+                                {" — "}
+                                {cell.text}
+                                {cell.sub ? ` ${cell.sub}` : ""}
+                              </span>
+                            )}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+
+                  {isCurrent && (
+                    <Badge variant="secondary" className="self-start mb-3 text-[10px]">
+                      বর্তমান
+                    </Badge>
+                  )}
+
+                  {isFree || isCurrent ? (
+                    <Button
+                      variant={isHighlight ? "default" : "outline"}
+                      disabled
+                      className="w-full rounded-xl py-6 font-semibold"
+                    >
+                      {isCurrent ? "বর্তমান প্যাকেজ" : "Free"}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant={isHighlight ? "default" : "outline"}
+                      className={`w-full rounded-xl py-6 font-semibold ${
+                        isHighlight ? "shadow-lg shadow-primary/20" : ""
+                      }`}
+                      onClick={() =>
+                        setSelected({ tier, price: pricing.price, id: pricing.id, days: pricing.days })
+                      }
+                    >
+                      {isHighlight ? "এখনই নিন" : "শুরু করুন"}
+                    </Button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
 
           {(myRequests.data?.length ?? 0) > 0 && (
             <Card className="p-5 mt-6">
