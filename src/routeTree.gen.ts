@@ -21,6 +21,7 @@ import { Route as AuthenticatedPurchasesRouteImport } from './routes/_authentica
 import { Route as AuthenticatedProprietorProfileRouteImport } from './routes/_authenticated/proprietor-profile'
 import { Route as AuthenticatedProfitLossRouteImport } from './routes/_authenticated/profit-loss'
 import { Route as AuthenticatedProductsRouteImport } from './routes/_authenticated/products'
+import { Route as AuthenticatedMobileBankingRouteImport } from './routes/_authenticated/mobile-banking'
 import { Route as AuthenticatedInvoiceDesignRouteImport } from './routes/_authenticated/invoice-design'
 import { Route as AuthenticatedHelpRouteImport } from './routes/_authenticated/help'
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
@@ -97,6 +98,12 @@ const AuthenticatedProductsRoute = AuthenticatedProductsRouteImport.update({
   path: '/products',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMobileBankingRoute =
+  AuthenticatedMobileBankingRouteImport.update({
+    id: '/mobile-banking',
+    path: '/mobile-banking',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedInvoiceDesignRoute =
   AuthenticatedInvoiceDesignRouteImport.update({
     id: '/invoice-design',
@@ -198,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/expenses': typeof AuthenticatedExpensesRoute
   '/help': typeof AuthenticatedHelpRoute
   '/invoice-design': typeof AuthenticatedInvoiceDesignRoute
+  '/mobile-banking': typeof AuthenticatedMobileBankingRoute
   '/products': typeof AuthenticatedProductsRoute
   '/profit-loss': typeof AuthenticatedProfitLossRoute
   '/proprietor-profile': typeof AuthenticatedProprietorProfileRoute
@@ -226,6 +234,7 @@ export interface FileRoutesByTo {
   '/expenses': typeof AuthenticatedExpensesRoute
   '/help': typeof AuthenticatedHelpRoute
   '/invoice-design': typeof AuthenticatedInvoiceDesignRoute
+  '/mobile-banking': typeof AuthenticatedMobileBankingRoute
   '/products': typeof AuthenticatedProductsRoute
   '/profit-loss': typeof AuthenticatedProfitLossRoute
   '/proprietor-profile': typeof AuthenticatedProprietorProfileRoute
@@ -255,6 +264,7 @@ export interface FileRoutesById {
   '/_authenticated/expenses': typeof AuthenticatedExpensesRoute
   '/_authenticated/help': typeof AuthenticatedHelpRoute
   '/_authenticated/invoice-design': typeof AuthenticatedInvoiceDesignRoute
+  '/_authenticated/mobile-banking': typeof AuthenticatedMobileBankingRoute
   '/_authenticated/products': typeof AuthenticatedProductsRoute
   '/_authenticated/profit-loss': typeof AuthenticatedProfitLossRoute
   '/_authenticated/proprietor-profile': typeof AuthenticatedProprietorProfileRoute
@@ -285,6 +295,7 @@ export interface FileRouteTypes {
     | '/expenses'
     | '/help'
     | '/invoice-design'
+    | '/mobile-banking'
     | '/products'
     | '/profit-loss'
     | '/proprietor-profile'
@@ -313,6 +324,7 @@ export interface FileRouteTypes {
     | '/expenses'
     | '/help'
     | '/invoice-design'
+    | '/mobile-banking'
     | '/products'
     | '/profit-loss'
     | '/proprietor-profile'
@@ -341,6 +353,7 @@ export interface FileRouteTypes {
     | '/_authenticated/expenses'
     | '/_authenticated/help'
     | '/_authenticated/invoice-design'
+    | '/_authenticated/mobile-banking'
     | '/_authenticated/products'
     | '/_authenticated/profit-loss'
     | '/_authenticated/proprietor-profile'
@@ -448,6 +461,13 @@ declare module '@tanstack/react-router' {
       path: '/products'
       fullPath: '/products'
       preLoaderRoute: typeof AuthenticatedProductsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mobile-banking': {
+      id: '/_authenticated/mobile-banking'
+      path: '/mobile-banking'
+      fullPath: '/mobile-banking'
+      preLoaderRoute: typeof AuthenticatedMobileBankingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/invoice-design': {
@@ -583,6 +603,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRoute
   AuthenticatedHelpRoute: typeof AuthenticatedHelpRoute
   AuthenticatedInvoiceDesignRoute: typeof AuthenticatedInvoiceDesignRoute
+  AuthenticatedMobileBankingRoute: typeof AuthenticatedMobileBankingRoute
   AuthenticatedProductsRoute: typeof AuthenticatedProductsRoute
   AuthenticatedProfitLossRoute: typeof AuthenticatedProfitLossRoute
   AuthenticatedProprietorProfileRoute: typeof AuthenticatedProprietorProfileRoute
@@ -604,6 +625,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedExpensesRoute: AuthenticatedExpensesRoute,
   AuthenticatedHelpRoute: AuthenticatedHelpRoute,
   AuthenticatedInvoiceDesignRoute: AuthenticatedInvoiceDesignRoute,
+  AuthenticatedMobileBankingRoute: AuthenticatedMobileBankingRoute,
   AuthenticatedProductsRoute: AuthenticatedProductsRoute,
   AuthenticatedProfitLossRoute: AuthenticatedProfitLossRoute,
   AuthenticatedProprietorProfileRoute: AuthenticatedProprietorProfileRoute,
