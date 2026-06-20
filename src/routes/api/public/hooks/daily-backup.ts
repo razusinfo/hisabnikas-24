@@ -3,7 +3,20 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/api/public/hooks/daily-backup")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        // Authenticate caller using the Supabase publishable/anon key
+        // (canonical pattern for pg_cron-triggered endpoints).
+        const expected =
+          process.env.SUPABASE_PUBLISHABLE_KEY ||
+          process.env.SUPABASE_ANON_KEY ||
+          process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+        const provided =
+          request.headers.get("apikey") ||
+          request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+        if (!expected || !provided || provided !== expected) {
+          return new Response("Unauthorized", { status: 401 });
+        }
+
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { runBackupForUser } = await import("@/lib/server-backup.server");
 
@@ -14,27 +27,29 @@ export const Route = createFileRoute("/api/public/hooks/daily-backup")({
           .select("user_id, last_backup_at")
           .eq("auto_daily", true);
         if (error) {
-          return Response.json({ ok: false, error: error.message }, { status: 500 });
+          return Response.json({ ok: false, error: "internal_error" }, { status: 500 });
         }
 
         const targets = (conns ?? []).filter(
           (c) => !c.last_backup_at || (c.last_backup_at as string) < cutoff,
         );
 
-        const results: { user_id: string; ok: boolean; error?: string }[] = [];
+        let succeeded = 0;
+        let failed = 0;
         for (const c of targets) {
           try {
             await runBackupForUser(supabaseAdmin, c.user_id as string);
-            results.push({ user_id: c.user_id as string, ok: true });
-          } catch (e: any) {
-            results.push({ user_id: c.user_id as string, ok: false, error: String(e.message || e) });
+            succeeded++;
+          } catch {
+            failed++;
           }
         }
         return Response.json({
           ok: true,
           total_connections: conns?.length ?? 0,
-          processed: results.length,
-          results,
+          processed: targets.length,
+          succeeded,
+          failed,
         });
       },
     },
