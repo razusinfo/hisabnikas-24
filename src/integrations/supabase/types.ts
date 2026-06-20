@@ -831,6 +831,22 @@ export type Database = {
           user_id: string
         }[]
       }
+      list_all_users: {
+        Args: never
+        Returns: {
+          company_name: string
+          created_at: string
+          email: string
+          expires_at: string
+          full_name: string
+          message_credits: number
+          phone: string
+          plan: string
+          roles: string[]
+          status: string
+          user_id: string
+        }[]
+      }
       refund_sms_credit: { Args: { _user_id: string }; Returns: undefined }
       reject_payment_request: {
         Args: { _note: string; _request_id: string }
