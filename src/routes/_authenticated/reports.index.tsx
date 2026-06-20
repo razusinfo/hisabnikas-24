@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
@@ -36,7 +38,7 @@ export const Route = createFileRoute("/_authenticated/reports/")({
   component: ReportsIndexPage,
 });
 
-// Only these 4 are free; everything else is locked behind a package.
+// Free for everyone; others unlocked for users with an active paid package.
 const FREE_SLUGS = new Set(["purchase", "sales", "expenses", "stock-summary"]);
 
 const reportCards = [
