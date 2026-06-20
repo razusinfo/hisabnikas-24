@@ -379,7 +379,7 @@ function SalesPage() {
     setItems(null);
     setEditing(false);
     setEditDate(s.created_at ? new Date(s.created_at).toISOString().slice(0, 10) : "");
-    setEditCustomerName(s.customers?.name ?? "");
+    setEditCustomerId(s.customer_id ?? "");
     setEditMethod(s.payment_method ?? "cash");
     const list = await fetchSaleItems(s.id);
     setItems(list);
