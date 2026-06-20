@@ -188,12 +188,8 @@ function MobileBankingDashboard() {
     onError: (e: any) => toast.error(e?.message ?? "মুছতে পারিনি"),
   });
 
-  function applyPreset(p: Preset) {
-    setPreset(p);
-    if (p === "today") {
-      setFrom(todayISO());
-      setTo(todayISO());
-    } else if (p === "week") {
+
+
 
 
   function applyPreset(p: Preset) {
