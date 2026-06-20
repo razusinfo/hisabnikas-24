@@ -381,46 +381,34 @@ function ProductsPage() {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
         {filtered.length === 0 && (
           <div className="col-span-full card-premium p-12 text-center text-muted-foreground">{t("noData")}</div>
         )}
         {filtered.map((p) => {
           const low = Number(p.stock) <= Number(p.low_stock_threshold);
           return (
-            <div key={p.id} className="card-premium p-2.5 group">
-              <div className="flex items-start justify-between">
-                <div className="h-12 w-12 rounded-md bg-primary/10 flex items-center justify-center overflow-hidden">
+            <div key={p.id} className="card-premium p-2 group">
+              <div className="flex items-start justify-between gap-1">
+                <div className="h-8 w-8 rounded bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
                   {p.image_url && signedMap[p.image_url] ? (
                     <img src={signedMap[p.image_url]} alt={p.name} className="h-full w-full object-cover" />
                   ) : (
-                    <Package className="h-4 w-4 text-primary" />
+                    <Package className="h-3.5 w-3.5 text-primary" />
                   )}
                 </div>
-                <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 md:transition">
-                  <Button size="icon" variant="ghost" className="h-6 w-6" title={t("adjustStock")} onClick={() => { setStockTarget(p); setStockVal(String(p.stock)); }}><Boxes className="h-3 w-3" /></Button>
-                  <Button size="icon" variant="ghost" className="h-6 w-6" title={t("edit")} onClick={() => openEdit(p)}><Pencil className="h-3 w-3" /></Button>
-                  <Button size="icon" variant="ghost" className="h-6 w-6" title={t("delete")} onClick={() => setDeleteTarget(p)}><Trash2 className="h-3 w-3" /></Button>
+                <div className="flex gap-0.5 md:opacity-0 md:group-hover:opacity-100 md:transition">
+                  <Button size="icon" variant="ghost" className="h-5 w-5" title={t("adjustStock")} onClick={() => { setStockTarget(p); setStockVal(String(p.stock)); }}><Boxes className="h-3 w-3" /></Button>
+                  <Button size="icon" variant="ghost" className="h-5 w-5" title={t("edit")} onClick={() => openEdit(p)}><Pencil className="h-3 w-3" /></Button>
+                  <Button size="icon" variant="ghost" className="h-5 w-5" title={t("delete")} onClick={() => setDeleteTarget(p)}><Trash2 className="h-3 w-3" /></Button>
                 </div>
               </div>
-              <div className="mt-2">
-                <div className="font-medium text-sm">{p.name}</div>
-                <div className="text-xs text-muted-foreground font-mono mt-0.5">{p.sku || p.barcode || "—"}</div>
-                {p.category_id && (
-                  <div className="inline-block mt-1 text-[10px] uppercase tracking-widest px-1.5 py-0.5 rounded bg-primary/10 text-primary">
-                    {categoryName(p.category_id)}
-                  </div>
-                )}
+              <div className="mt-1.5">
+                <div className="font-medium text-xs leading-tight line-clamp-2">{p.name}</div>
               </div>
-              <div className="flex items-end justify-between mt-2">
-                <div>
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{t("price")}</div>
-                  <div className="font-display font-semibold text-sm">{fmtMoney(p.sell_price, lang)}</div>
-                </div>
-                <div className="text-right">
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{t("stock")}</div>
-                  <div className={`font-mono font-semibold text-sm ${low ? "text-destructive" : ""}`}>{fmtNum(p.stock, lang)} {p.unit}</div>
-                </div>
+              <div className="flex items-end justify-between mt-1.5 gap-1">
+                <div className="font-display font-semibold text-xs">{fmtMoney(p.sell_price, lang)}</div>
+                <div className={`font-mono text-[11px] ${low ? "text-destructive font-semibold" : "text-muted-foreground"}`}>{fmtNum(p.stock, lang)}{p.unit ? ` ${p.unit}` : ""}</div>
               </div>
             </div>
           );
