@@ -91,6 +91,16 @@ function AdminPaymentsPage() {
     },
   });
 
+  const usersList = useQuery({
+    queryKey: ["all-users"],
+    enabled: !!meAdmin.data,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any).rpc("list_all_users");
+      if (error) throw error;
+      return (data ?? []) as UserRow[];
+    },
+  });
+
   const approve = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await (supabase as any).rpc("approve_payment_request", { _request_id: id });
