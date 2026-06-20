@@ -818,9 +818,26 @@ export type Database = {
         Returns: boolean
       }
       is_super_admin: { Args: { _uid: string }; Returns: boolean }
+      list_all_subscriptions: {
+        Args: never
+        Returns: {
+          company_name: string
+          expires_at: string
+          full_name: string
+          phone: string
+          plan: string
+          started_at: string
+          status: string
+          user_id: string
+        }[]
+      }
       refund_sms_credit: { Args: { _user_id: string }; Returns: undefined }
       reject_payment_request: {
         Args: { _note: string; _request_id: string }
+        Returns: undefined
+      }
+      revoke_subscription: {
+        Args: { _reason?: string; _user_id: string }
         Returns: undefined
       }
       send_due_reminder_sms: {

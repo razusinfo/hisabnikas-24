@@ -31,6 +31,7 @@ import { Route as AuthenticatedCashbookRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedBuyMessagesRouteImport } from './routes/_authenticated/buy-messages'
 import { Route as AuthenticatedBusinessProfileRouteImport } from './routes/_authenticated/business-profile'
 import { Route as AuthenticatedBackupRestoreRouteImport } from './routes/_authenticated/backup-restore'
+import { Route as AuthenticatedAdminSubscriptionsRouteImport } from './routes/_authenticated/admin-subscriptions'
 import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authenticated/admin-payments'
 import { Route as AuthenticatedReportsIndexRouteImport } from './routes/_authenticated/reports.index'
 import { Route as AuthenticatedReportsSlugRouteImport } from './routes/_authenticated/reports.$slug'
@@ -152,6 +153,12 @@ const AuthenticatedBackupRestoreRoute =
     path: '/backup-restore',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminSubscriptionsRoute =
+  AuthenticatedAdminSubscriptionsRouteImport.update({
+    id: '/admin-subscriptions',
+    path: '/admin-subscriptions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminPaymentsRoute =
   AuthenticatedAdminPaymentsRouteImport.update({
     id: '/admin-payments',
@@ -188,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/trust': typeof TrustRoute
   '/admin-payments': typeof AuthenticatedAdminPaymentsRoute
+  '/admin-subscriptions': typeof AuthenticatedAdminSubscriptionsRoute
   '/backup-restore': typeof AuthenticatedBackupRestoreRoute
   '/business-profile': typeof AuthenticatedBusinessProfileRoute
   '/buy-messages': typeof AuthenticatedBuyMessagesRoute
@@ -216,6 +224,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/trust': typeof TrustRoute
   '/admin-payments': typeof AuthenticatedAdminPaymentsRoute
+  '/admin-subscriptions': typeof AuthenticatedAdminSubscriptionsRoute
   '/backup-restore': typeof AuthenticatedBackupRestoreRoute
   '/business-profile': typeof AuthenticatedBusinessProfileRoute
   '/buy-messages': typeof AuthenticatedBuyMessagesRoute
@@ -245,6 +254,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/trust': typeof TrustRoute
   '/_authenticated/admin-payments': typeof AuthenticatedAdminPaymentsRoute
+  '/_authenticated/admin-subscriptions': typeof AuthenticatedAdminSubscriptionsRoute
   '/_authenticated/backup-restore': typeof AuthenticatedBackupRestoreRoute
   '/_authenticated/business-profile': typeof AuthenticatedBusinessProfileRoute
   '/_authenticated/buy-messages': typeof AuthenticatedBuyMessagesRoute
@@ -275,6 +285,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/trust'
     | '/admin-payments'
+    | '/admin-subscriptions'
     | '/backup-restore'
     | '/business-profile'
     | '/buy-messages'
@@ -303,6 +314,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/trust'
     | '/admin-payments'
+    | '/admin-subscriptions'
     | '/backup-restore'
     | '/business-profile'
     | '/buy-messages'
@@ -331,6 +343,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/trust'
     | '/_authenticated/admin-payments'
+    | '/_authenticated/admin-subscriptions'
     | '/_authenticated/backup-restore'
     | '/_authenticated/business-profile'
     | '/_authenticated/buy-messages'
@@ -520,6 +533,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBackupRestoreRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin-subscriptions': {
+      id: '/_authenticated/admin-subscriptions'
+      path: '/admin-subscriptions'
+      fullPath: '/admin-subscriptions'
+      preLoaderRoute: typeof AuthenticatedAdminSubscriptionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin-payments': {
       id: '/_authenticated/admin-payments'
       path: '/admin-payments'
@@ -573,6 +593,7 @@ const AuthenticatedReportsRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminPaymentsRoute: typeof AuthenticatedAdminPaymentsRoute
+  AuthenticatedAdminSubscriptionsRoute: typeof AuthenticatedAdminSubscriptionsRoute
   AuthenticatedBackupRestoreRoute: typeof AuthenticatedBackupRestoreRoute
   AuthenticatedBusinessProfileRoute: typeof AuthenticatedBusinessProfileRoute
   AuthenticatedBuyMessagesRoute: typeof AuthenticatedBuyMessagesRoute
@@ -594,6 +615,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminPaymentsRoute: AuthenticatedAdminPaymentsRoute,
+  AuthenticatedAdminSubscriptionsRoute: AuthenticatedAdminSubscriptionsRoute,
   AuthenticatedBackupRestoreRoute: AuthenticatedBackupRestoreRoute,
   AuthenticatedBusinessProfileRoute: AuthenticatedBusinessProfileRoute,
   AuthenticatedBuyMessagesRoute: AuthenticatedBuyMessagesRoute,
