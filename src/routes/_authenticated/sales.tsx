@@ -376,6 +376,7 @@ function SalesPage() {
     setViewSale(s);
     setItems(null);
     setEditing(false);
+    setEditDate(s.created_at ? new Date(s.created_at).toISOString().slice(0, 10) : "");
     const list = await fetchSaleItems(s.id);
     setItems(list);
   }
