@@ -28,6 +28,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { toast } from "sonner";
+import { PaymentSuccessDialog } from "@/components/PaymentSuccessDialog";
 
 export const Route = createFileRoute("/_authenticated/current-package")({
   component: CurrentPackagePage,
@@ -139,6 +140,7 @@ function CurrentPackagePage() {
   const [selected, setSelected] = useState<{ tier: Tier; price: number; id: string; days: number } | null>(null);
   const [senderNumber, setSenderNumber] = useState("");
   const [trxId, setTrxId] = useState("");
+  const [successOpen, setSuccessOpen] = useState(false);
 
   const sub = useQuery({
     queryKey: ["subscription"],
@@ -189,11 +191,11 @@ function CurrentPackagePage() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("পেমেন্ট রিকোয়েস্ট জমা হয়েছে। যাচাইয়ের পর প্যাকেজ চালু হবে।");
       qc.invalidateQueries({ queryKey: ["my-payment-requests"] });
       setSelected(null);
       setSenderNumber("");
       setTrxId("");
+      setSuccessOpen(true);
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -498,6 +500,8 @@ function CurrentPackagePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <PaymentSuccessDialog open={successOpen} onOpenChange={setSuccessOpen} />
     </div>
   );
 }

@@ -29,6 +29,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { toast } from "sonner";
+import { PaymentSuccessDialog } from "@/components/PaymentSuccessDialog";
 
 export const Route = createFileRoute("/_authenticated/buy-messages")({
   component: BuyMessagesPage,
@@ -60,6 +61,7 @@ function BuyMessagesPage() {
   const [selected, setSelected] = useState<MsgPack | null>(null);
   const [senderNumber, setSenderNumber] = useState("");
   const [trxId, setTrxId] = useState("");
+  const [successOpen, setSuccessOpen] = useState(false);
 
   const profile = useQuery({
     queryKey: ["my-profile-credits"],
@@ -113,13 +115,11 @@ function BuyMessagesPage() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success(
-        "পেমেন্ট রিকোয়েস্ট জমা হয়েছে। যাচাইয়ের পর মেসেজ ক্রেডিট যোগ হবে।",
-      );
       qc.invalidateQueries({ queryKey: ["my-message-requests"] });
       setSelected(null);
       setSenderNumber("");
       setTrxId("");
+      setSuccessOpen(true);
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -341,6 +341,8 @@ function BuyMessagesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <PaymentSuccessDialog open={successOpen} onOpenChange={setSuccessOpen} />
     </div>
   );
 }
