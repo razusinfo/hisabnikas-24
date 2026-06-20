@@ -103,6 +103,7 @@ function SalesPage() {
   const [payDate, setPayDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
   const [items, setItems] = useState<any[] | null>(null);
   const [editing, setEditing] = useState(false);
+  const [editDate, setEditDate] = useState<string>("");
   const [saving, setSaving] = useState(false);
 
   // New sale dialog state
