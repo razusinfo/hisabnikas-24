@@ -444,7 +444,7 @@ function SalesPage() {
       }
       toast.success(t("save"));
       setEditing(false);
-      setViewSale({ ...viewSale, subtotal, total, due, created_at: newCreatedAt, payment_method: editMethod, customers: updatedCustomers });
+      setViewSale({ ...viewSale, subtotal, total, due, created_at: newCreatedAt, payment_method: editMethod, customer_id: updatedCustomerId, customers: updatedCustomers });
       qc.invalidateQueries({ queryKey: ["sales"] });
     } catch (e: any) {
       toast.error(e.message);
