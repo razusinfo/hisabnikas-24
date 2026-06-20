@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
@@ -9,6 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { DateInput } from "@/components/DateInput";
 import { fmtMoney, fmtDate } from "@/lib/format";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   Smartphone,
   TrendingUp,
@@ -19,7 +27,12 @@ import {
   Printer,
   Info,
   Calendar,
+  Plus,
+  Pencil,
+  Trash2,
+  CreditCard,
 } from "lucide-react";
+
 
 export const Route = createFileRoute("/_authenticated/mobile-banking")({
   component: MobileBankingDashboard,
