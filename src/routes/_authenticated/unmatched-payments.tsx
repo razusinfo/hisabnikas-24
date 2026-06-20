@@ -119,7 +119,6 @@ function UnmatchedPayments() {
       <PageHeader
         title="Unmatched Payments"
         subtitle="যেসব মোবাইল ব্যাংকিং SMS এখনও কোনো invoice এর সাথে match হয়নি"
-        icon={<Inbox className="h-6 w-6" />}
       />
 
       <Card className="p-4">
