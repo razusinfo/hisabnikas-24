@@ -104,7 +104,7 @@ function SalesPage() {
   const [items, setItems] = useState<any[] | null>(null);
   const [editing, setEditing] = useState(false);
   const [editDate, setEditDate] = useState<string>("");
-  const [editCustomerName, setEditCustomerName] = useState<string>("");
+  const [editCustomerId, setEditCustomerId] = useState<string>("");
   const [editMethod, setEditMethod] = useState<string>("cash");
   const [saving, setSaving] = useState(false);
 
@@ -379,7 +379,7 @@ function SalesPage() {
     setItems(null);
     setEditing(false);
     setEditDate(s.created_at ? new Date(s.created_at).toISOString().slice(0, 10) : "");
-    setEditCustomerName(s.customers?.name ?? "");
+    setEditCustomerId(s.customer_id ?? "");
     setEditMethod(s.payment_method ?? "cash");
     const list = await fetchSaleItems(s.id);
     setItems(list);
@@ -426,17 +426,25 @@ function SalesPage() {
         .eq("id", viewSale.id);
       if (e2) throw e2;
       let updatedCustomers = viewSale.customers;
-      if (viewSale.customer_id && editCustomerName.trim() && editCustomerName.trim() !== (viewSale.customers?.name ?? "")) {
+      let updatedCustomerId = viewSale.customer_id;
+      const newCustId = editCustomerId || null;
+      if (newCustId !== viewSale.customer_id) {
         const { error: e3 } = await supabase
-          .from("customers")
-          .update({ name: editCustomerName.trim() })
-          .eq("id", viewSale.customer_id);
+          .from("sales")
+          .update({ customer_id: newCustId })
+          .eq("id", viewSale.id);
         if (e3) throw e3;
-        updatedCustomers = { ...(viewSale.customers ?? {}), name: editCustomerName.trim() };
+        updatedCustomerId = newCustId;
+        if (newCustId) {
+          const c = (customersList as any[]).find((x) => x.id === newCustId);
+          updatedCustomers = c ? { name: c.name, phone: c.phone, address: (c as any).address ?? "" } : null;
+        } else {
+          updatedCustomers = null;
+        }
       }
       toast.success(t("save"));
       setEditing(false);
-      setViewSale({ ...viewSale, subtotal, total, due, created_at: newCreatedAt, payment_method: editMethod, customers: updatedCustomers });
+      setViewSale({ ...viewSale, subtotal, total, due, created_at: newCreatedAt, payment_method: editMethod, customer_id: updatedCustomerId, customers: updatedCustomers });
       qc.invalidateQueries({ queryKey: ["sales"] });
     } catch (e: any) {
       toast.error(e.message);
@@ -794,7 +802,17 @@ function SalesPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div><div className="text-muted-foreground text-xs">{t("date")}</div>{editing ? <DateInput value={editDate} onChange={setEditDate} clearable={false} className="h-8" /> : fmtDate(viewSale.created_at, lang)}</div>
-                <div><div className="text-muted-foreground text-xs">{t("customer")}</div>{editing && viewSale.customer_id ? <Input value={editCustomerName} onChange={(e) => setEditCustomerName(e.target.value)} className="h-8" /> : (viewSale.customers?.name ?? t("walkIn"))}</div>
+                <div><div className="text-muted-foreground text-xs">{t("customer")}</div>{editing ? (
+                  <Select value={editCustomerId || "__walkin__"} onValueChange={(v) => setEditCustomerId(v === "__walkin__" ? "" : v)}>
+                    <SelectTrigger className="h-8"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__walkin__">{t("walkIn")}</SelectItem>
+                      {(customersList as any[]).map((c) => (
+                        <SelectItem key={c.id} value={c.id}>{c.name}{c.phone ? ` — ${c.phone}` : ""}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (viewSale.customers?.name ?? t("walkIn"))}</div>
                 <div><div className="text-muted-foreground text-xs">{t("method")}</div>{editing ? (
                   <Select value={editMethod} onValueChange={setEditMethod}>
                     <SelectTrigger className="h-8"><SelectValue /></SelectTrigger>
