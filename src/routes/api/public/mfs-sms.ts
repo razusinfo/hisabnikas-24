@@ -228,7 +228,7 @@ export const Route = createFileRoute("/api/public/mfs-sms")({
         // Auto-match invoice + post when status pending & auto-post is on
         let matchedSaleId: string | null = null;
         if (status === "pending" && autoPost && parsed.amount != null) {
-          const { data: matchRes, error: matchErr } = await supabaseAdmin.rpc("process_mfs_sms", {
+          const { data: matchRes, error: matchErr } = await (supabaseAdmin as any).rpc("process_mfs_sms", {
             _sms_id: smsId,
             _owner_id: ownerId,
             _amount: parsed.amount,
@@ -237,6 +237,7 @@ export const Route = createFileRoute("/api/public/mfs-sms")({
             _txn_id: parsed.txn_id,
             _received_at: receivedAt.toISOString(),
           });
+
           if (matchErr) {
             await supabaseAdmin
               .from("mfs_sms_inbox")
