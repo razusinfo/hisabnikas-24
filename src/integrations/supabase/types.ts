@@ -296,6 +296,60 @@ export type Database = {
         }
         Relationships: []
       }
+      mfs_sms_inbox: {
+        Row: {
+          account_number: string | null
+          amount: number | null
+          cashbook_id: string | null
+          created_at: string
+          error: string | null
+          id: string
+          owner_id: string
+          provider: string
+          raw_body: string
+          received_at: string
+          sender: string | null
+          sender_msisdn: string | null
+          status: string
+          txn_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_number?: string | null
+          amount?: number | null
+          cashbook_id?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          owner_id: string
+          provider?: string
+          raw_body: string
+          received_at?: string
+          sender?: string | null
+          sender_msisdn?: string | null
+          status?: string
+          txn_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_number?: string | null
+          amount?: number | null
+          cashbook_id?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          owner_id?: string
+          provider?: string
+          raw_body?: string
+          received_at?: string
+          sender?: string | null
+          sender_msisdn?: string | null
+          status?: string
+          txn_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payment_requests: {
         Row: {
           amount: number
@@ -477,6 +531,8 @@ export type Database = {
           logo_url: string | null
           message_credits: number
           phone: string | null
+          sms_auto_post: boolean
+          sms_device_secret_hash: string | null
           updated_at: string
         }
         Insert: {
@@ -492,6 +548,8 @@ export type Database = {
           logo_url?: string | null
           message_credits?: number
           phone?: string | null
+          sms_auto_post?: boolean
+          sms_device_secret_hash?: string | null
           updated_at?: string
         }
         Update: {
@@ -507,6 +565,8 @@ export type Database = {
           logo_url?: string | null
           message_credits?: number
           phone?: string | null
+          sms_auto_post?: boolean
+          sms_device_secret_hash?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -835,6 +895,7 @@ export type Database = {
         }
         Returns: string
       }
+      generate_sms_device_secret: { Args: never; Returns: string }
       get_plan_spec: {
         Args: { _kind: string; _plan: string }
         Returns: {
@@ -893,6 +954,7 @@ export type Database = {
         Args: { _body: string; _customer_id: string; _phone: string }
         Returns: string
       }
+      set_sms_auto_post: { Args: { _enabled: boolean }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "manager" | "staff" | "super_admin"

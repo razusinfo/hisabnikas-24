@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import {
   Smartphone,
   TrendingUp,
@@ -31,6 +32,12 @@ import {
   Pencil,
   Trash2,
   CreditCard,
+  Copy,
+  KeyRound,
+  Inbox,
+  RefreshCw,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 
 
@@ -187,6 +194,118 @@ function MobileBankingDashboard() {
     },
     onError: (e: any) => toast.error(e?.message ?? "মুছতে পারিনি"),
   });
+
+  // ============ SMS Auto-Capture ============
+  const [newSecret, setNewSecret] = useState<string | null>(null);
+  const profileQ = useQuery({
+    queryKey: ["mfs-sms-profile"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      const uid = u.user?.id;
+      if (!uid) return null;
+      const { data, error } = await (supabase as any)
+        .from("profiles")
+        .select("sms_device_secret_hash, sms_auto_post")
+        .eq("id", uid)
+        .maybeSingle();
+      if (error) throw error;
+      return data as { sms_device_secret_hash: string | null; sms_auto_post: boolean } | null;
+    },
+  });
+
+  const genSecret = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await (supabase as any).rpc("generate_sms_device_secret");
+      if (error) throw error;
+      return data as string;
+    },
+    onSuccess: (token) => {
+      setNewSecret(token);
+      toast.success("নতুন সিক্রেট তৈরি হয়েছে। কপি করে রাখুন।");
+      qc.invalidateQueries({ queryKey: ["mfs-sms-profile"] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "সিক্রেট তৈরি করা যায়নি"),
+  });
+
+  const toggleAutoPost = useMutation({
+    mutationFn: async (enabled: boolean) => {
+      const { error } = await (supabase as any).rpc("set_sms_auto_post", { _enabled: enabled });
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["mfs-sms-profile"] }),
+    onError: (e: any) => toast.error(e?.message ?? "আপডেট করা যায়নি"),
+  });
+
+  const smsInboxQ = useQuery({
+    queryKey: ["mfs-sms-inbox"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("mfs_sms_inbox")
+        .select("id,raw_body,sender,received_at,provider,txn_id,amount,sender_msisdn,status,cashbook_id,error,created_at")
+        .order("received_at", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return (data ?? []) as Array<any>;
+    },
+  });
+
+  const deleteSms = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await (supabase as any).from("mfs_sms_inbox").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("মুছে ফেলা হয়েছে");
+      qc.invalidateQueries({ queryKey: ["mfs-sms-inbox"] });
+    },
+  });
+
+  const postSms = useMutation({
+    mutationFn: async (row: any) => {
+      if (row.amount == null || row.provider === "unknown") {
+        throw new Error("পরিমাণ বা প্রোভাইডার পার্স করা যায়নি");
+      }
+      const { data: u } = await supabase.auth.getUser();
+      const uid = u.user?.id;
+      if (!uid) throw new Error("লগইন প্রয়োজন");
+      const providerLabel: Record<string, string> = {
+        bkash: "bKash", nagad: "Nagad", rocket: "Rocket", upay: "Upay",
+      };
+      const { data: cb, error: cbErr } = await (supabase as any)
+        .from("cashbook")
+        .insert({
+          owner_id: uid,
+          entry_date: String(row.received_at).slice(0, 10),
+          type: "income",
+          category: "Mobile Banking",
+          description: `SMS: ${providerLabel[row.provider] ?? row.provider}${row.sender_msisdn ? ` from ${row.sender_msisdn}` : ""}`.slice(0, 200),
+          amount: row.amount,
+          method: providerLabel[row.provider] ?? row.provider,
+          note: row.txn_id ? `TrxID ${row.txn_id}` : null,
+        })
+        .select("id")
+        .single();
+      if (cbErr) throw cbErr;
+      const { error: upErr } = await (supabase as any)
+        .from("mfs_sms_inbox")
+        .update({ status: "posted", cashbook_id: cb.id, error: null })
+        .eq("id", row.id);
+      if (upErr) throw upErr;
+    },
+    onSuccess: () => {
+      toast.success("পোস্ট হয়েছে");
+      qc.invalidateQueries({ queryKey: ["mfs-sms-inbox"] });
+      qc.invalidateQueries({ queryKey: ["mobile-banking-entries"] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "পোস্ট করা যায়নি"),
+  });
+
+  const postUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/api/public/mfs-sms`
+      : "/api/public/mfs-sms";
+
+
 
 
 
@@ -747,7 +866,210 @@ function MobileBankingDashboard() {
         </div>
       </Card>
 
+      {/* SMS Auto-Capture Setup */}
+      <Card className="p-4 mb-4">
+        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <KeyRound className="h-4 w-4 text-primary" />
+            <div className="font-semibold">SMS Auto-Capture (Android ফোন থেকে অটো পেমেন্ট)</div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Auto-Post</span>
+            <Switch
+              checked={!!profileQ.data?.sms_auto_post}
+              onCheckedChange={(v) => toggleAutoPost.mutate(v)}
+            />
+          </div>
+        </div>
+
+        <div className="text-xs text-muted-foreground space-y-2 mb-3">
+          <p>
+            আপনার বিকাশ/নগদ/রকেট/উপায় SIM যুক্ত Android ফোনে একটি <b>SMS Forwarder</b> অ্যাপ
+            (যেমন: "SMS Forwarder", "SMS to URL") ইনস্টল করে নিচের URL ও সিক্রেট ব্যবহার
+            করুন। নতুন পেমেন্ট SMS এলে স্বয়ংক্রিয়ভাবে cashbook-এ income এন্ট্রি হবে।
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <div>
+            <label className="text-xs font-medium mb-1 block">POST URL</label>
+            <div className="flex gap-2">
+              <Input value={postUrl} readOnly className="font-mono text-xs" />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(postUrl);
+                  toast.success("URL কপি হয়েছে");
+                }}
+              >
+                <Copy className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-medium mb-1 block">JSON Body Template</label>
+            <Input
+              readOnly
+              className="font-mono text-[11px]"
+              value={`{"device_secret":"<YOUR_SECRET>","sender":"{{from}}","body":"{{text}}","received_at":"{{sentStamp}}"}`}
+            />
+            <div className="text-[10px] text-muted-foreground mt-1">
+              Header: <code>Content-Type: application/json</code> · Method: <code>POST</code>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-medium mb-1 block">ডিভাইস সিক্রেট</label>
+            {newSecret ? (
+              <div className="space-y-1">
+                <div className="flex gap-2">
+                  <Input value={newSecret} readOnly className="font-mono text-xs" />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(newSecret);
+                      toast.success("সিক্রেট কপি হয়েছে");
+                    }}
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+                <div className="text-[10px] text-amber-600">
+                  ⚠️ এই সিক্রেট আর দেখানো হবে না। এখনই কপি করে নিরাপদ স্থানে রাখুন।
+                </div>
+              </div>
+            ) : (
+              <div className="text-xs text-muted-foreground">
+                {profileQ.data?.sms_device_secret_hash
+                  ? "একটি সিক্রেট সেট করা আছে। নতুন তৈরি করলে পুরানোটি কাজ করবে না।"
+                  : "এখনো কোনো সিক্রেট তৈরি করা হয়নি।"}
+              </div>
+            )}
+            <Button
+              size="sm"
+              className="mt-2"
+              onClick={() => genSecret.mutate()}
+              disabled={genSecret.isPending}
+            >
+              <RefreshCw className="h-3.5 w-3.5 mr-1" />
+              {profileQ.data?.sms_device_secret_hash ? "নতুন সিক্রেট তৈরি করুন" : "সিক্রেট তৈরি করুন"}
+            </Button>
+          </div>
+
+          <details className="text-xs">
+            <summary className="cursor-pointer text-primary font-medium">কীভাবে কাজ করবে?</summary>
+            <ol className="list-decimal pl-5 mt-2 space-y-1 text-muted-foreground">
+              <li>Google Play থেকে "SMS Forwarder" বা সমতুল্য অ্যাপ ইনস্টল করুন।</li>
+              <li>নতুন rule যোগ করুন — Sender filter-এ <code>bKash, NAGAD, ROCKET, UPAY</code> দিন।</li>
+              <li>উপরের POST URL ও JSON Body template paste করুন।</li>
+              <li><code>&lt;YOUR_SECRET&gt;</code> এর জায়গায় উপরের সিক্রেট বসান।</li>
+              <li>SMS Permission দিন। ফোন চালু রাখুন। নতুন পেমেন্ট SMS এলে অটো cashbook-এ income যোগ হবে।</li>
+            </ol>
+          </details>
+        </div>
+      </Card>
+
+      {/* SMS Inbox */}
+      <Card className="p-4 mb-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Inbox className="h-4 w-4 text-primary" />
+            <div className="font-semibold">সাম্প্রতিক SMS লেনদেন</div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => qc.invalidateQueries({ queryKey: ["mfs-sms-inbox"] })}
+          >
+            <RefreshCw className="h-3.5 w-3.5 mr-1" /> রিফ্রেশ
+          </Button>
+        </div>
+        {smsInboxQ.isLoading ? (
+          <div className="text-sm text-muted-foreground py-4 text-center">লোড হচ্ছে...</div>
+        ) : (smsInboxQ.data?.length ?? 0) === 0 ? (
+          <div className="text-sm text-muted-foreground py-6 text-center border border-dashed rounded-md">
+            এখনো কোনো SMS রেকর্ড নেই।
+          </div>
+        ) : (
+          <div className="overflow-auto">
+            <table className="w-full text-xs">
+              <thead className="text-[11px] text-muted-foreground border-b">
+                <tr>
+                  <th className="text-left p-2">সময়</th>
+                  <th className="text-left p-2">প্রোভাইডার</th>
+                  <th className="text-right p-2">পরিমাণ</th>
+                  <th className="text-left p-2">TrxID</th>
+                  <th className="text-left p-2">প্রেরক</th>
+                  <th className="text-center p-2">স্ট্যাটাস</th>
+                  <th className="text-right p-2">অ্যাকশন</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(smsInboxQ.data ?? []).map((r: any) => {
+                  const statusBadge =
+                    r.status === "posted"
+                      ? { label: "পোস্টেড", cls: "bg-emerald-500/15 text-emerald-700", icon: <CheckCircle2 className="h-3 w-3" /> }
+                      : r.status === "duplicate"
+                        ? { label: "ডুপ্লিকেট", cls: "bg-amber-500/15 text-amber-700", icon: null }
+                        : r.status === "ignored"
+                          ? { label: "এড়িয়ে গেছে", cls: "bg-muted text-muted-foreground", icon: null }
+                          : r.status === "error"
+                            ? { label: "ত্রুটি", cls: "bg-destructive/15 text-destructive", icon: <XCircle className="h-3 w-3" /> }
+                            : { label: "অপেক্ষমাণ", cls: "bg-blue-500/15 text-blue-700", icon: null };
+                  return (
+                    <tr key={r.id} className="border-b last:border-0 hover:bg-muted/30">
+                      <td className="p-2 whitespace-nowrap text-muted-foreground">
+                        {new Date(r.received_at).toLocaleString("bn-BD", { dateStyle: "short", timeStyle: "short" })}
+                      </td>
+                      <td className="p-2 capitalize">{r.provider}</td>
+                      <td className="p-2 text-right font-mono font-semibold">
+                        {r.amount != null ? fmtMoney(Number(r.amount), "bn") : "—"}
+                      </td>
+                      <td className="p-2 font-mono">{r.txn_id ?? "—"}</td>
+                      <td className="p-2">{r.sender_msisdn ?? r.sender ?? "—"}</td>
+                      <td className="p-2 text-center">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] ${statusBadge.cls}`}>
+                          {statusBadge.icon}
+                          {statusBadge.label}
+                        </span>
+                      </td>
+                      <td className="p-2 text-right whitespace-nowrap">
+                        {(r.status === "pending" || r.status === "ignored" || r.status === "error") && r.amount != null && r.provider !== "unknown" && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-6 px-2 text-xs mr-1"
+                            onClick={() => postSms.mutate(r)}
+                            disabled={postSms.isPending}
+                          >
+                            পোস্ট
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0 text-destructive"
+                          onClick={() => {
+                            if (confirm("মুছে ফেলবেন?")) deleteSms.mutate(r.id);
+                          }}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
+
       {/* Advanced features notice */}
+
       <Card className="p-4 border-dashed">
         <div className="flex items-start gap-3">
           <Info className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
