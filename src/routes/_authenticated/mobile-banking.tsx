@@ -464,7 +464,159 @@ function MobileBankingDashboard() {
         </div>
       </Card>
 
-      {/* Daily trend */}
+      {/* MFS Accounts management */}
+      <Card className="p-4 mb-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <CreditCard className="h-4 w-4 text-primary" />
+            <div className="font-semibold">আমার মোবাইল ব্যাংকিং অ্যাকাউন্ট</div>
+          </div>
+          <Button size="sm" onClick={() => openAddAccount()}>
+            <Plus className="h-3.5 w-3.5 mr-1" /> নতুন অ্যাকাউন্ট
+          </Button>
+        </div>
+        {accountsQ.isLoading ? (
+          <div className="text-sm text-muted-foreground py-4 text-center">লোড হচ্ছে...</div>
+        ) : (accountsQ.data?.length ?? 0) === 0 ? (
+          <div className="text-sm text-muted-foreground py-6 text-center border border-dashed rounded-md">
+            এখনো কোনো অ্যাকাউন্ট যোগ করা হয়নি। বিকাশ/নগদ/রকেট/উপায় অ্যাকাউন্টের নাম ও নাম্বার সেইভ করুন।
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {(["bkash", "nagad", "rocket", "upay"] as const).map((prov) => {
+              const list = (accountsQ.data ?? []).filter((a) => a.provider === prov);
+              const info = METHOD_LABELS[prov];
+              return (
+                <div key={prov} className="rounded-lg border p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="h-3 w-3 rounded-full" style={{ background: info.color }} />
+                      <span className="font-semibold text-sm">{info.label}</span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 px-2 text-xs"
+                      onClick={() => openAddAccount(prov)}
+                    >
+                      <Plus className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  {list.length === 0 ? (
+                    <div className="text-[11px] text-muted-foreground">কোনো অ্যাকাউন্ট নেই</div>
+                  ) : (
+                    <div className="space-y-1.5">
+                      {list.map((a) => (
+                        <div
+                          key={a.id}
+                          className="flex items-start justify-between gap-2 rounded-md bg-muted/40 px-2 py-1.5"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <div className="text-sm font-medium truncate">{a.account_name}</div>
+                            <div className="text-xs font-mono text-muted-foreground truncate">
+                              {a.account_number}
+                            </div>
+                            {a.note && (
+                              <div className="text-[10px] text-muted-foreground truncate">{a.note}</div>
+                            )}
+                          </div>
+                          <div className="flex gap-0.5">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0"
+                              onClick={() => openEditAccount(a)}
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 text-destructive"
+                              onClick={() => {
+                                if (confirm("মুছে ফেলবেন?")) deleteAcct.mutate(a.id);
+                              }}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </Card>
+
+      {/* Add/Edit account dialog */}
+      <Dialog open={acctOpen} onOpenChange={setAcctOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{editingId ? "অ্যাকাউন্ট সম্পাদনা" : "নতুন অ্যাকাউন্ট যোগ করুন"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs font-medium mb-1 block">মাধ্যম</label>
+              <div className="flex flex-wrap gap-2">
+                {(["bkash", "nagad", "rocket", "upay"] as const).map((p) => (
+                  <Button
+                    key={p}
+                    type="button"
+                    size="sm"
+                    variant={acctForm.provider === p ? "default" : "outline"}
+                    onClick={() => setAcctForm((s) => ({ ...s, provider: p }))}
+                    style={
+                      acctForm.provider === p
+                        ? { backgroundColor: METHOD_LABELS[p].color, borderColor: METHOD_LABELS[p].color }
+                        : undefined
+                    }
+                  >
+                    {METHOD_LABELS[p].label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-medium mb-1 block">অ্যাকাউন্টের নাম</label>
+              <Input
+                value={acctForm.account_name}
+                onChange={(e) => setAcctForm((s) => ({ ...s, account_name: e.target.value }))}
+                placeholder="যেমন: দোকানের বিকাশ"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium mb-1 block">নাম্বার</label>
+              <Input
+                value={acctForm.account_number}
+                onChange={(e) => setAcctForm((s) => ({ ...s, account_number: e.target.value }))}
+                placeholder="01XXXXXXXXX"
+                inputMode="tel"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium mb-1 block">নোট (ঐচ্ছিক)</label>
+              <Input
+                value={acctForm.note}
+                onChange={(e) => setAcctForm((s) => ({ ...s, note: e.target.value }))}
+                placeholder="যেমন: পার্সোনাল / মার্চেন্ট"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAcctOpen(false)}>
+              বাতিল
+            </Button>
+            <Button onClick={() => saveAcct.mutate()} disabled={saveAcct.isPending}>
+              {saveAcct.isPending ? "সেইভ হচ্ছে..." : "সেইভ"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
       <Card className="p-4 mb-4">
         <div className="font-semibold mb-3">দৈনিক কালেকশন ট্রেন্ড</div>
         {dailyTrend.length === 0 ? (
