@@ -47,7 +47,7 @@ const PACKS: MsgPack[] = [
   { id: "msg_30", name: "৩০ মেসেজ", count: 30, price: 20 },
   { id: "msg_50", name: "৫০ মেসেজ", count: 50, price: 31 },
   { id: "msg_100", name: "১০০ মেসেজ", count: 100, price: 55 },
-  { id: "msg_250", name: "২৫০ মেসেজ", count: 250, price: 120 },
+  { id: "msg_250", name: "২৫০ মেসেজ", count: 250, price: 125 },
   { id: "msg_500", name: "৫০০ মেসেজ", count: 500, price: 225 },
   { id: "msg_1000", name: "১০০০ মেসেজ", count: 1000, price: 400 },
 ];
