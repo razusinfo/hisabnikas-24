@@ -65,6 +65,31 @@ function ReportsIndexPage() {
   const [lockedOpen, setLockedOpen] = useState(false);
   const [lockedTitle, setLockedTitle] = useState("");
 
+  const subQuery = useQuery({
+    queryKey: ["my-subscription"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      const uid = u.user?.id;
+      if (!uid) return null;
+      const { data } = await supabase
+        .from("subscriptions")
+        .select("plan,status,expires_at")
+        .eq("user_id", uid)
+        .maybeSingle();
+      return data;
+    },
+  });
+
+  const isPackageActive = (() => {
+    const s = subQuery.data;
+    if (!s) return false;
+    if (s.status !== "active") return false;
+    if (s.plan === "trial" || s.plan === "free") return false;
+    if (!s.expires_at) return false;
+    return new Date(s.expires_at).getTime() > Date.now();
+  })();
+
+
   const cardInner = (card: (typeof reportCards)[number], locked: boolean) => {
     const Icon = card.icon;
     return (
