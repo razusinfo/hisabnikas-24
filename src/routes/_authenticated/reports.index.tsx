@@ -133,12 +133,22 @@ function ReportsIndexPage() {
         {reportCards.map((card) => {
           const isFree = FREE_SLUGS.has(card.slug) || isPackageActive;
           if (isFree) {
-            const isMb = card.slug === "mobile-banking";
+            if (card.slug === "mobile-banking") {
+              return (
+                <Link
+                  key={card.slug}
+                  to="/mobile-banking"
+                  className="group block rounded-2xl border border-border bg-card hover:shadow-md transition-all hover:border-primary/30"
+                >
+                  {cardInner(card, false)}
+                </Link>
+              );
+            }
             return (
               <Link
                 key={card.slug}
-                to={isMb ? "/mobile-banking" : "/reports/$slug"}
-                params={isMb ? undefined : { slug: card.slug }}
+                to="/reports/$slug"
+                params={{ slug: card.slug }}
                 className="group block rounded-2xl border border-border bg-card hover:shadow-md transition-all hover:border-primary/30"
               >
                 {cardInner(card, false)}
