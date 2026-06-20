@@ -195,7 +195,6 @@ function SalesPage() {
       if (error) throw error;
       return data ?? [];
     },
-    enabled: openNew,
   });
 
   const inv = (profile?.invoice_settings ?? {}) as any;
