@@ -16,14 +16,14 @@ import {
 } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
 import {
-  Check,
   Loader2,
   MessageSquare,
   Smartphone,
   Copy,
-  Zap,
+  ChevronRight,
+  Mail,
   Send,
-  Megaphone,
+  CreditCard,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,46 +41,18 @@ type MsgPack = {
   name: string;
   count: number;
   price: number;
-  icon: typeof MessageSquare;
-  highlight?: boolean;
-  features: string[];
 };
 
 const PACKS: MsgPack[] = [
-  {
-    id: "msg_100",
-    name: "১০০ মেসেজ",
-    count: 100,
-    price: 50,
-    icon: MessageSquare,
-    features: ["১০০টি SMS ক্রেডিট", "মেয়াদ নেই", "তাৎক্ষণিক ব্যবহার"],
-  },
-  {
-    id: "msg_500",
-    name: "৫০০ মেসেজ",
-    count: 500,
-    price: 225,
-    icon: Send,
-    highlight: true,
-    features: ["৫০০টি SMS ক্রেডিট", "১০% ছাড়", "মেয়াদ নেই"],
-  },
-  {
-    id: "msg_1000",
-    name: "১০০০ মেসেজ",
-    count: 1000,
-    price: 400,
-    icon: Zap,
-    features: ["১০০০টি SMS ক্রেডিট", "২০% ছাড়", "মেয়াদ নেই"],
-  },
-  {
-    id: "msg_5000",
-    name: "৫০০০ মেসেজ",
-    count: 5000,
-    price: 1750,
-    icon: Megaphone,
-    features: ["৫০০০টি SMS ক্রেডিট", "৩০% ছাড়", "বাল্ক ক্যাম্পেইনের জন্য"],
-  },
+  { id: "msg_25", name: "২৫ মেসেজ", count: 25, price: 19 },
+  { id: "msg_50", name: "৫০ মেসেজ", count: 50, price: 35 },
+  { id: "msg_100", name: "১০০ মেসেজ", count: 100, price: 54 },
+  { id: "msg_250", name: "২৫০ মেসেজ", count: 250, price: 120 },
+  { id: "msg_500", name: "৫০০ মেসেজ", count: 500, price: 225 },
+  { id: "msg_1000", name: "১০০০ মেসেজ", count: 1000, price: 400 },
 ];
+
+const bn = (n: number) => Number(n).toLocaleString("bn-BD");
 
 function BuyMessagesPage() {
   const { t } = useI18n();
@@ -152,7 +124,18 @@ function BuyMessagesPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const credits = (profile.data as any)?.message_credits ?? 0;
+  const total = Number((profile.data as any)?.message_credits ?? 0);
+  const packApproved = (myRequests.data ?? [])
+    .filter((r: any) => r.status === "approved")
+    .reduce((s: number, r: any) => s + Number(r.messages_count ?? 0), 0);
+  const packBalance = Math.min(packApproved, total);
+  const subBalance = Math.max(0, total - packBalance);
+
+  const stats = [
+    { label: "সাবস্ক্রিপশন", value: subBalance, icon: CreditCard },
+    { label: "মেসেজ প্যাক", value: packBalance, icon: Send },
+    { label: "মোট মেসেজ", value: total, icon: Mail },
+  ];
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl">
@@ -161,66 +144,68 @@ function BuyMessagesPage() {
         subtitle="বিকাশের মাধ্যমে SMS ক্রেডিট কিনুন"
       />
 
-      <Card className="p-5 mb-6 bg-gradient-to-r from-primary/10 to-primary/5">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-xl bg-primary/20 ring-1 ring-primary/30 flex items-center justify-center">
-              <MessageSquare className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground">বর্তমান মেসেজ ব্যালেন্স</div>
-              <div className="text-2xl font-bold">
-                {profile.isLoading ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <>{Number(credits).toLocaleString("bn-BD")} মেসেজ</>
-                )}
+      {/* Stat cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        {stats.map((s) => {
+          const Icon = s.icon;
+          return (
+            <Card
+              key={s.label}
+              className="p-5 bg-primary text-primary-foreground border-0 shadow-sm"
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-xl bg-primary-foreground/15 ring-1 ring-primary-foreground/20 flex items-center justify-center shrink-0">
+                  <Icon className="h-6 w-6" />
+                </div>
+                <div className="flex-1 text-right">
+                  <div className="text-sm opacity-90">{s.label}</div>
+                  <div className="text-3xl font-bold mt-1">
+                    {profile.isLoading ? (
+                      <Loader2 className="h-6 w-6 animate-spin inline" />
+                    ) : (
+                      bn(s.value)
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </Card>
+            </Card>
+          );
+        })}
+      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <h2 className="font-display font-semibold text-lg mb-3">
+        মেসেজ প্যাক নির্বাচন করুন
+      </h2>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {PACKS.map((p) => {
-          const Icon = p.icon;
           const perMsg = (p.price / p.count).toFixed(2);
           return (
             <Card
               key={p.id}
-              className={`p-5 relative flex flex-col ${p.highlight ? "ring-2 ring-primary" : ""}`}
+              className="overflow-hidden flex flex-col hover:shadow-md transition-shadow"
             >
-              {p.highlight && (
-                <Badge className="absolute -top-2 right-4">জনপ্রিয়</Badge>
-              )}
-              <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
-                <Icon className="h-5 w-5 text-primary" />
+              <div className="p-5 pb-4">
+                <div className="font-display font-semibold text-lg">
+                  {p.name}
+                </div>
+                <div className="mt-3 flex items-center justify-between flex-wrap gap-2">
+                  <div className="text-sm text-muted-foreground">
+                    ৳ {perMsg} / এসএমএস
+                  </div>
+                  <div className="text-primary font-bold text-lg">
+                    ৳ {p.price.toFixed(2)}
+                  </div>
+                </div>
               </div>
-              <div className="font-display font-semibold">{p.name}</div>
-              <div className="mt-3 flex items-baseline gap-1">
-                <span className="text-2xl font-bold">
-                  ৳{p.price.toLocaleString("bn-BD")}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  (৳{perMsg}/মেসেজ)
-                </span>
-              </div>
-              <ul className="mt-4 space-y-1.5 flex-1">
-                {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-              <Button
-                className="mt-5 w-full"
-                variant={p.highlight ? "default" : "secondary"}
+              <button
+                type="button"
                 onClick={() => setSelected(p)}
+                className="mt-auto flex items-center justify-between px-5 py-3 bg-primary/10 hover:bg-primary/15 text-primary font-medium text-sm transition-colors"
               >
-                <Smartphone className="h-4 w-4 mr-1.5" />
-                বিকাশে কিনুন
-              </Button>
+                <span>কিনুন</span>
+                <ChevronRight className="h-4 w-4" />
+              </button>
             </Card>
           );
         })}
@@ -237,12 +222,10 @@ function BuyMessagesPage() {
               >
                 <div>
                   <div className="font-medium">
-                    {r.messages_count?.toLocaleString("bn-BD")} মেসেজ — ৳
-                    {Number(r.amount).toLocaleString("bn-BD")}
+                    {bn(r.messages_count)} মেসেজ — ৳{bn(Number(r.amount))}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    TrxID: {r.trx_id} ·{" "}
-                    {fmtDateTime(r.created_at, "bn")}
+                    TrxID: {r.trx_id} · {fmtDateTime(r.created_at, "bn")}
                   </div>
                   {r.note && (
                     <div className="text-xs text-destructive mt-1">{r.note}</div>
@@ -350,7 +333,9 @@ function BuyMessagesPage() {
             >
               {submit.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-1" />
-              ) : null}
+              ) : (
+                <Smartphone className="h-4 w-4 mr-1" />
+              )}
               জমা দিন
             </Button>
           </DialogFooter>
