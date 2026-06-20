@@ -56,6 +56,7 @@ function AdminPaymentsPage() {
   const qc = useQueryClient();
   const [rejectNote, setRejectNote] = useState<Record<string, string>>({});
   const [q, setQ] = useState("");
+  const [userQ, setUserQ] = useState("");
   const [reason, setReason] = useState<Record<string, string>>({});
 
   const meAdmin = useQuery({
