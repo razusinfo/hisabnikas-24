@@ -341,6 +341,8 @@ function BuyMessagesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <PaymentSuccessDialog open={successOpen} onOpenChange={setSuccessOpen} />
     </div>
   );
 }
