@@ -47,7 +47,7 @@ export async function fetchSales() {
 async function fetchSaleItems(saleId: string) {
   const { data, error } = await supabase
     .from("sale_items")
-    .select("id,product_name,qty,unit_price,line_total")
+    .select("id,product_id,product_name,qty,unit_price,line_total")
     .eq("sale_id", saleId);
   if (error) throw error;
   return data ?? [];
@@ -387,7 +387,7 @@ function SalesPage() {
     setItems(list);
   }
 
-  function updateItem(id: string, patch: { qty?: number; unit_price?: number }) {
+  function updateItem(id: string, patch: { qty?: number; unit_price?: number; product_id?: string | null; product_name?: string }) {
     setItems((prev) => prev?.map((i) => {
       if (i.id !== id) return i;
       const next = { ...i, ...patch };
@@ -396,6 +396,8 @@ function SalesPage() {
     }) ?? null);
   }
 
+  const [productPickerOpen, setProductPickerOpen] = useState<string | null>(null);
+
   async function saveEdits() {
     if (!viewSale || !items) return;
     setSaving(true);
@@ -403,7 +405,7 @@ function SalesPage() {
       for (const i of items) {
         const { error } = await supabase
           .from("sale_items")
-          .update({ qty: Number(i.qty), unit_price: Number(i.unit_price), line_total: Number(i.qty) * Number(i.unit_price) })
+          .update({ qty: Number(i.qty), unit_price: Number(i.unit_price), line_total: Number(i.qty) * Number(i.unit_price), product_id: i.product_id ?? null, product_name: i.product_name })
           .eq("id", i.id);
         if (error) throw error;
       }
@@ -865,7 +867,37 @@ function SalesPage() {
                     {items === null && <tr><td colSpan={4} className="p-4 text-center text-muted-foreground">{t("loading")}</td></tr>}
                     {items?.map((i) => (
                       <tr key={i.id} className="border-t border-border/40">
-                        <td className="p-2">{i.product_name}</td>
+                        <td className="p-2">
+                          {editing ? (
+                            <Popover open={productPickerOpen === i.id} onOpenChange={(o) => setProductPickerOpen(o ? i.id : null)}>
+                              <PopoverTrigger asChild>
+                                <Button variant="outline" role="combobox" className="h-8 w-full justify-between font-normal">
+                                  <span className="truncate">{i.product_name || t("product")}</span>
+                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="p-0 w-[260px]" align="start">
+                                <Command>
+                                  <CommandInput placeholder={t("search") + "..."} />
+                                  <CommandList>
+                                    <CommandEmpty>—</CommandEmpty>
+                                    <CommandGroup>
+                                      {(productsList as any[]).map((p) => (
+                                        <CommandItem key={p.id} value={`${p.name} ${p.sku ?? ""}`} onSelect={() => {
+                                          updateItem(i.id, { product_id: p.id, product_name: p.name, unit_price: Number(p.sell_price || i.unit_price) });
+                                          setProductPickerOpen(null);
+                                        }}>
+                                          <Check className={cn("mr-2 h-4 w-4", i.product_id === p.id ? "opacity-100" : "opacity-0")} />
+                                          <span className="truncate">{p.name}</span>
+                                        </CommandItem>
+                                      ))}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+                          ) : i.product_name}
+                        </td>
                         <td className="p-2 text-right font-mono">
                           {editing ? (
                             <Input type="number" step="0.01" value={i.unit_price} onChange={(e) => updateItem(i.id, { unit_price: Number(e.target.value) })} className="h-7 w-24 ml-auto text-right" />
