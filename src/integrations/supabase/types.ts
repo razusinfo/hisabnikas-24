@@ -263,6 +263,39 @@ export type Database = {
         }
         Relationships: []
       }
+      mfs_accounts: {
+        Row: {
+          account_name: string
+          account_number: string
+          created_at: string
+          id: string
+          note: string | null
+          owner_id: string
+          provider: string
+          updated_at: string
+        }
+        Insert: {
+          account_name: string
+          account_number: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          owner_id: string
+          provider: string
+          updated_at?: string
+        }
+        Update: {
+          account_name?: string
+          account_number?: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          owner_id?: string
+          provider?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payment_requests: {
         Row: {
           amount: number
