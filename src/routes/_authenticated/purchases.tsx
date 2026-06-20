@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney, fmtDateTime, fmtDate } from "@/lib/format";
+import { resolveBranchIdForInsert } from "@/lib/current-branch";
 import { Input } from "@/components/ui/input";
 import { DateInput } from "@/components/DateInput";
 import { Button } from "@/components/ui/button";
@@ -152,9 +153,11 @@ function PurchasesPage() {
   async function createPurchase() {
     if (lines.length === 0) return toast.error(t("cartEmpty"));
     const { data: u } = await supabase.auth.getUser();
+    const branch_id = await resolveBranchIdForInsert();
     const invoice_no = "PO-" + Date.now().toString().slice(-8);
     const { data: pur, error } = await (supabase as any).from("purchases").insert({
       owner_id: u.user!.id,
+      branch_id,
       supplier_name: supplier || null,
       invoice_no,
       subtotal: newSubtotal,

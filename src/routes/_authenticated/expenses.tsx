@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney, fmtDate } from "@/lib/format";
+import { resolveBranchIdForInsert } from "@/lib/current-branch";
 import { Input } from "@/components/ui/input";
 import { DateInput } from "@/components/DateInput";
 import { Button } from "@/components/ui/button";

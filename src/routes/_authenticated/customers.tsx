@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney } from "@/lib/format";
+import { resolveBranchIdForInsert } from "@/lib/current-branch";
 import { Plus, Search, Trash2, Wallet, MessageSquare, ShoppingCart, BookUser } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
