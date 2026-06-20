@@ -140,6 +140,7 @@ function CurrentPackagePage() {
   const [selected, setSelected] = useState<{ tier: Tier; price: number; id: string; days: number } | null>(null);
   const [senderNumber, setSenderNumber] = useState("");
   const [trxId, setTrxId] = useState("");
+  const [successOpen, setSuccessOpen] = useState(false);
 
   const sub = useQuery({
     queryKey: ["subscription"],
