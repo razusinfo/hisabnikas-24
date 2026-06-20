@@ -387,7 +387,7 @@ function SalesPage() {
     setItems(list);
   }
 
-  function updateItem(id: string, patch: { qty?: number; unit_price?: number }) {
+  function updateItem(id: string, patch: { qty?: number; unit_price?: number; product_id?: string | null; product_name?: string }) {
     setItems((prev) => prev?.map((i) => {
       if (i.id !== id) return i;
       const next = { ...i, ...patch };
@@ -395,6 +395,8 @@ function SalesPage() {
       return next;
     }) ?? null);
   }
+
+  const [productPickerOpen, setProductPickerOpen] = useState<string | null>(null);
 
   async function saveEdits() {
     if (!viewSale || !items) return;
