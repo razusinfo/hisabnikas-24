@@ -203,6 +203,7 @@ function AdminPaymentsPage() {
         <TabsList className="mb-4">
           <TabsTrigger value="requests">পেমেন্ট রিকোয়েস্ট</TabsTrigger>
           <TabsTrigger value="subscriptions">প্যাকেজ ব্যবস্থাপনা</TabsTrigger>
+          <TabsTrigger value="users">গ্রাহক সমূহ</TabsTrigger>
         </TabsList>
 
         <TabsContent value="requests">
