@@ -34,6 +34,7 @@ import { Route as AuthenticatedBusinessProfileRouteImport } from './routes/_auth
 import { Route as AuthenticatedBackupRestoreRouteImport } from './routes/_authenticated/backup-restore'
 import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authenticated/admin-payments'
 import { Route as AuthenticatedReportsIndexRouteImport } from './routes/_authenticated/reports.index'
+import { Route as ApiPublicMfsSmsRouteImport } from './routes/api/public/mfs-sms'
 import { Route as AuthenticatedReportsSlugRouteImport } from './routes/_authenticated/reports.$slug'
 import { Route as ApiPublicHooksDailyBackupRouteImport } from './routes/api/public/hooks/daily-backup'
 import { Route as ApiPublicGoogleCallbackRouteImport } from './routes/api/public/google/callback'
@@ -171,6 +172,11 @@ const AuthenticatedReportsIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedReportsRoute,
   } as any)
+const ApiPublicMfsSmsRoute = ApiPublicMfsSmsRouteImport.update({
+  id: '/api/public/mfs-sms',
+  path: '/api/public/mfs-sms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedReportsSlugRoute =
   AuthenticatedReportsSlugRouteImport.update({
     id: '/$slug',
@@ -214,6 +220,7 @@ export interface FileRoutesByFullPath {
   '/sales': typeof AuthenticatedSalesRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/reports/$slug': typeof AuthenticatedReportsSlugRoute
+  '/api/public/mfs-sms': typeof ApiPublicMfsSmsRoute
   '/reports/': typeof AuthenticatedReportsIndexRoute
   '/api/public/google/callback': typeof ApiPublicGoogleCallbackRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
@@ -242,6 +249,7 @@ export interface FileRoutesByTo {
   '/sales': typeof AuthenticatedSalesRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/reports/$slug': typeof AuthenticatedReportsSlugRoute
+  '/api/public/mfs-sms': typeof ApiPublicMfsSmsRoute
   '/reports': typeof AuthenticatedReportsIndexRoute
   '/api/public/google/callback': typeof ApiPublicGoogleCallbackRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
@@ -273,6 +281,7 @@ export interface FileRoutesById {
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/reports/$slug': typeof AuthenticatedReportsSlugRoute
+  '/api/public/mfs-sms': typeof ApiPublicMfsSmsRoute
   '/_authenticated/reports/': typeof AuthenticatedReportsIndexRoute
   '/api/public/google/callback': typeof ApiPublicGoogleCallbackRoute
   '/api/public/hooks/daily-backup': typeof ApiPublicHooksDailyBackupRoute
@@ -304,6 +313,7 @@ export interface FileRouteTypes {
     | '/sales'
     | '/settings'
     | '/reports/$slug'
+    | '/api/public/mfs-sms'
     | '/reports/'
     | '/api/public/google/callback'
     | '/api/public/hooks/daily-backup'
@@ -332,6 +342,7 @@ export interface FileRouteTypes {
     | '/sales'
     | '/settings'
     | '/reports/$slug'
+    | '/api/public/mfs-sms'
     | '/reports'
     | '/api/public/google/callback'
     | '/api/public/hooks/daily-backup'
@@ -362,6 +373,7 @@ export interface FileRouteTypes {
     | '/_authenticated/sales'
     | '/_authenticated/settings'
     | '/_authenticated/reports/$slug'
+    | '/api/public/mfs-sms'
     | '/_authenticated/reports/'
     | '/api/public/google/callback'
     | '/api/public/hooks/daily-backup'
@@ -373,6 +385,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TrustRoute: typeof TrustRoute
+  ApiPublicMfsSmsRoute: typeof ApiPublicMfsSmsRoute
   ApiPublicGoogleCallbackRoute: typeof ApiPublicGoogleCallbackRoute
   ApiPublicHooksDailyBackupRoute: typeof ApiPublicHooksDailyBackupRoute
 }
@@ -554,6 +567,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedReportsIndexRouteImport
       parentRoute: typeof AuthenticatedReportsRoute
     }
+    '/api/public/mfs-sms': {
+      id: '/api/public/mfs-sms'
+      path: '/api/public/mfs-sms'
+      fullPath: '/api/public/mfs-sms'
+      preLoaderRoute: typeof ApiPublicMfsSmsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/reports/$slug': {
       id: '/_authenticated/reports/$slug'
       path: '/$slug'
@@ -644,6 +664,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TrustRoute: TrustRoute,
+  ApiPublicMfsSmsRoute: ApiPublicMfsSmsRoute,
   ApiPublicGoogleCallbackRoute: ApiPublicGoogleCallbackRoute,
   ApiPublicHooksDailyBackupRoute: ApiPublicHooksDailyBackupRoute,
 }
