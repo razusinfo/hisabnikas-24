@@ -31,6 +31,7 @@ import { Route as AuthenticatedCurrentPackageRouteImport } from './routes/_authe
 import { Route as AuthenticatedCashbookRouteImport } from './routes/_authenticated/cashbook'
 import { Route as AuthenticatedBuyMessagesRouteImport } from './routes/_authenticated/buy-messages'
 import { Route as AuthenticatedBusinessProfileRouteImport } from './routes/_authenticated/business-profile'
+import { Route as AuthenticatedBranchesRouteImport } from './routes/_authenticated/branches'
 import { Route as AuthenticatedBackupRestoreRouteImport } from './routes/_authenticated/backup-restore'
 import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authenticated/admin-payments'
 import { Route as AuthenticatedReportsIndexRouteImport } from './routes/_authenticated/reports.index'
@@ -154,6 +155,11 @@ const AuthenticatedBusinessProfileRoute =
     path: '/business-profile',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedBranchesRoute = AuthenticatedBranchesRouteImport.update({
+  id: '/branches',
+  path: '/branches',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedBackupRestoreRoute =
   AuthenticatedBackupRestoreRouteImport.update({
     id: '/backup-restore',
@@ -202,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/trust': typeof TrustRoute
   '/admin-payments': typeof AuthenticatedAdminPaymentsRoute
   '/backup-restore': typeof AuthenticatedBackupRestoreRoute
+  '/branches': typeof AuthenticatedBranchesRoute
   '/business-profile': typeof AuthenticatedBusinessProfileRoute
   '/buy-messages': typeof AuthenticatedBuyMessagesRoute
   '/cashbook': typeof AuthenticatedCashbookRoute
@@ -232,6 +239,7 @@ export interface FileRoutesByTo {
   '/trust': typeof TrustRoute
   '/admin-payments': typeof AuthenticatedAdminPaymentsRoute
   '/backup-restore': typeof AuthenticatedBackupRestoreRoute
+  '/branches': typeof AuthenticatedBranchesRoute
   '/business-profile': typeof AuthenticatedBusinessProfileRoute
   '/buy-messages': typeof AuthenticatedBuyMessagesRoute
   '/cashbook': typeof AuthenticatedCashbookRoute
@@ -263,6 +271,7 @@ export interface FileRoutesById {
   '/trust': typeof TrustRoute
   '/_authenticated/admin-payments': typeof AuthenticatedAdminPaymentsRoute
   '/_authenticated/backup-restore': typeof AuthenticatedBackupRestoreRoute
+  '/_authenticated/branches': typeof AuthenticatedBranchesRoute
   '/_authenticated/business-profile': typeof AuthenticatedBusinessProfileRoute
   '/_authenticated/buy-messages': typeof AuthenticatedBuyMessagesRoute
   '/_authenticated/cashbook': typeof AuthenticatedCashbookRoute
@@ -295,6 +304,7 @@ export interface FileRouteTypes {
     | '/trust'
     | '/admin-payments'
     | '/backup-restore'
+    | '/branches'
     | '/business-profile'
     | '/buy-messages'
     | '/cashbook'
@@ -325,6 +335,7 @@ export interface FileRouteTypes {
     | '/trust'
     | '/admin-payments'
     | '/backup-restore'
+    | '/branches'
     | '/business-profile'
     | '/buy-messages'
     | '/cashbook'
@@ -355,6 +366,7 @@ export interface FileRouteTypes {
     | '/trust'
     | '/_authenticated/admin-payments'
     | '/_authenticated/backup-restore'
+    | '/_authenticated/branches'
     | '/_authenticated/business-profile'
     | '/_authenticated/buy-messages'
     | '/_authenticated/cashbook'
@@ -546,6 +558,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBusinessProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/branches': {
+      id: '/_authenticated/branches'
+      path: '/branches'
+      fullPath: '/branches'
+      preLoaderRoute: typeof AuthenticatedBranchesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/backup-restore': {
       id: '/_authenticated/backup-restore'
       path: '/backup-restore'
@@ -614,6 +633,7 @@ const AuthenticatedReportsRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminPaymentsRoute: typeof AuthenticatedAdminPaymentsRoute
   AuthenticatedBackupRestoreRoute: typeof AuthenticatedBackupRestoreRoute
+  AuthenticatedBranchesRoute: typeof AuthenticatedBranchesRoute
   AuthenticatedBusinessProfileRoute: typeof AuthenticatedBusinessProfileRoute
   AuthenticatedBuyMessagesRoute: typeof AuthenticatedBuyMessagesRoute
   AuthenticatedCashbookRoute: typeof AuthenticatedCashbookRoute
@@ -636,6 +656,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminPaymentsRoute: AuthenticatedAdminPaymentsRoute,
   AuthenticatedBackupRestoreRoute: AuthenticatedBackupRestoreRoute,
+  AuthenticatedBranchesRoute: AuthenticatedBranchesRoute,
   AuthenticatedBusinessProfileRoute: AuthenticatedBusinessProfileRoute,
   AuthenticatedBuyMessagesRoute: AuthenticatedBuyMessagesRoute,
   AuthenticatedCashbookRoute: AuthenticatedCashbookRoute,
