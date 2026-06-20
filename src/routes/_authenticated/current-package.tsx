@@ -78,22 +78,36 @@ const TXT = (text: string, sub?: string): Cell => ({ kind: "text", text, sub });
 
 type Feature = { label: string; basic: Cell; premium: Cell; business: Cell };
 
-const FEATURES: Feature[] = [
-  { label: "পণ্য ও পার্টি সমূহ", basic: CHECK, premium: CHECK, business: CHECK },
-  { label: "খরচ সমূহ", basic: CHECK, premium: CHECK, business: CHECK },
-  { label: "লেনদেন সমূহ", basic: CHECK, premium: CHECK, business: CHECK },
-  { label: "অফলাইন মোড", basic: CHECK, premium: CHECK, business: CHECK },
-  { label: "একাধিক ডিভাইস", basic: CHECK, premium: CHECK, business: CHECK },
-  { label: "এসএমএস", basic: TXT("১০"), premium: TXT("৫০"), business: TXT("১০০") },
-  { label: "রিপোর্টস", basic: TXT("সীমিত", "(১৫ দিন)"), premium: CHECK, business: CHECK },
-  { label: "ইনভয়েস প্রিন্ট", basic: TXT("সীমিত", "(জলছাপ সহ)"), premium: CHECK, business: CHECK },
-  { label: "ইনভেন্টরি ব্যবস্থা", basic: TXT("সীমিত*", "(১৫ দিন)"), premium: CHECK, business: CHECK },
-  { label: "ডেলিভারি চার্জ", basic: TXT("সীমিত*", "(১৫ দিন)"), premium: CHECK, business: CHECK },
-  { label: "ব্যাংক লেনদেন", basic: TXT("সীমিত*", "(১৫ দিন)"), premium: CROSS, business: CHECK },
-  { label: "থার্মাল প্রিন্টিং", basic: CROSS, premium: CHECK, business: CHECK },
-  { label: "একাধিক ইউজার", basic: CROSS, premium: CROSS, business: TXT("✓ (৫ জন)") },
-  { label: "একাধিক ব্যবসা", basic: CROSS, premium: CROSS, business: CHECK },
-];
+const getFeatures = (billing: Billing): Feature[] => {
+  const yearly = billing === "yearly";
+  return [
+    { label: "পণ্য ও পার্টি সমূহ", basic: CHECK, premium: CHECK, business: CHECK },
+    { label: "খরচ সমূহ", basic: CHECK, premium: CHECK, business: CHECK },
+    { label: "লেনদেন সমূহ", basic: CHECK, premium: CHECK, business: CHECK },
+    { label: "অফলাইন মোড", basic: CHECK, premium: CHECK, business: CHECK },
+    { label: "একাধিক ডিভাইস", basic: CHECK, premium: CHECK, business: CHECK },
+    {
+      label: "এসএমএস",
+      basic: TXT("১০"),
+      premium: TXT(yearly ? "৬০০" : "৫০"),
+      business: TXT(yearly ? "১২০০" : "১০০"),
+    },
+    { label: "রিপোর্টস", basic: TXT("সীমিত", "(১৫ দিন)"), premium: CHECK, business: CHECK },
+    { label: "ইনভয়েস প্রিন্ট", basic: TXT("সীমিত", "(জলছাপ সহ)"), premium: CHECK, business: CHECK },
+    { label: "ইনভেন্টরি ব্যবস্থা", basic: TXT("সীমিত*", "(১৫ দিন)"), premium: CHECK, business: CHECK },
+    { label: "ডেলিভারি চার্জ", basic: TXT("সীমিত*", "(১৫ দিন)"), premium: CHECK, business: CHECK },
+    { label: "ব্যাংক লেনদেন", basic: TXT("সীমিত*", "(১৫ দিন)"), premium: CROSS, business: CHECK },
+    { label: "থার্মাল প্রিন্টিং", basic: CROSS, premium: CHECK, business: CHECK },
+    {
+      label: "একাধিক ইউজার",
+      basic: CROSS,
+      premium: CROSS,
+      business: TXT(yearly ? "✓ (৩ জন)" : "✓ (৫ জন)"),
+    },
+    { label: "একাধিক ব্যবসা", basic: CROSS, premium: CROSS, business: CHECK },
+  ];
+};
+
 
 function CellView({ cell, accent }: { cell: Cell; accent: boolean }) {
   if (cell.kind === "check") {
