@@ -13,7 +13,10 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Eye, CreditCard, Printer, Trash2, Search, Plus, Pencil, Save as SaveIcon, X } from "lucide-react";
+import { Eye, CreditCard, Printer, Trash2, Search, Plus, Pencil, Save as SaveIcon, X, Check, ChevronsUpDown } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 import { useInvoicePreview } from "@/components/InvoicePreviewProvider";
 import { ProductFormDialog, type CreatedProduct } from "@/components/ProductFormDialog";
 
@@ -802,17 +805,44 @@ function SalesPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div><div className="text-muted-foreground text-xs">{t("date")}</div>{editing ? <DateInput value={editDate} onChange={setEditDate} clearable={false} className="h-8" /> : fmtDate(viewSale.created_at, lang)}</div>
-                <div><div className="text-muted-foreground text-xs">{t("customer")}</div>{editing ? (
-                  <Select value={editCustomerId || "__walkin__"} onValueChange={(v) => setEditCustomerId(v === "__walkin__" ? "" : v)}>
-                    <SelectTrigger className="h-8"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="__walkin__">{t("walkIn")}</SelectItem>
-                      {(customersList as any[]).map((c) => (
-                        <SelectItem key={c.id} value={c.id}>{c.name}{c.phone ? ` — ${c.phone}` : ""}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (viewSale.customers?.name ?? t("walkIn"))}</div>
+                <div><div className="text-muted-foreground text-xs">{t("customer")}</div>{editing ? (() => {
+                  const selected = (customersList as any[]).find((c) => c.id === editCustomerId);
+                  const label = selected ? `${selected.name}${selected.phone ? ` — ${selected.phone}` : ""}` : t("walkIn");
+                  return (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" role="combobox" className="h-8 w-full justify-between font-normal">
+                          <span className="truncate">{label}</span>
+                          <ChevronsUpDown className="h-3.5 w-3.5 opacity-50 shrink-0 ml-2" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="p-0 w-[--radix-popover-trigger-width]" align="start">
+                        <Command>
+                          <CommandInput placeholder={t("search") || "Search..."} />
+                          <CommandList>
+                            <CommandEmpty>—</CommandEmpty>
+                            <CommandGroup>
+                              <CommandItem value="__walkin__" onSelect={() => setEditCustomerId("")}>
+                                <Check className={cn("mr-2 h-4 w-4", !editCustomerId ? "opacity-100" : "opacity-0")} />
+                                {t("walkIn")}
+                              </CommandItem>
+                              {(customersList as any[]).map((c) => (
+                                <CommandItem
+                                  key={c.id}
+                                  value={`${c.name} ${c.phone ?? ""}`}
+                                  onSelect={() => setEditCustomerId(c.id)}
+                                >
+                                  <Check className={cn("mr-2 h-4 w-4", editCustomerId === c.id ? "opacity-100" : "opacity-0")} />
+                                  <span className="truncate">{c.name}{c.phone ? ` — ${c.phone}` : ""}</span>
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  );
+                })() : (viewSale.customers?.name ?? t("walkIn"))}</div>
                 <div><div className="text-muted-foreground text-xs">{t("method")}</div>{editing ? (
                   <Select value={editMethod} onValueChange={setEditMethod}>
                     <SelectTrigger className="h-8"><SelectValue /></SelectTrigger>
