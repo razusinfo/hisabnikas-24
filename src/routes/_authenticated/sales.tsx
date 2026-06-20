@@ -880,7 +880,7 @@ function SalesPage() {
                                 <Command>
                                   <CommandInput placeholder={t("search") + "..."} />
                                   <CommandList>
-                                    <CommandEmpty>{t("noResults") || "—"}</CommandEmpty>
+                                    <CommandEmpty>—</CommandEmpty>
                                     <CommandGroup>
                                       {(productsList as any[]).map((p) => (
                                         <CommandItem key={p.id} value={`${p.name} ${p.sku ?? ""}`} onSelect={() => {
