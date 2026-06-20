@@ -236,7 +236,7 @@ function CurrentPackagePage() {
               আপনার পছন্দের প্যাকেজটি নির্বাচন করুন
             </h2>
             <p className="text-xs text-muted-foreground mt-1">
-              বাৎসরিক প্যাকেজ <span className="text-primary font-semibold">১৭% অধিক সাশ্রয়ী</span>
+              বাৎসরিক প্যাকেজ <span className="text-primary font-semibold">প্রায় ১৮% (+/-) সাশ্রয়ী</span>
             </p>
           </div>
 
