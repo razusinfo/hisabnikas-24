@@ -422,12 +422,21 @@ function SalesPage() {
         : viewSale.created_at;
       const { error: e2 } = await supabase
         .from("sales")
-        .update({ subtotal, total, due, status: due <= 0 ? "paid" : paid > 0 ? "partial" : "due", created_at: newCreatedAt })
+        .update({ subtotal, total, due, status: due <= 0 ? "paid" : paid > 0 ? "partial" : "due", created_at: newCreatedAt, payment_method: editMethod })
         .eq("id", viewSale.id);
       if (e2) throw e2;
+      let updatedCustomers = viewSale.customers;
+      if (viewSale.customer_id && editCustomerName.trim() && editCustomerName.trim() !== (viewSale.customers?.name ?? "")) {
+        const { error: e3 } = await supabase
+          .from("customers")
+          .update({ name: editCustomerName.trim() })
+          .eq("id", viewSale.customer_id);
+        if (e3) throw e3;
+        updatedCustomers = { ...(viewSale.customers ?? {}), name: editCustomerName.trim() };
+      }
       toast.success(t("save"));
       setEditing(false);
-      setViewSale({ ...viewSale, subtotal, total, due, created_at: newCreatedAt });
+      setViewSale({ ...viewSale, subtotal, total, due, created_at: newCreatedAt, payment_method: editMethod, customers: updatedCustomers });
       qc.invalidateQueries({ queryKey: ["sales"] });
     } catch (e: any) {
       toast.error(e.message);
