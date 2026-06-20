@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import {
   Smartphone,
   TrendingUp,
@@ -31,6 +32,12 @@ import {
   Pencil,
   Trash2,
   CreditCard,
+  Copy,
+  KeyRound,
+  Inbox,
+  RefreshCw,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 
 
