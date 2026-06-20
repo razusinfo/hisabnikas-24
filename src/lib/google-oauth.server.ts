@@ -6,8 +6,14 @@ export const GOOGLE_CLIENT_ID =
 export const GOOGLE_DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file";
 export const BACKUP_FOLDER_NAME = "HisabNikash Backups";
 
-function signingSecret() {
-  return process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.GOOGLE_CLIENT_SECRET || "fallback";
+function signingSecret(): string {
+  const secret = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.GOOGLE_CLIENT_SECRET;
+  if (!secret) {
+    throw new Error(
+      "Missing signing secret: set SUPABASE_SERVICE_ROLE_KEY or GOOGLE_CLIENT_SECRET",
+    );
+  }
+  return secret;
 }
 
 export function signState(userId: string): string {
