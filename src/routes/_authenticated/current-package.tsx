@@ -17,10 +17,9 @@ import {
 import { useI18n } from "@/lib/i18n";
 import {
   Check,
+  X,
   Sparkles,
   Loader2,
-  Crown,
-  Rocket,
   Smartphone,
   Copy,
   Clock,
@@ -36,67 +35,94 @@ export const Route = createFileRoute("/_authenticated/current-package")({
 
 const BKASH_NUMBER = "01719220690";
 
-type Plan = {
-  id: string;
+type Billing = "monthly" | "yearly";
+
+type Tier = {
+  key: "basic" | "premium" | "business";
   name: string;
-  price: number;
-  days: number;
-  icon: typeof Sparkles;
+  monthly: { id: string; price: number; days: number };
+  yearly: { id: string; price: number; days: number };
   highlight?: boolean;
-  features: string[];
 };
 
-const PLANS: Plan[] = [
+const TIERS: Tier[] = [
   {
-    id: "basic_30",
-    name: "Basic — ৩০ দিন",
-    price: 399,
-    days: 30,
-    icon: Sparkles,
-    features: ["সকল মৌলিক ফিচার", "আনলিমিটেড সেলস ও প্রোডাক্ট", "বেসিক রিপোর্ট"],
+    key: "basic",
+    name: "Basic",
+    monthly: { id: "basic_30", price: 0, days: 30 },
+    yearly: { id: "basic_365", price: 0, days: 365 },
   },
   {
-    id: "pro_30",
-    name: "Pro — ৩০ দিন",
-    price: 699,
-    days: 30,
-    icon: Rocket,
+    key: "premium",
+    name: "Premium",
     highlight: true,
-    features: [
-      "Basic-এর সব ফিচার",
-      "অ্যাডভান্সড রিপোর্ট",
-      "অটো ব্যাকআপ",
-      "প্রায়োরিটি সাপোর্ট",
-    ],
+    monthly: { id: "premium_30", price: 119, days: 30 },
+    yearly: { id: "premium_365", price: 1188, days: 365 },
   },
   {
-    id: "basic_365",
-    name: "Basic — ১ বছর",
-    price: 1499,
-    days: 365,
-    icon: Crown,
-    features: ["সকল মৌলিক ফিচার", "১ বছর মেয়াদ", "৬৮% সাশ্রয়ী"],
-  },
-  {
-    id: "pro_365",
-    name: "Pro — ১ বছর",
-    price: 1999,
-    days: 365,
-    icon: Crown,
-    highlight: true,
-    features: [
-      "Pro-এর সব ফিচার",
-      "১ বছর মেয়াদ",
-      "৭৬% সাশ্রয়ী",
-      "অটো ব্যাকআপ",
-    ],
+    key: "business",
+    name: "Business",
+    monthly: { id: "business_30", price: 299, days: 30 },
+    yearly: { id: "business_365", price: 2988, days: 365 },
   },
 ];
+
+type Cell =
+  | { kind: "check" }
+  | { kind: "cross" }
+  | { kind: "text"; text: string; sub?: string; muted?: boolean };
+
+const CHECK: Cell = { kind: "check" };
+const CROSS: Cell = { kind: "cross" };
+const TXT = (text: string, sub?: string): Cell => ({ kind: "text", text, sub });
+
+type Feature = { label: string; basic: Cell; premium: Cell; business: Cell };
+
+const FEATURES: Feature[] = [
+  { label: "পণ্য ও পার্টি সমূহ", basic: CHECK, premium: CHECK, business: CHECK },
+  { label: "খরচ সমূহ", basic: CHECK, premium: CHECK, business: CHECK },
+  { label: "লেনদেন সমূহ", basic: CHECK, premium: CHECK, business: CHECK },
+  { label: "অফলাইন মোড", basic: CHECK, premium: CHECK, business: CHECK },
+  { label: "একাধিক ডিভাইস", basic: CHECK, premium: CHECK, business: CHECK },
+  { label: "এসএমএস", basic: TXT("১০"), premium: TXT("৫০"), business: TXT("১০০") },
+  { label: "রিপোর্টস", basic: TXT("সীমিত", "(১ মাস)"), premium: CHECK, business: CHECK },
+  { label: "ইনভয়েস প্রিন্ট", basic: TXT("সীমিত", "(জলছাপ সহ)"), premium: CHECK, business: CHECK },
+  { label: "ইনভেন্টরি ব্যবস্থা", basic: TXT("সীমিত*", "(১ মাস)"), premium: CHECK, business: CHECK },
+  { label: "ডেলিভারি চার্জ", basic: TXT("সীমিত*", "(১ মাস)"), premium: CHECK, business: CHECK },
+  { label: "ব্যাংক লেনদেন", basic: TXT("সীমিত*", "(১ মাস)"), premium: CROSS, business: CHECK },
+  { label: "থার্মাল প্রিন্টিং", basic: CROSS, premium: CHECK, business: CHECK },
+  { label: "একাধিক ইউজার", basic: CROSS, premium: CROSS, business: TXT("✓ (৫ জন)") },
+  { label: "একাধিক ব্যবসা", basic: CROSS, premium: CROSS, business: CHECK },
+];
+
+function CellView({ cell, accent }: { cell: Cell; accent: boolean }) {
+  if (cell.kind === "check") {
+    return (
+      <div className={`mx-auto h-7 w-7 rounded-full flex items-center justify-center ${accent ? "bg-primary/15" : "bg-muted"}`}>
+        <Check className="h-4 w-4 text-primary" />
+      </div>
+    );
+  }
+  if (cell.kind === "cross") {
+    return (
+      <div className="mx-auto h-7 w-7 rounded-full ring-1 ring-destructive/40 flex items-center justify-center">
+        <X className="h-4 w-4 text-destructive" />
+      </div>
+    );
+  }
+  return (
+    <div className="text-center leading-tight">
+      <div className="font-semibold text-primary text-sm">{cell.text}</div>
+      {cell.sub && <div className="text-[11px] text-muted-foreground">{cell.sub}</div>}
+    </div>
+  );
+}
 
 function CurrentPackagePage() {
   const { t } = useI18n();
   const qc = useQueryClient();
-  const [selected, setSelected] = useState<Plan | null>(null);
+  const [billing, setBilling] = useState<Billing>("monthly");
+  const [selected, setSelected] = useState<{ tier: Tier; price: number; id: string; days: number } | null>(null);
   const [senderNumber, setSenderNumber] = useState("");
   const [trxId, setTrxId] = useState("");
 
@@ -179,16 +205,12 @@ function CurrentPackagePage() {
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
                 <div className="h-11 w-11 rounded-xl bg-primary/15 ring-1 ring-primary/30 flex items-center justify-center">
-                  {isTrial ? (
-                    <Clock className="h-5 w-5 text-primary" />
-                  ) : (
-                    <Sparkles className="h-5 w-5 text-primary" />
-                  )}
+                  {isTrial ? <Clock className="h-5 w-5 text-primary" /> : <Sparkles className="h-5 w-5 text-primary" />}
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground">বর্তমান প্যাকেজ</div>
                   <div className="font-semibold">
-                    {isTrial ? "ফ্রি ট্রায়াল (১০ দিন)" : (PLANS.find((p) => p.id === currentPlanId)?.name ?? currentPlanId)}
+                    {isTrial ? "ফ্রি ট্রায়াল (১০ দিন)" : currentPlanId}
                   </div>
                 </div>
               </div>
@@ -208,50 +230,129 @@ function CurrentPackagePage() {
             </div>
           </Card>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {PLANS.map((p) => {
-              const Icon = p.icon;
-              const isCurrent = currentPlanId === p.id;
-              return (
-                <Card
-                  key={p.id}
-                  className={`p-5 relative flex flex-col ${p.highlight ? "ring-2 ring-primary" : ""}`}
-                >
-                  {p.highlight && (
-                    <Badge className="absolute -top-2 right-4">জনপ্রিয়</Badge>
-                  )}
-                  <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
-                    <Icon className="h-5 w-5 text-primary" />
-                  </div>
-                  <div className="font-display font-semibold">{p.name}</div>
-                  <div className="mt-3 flex items-baseline gap-1">
-                    <span className="text-2xl font-bold">৳{p.price.toLocaleString("bn-BD")}</span>
-                  </div>
-                  <ul className="mt-4 space-y-1.5 flex-1">
-                    {p.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-sm">
-                        <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    className="mt-5 w-full"
-                    variant={isCurrent ? "outline" : p.highlight ? "default" : "secondary"}
-                    disabled={isCurrent}
-                    onClick={() => setSelected(p)}
-                  >
-                    {isCurrent ? "বর্তমান প্যাকেজ" : (
-                      <>
-                        <Smartphone className="h-4 w-4 mr-1.5" />
-                        বিকাশে কিনুন
-                      </>
-                    )}
-                  </Button>
-                </Card>
-              );
-            })}
+          {/* Pricing comparison */}
+          <div className="text-center mb-4">
+            <h2 className="font-display text-xl sm:text-2xl font-bold">
+              আপনার পছন্দের প্যাকেজটি নির্বাচন করুন
+            </h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              বাৎসরিক প্যাকেজ <span className="text-primary font-semibold">১৭% অধিক সাশ্রয়ী</span>
+            </p>
           </div>
+
+          {/* Billing toggle */}
+          <div className="flex justify-center mb-5">
+            <div className="inline-flex rounded-full bg-muted p-1">
+              <button
+                onClick={() => setBilling("monthly")}
+                className={`px-6 py-2 text-sm font-semibold rounded-full transition ${
+                  billing === "monthly" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground"
+                }`}
+              >
+                মাসিক
+              </button>
+              <button
+                onClick={() => setBilling("yearly")}
+                className={`px-6 py-2 text-sm font-semibold rounded-full transition ${
+                  billing === "yearly" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground"
+                }`}
+              >
+                বাৎসরিক
+              </button>
+            </div>
+          </div>
+
+          <Card className="overflow-hidden">
+            {/* Header row */}
+            <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr] sm:grid-cols-[1.5fr_1fr_1fr_1fr] bg-muted/30">
+              <div className="p-3 sm:p-4 flex items-end">
+                <div className="text-sm sm:text-base font-semibold">অফার সমূহ</div>
+              </div>
+              {TIERS.map((tier) => {
+                const pricing = tier[billing];
+                const isFree = pricing.price === 0;
+                const isCurrent = currentPlanId === pricing.id || (tier.key === "basic" && isTrial);
+                return (
+                  <div
+                    key={tier.key}
+                    className={`relative p-3 sm:p-4 text-center ${
+                      tier.highlight
+                        ? "bg-primary text-primary-foreground"
+                        : tier.key === "business"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-card"
+                    } ${tier.key === "basic" ? "bg-primary text-primary-foreground" : ""}`}
+                  >
+                    {tier.highlight && (
+                      <div className="absolute top-0 left-0 overflow-hidden w-20 h-20 pointer-events-none">
+                        <div className="absolute -left-7 top-3 rotate-[-45deg] bg-amber-400 text-amber-950 text-[10px] font-bold px-7 py-0.5 shadow">
+                          জনপ্রিয়
+                        </div>
+                      </div>
+                    )}
+                    <div className="font-display font-bold text-base sm:text-lg">{tier.name}</div>
+                    <div className="mt-1.5 font-bold text-xl sm:text-2xl">
+                      {isFree ? "Free" : <>৳ {pricing.price.toLocaleString("bn-BD")}.০০</>}
+                    </div>
+                    {!isFree && (
+                      <div className="text-[11px] opacity-90">
+                        {billing === "monthly" ? "প্রতি মাসে" : "প্রতি বছরে"}
+                      </div>
+                    )}
+                    {isCurrent && (
+                      <Badge variant="secondary" className="mt-1 text-[10px]">বর্তমান</Badge>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Feature rows */}
+            <div>
+              {FEATURES.map((f, i) => (
+                <div
+                  key={f.label}
+                  className={`grid grid-cols-[1.2fr_1fr_1fr_1fr] sm:grid-cols-[1.5fr_1fr_1fr_1fr] items-center border-t ${
+                    i % 2 === 1 ? "bg-muted/20" : ""
+                  }`}
+                >
+                  <div className="p-3 text-xs sm:text-sm font-medium">{f.label}</div>
+                  <div className="p-3"><CellView cell={f.basic} accent={false} /></div>
+                  <div className="p-3"><CellView cell={f.premium} accent /></div>
+                  <div className="p-3"><CellView cell={f.business} accent /></div>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA row */}
+            <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr] sm:grid-cols-[1.5fr_1fr_1fr_1fr] border-t bg-muted/10">
+              <div className="p-3" />
+              {TIERS.map((tier) => {
+                const pricing = tier[billing];
+                const isFree = pricing.price === 0;
+                const isCurrent = currentPlanId === pricing.id || (tier.key === "basic" && isTrial);
+                return (
+                  <div key={tier.key} className="p-3">
+                    {isFree || isCurrent ? (
+                      <Button variant="outline" disabled className="w-full rounded-full" size="sm">
+                        {isCurrent ? "বর্তমান প্যাকেজ" : "Free"}
+                      </Button>
+                    ) : (
+                      <Button
+                        className="w-full rounded-full"
+                        size="sm"
+                        onClick={() =>
+                          setSelected({ tier, price: pricing.price, id: pricing.id, days: pricing.days })
+                        }
+                      >
+                        সাবস্ক্রাইব
+                      </Button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
 
           {(myRequests.data?.length ?? 0) > 0 && (
             <Card className="p-5 mt-6">
@@ -264,7 +365,7 @@ function CurrentPackagePage() {
                   >
                     <div>
                       <div className="font-medium">
-                        {PLANS.find((p) => p.id === r.plan)?.name ?? r.plan} — ৳{Number(r.amount).toLocaleString("bn-BD")}
+                        {r.plan} — ৳{Number(r.amount).toLocaleString("bn-BD")}
                       </div>
                       <div className="text-xs text-muted-foreground">
                         TrxID: {r.trx_id} · {fmtDateTime(r.created_at, "bn")}
@@ -299,7 +400,8 @@ function CurrentPackagePage() {
           <DialogHeader>
             <DialogTitle>বিকাশে পেমেন্ট করুন</DialogTitle>
             <DialogDescription>
-              {selected?.name} — ৳{selected?.price.toLocaleString("bn-BD")}
+              {selected?.tier.name} ({billing === "monthly" ? "মাসিক" : "বাৎসরিক"}) — ৳
+              {selected?.price.toLocaleString("bn-BD")}
             </DialogDescription>
           </DialogHeader>
 
