@@ -142,6 +142,7 @@ function SidebarContent({
     ? [
         ...scrollNav,
         { to: "/admin-payments", icon: ShieldCheck, key: "adminPayments" as const, color: "red" },
+        { to: "/admin-subscriptions", icon: ShieldCheck, key: "adminSubscriptions" as const, color: "red" },
       ]
     : scrollNav;
 
