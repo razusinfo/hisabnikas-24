@@ -539,6 +539,88 @@ export type Database = {
           },
         ]
       }
+      payment_reconciliation: {
+        Row: {
+          branch_id: string | null
+          confidence: number | null
+          created_at: string
+          created_by: string | null
+          difference: number | null
+          expected_amount: number | null
+          id: string
+          match_reason: string | null
+          note: string | null
+          owner_id: string
+          provider: string | null
+          received_amount: number
+          sale_id: string | null
+          sms_inbox_id: string | null
+          status: string
+          txn_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          branch_id?: string | null
+          confidence?: number | null
+          created_at?: string
+          created_by?: string | null
+          difference?: number | null
+          expected_amount?: number | null
+          id?: string
+          match_reason?: string | null
+          note?: string | null
+          owner_id: string
+          provider?: string | null
+          received_amount: number
+          sale_id?: string | null
+          sms_inbox_id?: string | null
+          status?: string
+          txn_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          branch_id?: string | null
+          confidence?: number | null
+          created_at?: string
+          created_by?: string | null
+          difference?: number | null
+          expected_amount?: number | null
+          id?: string
+          match_reason?: string | null
+          note?: string | null
+          owner_id?: string
+          provider?: string | null
+          received_amount?: number
+          sale_id?: string | null
+          sms_inbox_id?: string | null
+          status?: string
+          txn_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_reconciliation_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_reconciliation_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_reconciliation_sms_inbox_id_fkey"
+            columns: ["sms_inbox_id"]
+            isOneToOne: false
+            referencedRelation: "mfs_sms_inbox"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_requests: {
         Row: {
           amount: number
@@ -1115,6 +1197,10 @@ export type Database = {
         }
         Returns: string
       }
+      dismiss_mfs_sms: {
+        Args: { _reason?: string; _sms_id: string }
+        Returns: undefined
+      }
       generate_sms_device_secret: { Args: never; Returns: string }
       get_plan_spec: {
         Args: { _kind: string; _plan: string }
@@ -1160,6 +1246,10 @@ export type Database = {
           status: string
           user_id: string
         }[]
+      }
+      manual_match_mfs_sms: {
+        Args: { _note?: string; _sale_id: string; _sms_id: string }
+        Returns: string
       }
       process_mfs_sms: {
         Args: {
