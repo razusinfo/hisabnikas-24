@@ -61,6 +61,7 @@ function BuyMessagesPage() {
   const [selected, setSelected] = useState<MsgPack | null>(null);
   const [senderNumber, setSenderNumber] = useState("");
   const [trxId, setTrxId] = useState("");
+  const [successOpen, setSuccessOpen] = useState(false);
 
   const profile = useQuery({
     queryKey: ["my-profile-credits"],
