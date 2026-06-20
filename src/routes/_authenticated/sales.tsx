@@ -426,13 +426,21 @@ function SalesPage() {
         .eq("id", viewSale.id);
       if (e2) throw e2;
       let updatedCustomers = viewSale.customers;
-      if (viewSale.customer_id && editCustomerName.trim() && editCustomerName.trim() !== (viewSale.customers?.name ?? "")) {
+      let updatedCustomerId = viewSale.customer_id;
+      const newCustId = editCustomerId || null;
+      if (newCustId !== viewSale.customer_id) {
         const { error: e3 } = await supabase
-          .from("customers")
-          .update({ name: editCustomerName.trim() })
-          .eq("id", viewSale.customer_id);
+          .from("sales")
+          .update({ customer_id: newCustId })
+          .eq("id", viewSale.id);
         if (e3) throw e3;
-        updatedCustomers = { ...(viewSale.customers ?? {}), name: editCustomerName.trim() };
+        updatedCustomerId = newCustId;
+        if (newCustId) {
+          const c = (customersList as any[]).find((x) => x.id === newCustId);
+          updatedCustomers = c ? { name: c.name, phone: c.phone, address: (c as any).address ?? "" } : null;
+        } else {
+          updatedCustomers = null;
+        }
       }
       toast.success(t("save"));
       setEditing(false);
