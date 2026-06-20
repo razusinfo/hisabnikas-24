@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Phone, MessageCircle } from "lucide-react";
 
-const CONTACT_NUMBER = "01719220690";
+const CONTACT_NUMBER = "01719220711";
 
 type Props = {
   open: boolean;
