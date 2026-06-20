@@ -57,13 +57,13 @@ const TIERS: Tier[] = [
     name: "Premium",
     highlight: true,
     monthly: { id: "premium_30", price: 149, days: 30 },
-    yearly: { id: "premium_365", price: 1188, days: 365 },
+    yearly: { id: "premium_365", price: 1465, days: 365 },
   },
   {
     key: "business",
     name: "Business",
     monthly: { id: "business_30", price: 249, days: 30 },
-    yearly: { id: "business_365", price: 2988, days: 365 },
+    yearly: { id: "business_365", price: 2450, days: 365 },
   },
 ];
 
