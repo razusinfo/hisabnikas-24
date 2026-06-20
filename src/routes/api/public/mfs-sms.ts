@@ -23,89 +23,84 @@ type Parsed = {
 
 function detectProvider(sender: string | null, body: string): Provider {
   const s = `${sender ?? ""} ${body}`.toLowerCase();
-  if (s.includes("bkash") || s.includes("বিকাশ")) return "bkash";
-  if (s.includes("nagad") || s.includes("নগদ")) return "nagad";
-  if (s.includes("rocket") || s.includes("রকেট") || s.includes("dbbl")) return "rocket";
-  if (s.includes("upay") || s.includes("উপায়")) return "upay";
+  if (/\bbkash\b|বিকাশ/.test(s)) return "bkash";
+  if (/\bnagad\b|নগদ/.test(s)) return "nagad";
+  if (/\brocket\b|রকেট|\bdbbl(?:-mb)?\b/.test(s)) return "rocket";
+  if (/\bupay\b|উপায়|\butap\b/.test(s)) return "upay";
   return "unknown";
 }
 
 function parseAmount(body: string): number | null {
-  // bKash: "Tk 500.00", "Amount Tk1,250.00", "received Tk 500"
-  const m =
-    body.match(/(?:tk|bdt|৳)\s*\.?\s*([0-9][0-9,]*\.?[0-9]*)/i) ||
-    body.match(/amount[:\s]+(?:tk|bdt)?\s*([0-9][0-9,]*\.?[0-9]*)/i);
-  if (!m) return null;
-  const n = parseFloat(m[1].replace(/,/g, ""));
-  return Number.isFinite(n) && n > 0 ? n : null;
+  const amt = body.match(/amount[:\s]+(?:tk|bdt|৳)?\s*\.?\s*([0-9][0-9,]*\.?[0-9]*)/i);
+  if (amt) {
+    const n = parseFloat(amt[1].replace(/,/g, ""));
+    if (Number.isFinite(n) && n > 0) return n;
+  }
+  const re = /(?:tk|bdt|৳)\s*\.?\s*([0-9][0-9,]*\.?[0-9]*)/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(body)) !== null) {
+    const n = parseFloat(m[1].replace(/,/g, ""));
+    if (Number.isFinite(n) && n > 0) return n;
+  }
+  return null;
 }
 
 function parseTxnId(body: string): string | null {
-  // bKash personal: "TrxID 9A7B6C5D4E", Agent: "TrxID BAA12345678"
-  const m =
-    body.match(/tr?x[\s.]*id[:#\s]*([A-Z0-9]{6,20})/i) ||
-    body.match(/transaction\s*id[:#\s]*([A-Z0-9]{6,20})/i) ||
-    body.match(/\bref(?:\.|erence)?\s*[:#]?\s*([A-Z0-9]{6,20})/i);
-  return m ? m[1].toUpperCase() : null;
+  const patterns = [
+    /tr?x[\s.]*id[:#\s]*([A-Z0-9]{5,24})/i,
+    /transaction\s*(?:id|no)[:#\s]*([A-Z0-9]{5,24})/i,
+    /\btxn[:#\s]*([A-Z0-9]{5,24})/i,
+    /reference(?:\s*no)?[.:\s#]*([A-Z0-9]{5,24})/i,
+    /\bref(?:\.|erence)?[:#\s]*([A-Z0-9]{5,24})/i,
+  ];
+  for (const p of patterns) {
+    const m = body.match(p);
+    if (m) return m[1].toUpperCase();
+  }
+  return null;
 }
 
 function parseSenderMsisdn(body: string): string | null {
-  // bKash Personal: "from 01XXXXXXXXX"
-  // bKash Agent (Cash In): "from agent 01XXXXXXXXX"
-  // bKash Merchant payment received: "from 01XXXXXXXXX"
   const m =
-    body.match(/(?:from(?:\s+agent)?|sender|হতে)[^0-9]{0,20}(01[0-9]{9})/i) ||
-    body.match(/\b(01[0-9]{9})\b/);
+    body.match(/(?:from(?:\s+agent)?|sender|হতে|received\s+from)[^0-9]{0,20}(?:\+?88)?(01[0-9]{9})/i) ||
+    body.match(/\b(?:\+?88)?(01[0-9]{9})\b/);
   return m ? m[1] : null;
 }
 
 function parseAccountNumber(body: string): string | null {
-  const m =
-    body.match(/(?:to|account|a\/c|recipient|your)[^0-9]{0,20}(01[0-9]{9})/i);
+  const m = body.match(/(?:to|account|a\/c|recipient|your)[^0-9]{0,20}(?:\+?88)?(01[0-9]{9})/i);
   return m ? m[1] : null;
 }
 
 function parseReceivedAt(body: string): Date | null {
-  // bKash formats:
-  // "at 21/06/2026 14:23"
-  // "12/06/2026 14:23:01"
-  // "21-06-2026 14:23"
   const m =
     body.match(/(?:at|on)\s+(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/i) ||
     body.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/);
   if (!m) return null;
-  let [_, dd, mm, yy, h, mi, s] = m;
+  const [, dd, mm, yy, h, mi, s] = m;
   let year = parseInt(yy, 10);
   if (year < 100) year += 2000;
-  // Treat as Bangladesh time (UTC+6) — convert to ISO UTC
   const bdMs = Date.UTC(year, parseInt(mm) - 1, parseInt(dd), parseInt(h), parseInt(mi), parseInt(s || "0"));
-  const utcMs = bdMs - 6 * 60 * 60 * 1000;
-  const d = new Date(utcMs);
+  const d = new Date(bdMs - 6 * 60 * 60 * 1000);
   return isNaN(d.getTime()) ? null : d;
 }
 
 function detectKind(body: string): Parsed["kind"] {
   const s = body.toLowerCase();
-  if (s.includes("cash in") || s.includes("from agent")) return "agent";
-  if (s.includes("payment received") || s.includes("merchant")) return "merchant";
-  if (s.includes("received") || s.includes("you have received") || s.includes("পেয়েছেন")) return "personal";
+  if (/(cash\s*in|from\s*agent)/.test(s)) return "agent";
+  if (/(payment\s*received|merchant|qr\s*payment)/.test(s)) return "merchant";
+  if (/(received|you\s*have\s*received|পেয়েছেন|deposit|জমা|credited)/.test(s)) return "personal";
   return "unknown";
 }
 
 function isIncomingFor(body: string): boolean {
   const s = body.toLowerCase();
-  const positive = [
-    "received", "cash in", "deposit", "payment received",
-    "you have received", "জমা", "পেয়েছেন", "received tk",
-  ];
-  const negative = [
-    "cash out", "send money", "payment sent", "withdraw", "paid to",
-    "পরিশোধ", "উত্তোলন", "send tk", "bill pay", "purchase",
-  ];
+  const positive = ["received", "cash in", "deposit", "payment received", "you have received", "জমা", "পেয়েছেন", "credited", "qr payment"];
+  const negative = ["cash out", "send money", "payment sent", "withdraw", "paid to", "debited", "পরিশোধ", "উত্তোলন", "send tk", "bill pay", "purchase", "recharge"];
   const hasPos = positive.some((k) => s.includes(k));
   const hasNeg = negative.some((k) => s.includes(k));
   if (hasNeg && !hasPos) return false;
-  return hasPos || /tk|bdt|৳/i.test(body);
+  return hasPos;
 }
 
 function parseSms(sender: string | null, body: string): Parsed {
