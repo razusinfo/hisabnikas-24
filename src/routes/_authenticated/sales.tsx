@@ -407,14 +407,23 @@ function SalesPage() {
       const total = Math.max(0, subtotal - discount + tax);
       const paid = Number(viewSale.paid || 0);
       const due = Math.max(0, total - paid);
+      const newCreatedAt = editDate
+        ? (() => {
+            const orig = viewSale.created_at ? new Date(viewSale.created_at) : new Date();
+            const [y, m, d] = editDate.split("-").map(Number);
+            const dt = new Date(orig);
+            dt.setFullYear(y, (m || 1) - 1, d || 1);
+            return dt.toISOString();
+          })()
+        : viewSale.created_at;
       const { error: e2 } = await supabase
         .from("sales")
-        .update({ subtotal, total, due, status: due <= 0 ? "paid" : paid > 0 ? "partial" : "due" })
+        .update({ subtotal, total, due, status: due <= 0 ? "paid" : paid > 0 ? "partial" : "due", created_at: newCreatedAt })
         .eq("id", viewSale.id);
       if (e2) throw e2;
       toast.success(t("save"));
       setEditing(false);
-      setViewSale({ ...viewSale, subtotal, total, due });
+      setViewSale({ ...viewSale, subtotal, total, due, created_at: newCreatedAt });
       qc.invalidateQueries({ queryKey: ["sales"] });
     } catch (e: any) {
       toast.error(e.message);
