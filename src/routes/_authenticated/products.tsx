@@ -13,7 +13,6 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { resolveBranchIdForInsert } from "@/lib/current-branch";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney, fmtNum } from "@/lib/format";
 import { Plus, Search, Trash2, Package, Pencil, Boxes, AlertTriangle, Image as ImageIcon, Upload, X, ShoppingCart, Settings2 } from "lucide-react";
@@ -242,8 +241,7 @@ function ProductsPage() {
         if (error) throw error;
       } else {
         const { data: u } = await supabase.auth.getUser();
-        const branch_id = await resolveBranchIdForInsert();
-        const { error } = await supabase.from("products").insert({ ...payload, owner_id: u.user!.id, branch_id } as any);
+        const { error } = await supabase.from("products").insert({ ...payload, owner_id: u.user!.id });
         if (error) throw error;
       }
     },

@@ -14,7 +14,6 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedUnmatchedPaymentsRouteImport } from './routes/_authenticated/unmatched-payments'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSalesRouteImport } from './routes/_authenticated/sales'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
@@ -32,7 +31,6 @@ import { Route as AuthenticatedCurrentPackageRouteImport } from './routes/_authe
 import { Route as AuthenticatedCashbookRouteImport } from './routes/_authenticated/cashbook'
 import { Route as AuthenticatedBuyMessagesRouteImport } from './routes/_authenticated/buy-messages'
 import { Route as AuthenticatedBusinessProfileRouteImport } from './routes/_authenticated/business-profile'
-import { Route as AuthenticatedBranchesRouteImport } from './routes/_authenticated/branches'
 import { Route as AuthenticatedBackupRestoreRouteImport } from './routes/_authenticated/backup-restore'
 import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authenticated/admin-payments'
 import { Route as AuthenticatedReportsIndexRouteImport } from './routes/_authenticated/reports.index'
@@ -65,12 +63,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedUnmatchedPaymentsRoute =
-  AuthenticatedUnmatchedPaymentsRouteImport.update({
-    id: '/unmatched-payments',
-    path: '/unmatched-payments',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -162,11 +154,6 @@ const AuthenticatedBusinessProfileRoute =
     path: '/business-profile',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedBranchesRoute = AuthenticatedBranchesRouteImport.update({
-  id: '/branches',
-  path: '/branches',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedBackupRestoreRoute =
   AuthenticatedBackupRestoreRouteImport.update({
     id: '/backup-restore',
@@ -215,7 +202,6 @@ export interface FileRoutesByFullPath {
   '/trust': typeof TrustRoute
   '/admin-payments': typeof AuthenticatedAdminPaymentsRoute
   '/backup-restore': typeof AuthenticatedBackupRestoreRoute
-  '/branches': typeof AuthenticatedBranchesRoute
   '/business-profile': typeof AuthenticatedBusinessProfileRoute
   '/buy-messages': typeof AuthenticatedBuyMessagesRoute
   '/cashbook': typeof AuthenticatedCashbookRoute
@@ -233,7 +219,6 @@ export interface FileRoutesByFullPath {
   '/reports': typeof AuthenticatedReportsRouteWithChildren
   '/sales': typeof AuthenticatedSalesRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/unmatched-payments': typeof AuthenticatedUnmatchedPaymentsRoute
   '/reports/$slug': typeof AuthenticatedReportsSlugRoute
   '/api/public/mfs-sms': typeof ApiPublicMfsSmsRoute
   '/reports/': typeof AuthenticatedReportsIndexRoute
@@ -247,7 +232,6 @@ export interface FileRoutesByTo {
   '/trust': typeof TrustRoute
   '/admin-payments': typeof AuthenticatedAdminPaymentsRoute
   '/backup-restore': typeof AuthenticatedBackupRestoreRoute
-  '/branches': typeof AuthenticatedBranchesRoute
   '/business-profile': typeof AuthenticatedBusinessProfileRoute
   '/buy-messages': typeof AuthenticatedBuyMessagesRoute
   '/cashbook': typeof AuthenticatedCashbookRoute
@@ -264,7 +248,6 @@ export interface FileRoutesByTo {
   '/purchases': typeof AuthenticatedPurchasesRoute
   '/sales': typeof AuthenticatedSalesRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/unmatched-payments': typeof AuthenticatedUnmatchedPaymentsRoute
   '/reports/$slug': typeof AuthenticatedReportsSlugRoute
   '/api/public/mfs-sms': typeof ApiPublicMfsSmsRoute
   '/reports': typeof AuthenticatedReportsIndexRoute
@@ -280,7 +263,6 @@ export interface FileRoutesById {
   '/trust': typeof TrustRoute
   '/_authenticated/admin-payments': typeof AuthenticatedAdminPaymentsRoute
   '/_authenticated/backup-restore': typeof AuthenticatedBackupRestoreRoute
-  '/_authenticated/branches': typeof AuthenticatedBranchesRoute
   '/_authenticated/business-profile': typeof AuthenticatedBusinessProfileRoute
   '/_authenticated/buy-messages': typeof AuthenticatedBuyMessagesRoute
   '/_authenticated/cashbook': typeof AuthenticatedCashbookRoute
@@ -298,7 +280,6 @@ export interface FileRoutesById {
   '/_authenticated/reports': typeof AuthenticatedReportsRouteWithChildren
   '/_authenticated/sales': typeof AuthenticatedSalesRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
-  '/_authenticated/unmatched-payments': typeof AuthenticatedUnmatchedPaymentsRoute
   '/_authenticated/reports/$slug': typeof AuthenticatedReportsSlugRoute
   '/api/public/mfs-sms': typeof ApiPublicMfsSmsRoute
   '/_authenticated/reports/': typeof AuthenticatedReportsIndexRoute
@@ -314,7 +295,6 @@ export interface FileRouteTypes {
     | '/trust'
     | '/admin-payments'
     | '/backup-restore'
-    | '/branches'
     | '/business-profile'
     | '/buy-messages'
     | '/cashbook'
@@ -332,7 +312,6 @@ export interface FileRouteTypes {
     | '/reports'
     | '/sales'
     | '/settings'
-    | '/unmatched-payments'
     | '/reports/$slug'
     | '/api/public/mfs-sms'
     | '/reports/'
@@ -346,7 +325,6 @@ export interface FileRouteTypes {
     | '/trust'
     | '/admin-payments'
     | '/backup-restore'
-    | '/branches'
     | '/business-profile'
     | '/buy-messages'
     | '/cashbook'
@@ -363,7 +341,6 @@ export interface FileRouteTypes {
     | '/purchases'
     | '/sales'
     | '/settings'
-    | '/unmatched-payments'
     | '/reports/$slug'
     | '/api/public/mfs-sms'
     | '/reports'
@@ -378,7 +355,6 @@ export interface FileRouteTypes {
     | '/trust'
     | '/_authenticated/admin-payments'
     | '/_authenticated/backup-restore'
-    | '/_authenticated/branches'
     | '/_authenticated/business-profile'
     | '/_authenticated/buy-messages'
     | '/_authenticated/cashbook'
@@ -396,7 +372,6 @@ export interface FileRouteTypes {
     | '/_authenticated/reports'
     | '/_authenticated/sales'
     | '/_authenticated/settings'
-    | '/_authenticated/unmatched-payments'
     | '/_authenticated/reports/$slug'
     | '/api/public/mfs-sms'
     | '/_authenticated/reports/'
@@ -451,13 +426,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/unmatched-payments': {
-      id: '/_authenticated/unmatched-payments'
-      path: '/unmatched-payments'
-      fullPath: '/unmatched-payments'
-      preLoaderRoute: typeof AuthenticatedUnmatchedPaymentsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
@@ -578,13 +546,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBusinessProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/branches': {
-      id: '/_authenticated/branches'
-      path: '/branches'
-      fullPath: '/branches'
-      preLoaderRoute: typeof AuthenticatedBranchesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/backup-restore': {
       id: '/_authenticated/backup-restore'
       path: '/backup-restore'
@@ -653,7 +614,6 @@ const AuthenticatedReportsRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminPaymentsRoute: typeof AuthenticatedAdminPaymentsRoute
   AuthenticatedBackupRestoreRoute: typeof AuthenticatedBackupRestoreRoute
-  AuthenticatedBranchesRoute: typeof AuthenticatedBranchesRoute
   AuthenticatedBusinessProfileRoute: typeof AuthenticatedBusinessProfileRoute
   AuthenticatedBuyMessagesRoute: typeof AuthenticatedBuyMessagesRoute
   AuthenticatedCashbookRoute: typeof AuthenticatedCashbookRoute
@@ -671,13 +631,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRouteWithChildren
   AuthenticatedSalesRoute: typeof AuthenticatedSalesRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
-  AuthenticatedUnmatchedPaymentsRoute: typeof AuthenticatedUnmatchedPaymentsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminPaymentsRoute: AuthenticatedAdminPaymentsRoute,
   AuthenticatedBackupRestoreRoute: AuthenticatedBackupRestoreRoute,
-  AuthenticatedBranchesRoute: AuthenticatedBranchesRoute,
   AuthenticatedBusinessProfileRoute: AuthenticatedBusinessProfileRoute,
   AuthenticatedBuyMessagesRoute: AuthenticatedBuyMessagesRoute,
   AuthenticatedCashbookRoute: AuthenticatedCashbookRoute,
@@ -695,7 +653,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedReportsRoute: AuthenticatedReportsRouteWithChildren,
   AuthenticatedSalesRoute: AuthenticatedSalesRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
-  AuthenticatedUnmatchedPaymentsRoute: AuthenticatedUnmatchedPaymentsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

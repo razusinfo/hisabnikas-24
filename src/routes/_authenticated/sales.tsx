@@ -17,7 +17,6 @@ import { Eye, CreditCard, Printer, Trash2, Search, Plus, Pencil, Save as SaveIco
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
-import { resolveBranchIdForInsert } from "@/lib/current-branch";
 import { useInvoicePreview } from "@/components/InvoicePreviewProvider";
 import { ProductFormDialog, type CreatedProduct } from "@/components/ProductFormDialog";
 
@@ -122,27 +121,6 @@ function SalesPage() {
       navigate({ to: "/sales", search: {}, replace: true });
     }
   }, [search.new, navigate]);
-
-  // Realtime: refresh sales list when SMS auto-matches a payment or any sale changes
-  useEffect(() => {
-    const channel = supabase
-      .channel("sales-realtime")
-      .on("postgres_changes", { event: "*", schema: "public", table: "sales" }, () => {
-        qc.invalidateQueries({ queryKey: ["sales"] });
-      })
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "mfs_sms_inbox" }, (payload: any) => {
-        qc.invalidateQueries({ queryKey: ["sales"] });
-        const row = payload?.new;
-        if (row?.status === "posted" && row?.matched_sale_id) {
-          toast.success(`SMS পেমেন্ট মিলেছে: ৳${row.amount}${row.txn_id ? ` · ${row.txn_id}` : ""}`);
-        }
-      })
-      .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [qc]);
-
   const [customerId, setCustomerId] = useState<string>("walkin");
   const [newMethod, setNewMethod] = useState("cash");
   const [newDiscount, setNewDiscount] = useState("0");
@@ -244,14 +222,12 @@ function SalesPage() {
     setNcSaving(true);
     try {
       const { data: u } = await supabase.auth.getUser();
-      const branch_id = await resolveBranchIdForInsert();
       const { data, error } = await supabase.from("customers").insert({
         owner_id: u.user!.id,
-        branch_id,
         name: ncName.trim(),
         phone: ncPhone.trim() || null,
         address: ncAddress.trim() || null,
-      } as any).select("id,name,phone").single();
+      }).select("id,name,phone").single();
       if (error) throw error;
       qc.invalidateQueries({ queryKey: ["customers-list"] });
       qc.invalidateQueries({ queryKey: ["customers"] });
@@ -320,10 +296,8 @@ function SalesPage() {
         d.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
         saleCreatedAt = d.toISOString();
       }
-      const branch_id = await resolveBranchIdForInsert();
       const { data: sale, error } = await supabase.from("sales").insert({
         owner_id: u.user!.id,
-        branch_id,
         customer_id: customerId === "walkin" ? null : customerId,
         invoice_no,
         subtotal: newSubtotal,
@@ -336,7 +310,7 @@ function SalesPage() {
         status,
         note: noteWithDelivery || null,
         ...(saleCreatedAt ? { created_at: saleCreatedAt } : {}),
-      } as any).select().single();
+      }).select().single();
       if (error) throw error;
       const rows = lines.map((l) => ({
         sale_id: sale.id,

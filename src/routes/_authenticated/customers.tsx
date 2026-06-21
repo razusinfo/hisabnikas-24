@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney } from "@/lib/format";
-import { resolveBranchIdForInsert } from "@/lib/current-branch";
 import { Plus, Search, Trash2, Wallet, MessageSquare, ShoppingCart, BookUser } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -54,8 +53,7 @@ function CustomersPage() {
   const create = useMutation({
     mutationFn: async () => {
       const { data: u } = await supabase.auth.getUser();
-      const branch_id = await resolveBranchIdForInsert();
-      const { error } = await supabase.from("customers").insert({ ...form, owner_id: u.user!.id, branch_id } as any);
+      const { error } = await supabase.from("customers").insert({ ...form, owner_id: u.user!.id });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -92,11 +90,9 @@ function CustomersPage() {
       if (!picked || picked.length === 0) return { added: 0 };
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) throw new Error("Not authenticated");
-      const branch_id = await resolveBranchIdForInsert();
       const rows = picked
         .map((c) => ({
           owner_id: u.user!.id,
-          branch_id,
           name: (c.name?.[0] || c.tel?.[0] || "Unnamed").toString().slice(0, 200),
           phone: (c.tel?.[0] || "").toString().slice(0, 40) || null,
           email: (c.email?.[0] || "").toString().slice(0, 200) || null,

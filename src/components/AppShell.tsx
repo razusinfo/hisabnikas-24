@@ -30,9 +30,7 @@ import {
   Moon,
   Plus,
   BookOpen,
-  Building2,
 } from "lucide-react";
-import { BranchSwitcher } from "@/components/BranchSwitcher";
 
 import { useState, useEffect, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -106,7 +104,6 @@ const fixedNav = [
 const scrollNav = [
   { to: "/customers", icon: Users, key: "customers" as const, color: "cyan" },
   { to: "/cashbook", icon: BookOpen, key: "cashbook" as const, color: "emerald" },
-  { to: "/branches", icon: Building2, key: "branches" as const, color: "violet" },
   { to: "/settings", icon: Settings, key: "settings" as const, color: "slate" },
   { to: "/reports", icon: BarChart3, key: "reports" as const, color: "indigo" },
   { to: "/backup-restore", icon: Database, key: "backupRestore" as const, color: "slate" },
@@ -493,14 +490,12 @@ export function AppShell({ children }: { children: ReactNode }) {
               <img src={appLogo.url} alt="হিসব নিকাশ-২৪" className="h-20 w-auto" />
             </Link>
             <div className="flex-1" />
-            <BranchSwitcher compact />
             <LangToggle compact />
             <SearchIconButton className="min-h-11 min-w-11" />
           </header>
 
           {/* Desktop top quick-actions bar */}
           <header className="hidden md:flex sticky top-0 z-20 items-center justify-end gap-2 px-6 py-2.5 bg-background/95 backdrop-blur border-b border-border/60">
-            <BranchSwitcher />
             <TopQuickLink to="/purchases" icon={ShoppingCart} label={t("purchases")} colorClass="text-amber-600 hover:bg-amber-50" />
             <button
               onClick={() => navigate({ to: "/sales", search: { new: 1 } })}
