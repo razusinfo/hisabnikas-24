@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
+import { usePwaInstall } from "@/hooks/usePwaInstall";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Loader2, Info, ExternalLink } from "lucide-react";
+import { Loader2, Info, ExternalLink, Download } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
@@ -297,9 +298,40 @@ function SettingsPage() {
     </div>
   );
 
+  const { canInstall, promptInstall, isInstalled } = usePwaInstall();
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
       <PageHeader title={t("settings")} subtitle={t("settingsSubtitle")} />
+
+      {canInstall && !isInstalled && (
+        <Card className="overflow-hidden border-primary/20">
+          <CardHeader className="bg-primary/5 border-b py-3">
+            <CardTitle className="text-primary text-base font-semibold flex items-center gap-2">
+              <Download className="h-4 w-4" />
+              {t("installApp")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 sm:p-6 space-y-4">
+            <p className="text-sm text-muted-foreground">{t("installAppDesc")}</p>
+            <Button onClick={promptInstall} className="bg-primary hover:bg-primary/90">
+              <Download className="h-4 w-4 mr-2" />
+              {t("install")}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {isInstalled && (
+        <Card className="overflow-hidden border-emerald-200">
+          <CardHeader className="bg-emerald-50 border-b py-3">
+            <CardTitle className="text-emerald-700 text-base font-semibold">{t("appInstalled")}</CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 sm:p-6">
+            <p className="text-sm text-emerald-700/80">This app is already installed on your device.</p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* পণ্য সমূহ */}
       <SectionCard title={tr("products")}>

@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney, fmtDateTime } from "@/lib/format";
+import { InstallAppBanner } from "@/components/InstallAppBanner";
 import {
   TrendingUp,
   Package,
@@ -127,6 +128,8 @@ function Dashboard() {
         title={t("dashboard")}
         subtitle="Real-time pulse of your business."
       />
+
+      <InstallAppBanner />
 
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
