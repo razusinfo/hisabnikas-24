@@ -751,13 +751,24 @@ function NumberRow({
 
 // ===== রেডি Android App ডাউনলোড কার্ড =====
 function ReadyAppDownloadCard() {
-  // env-driven dynamic repo URL — user can set VITE_GITHUB_REPO="owner/repo"
-  // after exporting to GitHub. Falls back to placeholder if unset.
   const envRepo = (import.meta.env.VITE_GITHUB_REPO as string | undefined)?.trim();
   const repo = envRepo && envRepo.includes("/") ? envRepo : "lovable-dev/hisab-nikash-24";
   const isConfigured = Boolean(envRepo && envRepo.includes("/"));
   const releasesUrl = `https://github.com/${repo}/releases/latest`;
   const actionsUrl = `https://github.com/${repo}/actions/workflows/android-build.yml`;
+
+  const fmtSize = (b: number) =>
+    b > 1024 * 1024 ? `${(b / 1024 / 1024).toFixed(1)} MB` : `${(b / 1024).toFixed(0)} KB`;
+
+  const liveQuery = useQuery({
+    queryKey: ["github-releases", repo],
+    enabled: isConfigured,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const mod = await import("@/lib/github-releases.functions");
+      return mod.getGithubReleases({ data: { repo } });
+    },
+  });
 
   return (
     <div className="rounded-lg border-2 border-emerald-300 bg-gradient-to-br from-emerald-50 to-emerald-100/50 p-4 space-y-3">
@@ -785,7 +796,107 @@ function ReadyAppDownloadCard() {
             Build status দেখুন
           </a>
         </Button>
+        {isConfigured && (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => liveQuery.refetch()}
+            disabled={liveQuery.isFetching}
+          >
+            {liveQuery.isFetching ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : null}
+            রিফ্রেশ
+          </Button>
+        )}
       </div>
+
+      {/* Live API result */}
+      {isConfigured && (
+        <div className="rounded-md border border-emerald-200 bg-white/70 p-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <h5 className="text-xs font-semibold text-emerald-900">লাইভ ফাইল লিস্ট (GitHub API)</h5>
+            {liveQuery.data?.hasToken === false && (
+              <span className="text-[10px] text-amber-700">টোকেন ছাড়া — শুধু public repo</span>
+            )}
+          </div>
+
+          {liveQuery.isLoading && (
+            <div className="flex items-center gap-2 text-xs text-emerald-800">
+              <Loader2 className="h-3.5 w-3.5 animate-spin" /> লোড হচ্ছে…
+            </div>
+          )}
+
+          {liveQuery.data?.error && (
+            <p className="text-xs text-rose-700">⚠️ {liveQuery.data.error}</p>
+          )}
+
+          {liveQuery.data?.release && (
+            <div className="space-y-1.5">
+              <p className="text-[11px] text-emerald-800">
+                <strong>রিলিজ:</strong> {liveQuery.data.release.name} ({liveQuery.data.release.tag})
+                {liveQuery.data.release.prerelease && " · pre-release"}
+              </p>
+              {liveQuery.data.release.assets.length === 0 ? (
+                <p className="text-[11px] text-emerald-700/70">কোনো asset পাওয়া যায়নি।</p>
+              ) : (
+                <ul className="space-y-1">
+                  {liveQuery.data.release.assets.map((a) => (
+                    <li key={a.name} className="flex items-center justify-between gap-2 text-xs">
+                      <span className="truncate text-emerald-900">📦 {a.name}</span>
+                      <span className="flex items-center gap-2 shrink-0">
+                        <span className="text-[10px] text-emerald-700/70">{fmtSize(a.size)}</span>
+                        <Button
+                          asChild
+                          size="sm"
+                          variant="outline"
+                          className="h-6 px-2 text-[11px] border-emerald-300"
+                        >
+                          <a href={a.download_url} target="_blank" rel="noopener noreferrer">
+                            <Download className="h-3 w-3 mr-1" />
+                            ডাউনলোড
+                          </a>
+                        </Button>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
+          {liveQuery.data && !liveQuery.data.release && !liveQuery.data.error && (
+            <p className="text-[11px] text-emerald-700/70">
+              এখনো কোনো রিলিজ নেই। <code className="bg-emerald-100 px-1 rounded">git tag v1.0.0 && git push --tags</code> দিন।
+            </p>
+          )}
+
+          {liveQuery.data && liveQuery.data.artifacts.length > 0 && (
+            <div className="pt-2 border-t border-emerald-200/60">
+              <p className="text-[11px] font-semibold text-emerald-900 mb-1">সাম্প্রতিক Artifacts</p>
+              <ul className="space-y-0.5">
+                {liveQuery.data.artifacts.slice(0, 5).map((a, i) => (
+                  <li key={i} className="flex items-center justify-between gap-2 text-[11px]">
+                    <span className="truncate text-emerald-800">
+                      {a.expired ? "⏳" : "🗂️"} {a.name}{" "}
+                      <span className="text-emerald-700/60">({fmtSize(a.size)})</span>
+                    </span>
+                    <a
+                      href={a.workflow_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-emerald-700 hover:underline shrink-0"
+                    >
+                      run →
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-[10px] text-emerald-700/60 mt-1">
+                * Artifacts শুধু GitHub-এ লগ-ইন থাকলে ডাউনলোড হবে (৯০ দিন রিটেনশন)।
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ৩ ধাপের গাইডলাইন */}
       <ol className="space-y-1.5 text-xs text-emerald-900 bg-white/60 rounded-md p-3 border border-emerald-200">
@@ -814,10 +925,11 @@ function ReadyAppDownloadCard() {
           <strong>সেটআপ:</strong> GitHub-এ export করার পর{" "}
           <code className="bg-amber-100 px-1 rounded">.env</code>-এ{" "}
           <code className="bg-amber-100 px-1 rounded">VITE_GITHUB_REPO=owner/repo</code> যোগ করুন —
-          তাহলে এই লিংকগুলো স্বয়ংক্রিয়ভাবে আপনার রেপোতে redirect হবে।
+          তাহলে লাইভ ফাইল লিস্ট ও ডাউনলোড লিংক স্বয়ংক্রিয়ভাবে দেখাবে।
         </div>
       )}
     </div>
   );
 }
+
 
