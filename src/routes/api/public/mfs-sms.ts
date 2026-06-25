@@ -216,7 +216,8 @@ export const Route = createFileRoute("/api/public/mfs-sms")({
           .single();
 
         if (insErr) {
-          return json({ ok: false, error: "insert_failed", detail: insErr.message }, 500);
+          console.error("mfs-sms insert_failed", insErr);
+          return json({ ok: false, error: "insert_failed" }, 500);
         }
 
         return json({ ok: true, ...inserted });
