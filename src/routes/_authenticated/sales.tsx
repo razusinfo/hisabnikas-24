@@ -1046,10 +1046,20 @@ function SalesPage() {
 
       {/* New Sale */}
       <Dialog open={openNew} onOpenChange={(o) => { if (!o) { setOpenNew(false); resetNew(); } }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>{t("newSale")}</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+        <DialogContent className="max-w-2xl p-0 sm:p-6 gap-0 sm:gap-4 h-[100dvh] sm:h-auto max-h-[100dvh] sm:max-h-[90vh] flex flex-col sm:block overflow-hidden sm:overflow-y-auto rounded-none sm:rounded-lg">
+          <DialogHeader className="px-4 pt-4 sm:p-0 shrink-0">
+            <DialogTitle className="flex items-center justify-between gap-2">
+              <span>{t("newSale")}</span>
+              <span className="md:hidden inline-flex items-center gap-1 text-xs font-normal text-muted-foreground">
+                <span className={cn("h-2 w-2 rounded-full", mobileStep === 1 ? "bg-primary" : "bg-muted")} />
+                <span className={cn("h-2 w-2 rounded-full", mobileStep === 2 ? "bg-primary" : "bg-muted")} />
+                <span className="ml-1">{mobileStep}/2</span>
+              </span>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 flex-1 min-h-0 overflow-y-auto px-4 pb-4 sm:p-0 sm:overflow-visible sm:flex-none">
+            <div className={cn("grid grid-cols-2 gap-3", mobileStep === 2 && "hidden md:grid")}>
+
               <div>
                 <label className="text-xs text-muted-foreground">{t("customer")}</label>
                 <Select value={customerId} onValueChange={(v) => { if (v === "__new__") { setOpenNewCust(true); } else { setCustomerId(v); } }}>
