@@ -858,7 +858,8 @@ function SalesPage() {
                 ) : methodLabel(viewSale.payment_method)}</div>
                 <div><div className="text-muted-foreground text-xs">{t("status")}</div>{statusBadge(viewSale)}</div>
               </div>
-              <div className="border rounded-md overflow-x-auto">
+              {/* Items — desktop table */}
+              <div className="border rounded-md overflow-x-auto hidden md:block">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/30 text-xs uppercase">
                     <tr><th className="text-left p-2">{t("item")}</th><th className="text-right p-2">{t("price")}</th><th className="text-right p-2">{t("qty")}</th><th className="text-right p-2">{t("total")}</th></tr>
@@ -913,6 +914,64 @@ function SalesPage() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+
+              {/* Items — mobile stacked cards */}
+              <div className="md:hidden space-y-2">
+                {items === null && <div className="border rounded-md p-4 text-center text-sm text-muted-foreground">{t("loading")}</div>}
+                {items?.map((i) => (
+                  <div key={i.id} className="border rounded-md p-3 space-y-2">
+                    <div className="text-sm font-medium">
+                      {editing ? (
+                        <Popover open={productPickerOpen === i.id} onOpenChange={(o) => setProductPickerOpen(o ? i.id : null)}>
+                          <PopoverTrigger asChild>
+                            <Button variant="outline" role="combobox" className="h-9 w-full justify-between font-normal">
+                              <span className="truncate">{i.product_name || t("product")}</span>
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="p-0 w-[--radix-popover-trigger-width]" align="start">
+                            <Command>
+                              <CommandInput placeholder={t("search") + "..."} />
+                              <CommandList>
+                                <CommandEmpty>—</CommandEmpty>
+                                <CommandGroup>
+                                  {(productsList as any[]).map((p) => (
+                                    <CommandItem key={p.id} value={`${p.name} ${p.sku ?? ""}`} onSelect={() => {
+                                      updateItem(i.id, { product_id: p.id, product_name: p.name, unit_price: Number(p.sell_price || i.unit_price) });
+                                      setProductPickerOpen(null);
+                                    }}>
+                                      <Check className={cn("mr-2 h-4 w-4", i.product_id === p.id ? "opacity-100" : "opacity-0")} />
+                                      <span className="truncate">{p.name}</span>
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      ) : i.product_name}
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 text-xs">
+                      <div>
+                        <div className="text-muted-foreground mb-1">{t("price")}</div>
+                        {editing ? (
+                          <Input type="number" step="0.01" value={i.unit_price} onChange={(e) => updateItem(i.id, { unit_price: Number(e.target.value) })} className="h-8 text-right font-mono" />
+                        ) : <div className="font-mono">{fmtMoney(i.unit_price, lang)}</div>}
+                      </div>
+                      <div>
+                        <div className="text-muted-foreground mb-1">{t("qty")}</div>
+                        {editing ? (
+                          <Input type="number" step="0.01" value={i.qty} onChange={(e) => updateItem(i.id, { qty: Number(e.target.value) })} className="h-8 text-right font-mono" />
+                        ) : <div className="font-mono">{lang === "bn" ? Number(i.qty).toLocaleString("bn-BD") : i.qty}</div>}
+                      </div>
+                      <div>
+                        <div className="text-muted-foreground mb-1">{t("total")}</div>
+                        <div className="font-mono font-medium">{fmtMoney(i.line_total, lang)}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="text-muted-foreground">{t("subtotal")}</div><div className="text-right font-mono">{fmtMoney(viewSale.subtotal, lang)}</div>
@@ -1077,32 +1136,65 @@ function SalesPage() {
             </div>
 
             {lines.length > 0 && (
-              <div className="border rounded-md overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="bg-muted/30 text-xs uppercase">
-                    <tr>
-                      <th className="text-left p-2">{t("product")}</th>
-                      <th className="text-right p-2 w-24">{t("qty")}</th>
-                      <th className="text-right p-2 w-28">{t("cost")}</th>
-                      <th className="text-right p-2 w-28">{t("price")}</th>
-                      <th className="text-right p-2 w-28">{t("total")}</th>
-                      <th className="w-10"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {lines.map((l, idx) => (
-                      <tr key={idx} className="border-t border-border/40">
-                        <td className="p-2">{l.name}</td>
-                        <td className="p-2"><Input type="number" min="0" step="0.01" className="h-8 text-right" value={l.qty} onChange={(e) => updateLine(idx, { qty: Number(e.target.value) })} /></td>
-                        <td className="p-2 text-right font-mono text-muted-foreground">{fmtMoney(l.cost_price, lang)}</td>
-                        <td className="p-2"><Input type="number" min="0" step="0.01" className="h-8 text-right" value={l.unit_price} onChange={(e) => updateLine(idx, { unit_price: Number(e.target.value) })} /></td>
-                        <td className="p-2 text-right font-mono">{fmtMoney(l.qty * l.unit_price, lang)}</td>
-                        <td className="p-2"><Button size="icon" variant="ghost" onClick={() => removeLine(idx)}><X className="h-4 w-4" /></Button></td>
+              <>
+                {/* Cart — desktop table */}
+                <div className="border rounded-md overflow-x-auto hidden md:block">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted/30 text-xs uppercase">
+                      <tr>
+                        <th className="text-left p-2">{t("product")}</th>
+                        <th className="text-right p-2 w-24">{t("qty")}</th>
+                        <th className="text-right p-2 w-28">{t("cost")}</th>
+                        <th className="text-right p-2 w-28">{t("price")}</th>
+                        <th className="text-right p-2 w-28">{t("total")}</th>
+                        <th className="w-10"></th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {lines.map((l, idx) => (
+                        <tr key={idx} className="border-t border-border/40">
+                          <td className="p-2">{l.name}</td>
+                          <td className="p-2"><Input type="number" min="0" step="0.01" className="h-8 text-right" value={l.qty} onChange={(e) => updateLine(idx, { qty: Number(e.target.value) })} /></td>
+                          <td className="p-2 text-right font-mono text-muted-foreground">{fmtMoney(l.cost_price, lang)}</td>
+                          <td className="p-2"><Input type="number" min="0" step="0.01" className="h-8 text-right" value={l.unit_price} onChange={(e) => updateLine(idx, { unit_price: Number(e.target.value) })} /></td>
+                          <td className="p-2 text-right font-mono">{fmtMoney(l.qty * l.unit_price, lang)}</td>
+                          <td className="p-2"><Button size="icon" variant="ghost" onClick={() => removeLine(idx)}><X className="h-4 w-4" /></Button></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Cart — mobile stacked cards */}
+                <div className="md:hidden space-y-2">
+                  {lines.map((l, idx) => (
+                    <div key={idx} className="border rounded-md p-3 space-y-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="text-sm font-medium min-w-0 truncate flex-1">{l.name}</div>
+                        <Button size="icon" variant="ghost" className="h-8 w-8 shrink-0 -mt-1 -mr-1" onClick={() => removeLine(idx)}><X className="h-4 w-4" /></Button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <div className="text-muted-foreground mb-1">{t("qty")}</div>
+                          <Input type="number" min="0" step="0.01" className="h-8 text-right font-mono" value={l.qty} onChange={(e) => updateLine(idx, { qty: Number(e.target.value) })} />
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground mb-1">{t("price")}</div>
+                          <Input type="number" min="0" step="0.01" className="h-8 text-right font-mono" value={l.unit_price} onChange={(e) => updateLine(idx, { unit_price: Number(e.target.value) })} />
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground mb-1">{t("cost")}</div>
+                          <div className="font-mono text-muted-foreground">{fmtMoney(l.cost_price, lang)}</div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground mb-1">{t("total")}</div>
+                          <div className="font-mono font-medium">{fmtMoney(l.qty * l.unit_price, lang)}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
 
             <div className="grid grid-cols-2 gap-3">
