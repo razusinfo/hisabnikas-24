@@ -531,9 +531,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           </header>
 
 
-          <main className="flex-1 min-w-0 overflow-x-hidden">{children}</main>
-          <footer className="px-4 py-3 text-center text-sm text-muted-foreground border-t border-border/40">
-            সফটওয়্যার প্রস্তুতকারক:{" "}
+          <main className="flex-1 min-w-0 overflow-x-hidden pb-20 md:pb-0">{children}</main>
+          <footer className="px-4 py-3 pb-20 md:pb-3 text-center text-sm text-muted-foreground border-t border-border/40">
+            সফটওয়্যার প্রস্তুতকারক:{" "}
             <a
               href="https://www.sylhetionlineshop.com"
               target="_blank"
@@ -544,8 +544,54 @@ export function AppShell({ children }: { children: ReactNode }) {
             </a>
           </footer>
         </div>
+
+        {/* Mobile bottom navigation */}
+        <MobileBottomNav />
       </div>
     </SearchProvider>
+  );
+}
+
+function MobileBottomNav() {
+  const { t } = useI18n();
+  const navigate = useNavigate();
+  const loc = useLocation();
+  const isActive = (to: string) => loc.pathname === to || loc.pathname.startsWith(to + "/");
+
+  const itemCls = (active: boolean) =>
+    cn(
+      "flex flex-col items-center justify-center gap-0.5 flex-1 min-h-[56px] rounded-xl text-[11px] font-medium transition-colors",
+      active ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground active:bg-accent"
+    );
+
+  return (
+    <nav
+      className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-background/95 backdrop-blur border-t border-border shadow-[0_-2px_12px_rgba(0,0,0,0.06)]"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      aria-label="Bottom navigation"
+    >
+      <div className="flex items-stretch gap-1 px-2 py-1.5">
+        <button
+          type="button"
+          onClick={() => navigate({ to: "/sales", search: { new: 1 } })}
+          className={cn(itemCls(false), "text-emerald-600")}
+          aria-label={t("newSale")}
+        >
+          <span className="grid place-items-center h-7 w-7 rounded-full bg-emerald-500 text-white">
+            <Plus className="h-4 w-4" />
+          </span>
+          <span className="truncate">{t("newSale")}</span>
+        </button>
+        <Link to="/products" className={itemCls(isActive("/products"))} aria-label={t("products")}>
+          <Package className="h-5 w-5" />
+          <span className="truncate">{t("products")}</span>
+        </Link>
+        <Link to="/reports" className={itemCls(isActive("/reports"))} aria-label={t("reports")}>
+          <BarChart3 className="h-5 w-5" />
+          <span className="truncate">{t("reports")}</span>
+        </Link>
+      </div>
+    </nav>
   );
 }
 
