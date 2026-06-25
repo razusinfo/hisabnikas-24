@@ -113,6 +113,8 @@ function SalesPage() {
 
   // New sale dialog state
   const [openNew, setOpenNew] = useState(false);
+  const [mobileStep, setMobileStep] = useState<1 | 2>(1);
+  useEffect(() => { if (openNew) setMobileStep(1); }, [openNew]);
   const search = Route.useSearch();
   const navigate = useNavigate();
   useEffect(() => {
@@ -1044,10 +1046,20 @@ function SalesPage() {
 
       {/* New Sale */}
       <Dialog open={openNew} onOpenChange={(o) => { if (!o) { setOpenNew(false); resetNew(); } }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>{t("newSale")}</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+        <DialogContent className="max-w-2xl p-0 sm:p-6 gap-0 sm:gap-4 h-[100dvh] sm:h-auto max-h-[100dvh] sm:max-h-[90vh] flex flex-col sm:block overflow-hidden sm:overflow-y-auto rounded-none sm:rounded-lg">
+          <DialogHeader className="px-4 pt-4 sm:p-0 shrink-0">
+            <DialogTitle className="flex items-center justify-between gap-2">
+              <span>{t("newSale")}</span>
+              <span className="md:hidden inline-flex items-center gap-1 text-xs font-normal text-muted-foreground">
+                <span className={cn("h-2 w-2 rounded-full", mobileStep === 1 ? "bg-primary" : "bg-muted")} />
+                <span className={cn("h-2 w-2 rounded-full", mobileStep === 2 ? "bg-primary" : "bg-muted")} />
+                <span className="ml-1">{mobileStep}/2</span>
+              </span>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 flex-1 min-h-0 overflow-y-auto px-4 pb-4 sm:p-0 sm:overflow-visible sm:flex-none">
+            <div className={cn("grid grid-cols-2 gap-3", mobileStep === 2 && "hidden md:grid")}>
+
               <div>
                 <label className="text-xs text-muted-foreground">{t("customer")}</label>
                 <Select value={customerId} onValueChange={(v) => { if (v === "__new__") { setOpenNewCust(true); } else { setCustomerId(v); } }}>
@@ -1080,9 +1092,10 @@ function SalesPage() {
               </div>
             </div>
 
-            <div>
+            <div className={cn(mobileStep === 2 && "hidden md:block")}>
               <label className="text-xs text-muted-foreground">{t("addItem")}</label>
-              <div className="grid grid-cols-[180px_1fr_auto] gap-2 items-end">
+              <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr_auto] gap-2 items-end">
+
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger><SelectValue placeholder="ক্যাটাগরি" /></SelectTrigger>
                   <SelectContent>
@@ -1136,7 +1149,8 @@ function SalesPage() {
             </div>
 
             {lines.length > 0 && (
-              <>
+              <div className={cn("space-y-3", mobileStep === 2 && "hidden md:block")}>
+
                 {/* Cart — desktop table */}
                 <div className="border rounded-md overflow-x-auto hidden md:block">
                   <table className="w-full text-sm">
@@ -1194,10 +1208,12 @@ function SalesPage() {
                     </div>
                   ))}
                 </div>
-              </>
+              </div>
             )}
 
-            <div className="grid grid-cols-2 gap-3">
+
+            <div className={cn("grid grid-cols-2 gap-3", mobileStep === 1 && "hidden md:grid")}>
+
               {sett.discountPerTx && (
                 <div>
                   <label className="text-xs text-muted-foreground">{t("discount")}</label>
@@ -1232,17 +1248,47 @@ function SalesPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 text-sm border-t pt-3">
+            <div className={cn("grid grid-cols-2 gap-2 text-sm border-t pt-3", mobileStep === 1 && "hidden md:grid")}>
               <div className="text-muted-foreground">{t("subtotal")}</div><div className="text-right font-mono">{fmtMoney(newSubtotal, lang)}</div>
               <div className="font-medium">{t("total")}</div><div className="text-right font-mono font-medium">{fmtMoney(newTotal, lang)}</div>
               <div className="text-success">{t("paid")}</div><div className="text-right font-mono text-success">{fmtMoney(newPaidAmt, lang)}</div>
               <div className="text-warning">{t("due")}</div><div className="text-right font-mono text-warning">{fmtMoney(newDue, lang)}</div>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => { setOpenNew(false); resetNew(); }}>{t("cancel")}</Button>
-            <Button onClick={createSale} disabled={creating}>{t("save")}</Button>
-          </DialogFooter>
+          {/* Sticky bottom action bar */}
+          <div className="shrink-0 border-t bg-background px-4 py-3 sm:p-0 sm:border-0 sm:bg-transparent">
+            {/* Mobile running total */}
+            <div className="md:hidden flex items-center justify-between mb-2 text-sm">
+              <span className="text-muted-foreground">{lines.length} {lang === "bn" ? "আইটেম" : "items"}</span>
+              <span className="font-mono font-semibold text-base">{fmtMoney(newTotal, lang)}</span>
+            </div>
+            <DialogFooter className="gap-2 sm:gap-2 flex-row">
+              {/* Mobile wizard controls */}
+              <div className="md:hidden flex w-full gap-2">
+                {mobileStep === 1 ? (
+                  <>
+                    <Button variant="ghost" className="flex-1" onClick={() => { setOpenNew(false); resetNew(); }}>{t("cancel")}</Button>
+                    <Button className="flex-[2]" onClick={() => setMobileStep(2)} disabled={lines.length === 0}>
+                      {lang === "bn" ? "পরবর্তী" : "Next"}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="outline" className="flex-1" onClick={() => setMobileStep(1)}>
+                      {lang === "bn" ? "পেছনে" : "Back"}
+                    </Button>
+                    <Button className="flex-[2]" onClick={createSale} disabled={creating}>{t("save")}</Button>
+                  </>
+                )}
+              </div>
+              {/* Desktop controls */}
+              <div className="hidden md:flex gap-2 ml-auto">
+                <Button variant="ghost" onClick={() => { setOpenNew(false); resetNew(); }}>{t("cancel")}</Button>
+                <Button onClick={createSale} disabled={creating}>{t("save")}</Button>
+              </div>
+            </DialogFooter>
+          </div>
+
         </DialogContent>
       </Dialog>
 
