@@ -1092,9 +1092,10 @@ function SalesPage() {
               </div>
             </div>
 
-            <div>
+            <div className={cn(mobileStep === 2 && "hidden md:block")}>
               <label className="text-xs text-muted-foreground">{t("addItem")}</label>
-              <div className="grid grid-cols-[180px_1fr_auto] gap-2 items-end">
+              <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr_auto] gap-2 items-end">
+
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger><SelectValue placeholder="ক্যাটাগরি" /></SelectTrigger>
                   <SelectContent>
