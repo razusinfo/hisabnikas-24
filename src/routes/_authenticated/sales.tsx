@@ -1149,7 +1149,8 @@ function SalesPage() {
             </div>
 
             {lines.length > 0 && (
-              <>
+              <div className={cn("space-y-3", mobileStep === 2 && "hidden md:block")}>
+
                 {/* Cart — desktop table */}
                 <div className="border rounded-md overflow-x-auto hidden md:block">
                   <table className="w-full text-sm">
