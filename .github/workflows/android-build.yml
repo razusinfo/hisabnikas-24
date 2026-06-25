@@ -1,0 +1,103 @@
+name: Build Android APK
+
+# স্বয়ংক্রিয়ভাবে APK ও AAB তৈরি করে — প্রতিটি push এবং tag-এ।
+# Tag (v1.0.0 etc.) push করলে Release-এ APK auto-attach হবে।
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 34
+          build-tools: 34.0.0
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Disable Capacitor dev server (production build)
+        run: |
+          # capacitor.config.ts থেকে server block টা comment-out করি production-এ
+          node -e "
+            const fs = require('fs');
+            let c = fs.readFileSync('capacitor.config.ts', 'utf8');
+            c = c.replace(/server:\s*{[^}]*},?/s, '// server block disabled in CI build');
+            fs.writeFileSync('capacitor.config.ts', c);
+          "
+
+      - name: Build web app
+        run: npm run build
+
+      - name: Add Android platform
+        run: |
+          npx cap add android || echo "Android platform already exists"
+          npx cap sync android
+
+      - name: Build Debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug
+
+      - name: Build Release APK (unsigned)
+        working-directory: android
+        run: ./gradlew assembleRelease
+
+      - name: Build Release AAB (Play Store)
+        working-directory: android
+        run: ./gradlew bundleRelease
+
+      - name: Rename artifacts
+        run: |
+          mkdir -p release
+          cp android/app/build/outputs/apk/debug/app-debug.apk      release/HisabNikash24-debug.apk
+          cp android/app/build/outputs/apk/release/app-release-unsigned.apk release/HisabNikash24-release-unsigned.apk
+          cp android/app/build/outputs/bundle/release/app-release.aab      release/HisabNikash24-release.aab
+
+      - name: Upload artifacts (every build)
+        uses: actions/upload-artifact@v4
+        with:
+          name: HisabNikash24-Android
+          path: release/*
+          retention-days: 30
+
+      - name: Create GitHub Release (tag push only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          generate_release_notes: true
+          name: হিসাব নিকাশ-২৪ ${{ github.ref_name }}
+          body: |
+            ## 📱 Download Android App
+
+            - **HisabNikash24-debug.apk** — সরাসরি ফোনে ইন্সটল করুন (testing)
+            - **HisabNikash24-release-unsigned.apk** — sign করে production-এ ব্যবহার করুন
+            - **HisabNikash24-release.aab** — Play Store-এ আপলোড করুন
+
+            ### ইন্সটল করার নিয়ম
+            1. APK ফাইলটি ফোনে ডাউনলোড করুন
+            2. Settings → Security → "Unknown sources" enable করুন
+            3. APK-এ tap করে Install করুন
