@@ -577,43 +577,8 @@ function AndroidBuildCard() {
       </CardHeader>
       <CardContent className="p-4 sm:p-6 space-y-4">
         {/* রেডি অ্যাপ ডাউনলোড সেকশন */}
-        <div className="rounded-lg border-2 border-emerald-300 bg-gradient-to-br from-emerald-50 to-emerald-100/50 p-4 space-y-3">
-          <div className="flex items-start gap-3">
-            <div className="h-10 w-10 rounded-lg bg-emerald-500 flex items-center justify-center shrink-0">
-              <Download className="h-5 w-5 text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h4 className="text-sm font-semibold text-emerald-900">রেডি Android App ডাউনলোড</h4>
-              <p className="text-xs text-emerald-800/80 mt-0.5">
-                সরাসরি ফোনে ইন্সটল করার জন্য APK ডাউনলোড করুন। কোনো setup লাগবে না।
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700">
-              <a
-                href="https://github.com/lovable-dev/hisab-nikash-24/releases/latest"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                সর্বশেষ APK ডাউনলোড
-              </a>
-            </Button>
-            <Button asChild size="sm" variant="outline" className="border-emerald-300">
-              <a
-                href="https://github.com/lovable-dev/hisab-nikash-24/actions/workflows/android-build.yml"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Build status দেখুন
-              </a>
-            </Button>
-          </div>
-          <p className="text-[11px] text-emerald-800/70 leading-relaxed">
-            <strong>নোট:</strong> প্রথমবার project GitHub-এ export করার পর Actions tab-এ যান → "Build Android APK" workflow চালু হবে। ১০-১৫ মিনিটে APK তৈরি হয়ে Release-এ আপলোড হবে। Tag (যেমন <code className="bg-emerald-200/60 px-1 rounded">v1.0.0</code>) push করলে public Release তৈরি হবে।
-          </p>
-        </div>
+        <ReadyAppDownloadCard />
+
 
         <div className="border-t pt-4">
           <h4 className="text-sm font-semibold text-foreground mb-2">নিজের computer-এ বিল্ড করুন (Advanced)</h4>
