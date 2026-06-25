@@ -487,7 +487,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </SheetContent>
             </Sheet>
             <Link to="/dashboard" className="flex items-center min-w-0">
-              <img src={appLogo.url} alt="হিসব নিকাশ-২৪" className="h-10 w-auto" />
+              <img src={appLogo.url} alt="হিসব নিকাশ-২৪" className="h-20 w-auto" />
             </Link>
             <div className="flex-1" />
             <LangToggle compact />
