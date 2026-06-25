@@ -113,6 +113,8 @@ function SalesPage() {
 
   // New sale dialog state
   const [openNew, setOpenNew] = useState(false);
+  const [mobileStep, setMobileStep] = useState<1 | 2>(1);
+  useEffect(() => { if (openNew) setMobileStep(1); }, [openNew]);
   const search = Route.useSearch();
   const navigate = useNavigate();
   useEffect(() => {
