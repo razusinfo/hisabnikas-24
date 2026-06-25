@@ -1207,8 +1207,10 @@ function SalesPage() {
                       </div>
                     </div>
                   ))}
+                </div>
               </div>
             )}
+
 
             <div className={cn("grid grid-cols-2 gap-3", mobileStep === 1 && "hidden md:grid")}>
 
