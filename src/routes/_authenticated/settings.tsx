@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Loader2, Info, ExternalLink, Download } from "lucide-react";
+import { Loader2, Info, ExternalLink, Download, Smartphone, Copy, FileCode } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
@@ -332,6 +332,9 @@ function SettingsPage() {
           </CardContent>
         </Card>
       )}
+
+      <AndroidBuildCard />
+
 
       {/* পণ্য সমূহ */}
       <SectionCard title={tr("products")}>
