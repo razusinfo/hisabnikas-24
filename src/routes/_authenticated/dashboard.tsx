@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
 import { fmtMoney, fmtDateTime } from "@/lib/format";
+import { InstallAppBanner } from "@/components/InstallAppBanner";
 import {
   TrendingUp,
   Package,
