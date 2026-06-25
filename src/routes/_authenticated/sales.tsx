@@ -1248,17 +1248,47 @@ function SalesPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 text-sm border-t pt-3">
+            <div className={cn("grid grid-cols-2 gap-2 text-sm border-t pt-3", mobileStep === 1 && "hidden md:grid")}>
               <div className="text-muted-foreground">{t("subtotal")}</div><div className="text-right font-mono">{fmtMoney(newSubtotal, lang)}</div>
               <div className="font-medium">{t("total")}</div><div className="text-right font-mono font-medium">{fmtMoney(newTotal, lang)}</div>
               <div className="text-success">{t("paid")}</div><div className="text-right font-mono text-success">{fmtMoney(newPaidAmt, lang)}</div>
               <div className="text-warning">{t("due")}</div><div className="text-right font-mono text-warning">{fmtMoney(newDue, lang)}</div>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => { setOpenNew(false); resetNew(); }}>{t("cancel")}</Button>
-            <Button onClick={createSale} disabled={creating}>{t("save")}</Button>
-          </DialogFooter>
+          {/* Sticky bottom action bar */}
+          <div className="shrink-0 border-t bg-background px-4 py-3 sm:p-0 sm:border-0 sm:bg-transparent">
+            {/* Mobile running total */}
+            <div className="md:hidden flex items-center justify-between mb-2 text-sm">
+              <span className="text-muted-foreground">{lines.length} {lang === "bn" ? "আইটেম" : "items"}</span>
+              <span className="font-mono font-semibold text-base">{fmtMoney(newTotal, lang)}</span>
+            </div>
+            <DialogFooter className="gap-2 sm:gap-2 flex-row">
+              {/* Mobile wizard controls */}
+              <div className="md:hidden flex w-full gap-2">
+                {mobileStep === 1 ? (
+                  <>
+                    <Button variant="ghost" className="flex-1" onClick={() => { setOpenNew(false); resetNew(); }}>{t("cancel")}</Button>
+                    <Button className="flex-[2]" onClick={() => setMobileStep(2)} disabled={lines.length === 0}>
+                      {lang === "bn" ? "পরবর্তী" : "Next"}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="outline" className="flex-1" onClick={() => setMobileStep(1)}>
+                      {lang === "bn" ? "পেছনে" : "Back"}
+                    </Button>
+                    <Button className="flex-[2]" onClick={createSale} disabled={creating}>{t("save")}</Button>
+                  </>
+                )}
+              </div>
+              {/* Desktop controls */}
+              <div className="hidden md:flex gap-2 ml-auto">
+                <Button variant="ghost" onClick={() => { setOpenNew(false); resetNew(); }}>{t("cancel")}</Button>
+                <Button onClick={createSale} disabled={creating}>{t("save")}</Button>
+              </div>
+            </DialogFooter>
+          </div>
+
         </DialogContent>
       </Dialog>
 
