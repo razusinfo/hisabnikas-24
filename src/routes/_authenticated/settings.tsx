@@ -577,43 +577,8 @@ function AndroidBuildCard() {
       </CardHeader>
       <CardContent className="p-4 sm:p-6 space-y-4">
         {/* রেডি অ্যাপ ডাউনলোড সেকশন */}
-        <div className="rounded-lg border-2 border-emerald-300 bg-gradient-to-br from-emerald-50 to-emerald-100/50 p-4 space-y-3">
-          <div className="flex items-start gap-3">
-            <div className="h-10 w-10 rounded-lg bg-emerald-500 flex items-center justify-center shrink-0">
-              <Download className="h-5 w-5 text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h4 className="text-sm font-semibold text-emerald-900">রেডি Android App ডাউনলোড</h4>
-              <p className="text-xs text-emerald-800/80 mt-0.5">
-                সরাসরি ফোনে ইন্সটল করার জন্য APK ডাউনলোড করুন। কোনো setup লাগবে না।
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700">
-              <a
-                href="https://github.com/lovable-dev/hisab-nikash-24/releases/latest"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                সর্বশেষ APK ডাউনলোড
-              </a>
-            </Button>
-            <Button asChild size="sm" variant="outline" className="border-emerald-300">
-              <a
-                href="https://github.com/lovable-dev/hisab-nikash-24/actions/workflows/android-build.yml"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Build status দেখুন
-              </a>
-            </Button>
-          </div>
-          <p className="text-[11px] text-emerald-800/70 leading-relaxed">
-            <strong>নোট:</strong> প্রথমবার project GitHub-এ export করার পর Actions tab-এ যান → "Build Android APK" workflow চালু হবে। ১০-১৫ মিনিটে APK তৈরি হয়ে Release-এ আপলোড হবে। Tag (যেমন <code className="bg-emerald-200/60 px-1 rounded">v1.0.0</code>) push করলে public Release তৈরি হবে।
-          </p>
-        </div>
+        <ReadyAppDownloadCard />
+
 
         <div className="border-t pt-4">
           <h4 className="text-sm font-semibold text-foreground mb-2">নিজের computer-এ বিল্ড করুন (Advanced)</h4>
@@ -783,3 +748,76 @@ function NumberRow({
     </Row>
   );
 }
+
+// ===== রেডি Android App ডাউনলোড কার্ড =====
+function ReadyAppDownloadCard() {
+  // env-driven dynamic repo URL — user can set VITE_GITHUB_REPO="owner/repo"
+  // after exporting to GitHub. Falls back to placeholder if unset.
+  const envRepo = (import.meta.env.VITE_GITHUB_REPO as string | undefined)?.trim();
+  const repo = envRepo && envRepo.includes("/") ? envRepo : "lovable-dev/hisab-nikash-24";
+  const isConfigured = Boolean(envRepo && envRepo.includes("/"));
+  const releasesUrl = `https://github.com/${repo}/releases/latest`;
+  const actionsUrl = `https://github.com/${repo}/actions/workflows/android-build.yml`;
+
+  return (
+    <div className="rounded-lg border-2 border-emerald-300 bg-gradient-to-br from-emerald-50 to-emerald-100/50 p-4 space-y-3">
+      <div className="flex items-start gap-3">
+        <div className="h-10 w-10 rounded-lg bg-emerald-500 flex items-center justify-center shrink-0">
+          <Download className="h-5 w-5 text-white" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h4 className="text-sm font-semibold text-emerald-900">রেডি Android App ডাউনলোড</h4>
+          <p className="text-xs text-emerald-800/80 mt-0.5">
+            সরাসরি ফোনে ইন্সটল করার জন্য APK ডাউনলোড করুন। কোনো setup লাগবে না।
+          </p>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+          <a href={releasesUrl} target="_blank" rel="noopener noreferrer">
+            <Download className="h-4 w-4 mr-2" />
+            সর্বশেষ APK ডাউনলোড
+          </a>
+        </Button>
+        <Button asChild size="sm" variant="outline" className="border-emerald-300">
+          <a href={actionsUrl} target="_blank" rel="noopener noreferrer">
+            Build status দেখুন
+          </a>
+        </Button>
+      </div>
+
+      {/* ৩ ধাপের গাইডলাইন */}
+      <ol className="space-y-1.5 text-xs text-emerald-900 bg-white/60 rounded-md p-3 border border-emerald-200">
+        <li className="flex gap-2">
+          <span className="font-bold text-emerald-700 shrink-0">১.</span>
+          <span>উপরের GitHub button দিয়ে প্রজেক্ট export করুন।</span>
+        </li>
+        <li className="flex gap-2">
+          <span className="font-bold text-emerald-700 shrink-0">২.</span>
+          <span>Actions tab-এ যান → workflow auto-run হবে (১০–১৫ মিনিট সময় লাগবে)।</span>
+        </li>
+        <li className="flex gap-2">
+          <span className="font-bold text-emerald-700 shrink-0">৩.</span>
+          <span>Releases থেকে APK ডাউনলোড করে ফোনে ইন্সটল করুন। ✓</span>
+        </li>
+      </ol>
+
+      <p className="text-[11px] text-emerald-800/70 leading-relaxed">
+        <strong>পাবলিক রিলিজ:</strong>{" "}
+        <code className="bg-emerald-200/60 px-1 rounded">git tag v1.0.0 && git push --tags</code>{" "}
+        — APK/AAB স্বয়ংক্রিয়ভাবে GitHub Release-এ attach হবে।
+      </p>
+
+      {!isConfigured && (
+        <div className="text-[11px] text-amber-900 bg-amber-50 border border-amber-200 rounded p-2 leading-relaxed">
+          <strong>সেটআপ:</strong> GitHub-এ export করার পর{" "}
+          <code className="bg-amber-100 px-1 rounded">.env</code>-এ{" "}
+          <code className="bg-amber-100 px-1 rounded">VITE_GITHUB_REPO=owner/repo</code> যোগ করুন —
+          তাহলে এই লিংকগুলো স্বয়ংক্রিয়ভাবে আপনার রেপোতে redirect হবে।
+        </div>
+      )}
+    </div>
+  );
+}
+
