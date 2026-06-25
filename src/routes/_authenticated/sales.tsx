@@ -1207,11 +1207,11 @@ function SalesPage() {
                       </div>
                     </div>
                   ))}
-                </div>
-              </>
+              </div>
             )}
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className={cn("grid grid-cols-2 gap-3", mobileStep === 1 && "hidden md:grid")}>
+
               {sett.discountPerTx && (
                 <div>
                   <label className="text-xs text-muted-foreground">{t("discount")}</label>
