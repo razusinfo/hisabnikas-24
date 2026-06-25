@@ -4,14 +4,21 @@ export const Route = createFileRoute("/api/public/hooks/daily-backup")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        // Authenticate caller using a private CRON_SECRET. The Supabase
-        // publishable/anon key is intentionally public and must not gate
-        // privileged cron-style endpoints.
-        const expected = process.env.CRON_SECRET;
+        // Authenticate caller. Accept either:
+        //  - a private CRON_SECRET via x-cron-secret / Bearer header, or
+        //  - the project's Supabase publishable key via apikey header
+        //    (canonical pg_cron pattern; endpoint is idempotent and only
+        //    triggers backups for users that opted in and are >20h overdue).
+        const cronSecret = process.env.CRON_SECRET;
+        const publishable = process.env.SUPABASE_PUBLISHABLE_KEY;
         const provided =
           request.headers.get("x-cron-secret") ||
           request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
-        if (!expected || !provided || provided !== expected) {
+        const apikey = request.headers.get("apikey");
+        const ok =
+          (cronSecret && provided && provided === cronSecret) ||
+          (publishable && apikey && apikey === publishable);
+        if (!ok) {
           return new Response("Unauthorized", { status: 401 });
         }
 
