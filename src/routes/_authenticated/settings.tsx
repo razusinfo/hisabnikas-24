@@ -522,6 +522,120 @@ function SettingsPage() {
   );
 }
 
+/* ---------- Android APK builder card ---------- */
+
+function AndroidBuildCard() {
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const copy = async (text: string, key: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedKey(key);
+      toast.success("কমান্ড কপি হয়েছে");
+      setTimeout(() => setCopiedKey(null), 1500);
+    } catch {
+      toast.error("কপি করা যায়নি");
+    }
+  };
+
+  const downloadScript = async () => {
+    try {
+      const res = await fetch("/build-android.sh");
+      if (!res.ok) throw new Error("Script পাওয়া যায়নি");
+      const text = await res.text();
+      const blob = new Blob([text], { type: "text/x-shellscript" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "build-android.sh";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast.success("Script ডাউনলোড হয়েছে");
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  };
+
+  const commands: { key: string; label: string; cmd: string }[] = [
+    { key: "debug", label: "Debug APK (টেস্টিং)", cmd: "./scripts/build-android.sh" },
+    { key: "release", label: "Release APK", cmd: "./scripts/build-android.sh release" },
+    { key: "bundle", label: "Play Store AAB", cmd: "./scripts/build-android.sh bundle" },
+  ];
+
+  return (
+    <Card className="overflow-hidden border-primary/20">
+      <CardHeader className="bg-primary/5 border-b py-3">
+        <CardTitle className="text-primary text-base font-semibold flex items-center gap-2">
+          <Smartphone className="h-4 w-4" />
+          Android APK তৈরি করুন (One-Click)
+        </CardTitle>
+        <CardDescription className="text-xs">
+          আপনার computer-এ project clone করার পর নিচের কমান্ড দিয়ে production-quality APK / Play Store AAB তৈরি করুন।
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="p-4 sm:p-6 space-y-4">
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+          <strong>প্রথমবার প্রয়োজন:</strong> Node.js 20+, Java JDK 17, Android Studio (SDK 34+). বিস্তারিত guide:{" "}
+          <code className="bg-amber-100 px-1 rounded">ANDROID_BUILD.md</code>
+        </div>
+
+        <div className="space-y-2">
+          {commands.map((c) => (
+            <div
+              key={c.key}
+              className="flex items-center gap-2 rounded-lg border bg-muted/40 p-2"
+            >
+              <div className="flex-1 min-w-0">
+                <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{c.label}</div>
+                <code className="block text-xs sm:text-sm font-mono text-foreground truncate">{c.cmd}</code>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8 shrink-0"
+                onClick={() => copy(c.cmd, c.key)}
+              >
+                <Copy className="h-3.5 w-3.5 mr-1" />
+                {copiedKey === c.key ? "কপি হয়েছে" : "কপি"}
+              </Button>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex flex-wrap gap-2 pt-1">
+          <Button onClick={downloadScript} size="sm" className="bg-primary hover:bg-primary/90">
+            <Download className="h-4 w-4 mr-2" />
+            build-android.sh ডাউনলোড
+          </Button>
+          <Button asChild size="sm" variant="outline">
+            <a
+              href="https://developer.android.com/studio"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FileCode className="h-4 w-4 mr-2" />
+              Android Studio
+            </a>
+          </Button>
+        </div>
+
+        <details className="text-xs text-muted-foreground">
+          <summary className="cursor-pointer font-medium text-foreground">প্রথমবার সম্পূর্ণ Setup steps</summary>
+          <ol className="list-decimal pl-5 mt-2 space-y-1">
+            <li>উপরের GitHub button দিয়ে project export করে clone করুন।</li>
+            <li><code>chmod +x scripts/build-android.sh</code></li>
+            <li><code>./scripts/build-android.sh</code> চালান।</li>
+            <li>আউটপুট পাবেন <code>android-output/</code> folder-এ।</li>
+            <li>Release বিল্ডের জন্য <code>capacitor.config.ts</code> এর <code>server</code> block কমেন্ট-আউট করুন।</li>
+          </ol>
+        </details>
+      </CardContent>
+    </Card>
+  );
+}
+
 /* ---------- Layout helpers ---------- */
 
 function SectionCard({ title, children }: { title: string; children: ReactNode }) {
