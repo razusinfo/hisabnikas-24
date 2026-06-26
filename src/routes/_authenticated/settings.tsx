@@ -277,6 +277,8 @@ function SettingsPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const { canInstall, promptInstall, isInstalled } = usePwaInstall();
+
   if (profileQuery.isLoading) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 flex items-center gap-2 text-muted-foreground">
@@ -298,7 +300,6 @@ function SettingsPage() {
     </div>
   );
 
-  const { canInstall, promptInstall, isInstalled } = usePwaInstall();
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
