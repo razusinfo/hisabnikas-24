@@ -56,16 +56,29 @@ export const getGithubReleases = createServerFn({ method: "POST" })
       return { ...base, error: "Invalid repo format. Use owner/repo." };
     }
 
-    const headers: Record<string, string> = {
+    const baseHeaders: Record<string, string> = {
       Accept: "application/vnd.github+json",
       "X-GitHub-Api-Version": "2022-11-28",
       "User-Agent": "HisabNikash24-App",
     };
-    if (token) headers.Authorization = `Bearer ${token}`;
+    const authedHeaders: Record<string, string> = token
+      ? { ...baseHeaders, Authorization: `Bearer ${token}` }
+      : baseHeaders;
+
+    // Try authed first (if token); on 401/403 fall back to unauthenticated
+    // (works for public repos and avoids breaking when GITHUB_TOKEN is stale/invalid).
+    async function ghFetch(url: string) {
+      let res = await fetch(url, { headers: authedHeaders });
+      if (token && (res.status === 401 || res.status === 403)) {
+        const retry = await fetch(url, { headers: baseHeaders });
+        if (retry.ok || retry.status === 404) return retry;
+      }
+      return res;
+    }
 
     try {
       // Latest release
-      const relRes = await fetch(`https://api.github.com/repos/${repo}/releases/latest`, { headers });
+      const relRes = await ghFetch(`https://api.github.com/repos/${repo}/releases/latest`);
       if (relRes.ok) {
         const rel = (await relRes.json()) as {
           name: string | null;
@@ -97,15 +110,24 @@ export const getGithubReleases = createServerFn({ method: "POST" })
             updated_at: a.updated_at,
           })),
         };
-      } else if (relRes.status !== 404) {
+      } else if (relRes.status === 404) {
+        // No release yet — not an error, just empty.
+      } else if (relRes.status === 401 || relRes.status === 403) {
+        return {
+          ...base,
+          error:
+            "GitHub API access denied (private repo বা invalid GITHUB_TOKEN)। নিচের 'সর্বশেষ APK ডাউনলোড' button দিয়ে সরাসরি Releases page থেকে ডাউনলোড করুন।",
+        };
+      } else {
         return { ...base, error: `Releases API: ${relRes.status} ${relRes.statusText}` };
       }
+
 
       // Recent workflow artifacts (requires token + Actions:Read)
       if (hasToken) {
         const artRes = await fetch(
           `https://api.github.com/repos/${repo}/actions/artifacts?per_page=10`,
-          { headers },
+          { headers: authedHeaders },
         );
         if (artRes.ok) {
           const j = (await artRes.json()) as {
