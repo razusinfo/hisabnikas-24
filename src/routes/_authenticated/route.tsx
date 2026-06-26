@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
 import { InvoicePreviewProvider } from "@/components/InvoicePreviewProvider";
+import { AppUpdateChecker } from "@/components/AppUpdateChecker";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -15,7 +16,9 @@ export const Route = createFileRoute("/_authenticated")({
       <AppShell>
         <Outlet />
       </AppShell>
+      <AppUpdateChecker />
     </InvoicePreviewProvider>
   ),
 
 });
+

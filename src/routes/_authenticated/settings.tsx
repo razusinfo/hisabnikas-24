@@ -757,15 +757,42 @@ function ReadyAppDownloadCard() {
 
       <div className="flex flex-wrap gap-2">
         <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700">
-          <a href={releasesUrl} target="_blank" rel="noopener noreferrer">
+          <a href="https://hisabnikas24.top/download/" target="_blank" rel="noopener noreferrer">
             <Download className="h-4 w-4 mr-2" />
-            সর্বশেষ APK ডাউনলোড
+            APK ডাউনলোড পেজ
           </a>
         </Button>
         <Button asChild size="sm" variant="outline" className="border-emerald-300">
-          <a href={actionsUrl} target="_blank" rel="noopener noreferrer">
-            Build status দেখুন
+          <a href={releasesUrl} target="_blank" rel="noopener noreferrer">
+            সব ভার্সন
           </a>
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          className="border-emerald-300"
+          onClick={async () => {
+            const { fetchLatestRelease, openDownload, isNativeAndroid } = await import(
+              "@/lib/app-update"
+            );
+            const latest = await fetchLatestRelease(repo);
+            if (!latest) {
+              toast.error("কোনো রিলিজ পাওয়া যায়নি");
+              return;
+            }
+            if (!latest.apkUrl) {
+              toast.error("APK পাওয়া যায়নি");
+              return;
+            }
+            toast.success(
+              isNativeAndroid()
+                ? `নতুন ভার্সন: ${latest.name} — ডাউনলোড শুরু হচ্ছে`
+                : `সর্বশেষ ভার্সন: ${latest.name}`,
+            );
+            openDownload(latest);
+          }}
+        >
+          🔄 আপডেট চেক করুন
         </Button>
         {isConfigured && (
           <Button
@@ -779,6 +806,7 @@ function ReadyAppDownloadCard() {
           </Button>
         )}
       </div>
+
 
       {/* Live API result */}
       {isConfigured && (
