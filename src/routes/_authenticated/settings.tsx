@@ -757,7 +757,16 @@ function ReadyAppDownloadCard() {
 
       <div className="flex flex-wrap gap-2">
         <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700">
-          <a href="https://hisabnikas24.top/download/" target="_blank" rel="noopener noreferrer">
+          <a
+            href={`https://hisabnikas24.top/download/?current=${encodeURIComponent(
+              (typeof window !== "undefined" &&
+                // lazy import constant via global to avoid SSR import cycle issues
+                (window as unknown as { __APP_VERSION__?: string }).__APP_VERSION__) ||
+                "1.0.0",
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <Download className="h-4 w-4 mr-2" />
             APK ডাউনলোড পেজ
           </a>
