@@ -178,6 +178,7 @@ async function fetchPnL(range: Range) {
       name: p.name,
       qty: p.qty,
       revenue: p.revenue,
+      cost: p.cost,
       profit: p.revenue - p.cost,
     }))
     .sort((a, b) => b.revenue - a.revenue)
