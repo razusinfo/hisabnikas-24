@@ -202,7 +202,7 @@ function SidebarContent({
         })}
       </nav>
 
-      <div className="px-3 py-2 border-t border-sidebar-border space-y-1 md:flex-1 md:overflow-y-auto md:min-h-0 md:py-3 md:space-y-2">
+      <div className="px-3 py-2 border-t border-sidebar-border space-y-1 flex-1 overflow-y-auto min-h-0 md:py-3 md:space-y-2">
         {effectiveScrollNav.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
