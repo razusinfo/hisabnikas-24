@@ -507,12 +507,11 @@ export function AppShell({ children }: { children: ReactNode }) {
               </span>
             </Link>
             <div className="inline-flex items-center gap-0.5">
-              <button className="inline-flex items-center justify-center min-h-10 min-w-10 rounded-md text-white hover:bg-white/15" aria-label="theme" onClick={() => { /* themed toggle below */ }}>
-                <MobileThemeIconWhite />
-              </button>
+              <MobileThemeToggle />
               <LangToggle compact />
               <SearchIconButton className="min-h-10 min-w-10 text-white hover:bg-white/15 hover:text-white" />
             </div>
+
           </header>
 
 
