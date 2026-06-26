@@ -664,7 +664,9 @@ function MobileBottomNav() {
           <Link
             to="/purchases"
             aria-label={buyLabel}
-            className="flex-1 flex items-center gap-2 justify-center h-12 rounded-full bg-gradient-to-r from-violet-500 to-purple-500 text-white font-semibold shadow-md shadow-violet-500/30 pr-4"
+            className="flex-1 flex items-center gap-2 justify-center h-12 rounded-full text-white font-semibold shadow-md pr-4"
+            style={{ backgroundImage: "var(--brand-gradient)", boxShadow: "0 4px 12px var(--brand-shadow)" }}
+
           >
             <ShoppingCart className="h-5 w-5" />
             <span className="truncate text-sm">{buyLabel}</span>
