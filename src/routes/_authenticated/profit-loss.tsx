@@ -451,7 +451,9 @@ function ProfitLossPage() {
         <div className="card-premium p-5">
           <div className="flex items-center gap-2 mb-3">
             <Boxes className="h-4 w-4 text-primary" />
-            <h3 className="font-semibold text-base">শীর্ষ বিক্রিত পণ্য</h3>
+            <h3 className="font-semibold text-base">
+              বিক্রিত পণ্যসমূহ ({pnl?.topProducts.length ?? 0})
+            </h3>
           </div>
           {pnl && pnl.topProducts.length > 0 ? (
             <div className="overflow-x-auto">
