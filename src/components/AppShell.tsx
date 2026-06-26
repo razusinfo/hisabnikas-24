@@ -623,12 +623,12 @@ export function AppShell({ children }: { children: ReactNode }) {
           <footer className="px-4 py-3 pb-20 md:pb-3 text-center text-sm text-muted-foreground border-t border-border/40 space-y-1">
             <div>
               <a
-                href="https://hisabnikas24.top/download/"
+                href={`https://hisabnikas24.top/download/?current=${encodeURIComponent(APP_VERSION)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline hover:text-foreground transition-colors font-medium"
               >
-                ডাউনলোড সফটওয়্যার
+                ডাউনলোড সফটওয়্যার (v{APP_VERSION})
               </a>
             </div>
             <div>
