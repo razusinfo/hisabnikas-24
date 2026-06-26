@@ -127,7 +127,7 @@ export const getGithubReleases = createServerFn({ method: "POST" })
       if (hasToken) {
         const artRes = await fetch(
           `https://api.github.com/repos/${repo}/actions/artifacts?per_page=10`,
-          { headers },
+          { headers: authedHeaders },
         );
         if (artRes.ok) {
           const j = (await artRes.json()) as {
