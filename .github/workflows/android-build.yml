@@ -123,7 +123,7 @@ jobs:
           path: release/*
           retention-days: 30
 
-      - name: Create GitHub Release (tag push only)
+      - name: Create GitHub Release (tag push)
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
@@ -141,3 +141,35 @@ jobs:
             1. APK ফাইলটি ফোনে ডাউনলোড করুন
             2. Settings → Security → "Unknown sources" enable করুন
             3. APK-এ tap করে Install করুন
+
+      - name: Auto Release (main branch push)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          tag_name: build-${{ github.run_number }}
+          name: হিসাব নিকাশ-২৪ Build #${{ github.run_number }}
+          generate_release_notes: true
+          prerelease: false
+          body: |
+            ## 📱 স্বয়ংক্রিয় বিল্ড (main branch)
+
+            Commit: ${{ github.sha }}
+
+            - **HisabNikash24-debug.apk** — সরাসরি ইন্সটলের জন্য
+            - **HisabNikash24-release-unsigned.apk** — sign করে production-এ ব্যবহার করুন
+            - **HisabNikash24-release.aab** — Play Store-এর জন্য
+
+      - name: Update "latest" rolling release (main branch push)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          tag_name: latest
+          name: সর্বশেষ APK (latest)
+          prerelease: false
+          body: |
+            সবসময় main branch-এর সর্বশেষ বিল্ড এখানে থাকে।
+
+            Build #${{ github.run_number }} · Commit ${{ github.sha }}
+
