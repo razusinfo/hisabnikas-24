@@ -575,50 +575,55 @@ export function AppShell({ children }: { children: ReactNode }) {
 }
 
 function MobileBottomNav() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const navigate = useNavigate();
-  const loc = useLocation();
-  const isActive = (to: string) => loc.pathname === to || loc.pathname.startsWith(to + "/");
-
-  const itemCls = (active: boolean) =>
-    cn(
-      "flex flex-col items-center justify-center gap-0.5 flex-1 min-h-[56px] rounded-xl text-[11px] font-medium transition-colors",
-      active ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground active:bg-accent"
-    );
+  const bn = lang === "bn";
+  const buyLabel = bn ? "কিনুন" : t("purchases");
+  const sellLabel = bn ? "বিক্রি করুন" : t("newSale");
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-background/95 backdrop-blur border-t border-border shadow-[0_-2px_12px_rgba(0,0,0,0.06)]"
+      className="md:hidden fixed bottom-0 inset-x-0 z-40 pointer-events-none"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       aria-label="Bottom navigation"
     >
-      <div className="flex items-stretch gap-1 px-2 py-1.5">
-        <Link to="/sales" className={itemCls(isActive("/sales"))} aria-label={t("sales")}>
-          <Receipt className="h-5 w-5" />
-          <span className="truncate">{t("sales")}</span>
-        </Link>
+      <div className="relative pointer-events-auto bg-background/95 backdrop-blur border-t border-border px-3 pt-3 pb-3 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
+        {/* Floating center + button */}
         <Link
           to="/reports"
-          className="flex items-center justify-center flex-1 min-h-[56px]"
           aria-label={t("reports")}
+          className="absolute left-1/2 -translate-x-1/2 -top-7 grid place-items-center h-14 w-14 rounded-full bg-card text-violet-600 border border-violet-200 shadow-lg ring-4 ring-background"
         >
-          <span className="grid place-items-center h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-lg -mt-6 ring-4 ring-background">
-            <Plus className="h-6 w-6" />
-          </span>
+          <Plus className="h-7 w-7" strokeWidth={2.5} />
         </Link>
-        <button
-          type="button"
-          onClick={() => navigate({ to: "/sales", search: { new: 1 } })}
-          className={cn(itemCls(false), "text-emerald-600")}
-          aria-label={t("newSale")}
-        >
-          <Plus className="h-5 w-5" />
-          <span className="truncate">{t("newSale")}</span>
-        </button>
+
+        <div className="flex items-center gap-3">
+          <Link
+            to="/purchases"
+            aria-label={buyLabel}
+            className="flex-1 flex items-center gap-2 justify-center h-12 rounded-full bg-gradient-to-r from-violet-500 to-purple-500 text-white font-semibold shadow-md shadow-violet-500/30 pr-4"
+          >
+            <ShoppingCart className="h-5 w-5" />
+            <span className="truncate text-sm">{buyLabel}</span>
+          </Link>
+
+          <div className="w-16 shrink-0" aria-hidden />
+
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/sales", search: { new: 1 } })}
+            aria-label={sellLabel}
+            className="flex-1 flex items-center gap-2 justify-center h-12 rounded-full bg-gradient-to-r from-sky-400 to-blue-500 text-white font-semibold shadow-md shadow-blue-500/30 pl-4"
+          >
+            <Receipt className="h-5 w-5" />
+            <span className="truncate text-sm">{sellLabel}</span>
+          </button>
+        </div>
       </div>
     </nav>
   );
 }
+
 
 export function PageHeader({
   title,
