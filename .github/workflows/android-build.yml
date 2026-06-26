@@ -50,10 +50,21 @@ jobs:
           "
 
       - name: Build web app
-        run: npm run build
+        run: |
+          npm run build
+          echo "=== Verifying build output ==="
+          ls -la dist/
+          test -d dist || { echo "ERROR: dist directory not found after build"; exit 1; }
+
+      - name: Verify webDir matches build output
+        run: |
+          WEBDIR=$(sed -n "s/.*webDir:[[:space:]]*['\"]\([^'\"]*\)['\"].*/\1/p" capacitor.config.ts)
+          echo "webDir from capacitor.config.ts: $WEBDIR"
+          test "$WEBDIR" = "dist" || { echo "ERROR: webDir '$WEBDIR' does not match expected 'dist'"; exit 1; }
 
       - name: Add Android platform
         run: |
+          set -e
           npx cap add android || echo "Android platform already exists"
           npx cap sync android
 
