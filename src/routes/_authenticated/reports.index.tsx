@@ -101,23 +101,23 @@ function ReportsIndexPage() {
             </div>
           </div>
         )}
-        <CardHeader className="pb-3">
+        <CardHeader className="pb-2 px-4 pt-4">
           <div className="flex items-center justify-between">
-            <div className={`h-10 w-10 rounded-xl ${card.bg} flex items-center justify-center`}>
-              <Icon className={`h-5 w-5 ${card.color}`} />
+            <div className={`h-8 w-8 rounded-lg ${card.bg} flex items-center justify-center`}>
+              <Icon className={`h-4 w-4 ${card.color}`} />
             </div>
             {locked ? (
-              <Lock className="h-4 w-4 text-muted-foreground" />
+              <Lock className="h-3.5 w-3.5 text-muted-foreground" />
             ) : (
-              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
             )}
           </div>
-          <CardTitle className="text-base mt-3">
+          <CardTitle className="text-sm mt-2">
             {bn ? card.title : card.titleEn}
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+        <CardContent className="px-4 pb-4 pt-0">
+          <p className="text-xs text-muted-foreground leading-relaxed">
             {card.description}
           </p>
         </CardContent>
