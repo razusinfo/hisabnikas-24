@@ -409,7 +409,9 @@ function ProprietorMenu({
             to="/proprietor-profile"
             onClick={() => setOpen(false)}
             aria-label={labels.edit}
-            className="absolute top-2 right-2 inline-flex items-center justify-center h-7 w-7 rounded-full bg-white/90 text-violet-700 hover:bg-white shadow"
+            className="absolute top-2 right-2 inline-flex items-center justify-center h-7 w-7 rounded-full bg-white/90 hover:bg-white shadow"
+            style={{ color: "var(--brand-solid)" }}
+
           >
             <Pencil className="h-3.5 w-3.5" />
           </Link>
