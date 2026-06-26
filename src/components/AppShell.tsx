@@ -490,6 +490,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <img src={appLogo.url} alt="হিসব নিকাশ-২৪" className="h-20 w-auto" />
             </Link>
             <div className="flex-1" />
+            <MobileThemeToggle />
             <LangToggle compact />
             <SearchIconButton className="min-h-11 min-w-11" />
           </header>
