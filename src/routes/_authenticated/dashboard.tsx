@@ -294,8 +294,8 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
   ];
 
   return (
-    <div className="md:hidden -mx-4 -mt-4 mb-4 px-4 pt-4 pb-2 bg-gradient-to-b from-violet-50 to-transparent">
-      <div className="rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white p-4 shadow-lg shadow-violet-500/30">
+    <div className="md:hidden -mx-4 -mt-4 mb-4 px-4 pt-4 pb-2" style={{ backgroundImage: "var(--brand-gradient-soft)" }}>
+      <div className="rounded-2xl text-white p-4 shadow-lg" style={{ backgroundImage: "var(--brand-gradient)", boxShadow: "0 10px 25px var(--brand-shadow)" }}>
         <div className="flex items-start">
           <div className="flex-1 text-center">
             <div className="text-sm opacity-90">{L.onHand}</div>
