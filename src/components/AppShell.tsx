@@ -214,15 +214,16 @@ function SidebarContent({
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all md:gap-4 md:px-5 md:py-5 md:rounded-xl md:text-base",
+                "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all md:gap-3 md:px-4 md:py-3 md:rounded-xl md:text-sm",
                 active
                   ? `${cs.activeBg} ${cs.activeText} ring-1 ${cs.activeRing}`
                   : `${cs.inactiveBg} ${cs.inactiveText} ${cs.inactiveHoverText} ${cs.inactiveHoverBg}`,
               )}
             >
-              <Icon className={cn("h-5 w-5 md:h-6 md:w-6 shrink-0", active ? cs.activeText : "")} />
+              <Icon className={cn("h-5 w-5 md:h-5 md:w-5 shrink-0", active ? cs.activeText : "")} />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className={cn("ml-auto h-2 w-2 md:h-2.5 md:w-2.5 rounded-full shrink-0", cs.dot)} />}
+              {active && <span className={cn("ml-auto h-2 w-2 md:h-2 md:w-2 rounded-full shrink-0", cs.dot)} />}
+
             </Link>
           );
         })}
