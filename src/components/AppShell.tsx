@@ -571,25 +571,28 @@ function MobileBottomNav() {
       aria-label="Bottom navigation"
     >
       <div className="flex items-stretch gap-1 px-2 py-1.5">
+        <Link to="/sales" className={itemCls(isActive("/sales"))} aria-label={t("sales")}>
+          <Receipt className="h-5 w-5" />
+          <span className="truncate">{t("sales")}</span>
+        </Link>
+        <Link
+          to="/reports"
+          className="flex items-center justify-center flex-1 min-h-[56px]"
+          aria-label={t("reports")}
+        >
+          <span className="grid place-items-center h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-lg -mt-6 ring-4 ring-background">
+            <Plus className="h-6 w-6" />
+          </span>
+        </Link>
         <button
           type="button"
           onClick={() => navigate({ to: "/sales", search: { new: 1 } })}
           className={cn(itemCls(false), "text-emerald-600")}
           aria-label={t("newSale")}
         >
-          <span className="grid place-items-center h-7 w-7 rounded-full bg-emerald-500 text-white">
-            <Plus className="h-4 w-4" />
-          </span>
+          <Plus className="h-5 w-5" />
           <span className="truncate">{t("newSale")}</span>
         </button>
-        <Link to="/products" className={itemCls(isActive("/products"))} aria-label={t("products")}>
-          <Package className="h-5 w-5" />
-          <span className="truncate">{t("products")}</span>
-        </Link>
-        <Link to="/reports" className={itemCls(isActive("/reports"))} aria-label={t("reports")}>
-          <BarChart3 className="h-5 w-5" />
-          <span className="truncate">{t("reports")}</span>
-        </Link>
       </div>
     </nav>
   );
