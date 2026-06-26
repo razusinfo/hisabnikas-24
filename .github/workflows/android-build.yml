@@ -58,7 +58,7 @@ jobs:
 
       - name: Verify webDir matches build output
         run: |
-          WEBDIR=$(grep -oP "(?<=webDir: ['\"])[^'\"]+" capacitor.config.ts || true)
+          WEBDIR=$(sed -n "s/.*webDir:[[:space:]]*['\"]\([^'\"]*\)['\"].*/\1/p" capacitor.config.ts)
           echo "webDir from capacitor.config.ts: $WEBDIR"
           test "$WEBDIR" = "dist" || { echo "ERROR: webDir '$WEBDIR' does not match expected 'dist'"; exit 1; }
 
