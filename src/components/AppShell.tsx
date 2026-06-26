@@ -202,7 +202,7 @@ function SidebarContent({
         })}
       </nav>
 
-      <div className="flex-1 overflow-y-auto min-h-0 px-3 py-3 border-t border-sidebar-border space-y-2">
+      <div className="px-3 py-2 border-t border-sidebar-border space-y-1 md:flex-1 md:overflow-y-auto md:min-h-0 md:py-3 md:space-y-2">
         {effectiveScrollNav.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
@@ -213,15 +213,15 @@ function SidebarContent({
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-4 px-5 py-5 rounded-xl text-base font-medium transition-all",
+                "group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all md:gap-4 md:px-5 md:py-5 md:rounded-xl md:text-base",
                 active
                   ? `${cs.activeBg} ${cs.activeText} ring-1 ${cs.activeRing}`
                   : `${cs.inactiveBg} ${cs.inactiveText} ${cs.inactiveHoverText} ${cs.inactiveHoverBg}`,
               )}
             >
-              <Icon className={cn("h-6 w-6 shrink-0", active ? cs.activeText : "")} />
+              <Icon className={cn("h-5 w-5 shrink-0 md:h-6 md:w-6", active ? cs.activeText : "")} />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className={cn("ml-auto h-2.5 w-2.5 rounded-full shrink-0", cs.dot)} />}
+              {active && <span className={cn("ml-auto h-2 w-2 rounded-full shrink-0 md:h-2.5 md:w-2.5", cs.dot)} />}
             </Link>
           );
         })}
@@ -230,9 +230,9 @@ function SidebarContent({
             onNavigate?.();
             onSignOut();
           }}
-          className="w-full flex items-center gap-4 px-5 py-5 rounded-xl text-base font-medium text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10 transition-all"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10 transition-all md:gap-4 md:px-5 md:py-5 md:rounded-xl md:text-base"
         >
-          <LogOut className="h-6 w-6 shrink-0" />
+          <LogOut className="h-5 w-5 shrink-0 md:h-6 md:w-6" />
           <span className="truncate">{t("signOut")}</span>
         </button>
         <div className="px-3 pt-1 pb-0.5 text-center">
