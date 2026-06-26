@@ -428,7 +428,7 @@ function ProprietorMenu({
                   <UserCircle2 className="h-10 w-10 text-muted-foreground" />
                 </div>
               )}
-              <span className="absolute bottom-0 right-0 inline-flex items-center justify-center h-6 w-6 rounded-full bg-violet-500 text-white border-2 border-background">
+              <span className="absolute bottom-0 right-0 inline-flex items-center justify-center h-6 w-6 rounded-full text-white border-2 border-background" style={{ background: "var(--brand-solid)" }}>
                 <Pencil className="h-3 w-3" />
               </span>
             </Link>
