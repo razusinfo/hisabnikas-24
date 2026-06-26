@@ -131,12 +131,29 @@
       // Resolve repo: ?repo=owner/name overrides; otherwise use the project default.
       const params = new URLSearchParams(location.search);
       const REPO = (params.get("repo") || "lovable-dev/hisab-nikash-24").trim();
+      const CURRENT = (params.get("current") || "").trim();
 
-      const verEl = document.getElementById("ver");
+      const curVerEl = document.getElementById("curVer");
+      const latVerEl = document.getElementById("latVer");
+      const statusEl = document.getElementById("status");
       const apkEl = document.getElementById("apk");
       const relEl = document.getElementById("rel");
 
+      curVerEl.textContent = CURRENT ? `v${CURRENT.replace(/^v/, "")}` : "অজানা";
       relEl.href = `https://github.com/${REPO}/releases/latest`;
+
+      // Compare semver-like strings "1.2.3" → returns 1 if a>b, -1 if a<b, 0 if equal
+      function cmpVer(a, b) {
+        const pa = String(a).replace(/^v/, "").split(/[.\-]/).map((n) => parseInt(n, 10) || 0);
+        const pb = String(b).replace(/^v/, "").split(/[.\-]/).map((n) => parseInt(n, 10) || 0);
+        const len = Math.max(pa.length, pb.length);
+        for (let i = 0; i < len; i++) {
+          const x = pa[i] || 0, y = pb[i] || 0;
+          if (x > y) return 1;
+          if (x < y) return -1;
+        }
+        return 0;
+      }
 
       async function loadLatest() {
         const urls = [
@@ -151,9 +168,22 @@
             const apk =
               (r.assets || []).find((a) => /debug.*\.apk$/i.test(a.name)) ||
               (r.assets || []).find((a) => /\.apk$/i.test(a.name));
+            const latestTag = (r.tag_name || r.name || "").replace(/^v/, "");
             const date = r.published_at ? new Date(r.published_at).toLocaleDateString("bn-BD") : "";
-            verEl.textContent = `${r.name || r.tag_name}${date ? " · " + date : ""}`;
+            latVerEl.textContent = `v${latestTag}${date ? " · " + date : ""}`;
             relEl.href = r.html_url;
+
+            if (CURRENT && latestTag) {
+              const c = cmpVer(latestTag, CURRENT);
+              if (c > 0) {
+                statusEl.innerHTML = '<span style="color:#b45309">⬆️ নতুন আপডেট উপলব্ধ — ডাউনলোড করুন</span>';
+              } else if (c === 0) {
+                statusEl.innerHTML = '<span style="color:#047857">✓ আপনার অ্যাপ আপ-টু-ডেট</span>';
+              } else {
+                statusEl.innerHTML = '<span style="color:#047857">✓ আপনি লেটেস্ট ব্যবহার করছেন</span>';
+              }
+            }
+
             if (apk) {
               const sizeMb = (apk.size / 1024 / 1024).toFixed(1);
               apkEl.href = apk.browser_download_url;
@@ -165,7 +195,7 @@
             return;
           } catch (_) {}
         }
-        verEl.innerHTML = '<span class="err">⚠️ এখনো কোনো রিলিজ নেই</span>';
+        latVerEl.innerHTML = '<span class="err">⚠️ এখনো কোনো রিলিজ নেই</span>';
       }
       loadLatest();
     </script>
