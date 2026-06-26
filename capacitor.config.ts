@@ -3,7 +3,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.hisabnikash24',
   appName: 'হিসাব নিকাশ-২৪',
-  webDir: 'dist',
+  webDir: '.output/public',
   server: {
     // Lovable sandbox preview URL — hot-reload for development.
     // Production build এর জন্য এই server block টা remove করে দিতে হবে।

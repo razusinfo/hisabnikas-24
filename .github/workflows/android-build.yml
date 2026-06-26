@@ -53,14 +53,14 @@ jobs:
         run: |
           npm run build
           echo "=== Verifying build output ==="
-          ls -la dist/
-          test -d dist || { echo "ERROR: dist directory not found after build"; exit 1; }
+          ls -la .output/public/
+          test -d .output/public || { echo "ERROR: .output/public directory not found after build"; exit 1; }
 
       - name: Verify webDir matches build output
         run: |
           WEBDIR=$(sed -n "s/.*webDir:[[:space:]]*['\"]\([^'\"]*\)['\"].*/\1/p" capacitor.config.ts)
           echo "webDir from capacitor.config.ts: $WEBDIR"
-          test "$WEBDIR" = "dist" || { echo "ERROR: webDir '$WEBDIR' does not match expected 'dist'"; exit 1; }
+          test "$WEBDIR" = ".output/public" || { echo "ERROR: webDir '$WEBDIR' does not match expected '.output/public'"; exit 1; }
 
       - name: Add Android platform
         run: |
