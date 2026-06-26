@@ -78,6 +78,7 @@ function LangToggle({ compact = false }: { compact?: boolean }) {
 }
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { APP_VERSION } from "@/lib/app-version";
 
 const colorStyles: Record<string, { activeBg: string; activeText: string; activeRing: string; inactiveText: string; inactiveHoverText: string; inactiveHoverBg: string; inactiveBg: string; dot: string }> = {
   blue: { activeBg: "bg-sky-100", activeText: "text-sky-700", activeRing: "ring-sky-200", inactiveText: "text-sky-600", inactiveHoverText: "hover:text-sky-700", inactiveHoverBg: "hover:bg-sky-100", inactiveBg: "bg-sky-50", dot: "bg-sky-500" },
@@ -622,12 +623,12 @@ export function AppShell({ children }: { children: ReactNode }) {
           <footer className="px-4 py-3 pb-20 md:pb-3 text-center text-sm text-muted-foreground border-t border-border/40 space-y-1">
             <div>
               <a
-                href="https://hisabnikas24.top/download/"
+                href={`https://hisabnikas24.top/download/?current=${encodeURIComponent(APP_VERSION)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline hover:text-foreground transition-colors font-medium"
               >
-                ডাউনলোড সফটওয়্যার
+                ডাউনলোড সফটওয়্যার (v{APP_VERSION})
               </a>
             </div>
             <div>

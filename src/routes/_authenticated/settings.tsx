@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Loader2, Info, ExternalLink, Download, Smartphone, Copy, FileCode } from "lucide-react";
+import { APP_VERSION } from "@/lib/app-version";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
@@ -757,7 +758,11 @@ function ReadyAppDownloadCard() {
 
       <div className="flex flex-wrap gap-2">
         <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700">
-          <a href="https://hisabnikas24.top/download/" target="_blank" rel="noopener noreferrer">
+          <a
+            href={`https://hisabnikas24.top/download/?current=${encodeURIComponent(APP_VERSION)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <Download className="h-4 w-4 mr-2" />
             APK ডাউনলোড পেজ
           </a>
