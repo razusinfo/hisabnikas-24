@@ -141,19 +141,22 @@ function Dashboard() {
 
       <InstallAppBanner />
 
+      {/* Mobile-only redesigned dashboard */}
+      <MobileDashboard d={d} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+      <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
         <Stat icon={CalendarDays} label={t("salesToday")} value={fmtMoney(d.salesToday)} themeIndex={0} to="/sales" />
         <Stat icon={CalendarRange} label={t("salesMonth")} value={fmtMoney(d.salesMonth)} themeIndex={1} to="/sales" />
         <Stat icon={TrendingUp} label={t("salesYear")} value={fmtMoney(d.salesYear)} themeIndex={2} to="/sales" />
         <Stat icon={Wallet} label={t("dueReceivable")} value={fmtMoney(d.dueReceivable)} themeIndex={3} />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
+      <div className="hidden md:grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
         <Stat icon={Package} label={t("totalProducts")} value={String(d.productCount)} themeIndex={4} />
         <Stat icon={Users} label={t("totalCustomers")} value={String(d.customerCount)} themeIndex={5} />
         <Stat icon={AlertTriangle} label={t("lowStock")} value={String(d.lowStockCount)} themeIndex={6} />
       </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="card-premium p-5 lg:col-span-2">
