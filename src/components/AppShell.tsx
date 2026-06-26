@@ -279,20 +279,79 @@ function useTheme() {
   return { isDark, toggle };
 }
 
+type ThemeId = "default" | "mint" | "rose";
+
+const THEMES: Array<{ id: ThemeId; name: string; nameBn: string; swatch: string; ring: string }> = [
+  { id: "default", name: "Ocean", nameBn: "ওশান", swatch: "bg-gradient-to-br from-violet-500 to-indigo-600", ring: "ring-violet-300" },
+  { id: "mint", name: "Mint", nameBn: "মিন্ট", swatch: "bg-gradient-to-br from-emerald-400 to-teal-500", ring: "ring-emerald-300" },
+  { id: "rose", name: "Rose", nameBn: "রোজ", swatch: "bg-gradient-to-br from-rose-400 to-orange-400", ring: "ring-rose-300" },
+];
+
+function useAppTheme() {
+  const [theme, setThemeState] = useState<ThemeId>("default");
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const saved = (localStorage.getItem("app-theme") as ThemeId | null) ?? "default";
+    setThemeState(saved);
+    if (saved === "default") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", saved);
+  }, []);
+  const setTheme = (next: ThemeId) => {
+    setThemeState(next);
+    if (typeof document === "undefined") return;
+    if (next === "default") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("app-theme", next);
+  };
+  return { theme, setTheme };
+}
+
 function MobileThemeToggle() {
-  const { isDark, toggle } = useTheme();
+  const { theme, setTheme } = useAppTheme();
+  const { lang } = useI18n();
+  const bn = lang === "bn";
+  const active = THEMES.find((t) => t.id === theme) ?? THEMES[0];
   return (
-    <button
-      type="button"
-      onClick={() => toggle(!isDark)}
-      className="inline-flex items-center justify-center min-h-10 min-w-10 rounded-md text-white hover:bg-white/15"
-      aria-label="Toggle theme"
-      title="Toggle theme"
-    >
-      {isDark ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-    </button>
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="inline-flex items-center justify-center min-h-10 min-w-10 rounded-md text-white hover:bg-white/15"
+          aria-label="Choose theme"
+          title="Choose theme"
+        >
+          <span className={cn("h-5 w-5 rounded-full ring-2 ring-white/70 shadow-sm", active.swatch)} />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="end" sideOffset={8} className="w-56 p-3 rounded-2xl">
+        <div className="text-xs font-semibold text-muted-foreground mb-2 px-1">
+          {bn ? "থিম বাছাই করুন" : "Choose theme"}
+        </div>
+        <div className="space-y-1">
+          {THEMES.map((opt) => {
+            const selected = opt.id === theme;
+            return (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => setTheme(opt.id)}
+                className={cn(
+                  "w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm transition-colors",
+                  selected ? "bg-accent text-foreground" : "hover:bg-accent/60 text-foreground/80"
+                )}
+              >
+                <span className={cn("h-7 w-7 rounded-full shadow-sm ring-2", opt.swatch, selected ? opt.ring : "ring-transparent")} />
+                <span className="flex-1 text-left font-medium">{bn ? opt.nameBn : opt.name}</span>
+                {selected && <span className="text-[11px] font-semibold text-primary">{bn ? "চালু" : "Active"}</span>}
+              </button>
+            );
+          })}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
+
 
 
 function ProprietorMenu({
