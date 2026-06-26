@@ -653,7 +653,9 @@ function MobileBottomNav() {
         <Link
           to="/reports"
           aria-label={t("reports")}
-          className="absolute left-1/2 -translate-x-1/2 -top-7 grid place-items-center h-14 w-14 rounded-full bg-card text-violet-600 border border-violet-200 shadow-lg ring-4 ring-background"
+          className="absolute left-1/2 -translate-x-1/2 -top-7 grid place-items-center h-14 w-14 rounded-full bg-card border shadow-lg ring-4 ring-background"
+          style={{ color: "var(--brand-solid)", borderColor: "var(--brand-ring)" }}
+
         >
           <Plus className="h-7 w-7" strokeWidth={2.5} />
         </Link>
