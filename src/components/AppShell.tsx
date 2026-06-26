@@ -619,17 +619,30 @@ export function AppShell({ children }: { children: ReactNode }) {
 
 
           <main className="flex-1 min-w-0 overflow-x-hidden pb-20 md:pb-0">{children}</main>
-          <footer className="px-4 py-3 pb-20 md:pb-3 text-center text-sm text-muted-foreground border-t border-border/40">
-            সফটওয়্যার প্রস্তুতকারক:{" "}
-            <a
-              href="https://www.sylhetionlineshop.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-foreground transition-colors"
-            >
-              www.sylhetionlineshop.com
-            </a>
+          <footer className="px-4 py-3 pb-20 md:pb-3 text-center text-sm text-muted-foreground border-t border-border/40 space-y-1">
+            <div>
+              <a
+                href="https://hisabnikas24.top/download/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-foreground transition-colors font-medium"
+              >
+                ডাউনলোড সফটওয়্যার
+              </a>
+            </div>
+            <div>
+              সফটওয়্যার প্রস্তুতকারক:{" "}
+              <a
+                href="https://www.sylhetionlineshop.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-foreground transition-colors"
+              >
+                www.sylhetionlineshop.com
+              </a>
+            </div>
           </footer>
+
         </div>
 
         {/* Mobile bottom navigation */}
