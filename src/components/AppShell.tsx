@@ -285,7 +285,7 @@ function MobileThemeToggle() {
     <button
       type="button"
       onClick={() => toggle(!isDark)}
-      className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-md hover:bg-accent text-foreground/80"
+      className="inline-flex items-center justify-center min-h-10 min-w-10 rounded-md text-white hover:bg-white/15"
       aria-label="Toggle theme"
       title="Toggle theme"
     >
@@ -293,6 +293,7 @@ function MobileThemeToggle() {
     </button>
   );
 }
+
 
 function ProprietorMenu({
   brandName,
