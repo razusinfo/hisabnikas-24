@@ -14,7 +14,17 @@ import {
   CalendarRange,
   CalendarDays,
   Receipt,
+  Eye,
+  ArrowDown,
+  ArrowUp,
+  Info,
+  ChevronRight,
+  HandCoins,
+  PackageOpen,
+  UserRound,
+  Banknote,
 } from "lucide-react";
+
 import {
   ResponsiveContainer,
   AreaChart,
