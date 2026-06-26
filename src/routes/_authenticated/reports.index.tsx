@@ -129,7 +129,7 @@ function ReportsIndexPage() {
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
       <PageHeader title={t("reports")} subtitle={bn ? "সব রিপোর্ট এক জায়গায়" : "All reports in one place"} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
         {reportCards.map((card) => {
           const isFree = FREE_SLUGS.has(card.slug) || isPackageActive;
           if (isFree) {
@@ -138,7 +138,7 @@ function ReportsIndexPage() {
                 <Link
                   key={card.slug}
                   to="/mobile-banking"
-                  className="group block rounded-2xl border border-border bg-card hover:shadow-md transition-all hover:border-primary/30"
+                  className="group block rounded-lg border border-border bg-card hover:shadow-md transition-all hover:border-primary/30"
                 >
                   {cardInner(card, false)}
                 </Link>
@@ -149,7 +149,7 @@ function ReportsIndexPage() {
                 key={card.slug}
                 to="/reports/$slug"
                 params={{ slug: card.slug }}
-                className="group block rounded-2xl border border-border bg-card hover:shadow-md transition-all hover:border-primary/30"
+                className="group block rounded-lg border border-border bg-card hover:shadow-md transition-all hover:border-primary/30"
               >
                 {cardInner(card, false)}
               </Link>
@@ -163,7 +163,7 @@ function ReportsIndexPage() {
                 setLockedTitle(bn ? card.title : card.titleEn);
                 setLockedOpen(true);
               }}
-              className="group block text-left rounded-2xl border border-border bg-card hover:shadow-md transition-all hover:border-primary/30"
+              className="group block text-left rounded-lg border border-border bg-card hover:shadow-md transition-all hover:border-primary/30"
             >
               {cardInner(card, true)}
             </button>
