@@ -5,10 +5,9 @@ const config: CapacitorConfig = {
   appName: 'হিসাব নিকাশ-২৪',
   webDir: '.output/public',
   server: {
-    // Lovable sandbox preview URL — hot-reload for development.
-    // Production build এর জন্য এই server block টা remove করে দিতে হবে।
-    url: 'https://cde7a6bb-d29f-4273-9f97-998bad84e306.lovableproject.com?forceHideBadge=true',
-    cleartext: true,
+    // Production: live custom domain
+    url: 'https://hisabnikas24.top/',
+    cleartext: false,
   },
   android: {
     allowMixedContent: true,
