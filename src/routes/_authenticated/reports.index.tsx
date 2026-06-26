@@ -96,28 +96,28 @@ function ReportsIndexPage() {
       <Card className="border-0 shadow-none bg-transparent relative overflow-hidden">
         {locked && (
           <div className="absolute top-0 right-0 z-10 pointer-events-none">
-            <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[9px] font-bold py-0.5 w-28 text-center shadow-sm rotate-45 translate-x-8 translate-y-2">
+            <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[8px] font-bold py-0.5 w-24 text-center shadow-sm rotate-45 translate-x-7 translate-y-1">
               {bn ? "প্যাকেজ" : "PACKAGE"}
             </div>
           </div>
         )}
-        <CardHeader className="pb-2 px-4 pt-4">
+        <CardHeader className="pb-1.5 px-3 pt-3">
           <div className="flex items-center justify-between">
-            <div className={`h-8 w-8 rounded-lg ${card.bg} flex items-center justify-center`}>
-              <Icon className={`h-4 w-4 ${card.color}`} />
+            <div className={`h-6 w-6 rounded-md ${card.bg} flex items-center justify-center`}>
+              <Icon className={`h-3 w-3 ${card.color}`} />
             </div>
             {locked ? (
-              <Lock className="h-3.5 w-3.5 text-muted-foreground" />
+              <Lock className="h-3 w-3 text-muted-foreground" />
             ) : (
-              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+              <ArrowRight className="h-3 w-3 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
             )}
           </div>
-          <CardTitle className="text-sm mt-2">
+          <CardTitle className="text-xs mt-1.5">
             {bn ? card.title : card.titleEn}
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-4 pb-4 pt-0">
-          <p className="text-xs text-muted-foreground leading-relaxed">
+        <CardContent className="px-3 pb-3 pt-0">
+          <p className="text-[11px] text-muted-foreground leading-snug">
             {card.description}
           </p>
         </CardContent>
