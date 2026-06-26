@@ -146,38 +146,38 @@ function SidebarContent({
     : scrollNav;
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="px-6 py-5 flex flex-col items-center text-center">
+    <div className="flex h-full flex-col overflow-y-auto md:overflow-hidden">
+      <div className="px-4 py-3 md:px-6 md:py-5 flex flex-col items-center text-center shrink-0">
         <Link to="/dashboard" onClick={onNavigate} className="flex flex-col items-center">
           {brandLogo ? (
             <img
               src={brandLogo}
               alt={brandName}
-              className="h-16 w-auto object-contain mb-2"
+              className="h-12 w-auto object-contain mb-1.5 md:h-16 md:mb-2"
             />
           ) : (
-            <div className="h-16 w-16 rounded-full bg-sidebar-accent flex items-center justify-center mb-2">
-              <span className="text-2xl font-bold text-sidebar-foreground/70">
+            <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-sidebar-accent flex items-center justify-center mb-1.5 md:mb-2">
+              <span className="text-xl md:text-2xl font-bold text-sidebar-foreground/70">
                 {brandName.charAt(0)}
               </span>
             </div>
           )}
-          <h2 className="text-base font-semibold text-sidebar-foreground truncate w-full leading-tight">
+          <h2 className="text-sm md:text-base font-semibold text-sidebar-foreground truncate w-full leading-tight">
             {brandName}
           </h2>
         </Link>
         <Link
           to="/business-profile"
           onClick={onNavigate}
-          className="mt-1 inline-flex items-center gap-1 text-xs text-sidebar-foreground/60 hover:text-sidebar-foreground"
+          className="mt-0.5 md:mt-1 inline-flex items-center gap-1 text-[11px] md:text-xs text-sidebar-foreground/60 hover:text-sidebar-foreground"
         >
-          <Pencil className="h-3 w-3" />
+          <Pencil className="h-2.5 w-2.5 md:h-3 md:w-3" />
           edit
         </Link>
       </div>
 
       {searchSlot}
-      <nav className="px-3 space-y-2">
+      <nav className="px-3 space-y-1 md:space-y-2 shrink-0">
         {fixedNav.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
@@ -188,21 +188,21 @@ function SidebarContent({
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all",
+                "group flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all md:gap-3 md:px-4 md:py-3 md:rounded-xl md:text-sm",
                 active
                   ? `${cs.activeBg} ${cs.activeText} ring-1 ${cs.activeRing}`
                   : `${cs.inactiveBg} ${cs.inactiveText} ${cs.inactiveHoverText} ${cs.inactiveHoverBg}`,
               )}
             >
-              <Icon className={cn("h-5 w-5 shrink-0", active ? cs.activeText : "")} />
+              <Icon className={cn("h-4 w-4 md:h-5 md:w-5 shrink-0", active ? cs.activeText : "")} />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className={cn("ml-auto h-2 w-2 rounded-full shrink-0", cs.dot)} />}
+              {active && <span className={cn("ml-auto h-1.5 w-1.5 md:h-2 md:w-2 rounded-full shrink-0", cs.dot)} />}
             </Link>
           );
         })}
       </nav>
 
-      <div className="px-3 py-2 border-t border-sidebar-border space-y-1 flex-1 overflow-y-auto min-h-0 md:py-3 md:space-y-2">
+      <div className="px-3 py-2 border-t border-sidebar-border space-y-0.5 md:space-y-1 flex-1 md:overflow-y-auto min-h-0 md:py-3">
         {effectiveScrollNav.map((item) => {
           const active = isActive(item.to);
           const Icon = item.icon;
@@ -213,15 +213,15 @@ function SidebarContent({
               to={item.to}
               onClick={onNavigate}
               className={cn(
-                "group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all md:gap-4 md:px-5 md:py-5 md:rounded-xl md:text-base",
+                "group flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all md:gap-4 md:px-5 md:py-5 md:rounded-xl md:text-base",
                 active
                   ? `${cs.activeBg} ${cs.activeText} ring-1 ${cs.activeRing}`
                   : `${cs.inactiveBg} ${cs.inactiveText} ${cs.inactiveHoverText} ${cs.inactiveHoverBg}`,
               )}
             >
-              <Icon className={cn("h-5 w-5 shrink-0 md:h-6 md:w-6", active ? cs.activeText : "")} />
+              <Icon className={cn("h-4 w-4 md:h-6 md:w-6 shrink-0", active ? cs.activeText : "")} />
               <span className="truncate">{t(item.key)}</span>
-              {active && <span className={cn("ml-auto h-2 w-2 rounded-full shrink-0 md:h-2.5 md:w-2.5", cs.dot)} />}
+              {active && <span className={cn("ml-auto h-1.5 w-1.5 md:h-2.5 md:w-2.5 rounded-full shrink-0", cs.dot)} />}
             </Link>
           );
         })}
@@ -230,9 +230,9 @@ function SidebarContent({
             onNavigate?.();
             onSignOut();
           }}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10 transition-all md:gap-4 md:px-5 md:py-5 md:rounded-xl md:text-base"
+          className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-xs font-medium text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10 transition-all md:gap-4 md:px-5 md:py-5 md:rounded-xl md:text-base"
         >
-          <LogOut className="h-5 w-5 shrink-0 md:h-6 md:w-6" />
+          <LogOut className="h-4 w-4 shrink-0 md:h-6 md:w-6" />
           <span className="truncate">{t("signOut")}</span>
         </button>
         <div className="px-3 pt-1 pb-0.5 text-center">
