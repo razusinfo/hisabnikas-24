@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Loader2, Info, ExternalLink, Download, Smartphone, Copy, FileCode } from "lucide-react";
+import { APP_VERSION } from "@/lib/app-version";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
