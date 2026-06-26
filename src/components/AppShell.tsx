@@ -78,6 +78,7 @@ function LangToggle({ compact = false }: { compact?: boolean }) {
 }
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { APP_VERSION } from "@/lib/app-version";
 
 const colorStyles: Record<string, { activeBg: string; activeText: string; activeRing: string; inactiveText: string; inactiveHoverText: string; inactiveHoverBg: string; inactiveBg: string; dot: string }> = {
   blue: { activeBg: "bg-sky-100", activeText: "text-sky-700", activeRing: "ring-sky-200", inactiveText: "text-sky-600", inactiveHoverText: "hover:text-sky-700", inactiveHoverBg: "hover:bg-sky-100", inactiveBg: "bg-sky-50", dot: "bg-sky-500" },
