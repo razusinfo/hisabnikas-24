@@ -461,7 +461,8 @@ function ProfitLossPage() {
                   <tr className="text-xs text-muted-foreground border-b border-border/40">
                     <th className="text-left py-2">পণ্য</th>
                     <th className="text-right py-2">পরিমাণ</th>
-                    <th className="text-right py-2">বিক্রি</th>
+                    <th className="text-right py-2">বিক্রয়মূল্য</th>
+                    <th className="text-right py-2">ক্রয়মূল্য</th>
                     <th className="text-right py-2">লাভ</th>
                   </tr>
                 </thead>
@@ -472,6 +473,9 @@ function ProfitLossPage() {
                       <td className="text-right py-2 font-mono">{p.qty}</td>
                       <td className="text-right py-2 font-mono">
                         {fmtMoney(p.revenue)}
+                      </td>
+                      <td className="text-right py-2 font-mono text-muted-foreground">
+                        {fmtMoney(p.cost)}
                       </td>
                       <td
                         className={`text-right py-2 font-mono ${
