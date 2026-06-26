@@ -71,7 +71,7 @@ function getRange(
   };
 }
 
-type TopProduct = { name: string; qty: number; revenue: number; profit: number };
+type TopProduct = { name: string; qty: number; revenue: number; cost: number; profit: number };
 type ExpenseRow = { description: string; amount: number };
 
 async function fetchPnL(range: Range) {
