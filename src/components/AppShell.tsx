@@ -544,7 +544,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <div className="flex-1 min-w-0 flex flex-col">
           {/* Mobile top bar */}
-          <header className="md:hidden sticky top-0 z-30 flex items-center gap-2 px-3 py-3 bg-gradient-to-r from-violet-500 to-indigo-600 text-white shadow-md">
+          <header className="md:hidden sticky top-0 z-30 flex items-center gap-2 px-3 py-3 text-white shadow-md" style={{ backgroundImage: "var(--brand-gradient)" }}>
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label="Open menu" className="min-h-11 min-w-11 text-white hover:bg-white/15 hover:text-white">
