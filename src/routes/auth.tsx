@@ -1,4 +1,4 @@
-import appLogo from "@/assets/logo.png.asset.json";
+import appLogo from "@/assets/hisab-nikash-24-logo-v8.png.asset.json";
 import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
