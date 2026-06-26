@@ -484,11 +484,11 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <div className="flex-1 min-w-0 flex flex-col">
           {/* Mobile top bar */}
-          <header className="md:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-3 bg-sidebar/95 backdrop-blur border-b border-sidebar-border">
+          <header className="md:hidden sticky top-0 z-30 flex items-center gap-2 px-3 py-3 bg-gradient-to-r from-violet-500 to-indigo-600 text-white shadow-md">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Open menu" className="min-h-11 min-w-11">
-                  <Menu className="h-5 w-5" />
+                <Button variant="ghost" size="icon" aria-label="Open menu" className="min-h-11 min-w-11 text-white hover:bg-white/15 hover:text-white">
+                  <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="p-0 w-60 bg-sidebar">
@@ -501,14 +501,20 @@ export function AppShell({ children }: { children: ReactNode }) {
                 />
               </SheetContent>
             </Sheet>
-            <Link to="/dashboard" className="flex items-center min-w-0">
-              <img src={appLogo.url} alt="হিসব নিকাশ-২৪" className="h-20 w-auto" />
+            <Link to="/dashboard" className="flex-1 min-w-0 flex items-center justify-center">
+              <span className="font-display text-xl font-bold tracking-wide truncate text-white">
+                {brandName}
+              </span>
             </Link>
-            <div className="flex-1" />
-            <MobileThemeToggle />
-            <LangToggle compact />
-            <SearchIconButton className="min-h-11 min-w-11" />
+            <div className="inline-flex items-center gap-0.5">
+              <button className="inline-flex items-center justify-center min-h-10 min-w-10 rounded-md text-white hover:bg-white/15" aria-label="theme" onClick={() => { /* themed toggle below */ }}>
+                <MobileThemeIconWhite />
+              </button>
+              <LangToggle compact />
+              <SearchIconButton className="min-h-10 min-w-10 text-white hover:bg-white/15 hover:text-white" />
+            </div>
           </header>
+
 
           {/* Desktop top quick-actions bar */}
           <header className="hidden md:flex sticky top-0 z-20 items-center justify-end gap-2 px-6 py-2.5 bg-background/95 backdrop-blur border-b border-border/60">
