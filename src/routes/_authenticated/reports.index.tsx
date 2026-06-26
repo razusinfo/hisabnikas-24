@@ -96,28 +96,28 @@ function ReportsIndexPage() {
       <Card className="border-0 shadow-none bg-transparent relative overflow-hidden">
         {locked && (
           <div className="absolute top-0 right-0 z-10 pointer-events-none">
-            <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] font-bold py-1 w-32 text-center shadow-md rotate-45 translate-x-8 translate-y-3">
+            <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[9px] font-bold py-0.5 w-28 text-center shadow-sm rotate-45 translate-x-8 translate-y-2">
               {bn ? "প্যাকেজ" : "PACKAGE"}
             </div>
           </div>
         )}
-        <CardHeader className="pb-3">
+        <CardHeader className="pb-2 px-4 pt-4">
           <div className="flex items-center justify-between">
-            <div className={`h-10 w-10 rounded-xl ${card.bg} flex items-center justify-center`}>
-              <Icon className={`h-5 w-5 ${card.color}`} />
+            <div className={`h-8 w-8 rounded-lg ${card.bg} flex items-center justify-center`}>
+              <Icon className={`h-4 w-4 ${card.color}`} />
             </div>
             {locked ? (
-              <Lock className="h-4 w-4 text-muted-foreground" />
+              <Lock className="h-3.5 w-3.5 text-muted-foreground" />
             ) : (
-              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
             )}
           </div>
-          <CardTitle className="text-base mt-3">
+          <CardTitle className="text-sm mt-2">
             {bn ? card.title : card.titleEn}
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+        <CardContent className="px-4 pb-4 pt-0">
+          <p className="text-xs text-muted-foreground leading-relaxed">
             {card.description}
           </p>
         </CardContent>
@@ -129,7 +129,7 @@ function ReportsIndexPage() {
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
       <PageHeader title={t("reports")} subtitle={bn ? "সব রিপোর্ট এক জায়গায়" : "All reports in one place"} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {reportCards.map((card) => {
           const isFree = FREE_SLUGS.has(card.slug) || isPackageActive;
           if (isFree) {
