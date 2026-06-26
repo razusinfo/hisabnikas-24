@@ -404,12 +404,14 @@ function ProprietorMenu({
         </button>
       </PopoverTrigger>
       <PopoverContent align="end" sideOffset={8} className="w-72 p-0 overflow-hidden rounded-2xl border-border/60 shadow-xl">
-        <div className="relative h-20 bg-gradient-to-br from-violet-400 to-violet-500">
+        <div className="relative h-20" style={{ backgroundImage: "var(--brand-gradient)" }}>
           <Link
             to="/proprietor-profile"
             onClick={() => setOpen(false)}
             aria-label={labels.edit}
-            className="absolute top-2 right-2 inline-flex items-center justify-center h-7 w-7 rounded-full bg-white/90 text-violet-700 hover:bg-white shadow"
+            className="absolute top-2 right-2 inline-flex items-center justify-center h-7 w-7 rounded-full bg-white/90 hover:bg-white shadow"
+            style={{ color: "var(--brand-solid)" }}
+
           >
             <Pencil className="h-3.5 w-3.5" />
           </Link>
@@ -426,7 +428,7 @@ function ProprietorMenu({
                   <UserCircle2 className="h-10 w-10 text-muted-foreground" />
                 </div>
               )}
-              <span className="absolute bottom-0 right-0 inline-flex items-center justify-center h-6 w-6 rounded-full bg-violet-500 text-white border-2 border-background">
+              <span className="absolute bottom-0 right-0 inline-flex items-center justify-center h-6 w-6 rounded-full text-white border-2 border-background" style={{ background: "var(--brand-solid)" }}>
                 <Pencil className="h-3 w-3" />
               </span>
             </Link>
@@ -544,7 +546,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <div className="flex-1 min-w-0 flex flex-col">
           {/* Mobile top bar */}
-          <header className="md:hidden sticky top-0 z-30 flex items-center gap-2 px-3 py-3 bg-gradient-to-r from-violet-500 to-indigo-600 text-white shadow-md">
+          <header className="md:hidden sticky top-0 z-30 flex items-center gap-2 px-3 py-3 text-white shadow-md" style={{ backgroundImage: "var(--brand-gradient)" }}>
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label="Open menu" className="min-h-11 min-w-11 text-white hover:bg-white/15 hover:text-white">
@@ -651,7 +653,9 @@ function MobileBottomNav() {
         <Link
           to="/reports"
           aria-label={t("reports")}
-          className="absolute left-1/2 -translate-x-1/2 -top-7 grid place-items-center h-14 w-14 rounded-full bg-card text-violet-600 border border-violet-200 shadow-lg ring-4 ring-background"
+          className="absolute left-1/2 -translate-x-1/2 -top-7 grid place-items-center h-14 w-14 rounded-full bg-card border shadow-lg ring-4 ring-background"
+          style={{ color: "var(--brand-solid)", borderColor: "var(--brand-ring)" }}
+
         >
           <Plus className="h-7 w-7" strokeWidth={2.5} />
         </Link>
@@ -660,7 +664,9 @@ function MobileBottomNav() {
           <Link
             to="/purchases"
             aria-label={buyLabel}
-            className="flex-1 flex items-center gap-2 justify-center h-12 rounded-full bg-gradient-to-r from-violet-500 to-purple-500 text-white font-semibold shadow-md shadow-violet-500/30 pr-4"
+            className="flex-1 flex items-center gap-2 justify-center h-12 rounded-full text-white font-semibold shadow-md pr-4"
+            style={{ backgroundImage: "var(--brand-gradient)", boxShadow: "0 4px 12px var(--brand-shadow)" }}
+
           >
             <ShoppingCart className="h-5 w-5" />
             <span className="truncate text-sm">{buyLabel}</span>

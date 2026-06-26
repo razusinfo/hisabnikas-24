@@ -294,8 +294,8 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
   ];
 
   return (
-    <div className="md:hidden -mx-4 -mt-4 mb-4 px-4 pt-4 pb-2 bg-gradient-to-b from-violet-50 to-transparent">
-      <div className="rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white p-4 shadow-lg shadow-violet-500/30">
+    <div className="md:hidden -mx-4 -mt-4 mb-4 px-4 pt-4 pb-2" style={{ backgroundImage: "var(--brand-gradient-soft)" }}>
+      <div className="rounded-2xl text-white p-4 shadow-lg" style={{ backgroundImage: "var(--brand-gradient)", boxShadow: "0 10px 25px var(--brand-shadow)" }}>
         <div className="flex items-start">
           <div className="flex-1 text-center">
             <div className="text-sm opacity-90">{L.onHand}</div>
@@ -345,7 +345,7 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
               </div>
               <div className="mt-1 flex items-center gap-1.5 font-display font-bold text-base">
                 <span className="truncate">{tile.value}</span>
-                <ChevronRight className="h-4 w-4 text-violet-500 shrink-0" />
+                <ChevronRight className="h-4 w-4 shrink-0" style={{ color: "var(--brand-solid)" }} />
               </div>
             </Link>
           );
@@ -363,7 +363,7 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
           <div className="text-[13px] text-muted-foreground truncate">{L.expenses}</div>
           <div className="font-display font-bold text-base truncate">{fmtMoney(0)}</div>
         </div>
-        <ChevronRight className="h-5 w-5 text-violet-500 shrink-0" />
+        <ChevronRight className="h-5 w-5 shrink-0" style={{ color: "var(--brand-solid)" }} />
       </Link>
     </div>
   );
