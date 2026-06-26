@@ -134,10 +134,13 @@ function Dashboard() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto">
-      <PageHeader
-        title={t("dashboard")}
-        subtitle="Real-time pulse of your business."
-      />
+      <div className="hidden md:block">
+        <PageHeader
+          title={t("dashboard")}
+          subtitle="Real-time pulse of your business."
+        />
+      </div>
+
 
       <InstallAppBanner />
 
