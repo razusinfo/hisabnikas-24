@@ -1,7 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
-import { format } from "date-fns";
+import {
+  format,
+  startOfDay,
+  endOfDay,
+  startOfMonth,
+  endOfMonth,
+  startOfYear,
+  endOfYear,
+} from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
 import { useI18n } from "@/lib/i18n";
@@ -39,26 +47,28 @@ function getRange(
   custom?: { from?: Date; to?: Date },
 ): Range {
   const now = new Date();
-  const to = new Date(now);
-  const from = new Date(now);
   if (period === "custom") {
-    const f = custom?.from ? new Date(custom.from) : new Date(now);
-    const t = custom?.to ? new Date(custom.to) : new Date(custom?.from ?? now);
-    f.setHours(0, 0, 0, 0);
-    t.setHours(23, 59, 59, 999);
+    const f = custom?.from ? startOfDay(custom.from) : startOfDay(now);
+    const t = custom?.to
+      ? endOfDay(custom.to)
+      : endOfDay(custom?.from ?? now);
     return { from: f.toISOString(), to: t.toISOString() };
   }
   if (period === "daily") {
-    from.setHours(0, 0, 0, 0);
-  } else if (period === "monthly") {
-    from.setDate(1);
-    from.setHours(0, 0, 0, 0);
-  } else {
-    from.setMonth(0, 1);
-    from.setHours(0, 0, 0, 0);
+    return { from: startOfDay(now).toISOString(), to: endOfDay(now).toISOString() };
   }
-  to.setHours(23, 59, 59, 999);
-  return { from: from.toISOString(), to: to.toISOString() };
+  if (period === "monthly") {
+    // Full current calendar month (1st 00:00 → last day 23:59), local time.
+    return {
+      from: startOfMonth(now).toISOString(),
+      to: endOfMonth(now).toISOString(),
+    };
+  }
+  // yearly — full current calendar year
+  return {
+    from: startOfYear(now).toISOString(),
+    to: endOfYear(now).toISOString(),
+  };
 }
 
 type TopProduct = { name: string; qty: number; revenue: number; profit: number };
