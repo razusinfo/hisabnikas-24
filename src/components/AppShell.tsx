@@ -279,6 +279,21 @@ function useTheme() {
   return { isDark, toggle };
 }
 
+function MobileThemeToggle() {
+  const { isDark, toggle } = useTheme();
+  return (
+    <button
+      type="button"
+      onClick={() => toggle(!isDark)}
+      className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-md hover:bg-accent text-foreground/80"
+      aria-label="Toggle theme"
+      title="Toggle theme"
+    >
+      {isDark ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+    </button>
+  );
+}
+
 function ProprietorMenu({
   brandName,
   avatarUrl,
