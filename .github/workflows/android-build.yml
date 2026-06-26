@@ -39,33 +39,62 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Disable Capacitor dev server (production build)
+      - name: Point Capacitor to hosted production URL (SSR app)
         run: |
-          # capacitor.config.ts থেকে server block টা comment-out করি production-এ
+          # TanStack Start + Nitro is an SSR app — .output/public has no index.html.
+          # For Capacitor we load the published web app via server.url and ship a
+          # minimal index.html stub as the local webDir fallback.
           node -e "
             const fs = require('fs');
             let c = fs.readFileSync('capacitor.config.ts', 'utf8');
-            c = c.replace(/server:\s*{[^}]*},?/s, '// server block disabled in CI build');
+            c = c.replace(/server:\s*{[^}]*},?/s, \"server: { url: 'https://hisabnikas-24.lovable.app', cleartext: true, androidScheme: 'https' },\");
             fs.writeFileSync('capacitor.config.ts', c);
+            console.log(c);
           "
 
       - name: Build web app
         run: |
           npm run build
           echo "=== Verifying build output ==="
-          ls -la .output/public/
           test -d .output/public || { echo "ERROR: .output/public directory not found after build"; exit 1; }
+          # Nitro SSR build does not emit index.html. Capacitor requires one in webDir,
+          # so write a minimal stub that immediately redirects to the hosted app
+          # (server.url above also forces loading from the production URL).
+          if [ ! -f .output/public/index.html ]; then
+            cat > .output/public/index.html <<'EOF'
+          <!doctype html>
+          <html lang="bn">
+            <head>
+              <meta charset="utf-8" />
+              <meta name="viewport" content="width=device-width,initial-scale=1" />
+              <title>হিসাব নিকাশ-২৪</title>
+              <meta http-equiv="refresh" content="0; url=https://hisabnikas-24.lovable.app/" />
+            </head>
+            <body>
+              <script>location.replace('https://hisabnikas-24.lovable.app/');</script>
+            </body>
+          </html>
+          EOF
+            echo "Generated fallback index.html for Capacitor webDir"
+          fi
+          ls -la .output/public/
 
-      - name: Verify webDir matches build output
+      - name: Verify webDir has index.html
         run: |
           WEBDIR=$(sed -n "s/.*webDir:[[:space:]]*['\"]\([^'\"]*\)['\"].*/\1/p" capacitor.config.ts)
           echo "webDir from capacitor.config.ts: $WEBDIR"
           test "$WEBDIR" = ".output/public" || { echo "ERROR: webDir '$WEBDIR' does not match expected '.output/public'"; exit 1; }
+          test -f "$WEBDIR/index.html" || { echo "ERROR: $WEBDIR/index.html missing"; exit 1; }
 
-      - name: Add Android platform
+      - name: Sync Android platform
         run: |
           set -e
-          npx cap add android || echo "Android platform already exists"
+          if [ ! -d "android/app" ]; then
+            echo "Android platform missing — adding it"
+            npx cap add android
+          else
+            echo "Android platform already present — skipping cap add"
+          fi
           npx cap sync android
 
       - name: Build Debug APK
