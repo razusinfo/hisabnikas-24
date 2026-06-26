@@ -58,7 +58,7 @@ jobs:
 
       - name: Verify webDir matches build output
         run: |
-          WEBDIR=$(node -e "console.log(require('./capacitor.config.ts').default.webDir)")
+          WEBDIR=$(grep -oP "(?<=webDir: ['\"])[^'\"]+" capacitor.config.ts || true)
           echo "webDir from capacitor.config.ts: $WEBDIR"
           test "$WEBDIR" = "dist" || { echo "ERROR: webDir '$WEBDIR' does not match expected 'dist'"; exit 1; }
 
