@@ -345,7 +345,7 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
               </div>
               <div className="mt-1 flex items-center gap-1.5 font-display font-bold text-base">
                 <span className="truncate">{tile.value}</span>
-                <ChevronRight className="h-4 w-4 text-violet-500 shrink-0" />
+                <ChevronRight className="h-4 w-4 shrink-0" style={{ color: "var(--brand-solid)" }} />
               </div>
             </Link>
           );
