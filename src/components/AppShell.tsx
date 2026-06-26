@@ -404,7 +404,7 @@ function ProprietorMenu({
         </button>
       </PopoverTrigger>
       <PopoverContent align="end" sideOffset={8} className="w-72 p-0 overflow-hidden rounded-2xl border-border/60 shadow-xl">
-        <div className="relative h-20 bg-gradient-to-br from-violet-400 to-violet-500">
+        <div className="relative h-20" style={{ backgroundImage: "var(--brand-gradient)" }}>
           <Link
             to="/proprietor-profile"
             onClick={() => setOpen(false)}
