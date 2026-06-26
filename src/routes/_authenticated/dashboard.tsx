@@ -14,7 +14,17 @@ import {
   CalendarRange,
   CalendarDays,
   Receipt,
+  Eye,
+  ArrowDown,
+  ArrowUp,
+  Info,
+  ChevronRight,
+  HandCoins,
+  PackageOpen,
+  UserRound,
+  Banknote,
 } from "lucide-react";
+
 import {
   ResponsiveContainer,
   AreaChart,
@@ -124,26 +134,32 @@ function Dashboard() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto">
-      <PageHeader
-        title={t("dashboard")}
-        subtitle="Real-time pulse of your business."
-      />
+      <div className="hidden md:block">
+        <PageHeader
+          title={t("dashboard")}
+          subtitle="Real-time pulse of your business."
+        />
+      </div>
+
 
       <InstallAppBanner />
 
+      {/* Mobile-only redesigned dashboard */}
+      <MobileDashboard d={d} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+      <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
         <Stat icon={CalendarDays} label={t("salesToday")} value={fmtMoney(d.salesToday)} themeIndex={0} to="/sales" />
         <Stat icon={CalendarRange} label={t("salesMonth")} value={fmtMoney(d.salesMonth)} themeIndex={1} to="/sales" />
         <Stat icon={TrendingUp} label={t("salesYear")} value={fmtMoney(d.salesYear)} themeIndex={2} to="/sales" />
         <Stat icon={Wallet} label={t("dueReceivable")} value={fmtMoney(d.dueReceivable)} themeIndex={3} />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
+      <div className="hidden md:grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
         <Stat icon={Package} label={t("totalProducts")} value={String(d.productCount)} themeIndex={4} />
         <Stat icon={Users} label={t("totalCustomers")} value={String(d.customerCount)} themeIndex={5} />
         <Stat icon={AlertTriangle} label={t("lowStock")} value={String(d.lowStockCount)} themeIndex={6} />
       </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="card-premium p-5 lg:col-span-2">
@@ -245,6 +261,110 @@ function Dashboard() {
           </ResponsiveContainer>
         </div>
       </div>
+    </div>
+  );
+}
+
+function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> }) {
+  const { lang } = useI18n();
+  const bn = lang === "bn";
+  const L = {
+    onHand: bn ? "হাতে আছে" : "On hand",
+    cashIn: bn ? "নগদ প্রাপ্তি" : "Cash in",
+    cashOut: bn ? "নগদ প্রদান" : "Cash out",
+    receivable: bn ? "মোট পাওনা" : "Total receivable",
+    payable: bn ? "মোট দেনা" : "Total payable",
+    products: bn ? "পণ্য" : "Products",
+    parties: bn ? "পার্টি" : "Parties",
+    expenses: bn ? "মোট ব্যয়/খরচ" : "Total expenses",
+  };
+
+  const tiles: Array<{
+    to: string;
+    label: string;
+    value: string;
+    icon: typeof HandCoins;
+    border: string;
+    iconBg: string;
+  }> = [
+    { to: "/customers", label: L.receivable, value: fmtMoney(d.dueReceivable), icon: HandCoins, border: "border-orange-200", iconBg: "bg-orange-400" },
+    { to: "/customers", label: L.payable, value: fmtMoney(0), icon: Banknote, border: "border-sky-200", iconBg: "bg-sky-400" },
+    { to: "/products", label: L.products, value: String(d.productCount), icon: PackageOpen, border: "border-teal-200", iconBg: "bg-teal-500" },
+    { to: "/customers", label: L.parties, value: String(d.customerCount), icon: UserRound, border: "border-amber-200", iconBg: "bg-amber-400" },
+  ];
+
+  return (
+    <div className="md:hidden -mx-4 -mt-4 mb-4 px-4 pt-4 pb-2 bg-gradient-to-b from-violet-50 to-transparent">
+      <div className="rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white p-4 shadow-lg shadow-violet-500/30">
+        <div className="flex items-start">
+          <div className="flex-1 text-center">
+            <div className="text-sm opacity-90">{L.onHand}</div>
+            <div className="font-display text-2xl font-bold mt-1">{fmtMoney(d.salesToday)}</div>
+          </div>
+          <button aria-label="toggle" className="text-white/90 p-1">
+            <Eye className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="mt-3 rounded-xl bg-white text-foreground grid grid-cols-2 divide-x divide-border/60 overflow-hidden">
+          <div className="flex items-center gap-2 p-3">
+            <span className="grid place-items-center h-8 w-8 rounded-lg bg-emerald-100 text-emerald-600 shrink-0">
+              <ArrowDown className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <div className="text-[11px] text-muted-foreground truncate">{L.cashIn}</div>
+              <div className="text-sm font-semibold truncate">{fmtMoney(d.salesToday)}</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 p-3">
+            <span className="grid place-items-center h-8 w-8 rounded-lg bg-rose-100 text-rose-500 shrink-0">
+              <ArrowUp className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <div className="text-[11px] text-muted-foreground truncate">{L.cashOut}</div>
+              <div className="text-sm font-semibold truncate">{fmtMoney(0)}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 mt-7">
+        {tiles.map((tile, i) => {
+          const Icon = tile.icon;
+          return (
+            <Link
+              key={i}
+              to={tile.to}
+              className={`relative rounded-2xl bg-card border ${tile.border} px-3 pt-7 pb-3 shadow-sm`}
+            >
+              <span className={`absolute -top-4 left-3 grid place-items-center h-9 w-9 rounded-full ${tile.iconBg} text-white shadow-md ring-4 ring-background`}>
+                <Icon className="h-4 w-4" />
+              </span>
+              <div className="flex items-center gap-1 text-[13px] text-muted-foreground">
+                <span className="truncate">{tile.label}</span>
+                <Info className="h-3 w-3 opacity-60" />
+              </div>
+              <div className="mt-1 flex items-center gap-1.5 font-display font-bold text-base">
+                <span className="truncate">{tile.value}</span>
+                <ChevronRight className="h-4 w-4 text-violet-500 shrink-0" />
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+
+      <Link
+        to="/expenses"
+        className="mt-3 flex items-center gap-3 rounded-2xl bg-card border border-border px-3 py-3 shadow-sm"
+      >
+        <span className="grid place-items-center h-11 w-11 rounded-xl bg-rose-100 text-rose-500 shrink-0">
+          <Banknote className="h-5 w-5" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="text-[13px] text-muted-foreground truncate">{L.expenses}</div>
+          <div className="font-display font-bold text-base truncate">{fmtMoney(0)}</div>
+        </div>
+        <ChevronRight className="h-5 w-5 text-violet-500 shrink-0" />
+      </Link>
     </div>
   );
 }
