@@ -306,8 +306,7 @@ function SettingsPage() {
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
       <PageHeader title={t("settings")} subtitle={t("settingsSubtitle")} />
 
-      {/* Android App ডাউনলোড / আপডেট */}
-      <ReadyAppDownloadCard />
+
 
       {/* পণ্য সমূহ */}
       <SectionCard title={tr("products")}>
