@@ -96,7 +96,7 @@ function ReportsIndexPage() {
       <Card className="border-0 shadow-none bg-transparent relative overflow-hidden">
         {locked && (
           <div className="absolute top-0 right-0 z-10 pointer-events-none">
-            <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] font-bold py-1 w-32 text-center shadow-md rotate-45 translate-x-8 translate-y-3">
+            <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[9px] font-bold py-0.5 w-28 text-center shadow-sm rotate-45 translate-x-8 translate-y-2">
               {bn ? "প্যাকেজ" : "PACKAGE"}
             </div>
           </div>
