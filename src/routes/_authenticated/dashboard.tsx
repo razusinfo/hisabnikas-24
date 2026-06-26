@@ -363,7 +363,7 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
           <div className="text-[13px] text-muted-foreground truncate">{L.expenses}</div>
           <div className="font-display font-bold text-base truncate">{fmtMoney(0)}</div>
         </div>
-        <ChevronRight className="h-5 w-5 text-violet-500 shrink-0" />
+        <ChevronRight className="h-5 w-5 shrink-0" style={{ color: "var(--brand-solid)" }} />
       </Link>
     </div>
   );
