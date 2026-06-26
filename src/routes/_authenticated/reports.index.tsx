@@ -96,28 +96,28 @@ function ReportsIndexPage() {
       <Card className="border-0 shadow-none bg-transparent relative overflow-hidden">
         {locked && (
           <div className="absolute top-0 right-0 z-10 pointer-events-none">
-            <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[8px] font-bold py-0.5 w-24 text-center shadow-sm rotate-45 translate-x-7 translate-y-1">
+            <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[7px] font-bold py-[2px] w-20 text-center shadow-sm rotate-45 translate-x-6 translate-y-0.5">
               {bn ? "প্যাকেজ" : "PACKAGE"}
             </div>
           </div>
         )}
-        <CardHeader className="pb-1.5 px-3 pt-3">
+        <CardHeader className="pb-1 px-2.5 pt-2.5">
           <div className="flex items-center justify-between">
-            <div className={`h-6 w-6 rounded-md ${card.bg} flex items-center justify-center`}>
-              <Icon className={`h-3 w-3 ${card.color}`} />
+            <div className={`h-5 w-5 rounded ${card.bg} flex items-center justify-center`}>
+              <Icon className={`h-2.5 w-2.5 ${card.color}`} />
             </div>
             {locked ? (
-              <Lock className="h-3 w-3 text-muted-foreground" />
+              <Lock className="h-2.5 w-2.5 text-muted-foreground" />
             ) : (
-              <ArrowRight className="h-3 w-3 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+              <ArrowRight className="h-2.5 w-2.5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
             )}
           </div>
-          <CardTitle className="text-xs mt-1.5">
+          <CardTitle className="text-[11px] mt-1">
             {bn ? card.title : card.titleEn}
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-3 pb-3 pt-0">
-          <p className="text-[11px] text-muted-foreground leading-snug">
+        <CardContent className="px-2.5 pb-2.5 pt-0">
+          <p className="text-[10px] text-muted-foreground leading-snug">
             {card.description}
           </p>
         </CardContent>
@@ -129,7 +129,7 @@ function ReportsIndexPage() {
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
       <PageHeader title={t("reports")} subtitle={bn ? "সব রিপোর্ট এক জায়গায়" : "All reports in one place"} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5">
         {reportCards.map((card) => {
           const isFree = FREE_SLUGS.has(card.slug) || isPackageActive;
           if (isFree) {
@@ -138,7 +138,7 @@ function ReportsIndexPage() {
                 <Link
                   key={card.slug}
                   to="/mobile-banking"
-                  className="group block rounded-lg border border-border bg-card hover:shadow-md transition-all hover:border-primary/30"
+                  className="group block rounded-md border border-border bg-card hover:shadow transition-all hover:border-primary/30"
                 >
                   {cardInner(card, false)}
                 </Link>
@@ -149,7 +149,7 @@ function ReportsIndexPage() {
                 key={card.slug}
                 to="/reports/$slug"
                 params={{ slug: card.slug }}
-                className="group block rounded-lg border border-border bg-card hover:shadow-md transition-all hover:border-primary/30"
+                className="group block rounded-md border border-border bg-card hover:shadow transition-all hover:border-primary/30"
               >
                 {cardInner(card, false)}
               </Link>
@@ -163,7 +163,7 @@ function ReportsIndexPage() {
                 setLockedTitle(bn ? card.title : card.titleEn);
                 setLockedOpen(true);
               }}
-              className="group block text-left rounded-lg border border-border bg-card hover:shadow-md transition-all hover:border-primary/30"
+              className="group block text-left rounded-md border border-border bg-card hover:shadow transition-all hover:border-primary/30"
             >
               {cardInner(card, true)}
             </button>
