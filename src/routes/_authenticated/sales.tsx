@@ -1206,7 +1206,7 @@ function SalesPage() {
                               </div>
                             </td>
                           </tr>
-                        </>
+                        </Fragment>
                       ))}
                     </tbody>
                   </table>
