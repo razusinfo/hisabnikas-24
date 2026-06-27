@@ -3,6 +3,7 @@ import { format, parse, isValid } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -22,7 +23,9 @@ const toDate = (v: string): Date | undefined => {
 
 const toISO = (d: Date | undefined): string => (d ? format(d, "yyyy-MM-dd") : "");
 
-export function DateInput({ value, onChange, className, placeholder = "দিন/মাস/সাল", clearable = true, disabled }: Props) {
+export function DateInput({ value, onChange, className, placeholder, clearable = true, disabled }: Props) {
+  const { lang } = useI18n();
+  const effectivePlaceholder = placeholder ?? (lang === "bn" ? "দিন/মাস/সাল" : "Day/Month/Year");
   const date = toDate(value);
   return (
     <Popover>
@@ -38,7 +41,7 @@ export function DateInput({ value, onChange, className, placeholder = "দিন
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
-          <span className="flex-1 truncate">{date ? format(date, "dd/MM/yyyy") : placeholder}</span>
+          <span className="flex-1 truncate">{date ? format(date, "dd/MM/yyyy") : effectivePlaceholder}</span>
           {clearable && date && !disabled && (
             <span
               role="button"

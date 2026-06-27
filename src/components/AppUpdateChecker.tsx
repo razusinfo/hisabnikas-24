@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
 import { Download, X } from "lucide-react";
 import {
   fetchLatestRelease,
@@ -24,6 +25,8 @@ import {
  * boot for a newer release and shows a non-blocking install prompt.
  */
 export function AppUpdateChecker() {
+  const { lang } = useI18n();
+  const isBn = lang === "bn";
   const [release, setRelease] = useState<LatestRelease | null>(null);
   const [open, setOpen] = useState(false);
 
@@ -67,20 +70,22 @@ export function AppUpdateChecker() {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Download className="h-5 w-5 text-emerald-600" />
-            নতুন আপডেট এসেছে
+            {isBn ? "নতুন আপডেট এসেছে" : "New update available"}
           </DialogTitle>
           <DialogDescription className="text-sm">
             <span className="font-semibold text-foreground">{release.name}</span>
             <br />
-            অ্যাপের নতুন ভার্সন এসেছে। এখনই ডাউনলোড করে ইনস্টল করুন।
+            {isBn
+              ? "অ্যাপের নতুন ভার্সন এসেছে। এখনই ডাউনলোড করে ইনস্টল করুন।"
+              : "A new app version is available. Download and install it now."}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex-row gap-2 sm:gap-2">
           <Button variant="outline" className="flex-1" onClick={dismiss}>
-            <X className="h-4 w-4 mr-1" /> পরে
+            <X className="h-4 w-4 mr-1" /> {isBn ? "পরে" : "Later"}
           </Button>
           <Button className="flex-1 bg-emerald-600 hover:bg-emerald-700" onClick={install}>
-            <Download className="h-4 w-4 mr-1" /> এখনই ডাউনলোড
+            <Download className="h-4 w-4 mr-1" /> {isBn ? "এখনই ডাউনলোড" : "Download now"}
           </Button>
         </DialogFooter>
       </DialogContent>
