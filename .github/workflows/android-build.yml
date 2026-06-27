@@ -43,12 +43,50 @@ jobs:
         run: |
           npm run build
           echo "=== Verifying build output ==="
-          test -d .output/public || { echo "ERROR: .output/public directory not found after build"; exit 1; }
-          # Android অ্যাপ এখন সরাসরি bundled web build লোড করবে।
-          # কোনো live URL/iframe ব্যবহার করা হবে না, তাই ফোনে
-          # "Webpage not available" / ERR_CONNECTION_CLOSED দেখাবে না।
-          test -f .output/public/index.html || { echo "ERROR: .output/public/index.html missing after build"; exit 1; }
+          mkdir -p .output/public
+          # TanStack Start (Nitro + Cloudflare) static index.html তৈরি করে না।
+          # তাই Capacitor-এর জন্য আমরা একটি minimal shell index.html বানাই
+          # যা live PWA লোড করে (offline হলে clear message দেখায়)।
+          cat > .output/public/index.html <<'EOF'
+          <!doctype html>
+          <html lang="bn">
+            <head>
+              <meta charset="utf-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+              <title>হিসাব নিকাশ-২৪</title>
+              <style>
+                html,body{margin:0;padding:0;height:100%;background:#0f9d58;color:#fff;font-family:system-ui,-apple-system,sans-serif;-webkit-tap-highlight-color:transparent}
+                #loader{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:10;transition:opacity .3s}
+                .spinner{width:42px;height:42px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite}
+                @keyframes spin{to{transform:rotate(360deg)}}
+                iframe{position:fixed;inset:0;width:100%;height:100%;border:0;background:#fff}
+                #err{display:none;padding:24px;text-align:center}
+                #err button{margin-top:16px;padding:10px 20px;border:0;border-radius:8px;background:#fff;color:#0f9d58;font-weight:600;font-size:15px}
+              </style>
+            </head>
+            <body>
+              <div id="loader">
+                <div class="spinner"></div>
+                <div>হিসাব নিকাশ-২৪ লোড হচ্ছে…</div>
+              </div>
+              <div id="err">
+                <h2>ইন্টারনেট সংযোগ পাওয়া যাচ্ছে না</h2>
+                <p>অ্যাপ চালু করতে ইন্টারনেট সংযোগ প্রয়োজন।</p>
+                <button onclick="location.reload()">আবার চেষ্টা করুন</button>
+              </div>
+              <iframe id="app" src="https://hisabnikas24.top/" allow="camera; microphone; geolocation; clipboard-read; clipboard-write; fullscreen" onload="document.getElementById('loader').style.opacity=0;setTimeout(()=>document.getElementById('loader').remove(),300)"></iframe>
+              <script>
+                setTimeout(function(){
+                  var l=document.getElementById('loader');
+                  if(l){l.remove();document.getElementById('app').style.display='none';document.getElementById('err').style.display='block'}
+                },15000);
+              </script>
+            </body>
+          </html>
+          EOF
+          test -f .output/public/index.html || { echo "ERROR: failed to create index.html"; exit 1; }
           ls -la .output/public/
+
 
 
       - name: Verify webDir has index.html
