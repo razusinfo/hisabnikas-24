@@ -1,19 +1,17 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
+// সত্যিকার Native Android অ্যাপ কনফিগারেশন।
+// `server.url` দেওয়া হলে Capacitor live website সরাসরি WebView এ লোড করে —
+// সেটা ব্রাউজার-এর মত অনুভব হয়। তাই এখানে আমরা bundled `index.html` ব্যবহার করছি,
+// যেটা GitHub Actions build-এ তৈরি হয় এবং পুরো অ্যাপটিকে fullscreen WebView shell-এর
+// মত কাজ করায় — কোনো address bar বা URL field দেখাবে না।
 const config: CapacitorConfig = {
   appId: 'com.hisabnikash24',
   appName: 'হিসাব নিকাশ-২৪',
   webDir: '.output/public',
-  // TanStack Start (SSR) প্রজেক্ট — `.output/public` তে static `index.html` থাকে না।
-  // তাই Capacitor কে live custom domain লোড করতে বলা হচ্ছে। এতে মোবাইল অ্যাপে
-  // সাদা স্ক্রিন বা "Webpage not available" আসবে না।
-  server: {
-    url: 'https://hisabnikas24.top/',
-    cleartext: true,
-    androidScheme: 'https',
-  },
   android: {
     allowMixedContent: true,
+    webContentsDebuggingEnabled: false,
   },
   plugins: {
     BarcodeScanner: {},
