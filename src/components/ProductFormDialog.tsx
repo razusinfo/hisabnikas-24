@@ -32,6 +32,7 @@ export type ProductFormEditing = {
   serial_no: string | null;
   size: string | null;
   expiry_date: string | null;
+  warranty: string | null;
 } | null;
 
 export type CreatedProduct = {
@@ -47,7 +48,7 @@ const emptyForm = {
   name: "", sku: "", barcode: "", unit: "pcs",
   cost_price: "0", sell_price: "0", stock: "0", low_stock_threshold: "5",
   category_id: "", image_url: "" as string,
-  vat: "0", mrp: "", batch_no: "", serial_no: "", size: "", expiry_date: "",
+  vat: "0", mrp: "", batch_no: "", serial_no: "", size: "", expiry_date: "", warranty: "",
 };
 
 export function ProductFormDialog({
@@ -78,6 +79,7 @@ export function ProductFormDialog({
     serialImei: appSettings?.serialImei === true,
     size: appSettings?.size === true,
     expiryDate: appSettings?.expiryDate === true,
+    warranty: appSettings?.warranty === true,
   };
 
   const { data: categories = [] } = useQuery({
@@ -105,6 +107,7 @@ export function ProductFormDialog({
         serial_no: editing.serial_no ?? "",
         size: editing.size ?? "",
         expiry_date: editing.expiry_date ?? "",
+        warranty: editing.warranty ?? "",
       });
     } else {
       setForm(emptyForm);
@@ -180,6 +183,7 @@ export function ProductFormDialog({
         serial_no: form.serial_no.trim() || null,
         size: form.size.trim() || null,
         expiry_date: form.expiry_date || null,
+        warranty: form.warranty.trim() || null,
       };
 
       if (editing) {
