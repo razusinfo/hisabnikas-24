@@ -6,6 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
 import { CheckCircle2, Phone, MessageCircle } from "lucide-react";
 
 const CONTACT_NUMBER = "01719220711";
@@ -16,9 +17,13 @@ type Props = {
 };
 
 export function PaymentSuccessDialog({ open, onOpenChange }: Props) {
+  const { lang } = useI18n();
+  const isBn = lang === "bn";
   const waNumber = "880" + CONTACT_NUMBER.replace(/^0/, "");
   const waMsg = encodeURIComponent(
-    "আসসালামু আলাইকুম, আমি পেমেন্ট জমা দিয়েছি। অনুগ্রহ করে আমার অ্যাকাউন্ট একটিভ করুন।",
+    isBn
+      ? "আসসালামু আলাইকুম, আমি পেমেন্ট জমা দিয়েছি। অনুগ্রহ করে আমার অ্যাকাউন্ট একটিভ করুন।"
+      : "Assalamu Alaikum, I have submitted my payment. Please activate my account.",
   );
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -28,10 +33,12 @@ export function PaymentSuccessDialog({ open, onOpenChange }: Props) {
             <CheckCircle2 className="h-8 w-8" />
           </div>
           <DialogTitle className="text-center">
-            আপনার পেমেন্ট সম্পন্ন হয়েছে
+            {isBn ? "আপনার পেমেন্ট সম্পন্ন হয়েছে" : "Your payment has been submitted"}
           </DialogTitle>
           <DialogDescription className="text-center">
-            পেমেন্টটি একটিভ করতে কল করুন অথবা হোয়াটসঅ্যাপে যোগাযোগ করুন।
+            {isBn
+              ? "পেমেন্টটি একটিভ করতে কল করুন অথবা হোয়াটসঅ্যাপে যোগাযোগ করুন।"
+              : "Call or contact us on WhatsApp to activate the payment."}
           </DialogDescription>
         </DialogHeader>
 
@@ -39,7 +46,7 @@ export function PaymentSuccessDialog({ open, onOpenChange }: Props) {
           <Button asChild className="w-full" size="lg">
             <a href={`tel:${CONTACT_NUMBER}`}>
               <Phone className="h-4 w-4 mr-2" />
-              কল করুন ({CONTACT_NUMBER})
+              {isBn ? "কল করুন" : "Call"} ({CONTACT_NUMBER})
             </a>
           </Button>
           <Button
@@ -53,11 +60,11 @@ export function PaymentSuccessDialog({ open, onOpenChange }: Props) {
               rel="noopener noreferrer"
             >
               <MessageCircle className="h-4 w-4 mr-2" />
-              হোয়াটসঅ্যাপে যোগাযোগ
+              {isBn ? "হোয়াটসঅ্যাপে যোগাযোগ" : "Contact on WhatsApp"}
             </a>
           </Button>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            বন্ধ করুন
+            {isBn ? "বন্ধ করুন" : "Close"}
           </Button>
         </div>
       </DialogContent>
