@@ -729,6 +729,7 @@ function ReadyAppDownloadCard() {
   const releasesUrl = `https://github.com/${repo}/releases/latest`;
   const directApkUrl = `https://github.com/${repo}/releases/latest/download/HisabNikash24-debug.apk`;
   const actionsUrl = `https://github.com/${repo}/actions/workflows/android-build.yml`;
+  const [downloading, setDownloading] = useState(false);
 
   const fmtSize = (b: number) =>
     b > 1024 * 1024 ? `${(b / 1024 / 1024).toFixed(1)} MB` : `${(b / 1024).toFixed(0)} KB`;
