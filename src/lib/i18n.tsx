@@ -163,6 +163,7 @@ const dict = {
     categories: "Categories",
     allCategories: "All Categories",
     noCategory: "No category",
+    selectCategory: "Select category",
     newCategory: "New category",
     addCategory: "Add Category",
     categoryCreated: "Category added",
