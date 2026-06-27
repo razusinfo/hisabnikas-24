@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
@@ -67,6 +67,9 @@ export async function fetchCategories() {
 }
 
 export const Route = createFileRoute("/_authenticated/products")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    new: search.new === 1 || search.new === "1" ? 1 : undefined,
+  }),
   loader: async ({ context }) => {
     await Promise.all([
       context.queryClient.ensureQueryData({ queryKey: ["products"], queryFn: fetchProducts }),
@@ -81,6 +84,7 @@ export const Route = createFileRoute("/_authenticated/products")({
 function ProductsPage() {
   const { t, lang } = useI18n();
   const qc = useQueryClient();
+  const routeSearch = Route.useSearch();
   const { data } = useSuspenseQuery({ queryKey: ["products"], queryFn: fetchProducts });
   const { data: categories } = useSuspenseQuery({ queryKey: ["categories"], queryFn: fetchCategories });
   const { data: appSettings } = useAppSettings();
@@ -112,6 +116,15 @@ function ProductsPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState(emptyForm);
+
+  useEffect(() => {
+    if (routeSearch.new === 1) {
+      setEditing(null);
+      setForm(emptyForm);
+      setOpen(true);
+      navigate({ to: "/products", search: {}, replace: true });
+    }
+  }, [routeSearch.new, navigate]);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [manageCatOpen, setManageCatOpen] = useState(false);
 
