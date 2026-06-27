@@ -233,17 +233,17 @@ function InvoiceDesignPage() {
     { name: tr("মেসার্স জাহিদ স্টোর", "M/s Jahid Store"), phone: "01622-778899", address: tr("রাজশাহী", "Rajshahi") },
   ];
 
-  const SAMPLE_PRODUCTS = [
-    { name: tr("বাসমতি চাল ৫ কেজি", "Basmati Rice 5kg"), price: 850 },
-    { name: tr("সয়াবিন তেল ১ লিটার", "Soybean Oil 1L"), price: 175 },
-    { name: tr("ডিটারজেন্ট পাউডার ১ কেজি", "Detergent Powder 1kg"), price: 220 },
-    { name: tr("চা পাতা ৫০০ গ্রাম", "Tea Leaves 500g"), price: 320 },
-    { name: tr("লাল চিনি ১ কেজি", "Brown Sugar 1kg"), price: 140 },
-    { name: tr("মসুর ডাল ১ কেজি", "Lentil 1kg"), price: 135 },
-    { name: tr("সরিষার তেল ৫০০ মিলি", "Mustard Oil 500ml"), price: 195 },
-    { name: tr("আটা ২ কেজি", "Flour 2kg"), price: 130 },
-    { name: tr("লবণ ১ কেজি", "Salt 1kg"), price: 40 },
-    { name: tr("হলুদ গুঁড়া ২০০ গ্রাম", "Turmeric Powder 200g"), price: 85 },
+  const SAMPLE_PRODUCTS: { name: string; price: number; warranty: string | null }[] = [
+    { name: tr("বাসমতি চাল ৫ কেজি", "Basmati Rice 5kg"), price: 850, warranty: null },
+    { name: tr("সয়াবিন তেল ১ লিটার", "Soybean Oil 1L"), price: 175, warranty: null },
+    { name: tr("ইলেকট্রিক কেটলি", "Electric Kettle"), price: 1450, warranty: tr("১ বছরের ওয়ারেন্টি", "1 year warranty") },
+    { name: tr("LED বাল্ব ৯ ওয়াট", "LED Bulb 9W"), price: 220, warranty: tr("৬ মাসের ওয়ারেন্টি", "6 months warranty") },
+    { name: tr("লাল চিনি ১ কেজি", "Brown Sugar 1kg"), price: 140, warranty: null },
+    { name: tr("মসুর ডাল ১ কেজি", "Lentil 1kg"), price: 135, warranty: null },
+    { name: tr("ব্লুটুথ স্পিকার", "Bluetooth Speaker"), price: 1850, warranty: tr("২ বছরের ওয়ারেন্টি", "2 years warranty") },
+    { name: tr("আটা ২ কেজি", "Flour 2kg"), price: 130, warranty: null },
+    { name: tr("রাইস কুকার ১.৮L", "Rice Cooker 1.8L"), price: 2750, warranty: tr("৩ বছরের ওয়ারেন্টি", "3 years warranty") },
+    { name: tr("হলুদ গুঁড়া ২০০ গ্রাম", "Turmeric Powder 200g"), price: 85, warranty: null },
   ];
 
   const buildSampleInvoice = () => {
@@ -260,7 +260,7 @@ function InvoiceDesignPage() {
       picked.add(idx);
       const p = SAMPLE_PRODUCTS[idx];
       const qty = 1 + Math.floor(rnd(5, i + 10));
-      return { name: p.name, qty, price: p.price, total: p.price * qty };
+      return { name: p.name, qty, price: p.price, total: p.price * qty, warranty: p.warranty };
     });
     const subtotal = items.reduce((s, i) => s + i.total, 0);
     const discount = Math.round(subtotal * 0.05);
