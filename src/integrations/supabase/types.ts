@@ -732,6 +732,7 @@ export type Database = {
           unit: string
           updated_at: string
           vat: number
+          warranty: string | null
         }
         Insert: {
           barcode?: string | null
@@ -756,6 +757,7 @@ export type Database = {
           unit?: string
           updated_at?: string
           vat?: number
+          warranty?: string | null
         }
         Update: {
           barcode?: string | null
@@ -780,6 +782,7 @@ export type Database = {
           unit?: string
           updated_at?: string
           vat?: number
+          warranty?: string | null
         }
         Relationships: [
           {
