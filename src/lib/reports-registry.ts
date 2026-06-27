@@ -369,7 +369,9 @@ async function fetchExpenses(ownerId: string, from: string, to: string, _lang: R
   };
 }
 
-async function fetchExpensesGroup(ownerId: string, from: string, to: string, key: "method" | "category"): Promise<ReportResult> {
+async function fetchExpensesGroup(ownerId: string, from: string, to: string, lang: ReportLang, key: "method" | "category"): Promise<ReportResult> {
+  const bn = lang === "bn";
+  const other = bn ? "অন্যান্য" : "Other";
   if (key === "method") {
     const { data, error } = await supabase
       .from("expenses")
@@ -380,7 +382,7 @@ async function fetchExpensesGroup(ownerId: string, from: string, to: string, key
     if (error) throw error;
     const map = new Map<string, { count: number; total: number }>();
     for (const r of data ?? []) {
-      const k = (r.method as string) || "অন্যান্য";
+      const k = (r.method as string) || other;
       const e = map.get(k) ?? { count: 0, total: 0 };
       e.count += 1; e.total += num(r.amount);
       map.set(k, e);
@@ -412,7 +414,7 @@ async function fetchExpensesGroup(ownerId: string, from: string, to: string, key
   if (error) throw error;
   const map = new Map<string, { count: number; total: number }>();
   for (const r of data ?? []) {
-    const k = (r.category as string) || "অন্যান্য";
+    const k = (r.category as string) || other;
     const e = map.get(k) ?? { count: 0, total: 0 };
     e.count += 1; e.total += num(r.amount);
     map.set(k, e);
@@ -434,7 +436,8 @@ async function fetchExpensesGroup(ownerId: string, from: string, to: string, key
   };
 }
 
-async function fetchStockSummary(ownerId: string): Promise<ReportResult> {
+async function fetchStockSummary(ownerId: string, lang: ReportLang): Promise<ReportResult> {
+  const bn = lang === "bn";
   const { data, error } = await supabase
     .from("products")
     .select("name, unit, stock, cost_price, sell_price, low_stock_threshold")
@@ -445,7 +448,11 @@ async function fetchStockSummary(ownerId: string): Promise<ReportResult> {
     ...r,
     cost_value: num(r.stock) * num(r.cost_price),
     sell_value: num(r.stock) * num(r.sell_price),
-    status: num(r.stock) <= 0 ? "স্টক নেই" : num(r.stock) <= num(r.low_stock_threshold) ? "কম স্টক" : "ঠিক আছে",
+    status: num(r.stock) <= 0
+      ? (bn ? "স্টক নেই" : "Out of stock")
+      : num(r.stock) <= num(r.low_stock_threshold)
+        ? (bn ? "কম স্টক" : "Low stock")
+        : (bn ? "ঠিক আছে" : "OK"),
   }));
   const totalStock = rows.reduce((s, r) => s + num(r.stock), 0);
   const totalCost = rows.reduce((s, r) => s + (r as any).cost_value, 0);
@@ -469,7 +476,7 @@ async function fetchStockSummary(ownerId: string): Promise<ReportResult> {
   };
 }
 
-async function fetchStockMovement(ownerId: string, from: string, to: string): Promise<ReportResult> {
+async function fetchStockMovement(ownerId: string, from: string, to: string, _lang: ReportLang): Promise<ReportResult> {
   const [pi, si] = await Promise.all([
     supabase.from("purchase_items").select("product_id, product_name, qty, purchases!inner(created_at, owner_id)")
       .eq("owner_id", ownerId)
@@ -515,7 +522,7 @@ async function fetchStockMovement(ownerId: string, from: string, to: string): Pr
   };
 }
 
-async function fetchItemDetail(ownerId: string): Promise<ReportResult> {
+async function fetchItemDetail(ownerId: string, _lang: ReportLang): Promise<ReportResult> {
   const { data, error } = await supabase
     .from("products")
     .select("name, sku, barcode, unit, size, cost_price, sell_price, mrp, stock, expiry_date, batch_no, categories(name)")
