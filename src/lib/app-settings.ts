@@ -5,6 +5,7 @@ export type AppSettings = {
   // Products
   productActive?: boolean;
   itemType?: "product" | "service";
+  sku?: boolean;
   barcodeScan?: boolean;
   stockMaintenance?: boolean;
   stockValuationMethod?: "avg" | "fifo" | "lifo";

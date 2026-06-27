@@ -23,6 +23,7 @@ type AppSettings = {
   // Products
   productActive?: boolean;
   itemType?: "product" | "service";
+  sku?: boolean;
   barcodeScan?: boolean;
   stockMaintenance?: boolean;
   stockValuationMethod?: "avg" | "fifo" | "lifo";
@@ -118,6 +119,7 @@ const L = {
   itemType: { bn: "আইটেমের ধরণ", en: "Item type" },
   product: { bn: "পণ্য", en: "Product" },
   service: { bn: "সেবা", en: "Service" },
+  sku: { bn: "এসকিউ (SKU)", en: "SKU" },
   barcodeScan: { bn: "বারকোড স্ক্যান", en: "Barcode scan" },
   stockMaintenance: { bn: "স্টক মেইনটেনেন্স", en: "Stock maintenance" },
   stockValuationMethod: { bn: "স্টক মূল্য নির্ধারণের প্রক্রিয়া", en: "Stock valuation method" },
@@ -324,7 +326,8 @@ function SettingsPage() {
               { value: "service", label: tr("service") },
             ]}
           />
-          <ToggleRow label={tr("barcodeScan")} checked={!!s.barcodeScan} onChange={(v) => set("barcodeScan", v)} />
+          <ToggleRow label={tr("sku")} checked={s.sku !== false} onChange={(v) => set("sku", v)} />
+          <ToggleRow label={tr("barcodeScan")} checked={s.barcodeScan !== false} onChange={(v) => set("barcodeScan", v)} />
           <ToggleRow label={tr("stockMaintenance")} checked={!!s.stockMaintenance} onChange={(v) => set("stockMaintenance", v)} />
           <SelectRow
             label={tr("stockValuationMethod")}
