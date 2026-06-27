@@ -339,7 +339,7 @@ function SettingsPage() {
               { value: "lifo", label: tr("lifo") },
             ]}
           />
-          <ToggleRow label={tr("itemUnit")} checked={!!s.itemUnit} onChange={(v) => set("itemUnit", v)} />
+          <ToggleRow label={tr("itemUnit")} checked={s.itemUnit !== false} onChange={(v) => set("itemUnit", v)} />
           <ToggleRow label={tr("itemCategory")} checked={!!s.itemCategory} onChange={(v) => set("itemCategory", v)} />
           <ToggleRow label={tr("showPurchasePrice")} checked={!!s.showPurchasePrice} onChange={(v) => set("showPurchasePrice", v)} />
           <ToggleRow label={tr("discount")} checked={!!s.discount} onChange={(v) => set("discount", v)} />
