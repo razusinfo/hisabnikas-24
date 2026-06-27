@@ -729,6 +729,7 @@ function ReadyAppDownloadCard() {
   const releasesUrl = `https://github.com/${repo}/releases/latest`;
   const directApkUrl = `https://github.com/${repo}/releases/latest/download/HisabNikash24-debug.apk`;
   const actionsUrl = `https://github.com/${repo}/actions/workflows/android-build.yml`;
+  const [downloading, setDownloading] = useState(false);
 
   const fmtSize = (b: number) =>
     b > 1024 * 1024 ? `${(b / 1024 / 1024).toFixed(1)} MB` : `${(b / 1024).toFixed(0)} KB`;
@@ -758,15 +759,64 @@ function ReadyAppDownloadCard() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700">
-          <a
-            href={directApkUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+        <Button
+          size="sm"
+          className="bg-emerald-600 hover:bg-emerald-700"
+          disabled={downloading}
+          onClick={async () => {
+            setDownloading(true);
+            try {
+              const res = await fetch(
+                `https://api.github.com/repos/${repo}/releases/latest`,
+                { headers: { Accept: "application/vnd.github+json" } },
+              );
+              if (res.status === 404) {
+                toast.error("কোনো রিলিজ এখনো প্রকাশিত হয়নি");
+                return;
+              }
+              if (!res.ok) {
+                toast.error(`GitHub API error: ${res.status}`);
+                return;
+              }
+              const rel = (await res.json()) as {
+                tag_name: string;
+                name: string | null;
+                assets: Array<{ name: string; browser_download_url: string }>;
+              };
+              const assets = rel.assets || [];
+              // Prefer release APK (non-debug, non-unsigned); fall back to any release APK; never debug.
+              const releaseApk =
+                assets.find(
+                  (a) =>
+                    /\.apk$/i.test(a.name) &&
+                    !/debug/i.test(a.name) &&
+                    !/unsigned/i.test(a.name),
+                ) ||
+                assets.find((a) => /release.*\.apk$/i.test(a.name)) ||
+                assets.find((a) => /\.apk$/i.test(a.name) && !/debug/i.test(a.name));
+              if (!releaseApk) {
+                toast.error(
+                  "এই রিলিজে কোনো release APK ফাইল পাওয়া যায়নি। অনুগ্রহ করে 'সব ভার্সন' থেকে দেখুন।",
+                );
+                return;
+              }
+              toast.success(`${rel.name || rel.tag_name} — ডাউনলোড শুরু হচ্ছে`);
+              window.open(releaseApk.browser_download_url, "_blank", "noopener,noreferrer");
+            } catch (e) {
+              toast.error(
+                `ডাউনলোড করা যাচ্ছে না: ${e instanceof Error ? e.message : "অজানা সমস্যা"}`,
+              );
+            } finally {
+              setDownloading(false);
+            }
+          }}
+        >
+          {downloading ? (
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
             <Download className="h-4 w-4 mr-2" />
-            সর্বশেষ APK ডাউনলোড
-          </a>
+          )}
+          সর্বশেষ APK ডাউনলোড
         </Button>
         <Button asChild size="sm" variant="outline" className="border-emerald-300">
           <a
