@@ -47,7 +47,7 @@ export async function fetchSales() {
 async function fetchSaleItems(saleId: string) {
   const { data, error } = await supabase
     .from("sale_items")
-    .select("id,product_id,product_name,qty,unit_price,line_total")
+    .select("id,product_id,product_name,qty,unit_price,line_total,products(warranty)")
     .eq("sale_id", saleId);
   if (error) throw error;
   return data ?? [];
@@ -539,6 +539,7 @@ function SalesPage() {
           qty: l.qty,
           price: l.unit_price,
           total: l.line_total,
+          warranty: (l as any).products?.warranty ?? null,
         })),
         discount: s.discount,
         tax: s.tax,

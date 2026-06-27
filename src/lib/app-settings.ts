@@ -22,6 +22,7 @@ export type AppSettings = {
   batchNumber?: boolean;
   serialImei?: boolean;
   size?: boolean;
+  warranty?: boolean;
   expiryAlert?: boolean;
   expiryAlertDays?: number;
   lowStockAlert?: boolean;

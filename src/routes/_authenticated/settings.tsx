@@ -40,6 +40,7 @@ type AppSettings = {
   batchNumber?: boolean;
   serialImei?: boolean;
   size?: boolean;
+  warranty?: boolean;
   expiryAlert?: boolean;
   expiryAlertDays?: number;
   lowStockAlert?: boolean;
@@ -137,6 +138,7 @@ const L = {
   batchNumber: { bn: "ব্যাচ নাম্বার", en: "Batch number" },
   serialImei: { bn: "ক্রমিক নং / আইএমইআই", en: "Serial / IMEI" },
   size: { bn: "আকার", en: "Size" },
+  warranty: { bn: "ওয়ারেন্টি", en: "Warranty" },
   expiryAlert: { bn: "মেয়াদ উত্তীর্ণের এলার্ট", en: "Expiry alert" },
   expiryAlertDays: { bn: "মেয়াদ উত্তীর্ণের এলার্টের জন্য সর্বোচ্চ দিনের পরিমাণ", en: "Max days for expiry alert" },
   lowStockAlert: { bn: "স্টক শেষের এলার্ট", en: "Low stock alert" },
@@ -352,6 +354,7 @@ function SettingsPage() {
           {/* Column 3 */}
           <ToggleRow label={tr("serialImei")} checked={!!s.serialImei} onChange={(v) => set("serialImei", v)} />
           <ToggleRow label={tr("size")} checked={!!s.size} onChange={(v) => set("size", v)} />
+          <ToggleRow label={tr("warranty")} checked={!!s.warranty} onChange={(v) => set("warranty", v)} />
           <ToggleRow label={tr("expiryAlert")} checked={!!s.expiryAlert} onChange={(v) => set("expiryAlert", v)} />
           <NumberRow
             label={tr("expiryAlertDays")}

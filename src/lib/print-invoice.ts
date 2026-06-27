@@ -6,6 +6,7 @@ export type PrintInvoiceItem = {
   qty: number | string;
   price: number | string;
   total: number | string;
+  warranty?: string | null;
 };
 
 export type PrintInvoiceLabels = {
@@ -107,11 +108,12 @@ export function buildInvoiceHtml({ doc, business, settings, lang, labels, hideMe
   const titleClr = invertHeader ? "#fff" : (thermal ? "#000" : theme);
   const subClr = invertHeader ? "rgba(255,255,255,0.85)" : "#64748b";
 
+  const warrantyLabel = lang === "bn" ? "ওয়ারেন্টি" : "Warranty";
   const rows = doc.items
     .map(
       (l, i) => `<tr>
       <td class="num">${i + 1}</td>
-      <td>${esc(l.name)}</td>
+      <td>${esc(l.name)}${l.warranty ? `<div style="font-size:${thermal ? 9 : baseFs - 5}px;color:${thermal ? "#000" : "#64748b"};margin-top:2px"><b>${warrantyLabel}:</b> ${esc(l.warranty)}</div>` : ""}</td>
       <td class="right">${typeof l.price === "number" ? fmtMoney(l.price, lang) : esc(l.price)}</td>
       <td class="right num">${lang === "bn" && typeof l.qty === "number" ? Number(l.qty).toLocaleString("bn-BD") : esc(l.qty)}</td>
       <td class="right">${typeof l.total === "number" ? fmtMoney(l.total, lang) : esc(l.total)}</td>
