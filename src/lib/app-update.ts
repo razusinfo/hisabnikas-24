@@ -21,7 +21,7 @@ const LAST_SEEN_KEY = "hisabnikash24:last_seen_release";
 export function getConfiguredRepo(): string {
   const envRepo = (import.meta.env.VITE_GITHUB_REPO as string | undefined)?.trim();
   if (envRepo && envRepo.includes("/")) return envRepo;
-  return "lovable-dev/hisab-nikash-24";
+  return "razusinfo/hisabnikas-24";
 }
 
 export function isNativeAndroid(): boolean {
