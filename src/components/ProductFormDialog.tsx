@@ -327,26 +327,31 @@ export function ProductFormDialog({
               )}
             </div>
           )}
-          {(sett.size || sett.expiryDate) && (
-            <div className="grid grid-cols-2 gap-3">
-              {sett.size && (
-                <div className="space-y-1.5"><Label>{bn ? "সাইজ" : "Size"}</Label><Input value={form.size} onChange={(e) => setForm({ ...form, size: e.target.value })} /></div>
-              )}
-              {sett.expiryDate && (
-                <div className="space-y-1.5"><Label>{bn ? "মেয়াদ উত্তীর্ণের তারিখ" : "Expiry date"}</Label><DateInput value={form.expiry_date} onChange={(v) => setForm({ ...form, expiry_date: v })} /></div>
-              )}
+          {sett.expiryDate && (
+            <div className="space-y-1.5">
+              <Label>{bn ? "মেয়াদ উত্তীর্ণের তারিখ" : "Expiry date"}</Label>
+              <DateInput value={form.expiry_date} onChange={(v) => setForm({ ...form, expiry_date: v })} />
             </div>
           )}
           {sett.warranty && (
             <div className="space-y-1.5">
               <Label>{bn ? "ওয়ারেন্টি" : "Warranty"}</Label>
-              <Input
-                value={form.warranty}
-                onChange={(e) => setForm({ ...form, warranty: e.target.value })}
-                placeholder={bn ? "যেমন: ১ বছরের ওয়ারেন্টি" : "e.g. 1 year manufacturer warranty"}
-              />
+              <Select
+                value={form.warranty || "none"}
+                onValueChange={(v) => setForm({ ...form, warranty: v === "none" ? "" : v })}
+              >
+                <SelectTrigger><SelectValue placeholder={bn ? "ওয়ারেন্টি নির্বাচন করুন" : "Select warranty"} /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">{bn ? "কোন ওয়ারেন্টি নেই" : "No warranty"}</SelectItem>
+                  <SelectItem value={bn ? "৬ মাসের ওয়ারেন্টি" : "6 months warranty"}>{bn ? "৬ মাসের ওয়ারেন্টি" : "6 months warranty"}</SelectItem>
+                  <SelectItem value={bn ? "১ বছরের ওয়ারেন্টি" : "1 year warranty"}>{bn ? "১ বছরের ওয়ারেন্টি" : "1 year warranty"}</SelectItem>
+                  <SelectItem value={bn ? "২ বছরের ওয়ারেন্টি" : "2 years warranty"}>{bn ? "২ বছরের ওয়ারেন্টি" : "2 years warranty"}</SelectItem>
+                  <SelectItem value={bn ? "৩ বছরের ওয়ারেন্টি" : "3 years warranty"}>{bn ? "৩ বছরের ওয়ারেন্টি" : "3 years warranty"}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           )}
+
           <DialogFooter className="gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t("cancel")}</Button>
             <Button type="submit" disabled={save.isPending}>{t("save")}</Button>
