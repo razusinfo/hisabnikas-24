@@ -6,6 +6,8 @@ export type PrintInvoiceItem = {
   qty: number | string;
   price: number | string;
   total: number | string;
+  warranty?: string | null;
+  serial_no?: string | null;
 };
 
 export type PrintInvoiceLabels = {
