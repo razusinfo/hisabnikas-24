@@ -337,6 +337,16 @@ export function ProductFormDialog({
               )}
             </div>
           )}
+          {sett.warranty && (
+            <div className="space-y-1.5">
+              <Label>{bn ? "ওয়ারেন্টি" : "Warranty"}</Label>
+              <Input
+                value={form.warranty}
+                onChange={(e) => setForm({ ...form, warranty: e.target.value })}
+                placeholder={bn ? "যেমন: ১ বছরের ওয়ারেন্টি" : "e.g. 1 year manufacturer warranty"}
+              />
+            </div>
+          )}
           <DialogFooter className="gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t("cancel")}</Button>
             <Button type="submit" disabled={save.isPending}>{t("save")}</Button>
