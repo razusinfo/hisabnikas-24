@@ -258,7 +258,8 @@ async function fetchSalesProfit(ownerId: string, from: string, to: string, _lang
   };
 }
 
-async function fetchProfitLoss(ownerId: string, from: string, to: string): Promise<ReportResult> {
+async function fetchProfitLoss(ownerId: string, from: string, to: string, lang: ReportLang): Promise<ReportResult> {
+  const bn = lang === "bn";
   const [salesRes, purchRes, expRes] = await Promise.all([
     supabase.from("sales").select("total").eq("owner_id", ownerId).gte("created_at", startISO(from)).lte("created_at", endISO(to)),
     supabase.from("purchases").select("total").eq("owner_id", ownerId).gte("created_at", startISO(from)).lte("created_at", endISO(to)),
@@ -273,11 +274,11 @@ async function fetchProfitLoss(ownerId: string, from: string, to: string): Promi
   const gross = sales - purch;
   const net = gross - exp;
   const rows = [
-    { item: "মোট বিক্রয়", itemEn: "Total Sales", amount: sales },
-    { item: "মোট ক্রয়", itemEn: "Total Purchase", amount: purch },
-    { item: "গ্রস লাভ", itemEn: "Gross Profit", amount: gross },
-    { item: "মোট খরচ", itemEn: "Total Expenses", amount: exp },
-    { item: "নিট লাভ", itemEn: "Net Profit", amount: net },
+    { item: bn ? "মোট বিক্রয়" : "Total Sales", amount: sales },
+    { item: bn ? "মোট ক্রয়" : "Total Purchase", amount: purch },
+    { item: bn ? "গ্রস লাভ" : "Gross Profit", amount: gross },
+    { item: bn ? "মোট খরচ" : "Total Expenses", amount: exp },
+    { item: bn ? "নিট লাভ" : "Net Profit", amount: net },
   ];
   return {
     columns: [
@@ -294,7 +295,8 @@ async function fetchProfitLoss(ownerId: string, from: string, to: string): Promi
   };
 }
 
-async function fetchCashbookByMethods(ownerId: string, from: string, to: string, methods: string[]): Promise<ReportResult> {
+async function fetchCashbookByMethods(ownerId: string, from: string, to: string, lang: ReportLang, methods: string[]): Promise<ReportResult> {
+  const bn = lang === "bn";
   const { data, error } = await supabase
     .from("cashbook")
     .select("entry_date, type, category, description, amount, method")
@@ -304,11 +306,17 @@ async function fetchCashbookByMethods(ownerId: string, from: string, to: string,
     .lte("entry_date", to)
     .order("entry_date", { ascending: false });
   if (error) throw error;
-  const rows = data ?? [];
+  const rawRows = data ?? [];
   let inAmt = 0, outAmt = 0;
-  for (const r of rows) {
+  for (const r of rawRows) {
     if (r.type === "in") inAmt += num(r.amount); else outAmt += num(r.amount);
   }
+  const rows = rawRows.map((r: any) => ({
+    ...r,
+    type: bn
+      ? (r.type === "in" ? "জমা" : "উত্তোলন")
+      : (r.type === "in" ? "Cash In" : "Cash Out"),
+  }));
   return {
     columns: [
       { key: "entry_date", label: "তারিখ", labelEn: "Date", format: "date" },
@@ -330,7 +338,7 @@ async function fetchCashbookByMethods(ownerId: string, from: string, to: string,
 const MOBILE_METHODS = ["bkash", "nagad", "rocket", "upay", "tap", "mobile_banking", "বিকাশ", "নগদ", "রকেট"];
 const BANK_METHODS = ["bank", "bank_transfer", "cheque", "ব্যাংক"];
 
-async function fetchExpenses(ownerId: string, from: string, to: string): Promise<ReportResult> {
+async function fetchExpenses(ownerId: string, from: string, to: string, _lang: ReportLang): Promise<ReportResult> {
   const { data, error } = await supabase
     .from("expenses")
     .select("expense_date, description, amount, paid_amount, method, party_name")
