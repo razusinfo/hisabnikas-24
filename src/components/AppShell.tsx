@@ -71,7 +71,7 @@ function LangToggle({ compact = false }: { compact?: boolean }) {
         )}
         aria-pressed={lang === "bn"}
       >
-        বাং
+        {lang === "bn" ? "বাং" : "BN"}
       </button>
     </div>
   );
@@ -173,7 +173,7 @@ function SidebarContent({
           className="mt-0.5 md:mt-1 inline-flex items-center gap-1 text-[11px] md:text-xs text-sidebar-foreground/60 hover:text-sidebar-foreground"
         >
           <Pencil className="h-2.5 w-2.5 md:h-3 md:w-3" />
-          edit
+          {t("edit")}
         </Link>
       </div>
 

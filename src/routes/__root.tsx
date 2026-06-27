@@ -11,7 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { I18nProvider } from "@/lib/i18n";
+import { I18nProvider, useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -71,11 +71,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "হিসব নিকাশ-২৪ — Inventory & Accounting OS" },
+      { title: "Hisab Nikash-24 — Inventory & Accounting OS" },
       { name: "description", content: "Modern inventory management & accounting for retail, wholesale, and online business." },
       { name: "theme-color", content: "#0A0A0A" },
-      { property: "og:title", content: "হিসব নিকাশ-২৪ — Inventory & Accounting OS" },
-      { name: "twitter:title", content: "হিসব নিকাশ-২৪ — Inventory & Accounting OS" },
+      { property: "og:title", content: "Hisab Nikash-24 — Inventory & Accounting OS" },
+      { name: "twitter:title", content: "Hisab Nikash-24 — Inventory & Accounting OS" },
       { property: "og:description", content: "Modern inventory management & accounting for retail, wholesale, and online business." },
       { name: "twitter:description", content: "Modern inventory management & accounting for retail, wholesale, and online business." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0236ca10-fbb3-451e-8bd6-82577d9c0ecc/id-preview-8a832ce5--cde7a6bb-d29f-4273-9f97-998bad84e306.lovable.app-1781314250690.png" },
@@ -133,9 +133,21 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
+        <DocumentLanguageSync />
         <Outlet />
         <Toaster richColors theme="light" position="top-right" />
       </I18nProvider>
     </QueryClientProvider>
   );
+}
+
+function DocumentLanguageSync() {
+  const { lang, t } = useI18n();
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.title = `${t("appName")} — ${t("tagline")}`;
+  }, [lang, t]);
+
+  return null;
 }
