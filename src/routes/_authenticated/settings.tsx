@@ -724,9 +724,10 @@ function NumberRow({
 // ===== রেডি Android App ডাউনলোড কার্ড =====
 function ReadyAppDownloadCard() {
   const envRepo = (import.meta.env.VITE_GITHUB_REPO as string | undefined)?.trim();
-  const repo = envRepo && envRepo.includes("/") ? envRepo : "lovable-dev/hisab-nikash-24";
+  const repo = envRepo && envRepo.includes("/") ? envRepo : "razusinfo/hisabnikas-24";
   const isConfigured = Boolean(envRepo && envRepo.includes("/"));
   const releasesUrl = `https://github.com/${repo}/releases/latest`;
+  const directApkUrl = `https://github.com/${repo}/releases/latest/download/HisabNikash24-debug.apk`;
   const actionsUrl = `https://github.com/${repo}/actions/workflows/android-build.yml`;
 
   const fmtSize = (b: number) =>
@@ -759,12 +760,21 @@ function ReadyAppDownloadCard() {
       <div className="flex flex-wrap gap-2">
         <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700">
           <a
-            href={`https://hisabnikas24.top/download/?current=${encodeURIComponent(APP_VERSION)}`}
+            href={directApkUrl}
             target="_blank"
             rel="noopener noreferrer"
           >
             <Download className="h-4 w-4 mr-2" />
-            APK ডাউনলোড পেজ
+            সর্বশেষ APK ডাউনলোড
+          </a>
+        </Button>
+        <Button asChild size="sm" variant="outline" className="border-emerald-300">
+          <a
+            href={`https://hisabnikas24.top/download/?current=${encodeURIComponent(APP_VERSION)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            ডাউনলোড পেজ
           </a>
         </Button>
         <Button asChild size="sm" variant="outline" className="border-emerald-300">

@@ -4,21 +4,20 @@ const config: CapacitorConfig = {
   appId: 'com.hisabnikash24',
   appName: 'হিসাব নিকাশ-২৪',
   webDir: '.output/public',
-  // IMPORTANT: কোন `server.url` দেওয়া যাবে না — দিলে অ্যাপ ব্রাউজারের মত
-  // লাইভ সাইট লোড করে (WebView wrapper)। Production APK তে অ্যাপ নিজের
-  // bundled `.output/public` থেকে চলবে — এটাই আসল native অ্যাপ অভিজ্ঞতা।
-  // লোকাল dev এ লাইভ-রিলোড দরকার হলে শুধু তখনই নিচে server.url যোগ করবেন,
-  // APK build এর আগে আবার সরিয়ে ফেলবেন।
+  // TanStack Start (SSR) প্রজেক্ট — `.output/public` তে static `index.html` থাকে না।
+  // তাই Capacitor কে live custom domain লোড করতে বলা হচ্ছে। এতে মোবাইল অ্যাপে
+  // সাদা স্ক্রিন বা "Webpage not available" আসবে না।
+  server: {
+    url: 'https://hisabnikas24.top/',
+    cleartext: true,
+    androidScheme: 'https',
+  },
   android: {
     allowMixedContent: true,
   },
   plugins: {
-    BarcodeScanner: {
-      // Camera permission rationale shown to user
-    },
-    Camera: {
-      // Permissions handled automatically
-    },
+    BarcodeScanner: {},
+    Camera: {},
   },
 };
 
