@@ -971,9 +971,7 @@ export type Database = {
           product_name: string
           qty: number
           sale_id: string
-          serial_no: string | null
           unit_price: number
-          warranty: string | null
         }
         Insert: {
           id?: string
@@ -983,9 +981,7 @@ export type Database = {
           product_name: string
           qty: number
           sale_id: string
-          serial_no?: string | null
           unit_price: number
-          warranty?: string | null
         }
         Update: {
           id?: string
@@ -995,9 +991,7 @@ export type Database = {
           product_name?: string
           qty?: number
           sale_id?: string
-          serial_no?: string | null
           unit_price?: number
-          warranty?: string | null
         }
         Relationships: [
           {

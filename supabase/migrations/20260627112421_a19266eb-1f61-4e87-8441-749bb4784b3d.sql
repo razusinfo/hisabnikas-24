@@ -1,1 +1,0 @@
-ALTER TABLE public.sale_items ADD COLUMN IF NOT EXISTS warranty text, ADD COLUMN IF NOT EXISTS serial_no text;
