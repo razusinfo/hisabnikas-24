@@ -24,6 +24,8 @@ export type ReportResult = {
   summary: ReportSummary[];
 };
 
+export type ReportLang = "bn" | "en";
+
 export type ReportConfig = {
   slug: string;
   title: string;
@@ -31,7 +33,7 @@ export type ReportConfig = {
   description: string;
   descriptionEn: string;
   usesDateFilter: boolean;
-  fetch: (ownerId: string, from: string, to: string) => Promise<ReportResult>;
+  fetch: (ownerId: string, from: string, to: string, lang: ReportLang) => Promise<ReportResult>;
 };
 
 // from / to are YYYY-MM-DD inclusive. For created_at (timestamptz) we expand to end-of-day.
