@@ -84,7 +84,6 @@ export const Route = createFileRoute("/_authenticated/products")({
 function ProductsPage() {
   const { t, lang } = useI18n();
   const qc = useQueryClient();
-  const navigate = useNavigate();
   const routeSearch = Route.useSearch();
   const { data } = useSuspenseQuery({ queryKey: ["products"], queryFn: fetchProducts });
   const { data: categories } = useSuspenseQuery({ queryKey: ["categories"], queryFn: fetchCategories });
