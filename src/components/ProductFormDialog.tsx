@@ -295,21 +295,24 @@ export function ProductFormDialog({
                   {categories.map((c) => (
                     <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                   ))}
+                  <SelectItem value="__new__">+ {t("newCategory")}</SelectItem>
                 </SelectContent>
               </Select>
-              <div className="flex gap-2 pt-1">
-                <Input
-                  value={newCategoryName}
-                  onChange={(e) => setNewCategoryName(e.target.value)}
-                  placeholder={t("newCategory")}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") { e.preventDefault(); addCategory.mutate(newCategoryName); }
-                  }}
-                />
-                <Button type="button" variant="outline" disabled={addCategory.isPending || !newCategoryName.trim()} onClick={() => addCategory.mutate(newCategoryName)}>
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
+              {form.category_id === "__new__" && (
+                <div className="flex gap-2 pt-1">
+                  <Input
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    placeholder={t("newCategory")}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") { e.preventDefault(); addCategory.mutate(newCategoryName); }
+                    }}
+                  />
+                  <Button type="button" variant="outline" disabled={addCategory.isPending || !newCategoryName.trim()} onClick={() => addCategory.mutate(newCategoryName)}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
             </div>
           )}
           {(sett.vat || sett.mrpPrice) && (
