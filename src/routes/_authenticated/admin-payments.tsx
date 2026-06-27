@@ -435,7 +435,7 @@ function AdminPaymentsPage() {
               </div>
               <div className="space-y-3">
                 {filteredUsers.map((u) => {
-                  const planLabel = u.status === "active" ? (u.plan ?? "—") : (u.status ?? "—");
+                  const planLabel = u.status === "active" ? (u.plan ?? "—") : statusLabel(u.status, isBn);
                   const planVariant: "default" | "secondary" | "destructive" =
                     u.status === "active"
                       ? "default"
@@ -479,9 +479,9 @@ function AdminPaymentsPage() {
                             </div>
                           )}
                           <div className="text-xs text-muted-foreground pt-1">
-                            যোগদান: {u.created_at ? fmtDateTime(u.created_at, "bn") : "—"}
+                            {isBn ? "যোগদান" : "Joined"}: {formatDateTime(u.created_at)}
                             {u.expires_at && (
-                              <> {" · "}মেয়াদ: {fmtDateTime(u.expires_at, "bn")}</>
+                              <> {" · "}{isBn ? "মেয়াদ" : "Expires"}: {formatDateTime(u.expires_at)}</>
                             )}
                           </div>
                         </div>
@@ -489,7 +489,7 @@ function AdminPaymentsPage() {
                           <Badge variant={planVariant}>{planLabel}</Badge>
                           <div className="text-xs text-muted-foreground flex items-center gap-1">
                             <MessageSquare className="h-3 w-3" />
-                            {Number(u.message_credits).toLocaleString("bn-BD")} ক্রেডিট
+                            {formatNumber(Number(u.message_credits))} {isBn ? "ক্রেডিট" : "credits"}
                           </div>
                         </div>
                       </div>
