@@ -24,6 +24,8 @@ export type ReportResult = {
   summary: ReportSummary[];
 };
 
+export type ReportLang = "bn" | "en";
+
 export type ReportConfig = {
   slug: string;
   title: string;
@@ -31,7 +33,7 @@ export type ReportConfig = {
   description: string;
   descriptionEn: string;
   usesDateFilter: boolean;
-  fetch: (ownerId: string, from: string, to: string) => Promise<ReportResult>;
+  fetch: (ownerId: string, from: string, to: string, lang: ReportLang) => Promise<ReportResult>;
 };
 
 // from / to are YYYY-MM-DD inclusive. For created_at (timestamptz) we expand to end-of-day.
@@ -40,7 +42,7 @@ const endISO = (to: string) => `${to}T23:59:59.999Z`;
 
 const num = (v: unknown) => Number(v ?? 0) || 0;
 
-async function fetchPurchase(ownerId: string, from: string, to: string): Promise<ReportResult> {
+async function fetchPurchase(ownerId: string, from: string, to: string, _lang: ReportLang): Promise<ReportResult> {
   const { data, error } = await supabase
     .from("purchases")
     .select("id, invoice_no, supplier_name, total, paid, due, payment_method, created_at")
@@ -71,7 +73,8 @@ async function fetchPurchase(ownerId: string, from: string, to: string): Promise
   };
 }
 
-async function fetchSales(ownerId: string, from: string, to: string): Promise<ReportResult> {
+async function fetchSales(ownerId: string, from: string, to: string, lang: ReportLang): Promise<ReportResult> {
+  const bn = lang === "bn";
   const { data, error } = await supabase
     .from("sales")
     .select("id, invoice_no, customer_id, total, paid, due, payment_method, created_at, customers(name)")
@@ -82,7 +85,7 @@ async function fetchSales(ownerId: string, from: string, to: string): Promise<Re
   if (error) throw error;
   const rows = (data ?? []).map((r: any) => ({
     ...r,
-    customer_name: r.customers?.name ?? "ওয়াক-ইন",
+    customer_name: r.customers?.name ?? (bn ? "ওয়াক-ইন" : "Walk-in"),
   }));
   let total = 0, paid = 0, due = 0;
   for (const r of rows) { total += num(r.total); paid += num(r.paid); due += num(r.due); }
@@ -105,7 +108,8 @@ async function fetchSales(ownerId: string, from: string, to: string): Promise<Re
   };
 }
 
-async function fetchProducts(ownerId: string): Promise<ReportResult> {
+async function fetchProducts(ownerId: string, lang: ReportLang): Promise<ReportResult> {
+  const bn = lang === "bn";
   const { data, error } = await supabase
     .from("products")
     .select("id, name, sku, unit, cost_price, sell_price, stock, low_stock_threshold, is_active, categories(name)")
@@ -117,6 +121,7 @@ async function fetchProducts(ownerId: string): Promise<ReportResult> {
     category_name: r.categories?.name ?? "-",
     value: num(r.stock) * num(r.cost_price),
   }));
+  void bn;
   let totalStock = 0, totalValue = 0;
   for (const r of rows) { totalStock += num(r.stock); totalValue += num((r as any).value); }
   return {
@@ -139,7 +144,7 @@ async function fetchProducts(ownerId: string): Promise<ReportResult> {
   };
 }
 
-async function fetchCustomers(ownerId: string): Promise<ReportResult> {
+async function fetchCustomers(ownerId: string, _lang: ReportLang): Promise<ReportResult> {
   const { data, error } = await supabase
     .from("customers")
     .select("id, name, phone, address, due_balance")
@@ -163,7 +168,8 @@ async function fetchCustomers(ownerId: string): Promise<ReportResult> {
   };
 }
 
-async function fetchDues(ownerId: string): Promise<ReportResult> {
+async function fetchDues(ownerId: string, lang: ReportLang): Promise<ReportResult> {
+  const bn = lang === "bn";
   const [cust, exp] = await Promise.all([
     supabase.from("customers").select("name, phone, due_balance").eq("owner_id", ownerId).gt("due_balance", 0),
     supabase.from("expenses").select("party_name, party_type, amount, paid_amount, due_date").eq("owner_id", ownerId),
@@ -172,11 +178,17 @@ async function fetchDues(ownerId: string): Promise<ReportResult> {
   if (exp.error) throw exp.error;
   const rows: any[] = [];
   for (const c of cust.data ?? []) {
-    rows.push({ party: c.name, phone: c.phone ?? "-", type: "কাস্টমার", due: num(c.due_balance), due_date: null });
+    rows.push({ party: c.name, phone: c.phone ?? "-", type: bn ? "কাস্টমার" : "Customer", due: num(c.due_balance), due_date: null });
   }
   for (const e of exp.data ?? []) {
     const d = num(e.amount) - num(e.paid_amount);
-    if (d > 0 && e.party_name) rows.push({ party: e.party_name, phone: "-", type: e.party_type ?? "সরবরাহকারী", due: d, due_date: e.due_date });
+    if (d > 0 && e.party_name) {
+      const typeRaw = e.party_type ?? (bn ? "সরবরাহকারী" : "Supplier");
+      const typeLocalized = bn
+        ? (typeRaw === "supplier" ? "সরবরাহকারী" : typeRaw === "customer" ? "কাস্টমার" : typeRaw === "other" ? "অন্যান্য" : typeRaw)
+        : (typeRaw === "supplier" || typeRaw === "সরবরাহকারী" ? "Supplier" : typeRaw === "customer" || typeRaw === "কাস্টমার" ? "Customer" : typeRaw === "other" || typeRaw === "অন্যান্য" ? "Other" : typeRaw);
+      rows.push({ party: e.party_name, phone: "-", type: typeLocalized, due: d, due_date: e.due_date });
+    }
   }
   rows.sort((a, b) => b.due - a.due);
   const total = rows.reduce((s, r) => s + r.due, 0);
@@ -196,7 +208,7 @@ async function fetchDues(ownerId: string): Promise<ReportResult> {
   };
 }
 
-async function fetchSalesProfit(ownerId: string, from: string, to: string): Promise<ReportResult> {
+async function fetchSalesProfit(ownerId: string, from: string, to: string, _lang: ReportLang): Promise<ReportResult> {
   const { data: sales, error } = await supabase
     .from("sales")
     .select("id, invoice_no, total, created_at, sale_items(qty, line_total, unit_price, product_id)")
@@ -246,7 +258,8 @@ async function fetchSalesProfit(ownerId: string, from: string, to: string): Prom
   };
 }
 
-async function fetchProfitLoss(ownerId: string, from: string, to: string): Promise<ReportResult> {
+async function fetchProfitLoss(ownerId: string, from: string, to: string, lang: ReportLang): Promise<ReportResult> {
+  const bn = lang === "bn";
   const [salesRes, purchRes, expRes] = await Promise.all([
     supabase.from("sales").select("total").eq("owner_id", ownerId).gte("created_at", startISO(from)).lte("created_at", endISO(to)),
     supabase.from("purchases").select("total").eq("owner_id", ownerId).gte("created_at", startISO(from)).lte("created_at", endISO(to)),
@@ -261,11 +274,11 @@ async function fetchProfitLoss(ownerId: string, from: string, to: string): Promi
   const gross = sales - purch;
   const net = gross - exp;
   const rows = [
-    { item: "মোট বিক্রয়", itemEn: "Total Sales", amount: sales },
-    { item: "মোট ক্রয়", itemEn: "Total Purchase", amount: purch },
-    { item: "গ্রস লাভ", itemEn: "Gross Profit", amount: gross },
-    { item: "মোট খরচ", itemEn: "Total Expenses", amount: exp },
-    { item: "নিট লাভ", itemEn: "Net Profit", amount: net },
+    { item: bn ? "মোট বিক্রয়" : "Total Sales", amount: sales },
+    { item: bn ? "মোট ক্রয়" : "Total Purchase", amount: purch },
+    { item: bn ? "গ্রস লাভ" : "Gross Profit", amount: gross },
+    { item: bn ? "মোট খরচ" : "Total Expenses", amount: exp },
+    { item: bn ? "নিট লাভ" : "Net Profit", amount: net },
   ];
   return {
     columns: [
@@ -282,7 +295,8 @@ async function fetchProfitLoss(ownerId: string, from: string, to: string): Promi
   };
 }
 
-async function fetchCashbookByMethods(ownerId: string, from: string, to: string, methods: string[]): Promise<ReportResult> {
+async function fetchCashbookByMethods(ownerId: string, from: string, to: string, lang: ReportLang, methods: string[]): Promise<ReportResult> {
+  const bn = lang === "bn";
   const { data, error } = await supabase
     .from("cashbook")
     .select("entry_date, type, category, description, amount, method")
@@ -292,11 +306,17 @@ async function fetchCashbookByMethods(ownerId: string, from: string, to: string,
     .lte("entry_date", to)
     .order("entry_date", { ascending: false });
   if (error) throw error;
-  const rows = data ?? [];
+  const rawRows = data ?? [];
   let inAmt = 0, outAmt = 0;
-  for (const r of rows) {
+  for (const r of rawRows) {
     if (r.type === "in") inAmt += num(r.amount); else outAmt += num(r.amount);
   }
+  const rows = rawRows.map((r: any) => ({
+    ...r,
+    type: bn
+      ? (r.type === "in" ? "জমা" : "উত্তোলন")
+      : (r.type === "in" ? "Cash In" : "Cash Out"),
+  }));
   return {
     columns: [
       { key: "entry_date", label: "তারিখ", labelEn: "Date", format: "date" },
@@ -318,7 +338,7 @@ async function fetchCashbookByMethods(ownerId: string, from: string, to: string,
 const MOBILE_METHODS = ["bkash", "nagad", "rocket", "upay", "tap", "mobile_banking", "বিকাশ", "নগদ", "রকেট"];
 const BANK_METHODS = ["bank", "bank_transfer", "cheque", "ব্যাংক"];
 
-async function fetchExpenses(ownerId: string, from: string, to: string): Promise<ReportResult> {
+async function fetchExpenses(ownerId: string, from: string, to: string, _lang: ReportLang): Promise<ReportResult> {
   const { data, error } = await supabase
     .from("expenses")
     .select("expense_date, description, amount, paid_amount, method, party_name")
@@ -349,7 +369,9 @@ async function fetchExpenses(ownerId: string, from: string, to: string): Promise
   };
 }
 
-async function fetchExpensesGroup(ownerId: string, from: string, to: string, key: "method" | "category"): Promise<ReportResult> {
+async function fetchExpensesGroup(ownerId: string, from: string, to: string, lang: ReportLang, key: "method" | "category"): Promise<ReportResult> {
+  const bn = lang === "bn";
+  const other = bn ? "অন্যান্য" : "Other";
   if (key === "method") {
     const { data, error } = await supabase
       .from("expenses")
@@ -360,7 +382,7 @@ async function fetchExpensesGroup(ownerId: string, from: string, to: string, key
     if (error) throw error;
     const map = new Map<string, { count: number; total: number }>();
     for (const r of data ?? []) {
-      const k = (r.method as string) || "অন্যান্য";
+      const k = (r.method as string) || other;
       const e = map.get(k) ?? { count: 0, total: 0 };
       e.count += 1; e.total += num(r.amount);
       map.set(k, e);
@@ -392,7 +414,7 @@ async function fetchExpensesGroup(ownerId: string, from: string, to: string, key
   if (error) throw error;
   const map = new Map<string, { count: number; total: number }>();
   for (const r of data ?? []) {
-    const k = (r.category as string) || "অন্যান্য";
+    const k = (r.category as string) || other;
     const e = map.get(k) ?? { count: 0, total: 0 };
     e.count += 1; e.total += num(r.amount);
     map.set(k, e);
@@ -414,7 +436,8 @@ async function fetchExpensesGroup(ownerId: string, from: string, to: string, key
   };
 }
 
-async function fetchStockSummary(ownerId: string): Promise<ReportResult> {
+async function fetchStockSummary(ownerId: string, lang: ReportLang): Promise<ReportResult> {
+  const bn = lang === "bn";
   const { data, error } = await supabase
     .from("products")
     .select("name, unit, stock, cost_price, sell_price, low_stock_threshold")
@@ -425,7 +448,11 @@ async function fetchStockSummary(ownerId: string): Promise<ReportResult> {
     ...r,
     cost_value: num(r.stock) * num(r.cost_price),
     sell_value: num(r.stock) * num(r.sell_price),
-    status: num(r.stock) <= 0 ? "স্টক নেই" : num(r.stock) <= num(r.low_stock_threshold) ? "কম স্টক" : "ঠিক আছে",
+    status: num(r.stock) <= 0
+      ? (bn ? "স্টক নেই" : "Out of stock")
+      : num(r.stock) <= num(r.low_stock_threshold)
+        ? (bn ? "কম স্টক" : "Low stock")
+        : (bn ? "ঠিক আছে" : "OK"),
   }));
   const totalStock = rows.reduce((s, r) => s + num(r.stock), 0);
   const totalCost = rows.reduce((s, r) => s + (r as any).cost_value, 0);
@@ -449,7 +476,7 @@ async function fetchStockSummary(ownerId: string): Promise<ReportResult> {
   };
 }
 
-async function fetchStockMovement(ownerId: string, from: string, to: string): Promise<ReportResult> {
+async function fetchStockMovement(ownerId: string, from: string, to: string, _lang: ReportLang): Promise<ReportResult> {
   const [pi, si] = await Promise.all([
     supabase.from("purchase_items").select("product_id, product_name, qty, purchases!inner(created_at, owner_id)")
       .eq("owner_id", ownerId)
@@ -495,7 +522,7 @@ async function fetchStockMovement(ownerId: string, from: string, to: string): Pr
   };
 }
 
-async function fetchItemDetail(ownerId: string): Promise<ReportResult> {
+async function fetchItemDetail(ownerId: string, _lang: ReportLang): Promise<ReportResult> {
   const { data, error } = await supabase
     .from("products")
     .select("name, sku, barcode, unit, size, cost_price, sell_price, mrp, stock, expiry_date, batch_no, categories(name)")
@@ -542,19 +569,19 @@ export const REPORTS: Record<string, ReportConfig> = {
     slug: "products", title: "পণ্যের রিপোর্ট", titleEn: "Products Report",
     description: "স্টক, ক্যাটাগরি ও মূল্য অনুযায়ী পণ্যের তালিকা।",
     descriptionEn: "Products by stock, category and price.",
-    usesDateFilter: false, fetch: (o) => fetchProducts(o),
+    usesDateFilter: false, fetch: (o, _f, _t, l) => fetchProducts(o, l),
   },
   "customers": {
     slug: "customers", title: "কাস্টমার রিপোর্ট", titleEn: "Customer Report",
     description: "ক্রেতাদের বাকি ও তথ্য।",
     descriptionEn: "Customer due and information.",
-    usesDateFilter: false, fetch: (o) => fetchCustomers(o),
+    usesDateFilter: false, fetch: (o, _f, _t, l) => fetchCustomers(o, l),
   },
   "dues": {
     slug: "dues", title: "বাকির রিপোর্ট", titleEn: "Due Report",
     description: "পরিশোধযোগ্য ও আদায়যোগ্য বাকির তালিকা।",
     descriptionEn: "Payable and receivable dues.",
-    usesDateFilter: false, fetch: (o) => fetchDues(o),
+    usesDateFilter: false, fetch: (o, _f, _t, l) => fetchDues(o, l),
   },
   "sales-profit": {
     slug: "sales-profit", title: "বিক্রয় অনুযায়ী লাভ ক্ষতি", titleEn: "Sales-wise Profit & Loss",
@@ -572,13 +599,13 @@ export const REPORTS: Record<string, ReportConfig> = {
     slug: "mobile-banking", title: "মোবাইল ব্যাংকিং রিপোর্ট", titleEn: "Mobile Banking Report",
     description: "বিকাশ, নগদ, রকেট ইত্যাদি মোবাইল ব্যাংকিং লেনদেন।",
     descriptionEn: "bKash, Nagad, Rocket etc. transactions.",
-    usesDateFilter: true, fetch: (o, f, t) => fetchCashbookByMethods(o, f, t, MOBILE_METHODS),
+    usesDateFilter: true, fetch: (o, f, t, l) => fetchCashbookByMethods(o, f, t, l, MOBILE_METHODS),
   },
   "bank": {
     slug: "bank", title: "ব্যাংক লেনদেন রিপোর্ট", titleEn: "Bank Transaction Report",
     description: "ব্যাংক অ্যাকাউন্টের জমা ও উত্তোলন।",
     descriptionEn: "Bank account deposits and withdrawals.",
-    usesDateFilter: true, fetch: (o, f, t) => fetchCashbookByMethods(o, f, t, BANK_METHODS),
+    usesDateFilter: true, fetch: (o, f, t, l) => fetchCashbookByMethods(o, f, t, l, BANK_METHODS),
   },
   "expenses": {
     slug: "expenses", title: "খরচ", titleEn: "Expenses",
@@ -590,19 +617,19 @@ export const REPORTS: Record<string, ReportConfig> = {
     slug: "expense-type", title: "খরচের ধরন", titleEn: "Expense Type",
     description: "ধরন অনুযায়ী খরচের বিশ্লেষণ।",
     descriptionEn: "Expenses grouped by type.",
-    usesDateFilter: true, fetch: (o, f, t) => fetchExpensesGroup(o, f, t, "method"),
+    usesDateFilter: true, fetch: (o, f, t, l) => fetchExpensesGroup(o, f, t, l, "method"),
   },
   "expense-category": {
     slug: "expense-category", title: "খরচের ক্যাটাগরি", titleEn: "Expense Category",
     description: "ক্যাটাগরি অনুযায়ী খরচের সংক্ষিপ্ত বিবরণ।",
     descriptionEn: "Expenses grouped by category.",
-    usesDateFilter: true, fetch: (o, f, t) => fetchExpensesGroup(o, f, t, "category"),
+    usesDateFilter: true, fetch: (o, f, t, l) => fetchExpensesGroup(o, f, t, l, "category"),
   },
   "stock-summary": {
     slug: "stock-summary", title: "স্টক সামারী", titleEn: "Stock Summary",
     description: "বর্তমান স্টকের সংক্ষিপ্ত বিবরণ ও মূল্যমান।",
     descriptionEn: "Current stock summary and valuation.",
-    usesDateFilter: false, fetch: (o) => fetchStockSummary(o),
+    usesDateFilter: false, fetch: (o, _f, _t, l) => fetchStockSummary(o, l),
   },
   "stock-movement": {
     slug: "stock-movement", title: "স্টক পরিবর্তনের রিপোর্ট", titleEn: "Stock Movement Report",
@@ -614,7 +641,7 @@ export const REPORTS: Record<string, ReportConfig> = {
     slug: "item-detail", title: "আইটেমের বিস্তারিত রিপোর্ট", titleEn: "Item Detail Report",
     description: "প্রতিটি আইটেমের বিস্তারিত তথ্য।",
     descriptionEn: "Detailed information per item.",
-    usesDateFilter: false, fetch: (o) => fetchItemDetail(o),
+    usesDateFilter: false, fetch: (o, _f, _t, l) => fetchItemDetail(o, l),
   },
 };
 
