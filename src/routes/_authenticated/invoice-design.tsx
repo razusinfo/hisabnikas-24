@@ -260,7 +260,7 @@ function InvoiceDesignPage() {
       picked.add(idx);
       const p = SAMPLE_PRODUCTS[idx];
       const qty = 1 + Math.floor(rnd(5, i + 10));
-      return { name: p.name, qty, price: p.price, total: p.price * qty };
+      return { name: p.name, qty, price: p.price, total: p.price * qty, warranty: p.warranty };
     });
     const subtotal = items.reduce((s, i) => s + i.total, 0);
     const discount = Math.round(subtotal * 0.05);
