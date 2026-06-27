@@ -724,9 +724,10 @@ function NumberRow({
 // ===== রেডি Android App ডাউনলোড কার্ড =====
 function ReadyAppDownloadCard() {
   const envRepo = (import.meta.env.VITE_GITHUB_REPO as string | undefined)?.trim();
-  const repo = envRepo && envRepo.includes("/") ? envRepo : "lovable-dev/hisab-nikash-24";
+  const repo = envRepo && envRepo.includes("/") ? envRepo : "razusinfo/hisabnikas-24";
   const isConfigured = Boolean(envRepo && envRepo.includes("/"));
   const releasesUrl = `https://github.com/${repo}/releases/latest`;
+  const directApkUrl = `https://github.com/${repo}/releases/latest/download/HisabNikash24-debug.apk`;
   const actionsUrl = `https://github.com/${repo}/actions/workflows/android-build.yml`;
 
   const fmtSize = (b: number) =>
