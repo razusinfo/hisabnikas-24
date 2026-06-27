@@ -96,6 +96,14 @@ jobs:
           test "$WEBDIR" = ".output/public" || { echo "ERROR: webDir '$WEBDIR' does not match expected '.output/public'"; exit 1; }
           test -f "$WEBDIR/index.html" || { echo "ERROR: $WEBDIR/index.html missing"; exit 1; }
 
+      - name: Install committed debug keystore (stable SHA-1)
+        run: |
+          mkdir -p ~/.android
+          cp android/keystore/debug.keystore ~/.android/debug.keystore
+          echo "Debug keystore SHA-1:"
+          keytool -list -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey | grep "SHA1:"
+
+
       - name: Sync Android platform
         run: |
           set -e
