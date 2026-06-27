@@ -322,6 +322,8 @@ function SalesPage() {
         qty: l.qty,
         unit_price: l.unit_price,
         line_total: l.qty * l.unit_price,
+        warranty: l.warranty?.trim() || null,
+        serial_no: l.serial_no?.trim() || null,
       }));
       const { error: e2 } = await supabase.from("sale_items").insert(rows);
       if (e2) throw e2;
