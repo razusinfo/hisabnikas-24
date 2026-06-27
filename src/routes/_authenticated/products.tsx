@@ -39,6 +39,7 @@ type Product = {
   serial_no: string | null;
   size: string | null;
   expiry_date: string | null;
+  warranty: string | null;
 };
 
 type Category = { id: string; name: string };
@@ -47,7 +48,7 @@ const emptyForm = {
   name: "", sku: "", barcode: "", unit: "pcs",
   cost_price: "0", sell_price: "0", stock: "0", low_stock_threshold: "5",
   category_id: "", image_url: "" as string,
-  vat: "0", mrp: "", batch_no: "", serial_no: "", size: "", expiry_date: "",
+  vat: "0", mrp: "", batch_no: "", serial_no: "", size: "", expiry_date: "", warranty: "",
 };
 
 
@@ -96,6 +97,7 @@ function ProductsPage() {
     serialImei: appSettings?.serialImei === true,
     size: appSettings?.size === true,
     expiryDate: appSettings?.expiryDate === true,
+    warranty: appSettings?.warranty === true,
   };
 
 
@@ -188,6 +190,7 @@ function ProductsPage() {
       serial_no: p.serial_no ?? "",
       size: p.size ?? "",
       expiry_date: p.expiry_date ?? "",
+      warranty: p.warranty ?? "",
     });
     setOpen(true);
   };
@@ -234,6 +237,7 @@ function ProductsPage() {
         serial_no: form.serial_no.trim() || null,
         size: form.size.trim() || null,
         expiry_date: form.expiry_date || null,
+        warranty: form.warranty.trim() || null,
       };
 
       if (editing) {
@@ -538,6 +542,16 @@ function ProductsPage() {
                 {sett.expiryDate && (
                   <div className="space-y-1.5"><Label>{lang === "bn" ? "মেয়াদ উত্তীর্ণের তারিখ" : "Expiry date"}</Label><DateInput value={form.expiry_date} onChange={(v) => setForm({ ...form, expiry_date: v })} /></div>
                 )}
+              </div>
+            )}
+            {sett.warranty && (
+              <div className="space-y-1.5">
+                <Label>{lang === "bn" ? "ওয়ারেন্টি" : "Warranty"}</Label>
+                <Input
+                  value={form.warranty}
+                  onChange={(e) => setForm({ ...form, warranty: e.target.value })}
+                  placeholder={lang === "bn" ? "যেমন: ১ বছরের ওয়ারেন্টি" : "e.g. 1 year manufacturer warranty"}
+                />
               </div>
             )}
             <DialogFooter className="gap-2">

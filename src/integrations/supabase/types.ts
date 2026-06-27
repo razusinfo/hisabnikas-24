@@ -732,6 +732,7 @@ export type Database = {
           unit: string
           updated_at: string
           vat: number
+          warranty: string | null
         }
         Insert: {
           barcode?: string | null
@@ -756,6 +757,7 @@ export type Database = {
           unit?: string
           updated_at?: string
           vat?: number
+          warranty?: string | null
         }
         Update: {
           barcode?: string | null
@@ -780,6 +782,7 @@ export type Database = {
           unit?: string
           updated_at?: string
           vat?: number
+          warranty?: string | null
         }
         Relationships: [
           {
@@ -971,7 +974,9 @@ export type Database = {
           product_name: string
           qty: number
           sale_id: string
+          serial_no: string | null
           unit_price: number
+          warranty: string | null
         }
         Insert: {
           id?: string
@@ -981,7 +986,9 @@ export type Database = {
           product_name: string
           qty: number
           sale_id: string
+          serial_no?: string | null
           unit_price: number
+          warranty?: string | null
         }
         Update: {
           id?: string
@@ -991,7 +998,9 @@ export type Database = {
           product_name?: string
           qty?: number
           sale_id?: string
+          serial_no?: string | null
           unit_price?: number
+          warranty?: string | null
         }
         Relationships: [
           {
