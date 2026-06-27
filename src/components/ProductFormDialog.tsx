@@ -61,7 +61,8 @@ export function ProductFormDialog({
   editing?: ProductFormEditing;
   onCreated?: (p: CreatedProduct) => void;
 }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const bn = lang === "bn";
   const qc = useQueryClient();
   const { data: appSettings } = useAppSettings();
   const sett = {
@@ -213,7 +214,7 @@ export function ProductFormDialog({
         <DialogHeader><DialogTitle>{editing ? t("editProduct") : t("addProduct")}</DialogTitle></DialogHeader>
         <form onSubmit={(e) => { e.preventDefault(); save.mutate(); }} className="space-y-3">
           <div className="space-y-1.5">
-            <Label>ছবি / Image</Label>
+            <Label>{bn ? "ছবি" : "Image"}</Label>
             <div className="flex items-center gap-3">
               <div className="h-16 w-16 rounded-md border bg-muted/30 flex items-center justify-center overflow-hidden shrink-0">
                 {formImageQuery.data ? (
@@ -305,7 +306,7 @@ export function ProductFormDialog({
           {(sett.vat || sett.mrpPrice) && (
             <div className="grid grid-cols-2 gap-3">
               {sett.vat && (
-                <div className="space-y-1.5"><Label>ভ্যাট (%) / VAT</Label><Input type="number" step="0.01" min="0" value={form.vat} onChange={(e) => setForm({ ...form, vat: e.target.value })} /></div>
+                <div className="space-y-1.5"><Label>{bn ? "ভ্যাট (%)" : "VAT (%)"}</Label><Input type="number" step="0.01" min="0" value={form.vat} onChange={(e) => setForm({ ...form, vat: e.target.value })} /></div>
               )}
               {sett.mrpPrice && (
                 <div className="space-y-1.5"><Label>MRP</Label><Input type="number" step="0.01" min="0" value={form.mrp} onChange={(e) => setForm({ ...form, mrp: e.target.value })} /></div>
@@ -315,20 +316,20 @@ export function ProductFormDialog({
           {(sett.batchNumber || sett.serialImei) && (
             <div className="grid grid-cols-2 gap-3">
               {sett.batchNumber && (
-                <div className="space-y-1.5"><Label>ব্যাচ নম্বর / Batch</Label><Input value={form.batch_no} onChange={(e) => setForm({ ...form, batch_no: e.target.value })} /></div>
+                <div className="space-y-1.5"><Label>{bn ? "ব্যাচ নম্বর" : "Batch"}</Label><Input value={form.batch_no} onChange={(e) => setForm({ ...form, batch_no: e.target.value })} /></div>
               )}
               {sett.serialImei && (
-                <div className="space-y-1.5"><Label>সিরিয়াল / IMEI</Label><Input value={form.serial_no} onChange={(e) => setForm({ ...form, serial_no: e.target.value })} /></div>
+                <div className="space-y-1.5"><Label>{bn ? "সিরিয়াল / আইএমইআই" : "Serial / IMEI"}</Label><Input value={form.serial_no} onChange={(e) => setForm({ ...form, serial_no: e.target.value })} /></div>
               )}
             </div>
           )}
           {(sett.size || sett.expiryDate) && (
             <div className="grid grid-cols-2 gap-3">
               {sett.size && (
-                <div className="space-y-1.5"><Label>সাইজ / Size</Label><Input value={form.size} onChange={(e) => setForm({ ...form, size: e.target.value })} /></div>
+                <div className="space-y-1.5"><Label>{bn ? "সাইজ" : "Size"}</Label><Input value={form.size} onChange={(e) => setForm({ ...form, size: e.target.value })} /></div>
               )}
               {sett.expiryDate && (
-                <div className="space-y-1.5"><Label>মেয়াদ উত্তীর্ণের তারিখ / Expiry</Label><DateInput value={form.expiry_date} onChange={(v) => setForm({ ...form, expiry_date: v })} /></div>
+                <div className="space-y-1.5"><Label>{bn ? "মেয়াদ উত্তীর্ণের তারিখ" : "Expiry date"}</Label><DateInput value={form.expiry_date} onChange={(v) => setForm({ ...form, expiry_date: v })} /></div>
               )}
             </div>
           )}
