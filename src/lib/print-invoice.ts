@@ -111,15 +111,26 @@ export function buildInvoiceHtml({ doc, business, settings, lang, labels, hideMe
   const titleClr = invertHeader ? "#fff" : (thermal ? "#000" : theme);
   const subClr = invertHeader ? "rgba(255,255,255,0.85)" : "#64748b";
 
+  const warrantyLabel = labels.warranty || (lang === "bn" ? "ওয়ারেন্টি" : "Warranty");
+  const serialLabel = labels.serialNo || (lang === "bn" ? "সিরিয়াল/IMEI" : "Serial/IMEI");
+  const naLabel = lang === "bn" ? "নেই" : "N/A";
+  const hasAnyMeta = doc.items.some((l) => (l.warranty && String(l.warranty).trim()) || (l.serial_no && String(l.serial_no).trim()));
   const rows = doc.items
     .map(
-      (l, i) => `<tr>
+      (l, i) => {
+        const w = l.warranty && String(l.warranty).trim() ? esc(l.warranty) : `<span style="color:#94a3b8">${esc(naLabel)}</span>`;
+        const s = l.serial_no && String(l.serial_no).trim() ? esc(l.serial_no) : `<span style="color:#94a3b8">${esc(naLabel)}</span>`;
+        const metaLine = hasAnyMeta
+          ? `<div style="font-size:${thermal ? 9 : baseFs - 5}px;color:#475569;margin-top:2px;line-height:1.3"><b>${esc(warrantyLabel)}:</b> ${w} &nbsp;·&nbsp; <b>${esc(serialLabel)}:</b> ${s}</div>`
+          : "";
+        return `<tr>
       <td class="num">${i + 1}</td>
-      <td>${esc(l.name)}</td>
+      <td>${esc(l.name)}${metaLine}</td>
       <td class="right">${typeof l.price === "number" ? fmtMoney(l.price, lang) : esc(l.price)}</td>
       <td class="right num">${lang === "bn" && typeof l.qty === "number" ? Number(l.qty).toLocaleString("bn-BD") : esc(l.qty)}</td>
       <td class="right">${typeof l.total === "number" ? fmtMoney(l.total, lang) : esc(l.total)}</td>
-    </tr>`,
+    </tr>`;
+      },
     )
     .join("");
 
