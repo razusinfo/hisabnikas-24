@@ -42,7 +42,7 @@ const endISO = (to: string) => `${to}T23:59:59.999Z`;
 
 const num = (v: unknown) => Number(v ?? 0) || 0;
 
-async function fetchPurchase(ownerId: string, from: string, to: string): Promise<ReportResult> {
+async function fetchPurchase(ownerId: string, from: string, to: string, _lang: ReportLang): Promise<ReportResult> {
   const { data, error } = await supabase
     .from("purchases")
     .select("id, invoice_no, supplier_name, total, paid, due, payment_method, created_at")
@@ -73,7 +73,8 @@ async function fetchPurchase(ownerId: string, from: string, to: string): Promise
   };
 }
 
-async function fetchSales(ownerId: string, from: string, to: string): Promise<ReportResult> {
+async function fetchSales(ownerId: string, from: string, to: string, lang: ReportLang): Promise<ReportResult> {
+  const bn = lang === "bn";
   const { data, error } = await supabase
     .from("sales")
     .select("id, invoice_no, customer_id, total, paid, due, payment_method, created_at, customers(name)")
@@ -84,7 +85,7 @@ async function fetchSales(ownerId: string, from: string, to: string): Promise<Re
   if (error) throw error;
   const rows = (data ?? []).map((r: any) => ({
     ...r,
-    customer_name: r.customers?.name ?? "ওয়াক-ইন",
+    customer_name: r.customers?.name ?? (bn ? "ওয়াক-ইন" : "Walk-in"),
   }));
   let total = 0, paid = 0, due = 0;
   for (const r of rows) { total += num(r.total); paid += num(r.paid); due += num(r.due); }
@@ -107,7 +108,8 @@ async function fetchSales(ownerId: string, from: string, to: string): Promise<Re
   };
 }
 
-async function fetchProducts(ownerId: string): Promise<ReportResult> {
+async function fetchProducts(ownerId: string, lang: ReportLang): Promise<ReportResult> {
+  const bn = lang === "bn";
   const { data, error } = await supabase
     .from("products")
     .select("id, name, sku, unit, cost_price, sell_price, stock, low_stock_threshold, is_active, categories(name)")
@@ -119,6 +121,7 @@ async function fetchProducts(ownerId: string): Promise<ReportResult> {
     category_name: r.categories?.name ?? "-",
     value: num(r.stock) * num(r.cost_price),
   }));
+  void bn;
   let totalStock = 0, totalValue = 0;
   for (const r of rows) { totalStock += num(r.stock); totalValue += num((r as any).value); }
   return {
@@ -141,7 +144,7 @@ async function fetchProducts(ownerId: string): Promise<ReportResult> {
   };
 }
 
-async function fetchCustomers(ownerId: string): Promise<ReportResult> {
+async function fetchCustomers(ownerId: string, _lang: ReportLang): Promise<ReportResult> {
   const { data, error } = await supabase
     .from("customers")
     .select("id, name, phone, address, due_balance")
@@ -165,7 +168,8 @@ async function fetchCustomers(ownerId: string): Promise<ReportResult> {
   };
 }
 
-async function fetchDues(ownerId: string): Promise<ReportResult> {
+async function fetchDues(ownerId: string, lang: ReportLang): Promise<ReportResult> {
+  const bn = lang === "bn";
   const [cust, exp] = await Promise.all([
     supabase.from("customers").select("name, phone, due_balance").eq("owner_id", ownerId).gt("due_balance", 0),
     supabase.from("expenses").select("party_name, party_type, amount, paid_amount, due_date").eq("owner_id", ownerId),
@@ -174,11 +178,17 @@ async function fetchDues(ownerId: string): Promise<ReportResult> {
   if (exp.error) throw exp.error;
   const rows: any[] = [];
   for (const c of cust.data ?? []) {
-    rows.push({ party: c.name, phone: c.phone ?? "-", type: "কাস্টমার", due: num(c.due_balance), due_date: null });
+    rows.push({ party: c.name, phone: c.phone ?? "-", type: bn ? "কাস্টমার" : "Customer", due: num(c.due_balance), due_date: null });
   }
   for (const e of exp.data ?? []) {
     const d = num(e.amount) - num(e.paid_amount);
-    if (d > 0 && e.party_name) rows.push({ party: e.party_name, phone: "-", type: e.party_type ?? "সরবরাহকারী", due: d, due_date: e.due_date });
+    if (d > 0 && e.party_name) {
+      const typeRaw = e.party_type ?? (bn ? "সরবরাহকারী" : "Supplier");
+      const typeLocalized = bn
+        ? (typeRaw === "supplier" ? "সরবরাহকারী" : typeRaw === "customer" ? "কাস্টমার" : typeRaw === "other" ? "অন্যান্য" : typeRaw)
+        : (typeRaw === "supplier" || typeRaw === "সরবরাহকারী" ? "Supplier" : typeRaw === "customer" || typeRaw === "কাস্টমার" ? "Customer" : typeRaw === "other" || typeRaw === "অন্যান্য" ? "Other" : typeRaw);
+      rows.push({ party: e.party_name, phone: "-", type: typeLocalized, due: d, due_date: e.due_date });
+    }
   }
   rows.sort((a, b) => b.due - a.due);
   const total = rows.reduce((s, r) => s + r.due, 0);
@@ -198,7 +208,7 @@ async function fetchDues(ownerId: string): Promise<ReportResult> {
   };
 }
 
-async function fetchSalesProfit(ownerId: string, from: string, to: string): Promise<ReportResult> {
+async function fetchSalesProfit(ownerId: string, from: string, to: string, _lang: ReportLang): Promise<ReportResult> {
   const { data: sales, error } = await supabase
     .from("sales")
     .select("id, invoice_no, total, created_at, sale_items(qty, line_total, unit_price, product_id)")
