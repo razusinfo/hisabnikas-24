@@ -468,6 +468,7 @@ const dict = {
     categories: "ক্যাটাগরি সমূহ",
     allCategories: "সকল ক্যাটাগরি",
     noCategory: "কোন ক্যাটাগরি নেই",
+    selectCategory: "ক্যাটাগরি নির্বাচন করুন",
     newCategory: "নতুন ক্যাটাগরি",
     addCategory: "ক্যাটাগরি যোগ",
     categoryCreated: "ক্যাটাগরি যোগ হয়েছে",
