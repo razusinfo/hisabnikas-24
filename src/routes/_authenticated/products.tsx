@@ -421,7 +421,7 @@ function ProductsPage() {
           <DialogHeader><DialogTitle>{editing ? t("editProduct") : t("addProduct")}</DialogTitle></DialogHeader>
           <form onSubmit={(e) => { e.preventDefault(); save.mutate(); }} className="space-y-3">
             <div className="space-y-1.5">
-              <Label>ছবি / Image</Label>
+              <Label>{lang === "bn" ? "ছবি" : "Image"}</Label>
               <div className="flex items-center gap-3">
                 <div className="h-16 w-16 rounded-md border bg-muted/30 flex items-center justify-center overflow-hidden shrink-0">
                   {formImageQuery.data ? (
