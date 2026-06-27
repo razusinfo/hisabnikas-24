@@ -116,6 +116,15 @@ function ProductsPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState(emptyForm);
+
+  useEffect(() => {
+    if (routeSearch.new === 1) {
+      setEditing(null);
+      setForm(emptyForm);
+      setOpen(true);
+      navigate({ to: "/products", search: {}, replace: true });
+    }
+  }, [routeSearch.new, navigate]);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [manageCatOpen, setManageCatOpen] = useState(false);
 
