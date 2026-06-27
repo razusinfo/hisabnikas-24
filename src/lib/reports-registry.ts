@@ -569,19 +569,19 @@ export const REPORTS: Record<string, ReportConfig> = {
     slug: "products", title: "পণ্যের রিপোর্ট", titleEn: "Products Report",
     description: "স্টক, ক্যাটাগরি ও মূল্য অনুযায়ী পণ্যের তালিকা।",
     descriptionEn: "Products by stock, category and price.",
-    usesDateFilter: false, fetch: (o) => fetchProducts(o),
+    usesDateFilter: false, fetch: (o, _f, _t, l) => fetchProducts(o, l),
   },
   "customers": {
     slug: "customers", title: "কাস্টমার রিপোর্ট", titleEn: "Customer Report",
     description: "ক্রেতাদের বাকি ও তথ্য।",
     descriptionEn: "Customer due and information.",
-    usesDateFilter: false, fetch: (o) => fetchCustomers(o),
+    usesDateFilter: false, fetch: (o, _f, _t, l) => fetchCustomers(o, l),
   },
   "dues": {
     slug: "dues", title: "বাকির রিপোর্ট", titleEn: "Due Report",
     description: "পরিশোধযোগ্য ও আদায়যোগ্য বাকির তালিকা।",
     descriptionEn: "Payable and receivable dues.",
-    usesDateFilter: false, fetch: (o) => fetchDues(o),
+    usesDateFilter: false, fetch: (o, _f, _t, l) => fetchDues(o, l),
   },
   "sales-profit": {
     slug: "sales-profit", title: "বিক্রয় অনুযায়ী লাভ ক্ষতি", titleEn: "Sales-wise Profit & Loss",
@@ -599,13 +599,13 @@ export const REPORTS: Record<string, ReportConfig> = {
     slug: "mobile-banking", title: "মোবাইল ব্যাংকিং রিপোর্ট", titleEn: "Mobile Banking Report",
     description: "বিকাশ, নগদ, রকেট ইত্যাদি মোবাইল ব্যাংকিং লেনদেন।",
     descriptionEn: "bKash, Nagad, Rocket etc. transactions.",
-    usesDateFilter: true, fetch: (o, f, t) => fetchCashbookByMethods(o, f, t, MOBILE_METHODS),
+    usesDateFilter: true, fetch: (o, f, t, l) => fetchCashbookByMethods(o, f, t, l, MOBILE_METHODS),
   },
   "bank": {
     slug: "bank", title: "ব্যাংক লেনদেন রিপোর্ট", titleEn: "Bank Transaction Report",
     description: "ব্যাংক অ্যাকাউন্টের জমা ও উত্তোলন।",
     descriptionEn: "Bank account deposits and withdrawals.",
-    usesDateFilter: true, fetch: (o, f, t) => fetchCashbookByMethods(o, f, t, BANK_METHODS),
+    usesDateFilter: true, fetch: (o, f, t, l) => fetchCashbookByMethods(o, f, t, l, BANK_METHODS),
   },
   "expenses": {
     slug: "expenses", title: "খরচ", titleEn: "Expenses",
@@ -617,19 +617,19 @@ export const REPORTS: Record<string, ReportConfig> = {
     slug: "expense-type", title: "খরচের ধরন", titleEn: "Expense Type",
     description: "ধরন অনুযায়ী খরচের বিশ্লেষণ।",
     descriptionEn: "Expenses grouped by type.",
-    usesDateFilter: true, fetch: (o, f, t) => fetchExpensesGroup(o, f, t, "method"),
+    usesDateFilter: true, fetch: (o, f, t, l) => fetchExpensesGroup(o, f, t, l, "method"),
   },
   "expense-category": {
     slug: "expense-category", title: "খরচের ক্যাটাগরি", titleEn: "Expense Category",
     description: "ক্যাটাগরি অনুযায়ী খরচের সংক্ষিপ্ত বিবরণ।",
     descriptionEn: "Expenses grouped by category.",
-    usesDateFilter: true, fetch: (o, f, t) => fetchExpensesGroup(o, f, t, "category"),
+    usesDateFilter: true, fetch: (o, f, t, l) => fetchExpensesGroup(o, f, t, l, "category"),
   },
   "stock-summary": {
     slug: "stock-summary", title: "স্টক সামারী", titleEn: "Stock Summary",
     description: "বর্তমান স্টকের সংক্ষিপ্ত বিবরণ ও মূল্যমান।",
     descriptionEn: "Current stock summary and valuation.",
-    usesDateFilter: false, fetch: (o) => fetchStockSummary(o),
+    usesDateFilter: false, fetch: (o, _f, _t, l) => fetchStockSummary(o, l),
   },
   "stock-movement": {
     slug: "stock-movement", title: "স্টক পরিবর্তনের রিপোর্ট", titleEn: "Stock Movement Report",
@@ -641,7 +641,7 @@ export const REPORTS: Record<string, ReportConfig> = {
     slug: "item-detail", title: "আইটেমের বিস্তারিত রিপোর্ট", titleEn: "Item Detail Report",
     description: "প্রতিটি আইটেমের বিস্তারিত তথ্য।",
     descriptionEn: "Detailed information per item.",
-    usesDateFilter: false, fetch: (o) => fetchItemDetail(o),
+    usesDateFilter: false, fetch: (o, _f, _t, l) => fetchItemDetail(o, l),
   },
 };
 

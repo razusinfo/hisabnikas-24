@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/reports/$slug")({
   },
   component: ReportDetailPage,
   notFoundComponent: () => (
-    <div className="p-8 text-center text-muted-foreground">রিপোর্ট পাওয়া যায়নি।</div>
+    <div className="p-8 text-center text-muted-foreground">রিপোর্ট পাওয়া যায়নি। / Report not found.</div>
   ),
 });
 
@@ -50,12 +50,12 @@ function ReportDetailPage() {
   const { from, to } = useMemo(() => rangeFor(preset, customFrom, customTo), [preset, customFrom, customTo]);
 
   const query = useQuery({
-    queryKey: ["report", slug, from, to],
+    queryKey: ["report", slug, from, to, lang],
     queryFn: async () => {
       const { data: u } = await supabase.auth.getUser();
       const uid = u.user?.id;
       if (!uid) throw new Error("Not authenticated");
-      return config.fetch(uid, from, to);
+      return config.fetch(uid, from, to, lang);
     },
   });
 
