@@ -67,6 +67,9 @@ export async function fetchCategories() {
 }
 
 export const Route = createFileRoute("/_authenticated/products")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    new: search.new === 1 || search.new === "1" ? 1 : undefined,
+  }),
   loader: async ({ context }) => {
     await Promise.all([
       context.queryClient.ensureQueryData({ queryKey: ["products"], queryFn: fetchProducts }),
