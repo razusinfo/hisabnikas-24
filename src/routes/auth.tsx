@@ -12,6 +12,7 @@ import { Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useServerFn } from "@tanstack/react-start";
 import { requestPhoneOtp, verifyPhoneOtp } from "@/lib/phone-otp.functions";
+import { isNativePlatform, signInWithGoogleNative } from "@/lib/native-google-auth";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
