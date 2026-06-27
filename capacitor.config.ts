@@ -1,10 +1,9 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 // সত্যিকার Native Android অ্যাপ কনফিগারেশন।
-// `server.url` দেওয়া হলে Capacitor live website সরাসরি WebView এ লোড করে —
-// সেটা ব্রাউজার-এর মত অনুভব হয়। তাই এখানে আমরা bundled `index.html` ব্যবহার করছি,
-// যেটা GitHub Actions build-এ তৈরি হয় এবং পুরো অ্যাপটিকে fullscreen WebView shell-এর
-// মত কাজ করায় — কোনো address bar বা URL field দেখাবে না।
+// `server.url` দিলে Capacitor live website সরাসরি WebView-এ খুলে এবং
+// connection issue হলে "Webpage not available" দেখায়। তাই এখানে কোনো
+// server.url নেই — APK সরাসরি bundled `.output/public/index.html` লোড করবে।
 const config: CapacitorConfig = {
   appId: 'com.hisabnikash24',
   appName: 'হিসাব নিকাশ-২৪',

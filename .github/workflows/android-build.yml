@@ -44,88 +44,10 @@ jobs:
           npm run build
           echo "=== Verifying build output ==="
           test -d .output/public || { echo "ERROR: .output/public directory not found after build"; exit 1; }
-          # সত্যিকার Native অ্যাপের জন্য — bundled fullscreen WebView shell।
-          # এটি hisabnikas24.top কে fullscreen iframe-এ embed করে যাতে কোনো
-          # browser address bar বা URL field না দেখায়। অ্যাপটি একটি native
-          # container হিসেবে কাজ করে।
-          cat > .output/public/index.html <<'EOF'
-          <!doctype html>
-          <html lang="bn">
-            <head>
-              <meta charset="utf-8" />
-              <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
-              <meta name="theme-color" content="#059669" />
-              <title>হিসাব নিকাশ-২৪</title>
-              <style>
-                html, body {
-                  margin: 0;
-                  padding: 0;
-                  height: 100%;
-                  width: 100%;
-                  overflow: hidden;
-                  background: #059669;
-                  -webkit-user-select: none;
-                  user-select: none;
-                  -webkit-tap-highlight-color: transparent;
-                }
-                #app-frame {
-                  position: fixed;
-                  inset: 0;
-                  width: 100%;
-                  height: 100%;
-                  border: 0;
-                  display: block;
-                }
-                #loader {
-                  position: fixed;
-                  inset: 0;
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                  justify-content: center;
-                  background: #059669;
-                  color: #fff;
-                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Bengali", sans-serif;
-                  z-index: 10;
-                  transition: opacity .3s ease;
-                }
-                #loader.hidden { opacity: 0; pointer-events: none; }
-                .spinner {
-                  width: 44px;
-                  height: 44px;
-                  border: 4px solid rgba(255,255,255,.25);
-                  border-top-color: #fff;
-                  border-radius: 50%;
-                  animation: spin 1s linear infinite;
-                  margin-bottom: 14px;
-                }
-                @keyframes spin { to { transform: rotate(360deg); } }
-              </style>
-            </head>
-            <body>
-              <div id="loader">
-                <div class="spinner"></div>
-                <div>হিসাব নিকাশ-২৪ লোড হচ্ছে…</div>
-              </div>
-              <iframe
-                id="app-frame"
-                src="https://hisabnikas24.top/"
-                allow="camera; microphone; geolocation; clipboard-read; clipboard-write; fullscreen"
-                allowfullscreen
-              ></iframe>
-              <script>
-                var frame = document.getElementById('app-frame');
-                var loader = document.getElementById('loader');
-                frame.addEventListener('load', function () {
-                  setTimeout(function () { loader.classList.add('hidden'); }, 400);
-                });
-                // 15s fallback — যাতে iframe load-এ সমস্যা হলেও loader আটকে না থাকে
-                setTimeout(function () { loader.classList.add('hidden'); }, 15000);
-              </script>
-            </body>
-          </html>
-          EOF
-          echo "Generated native WebView shell index.html"
+          # Android অ্যাপ এখন সরাসরি bundled web build লোড করবে।
+          # কোনো live URL/iframe ব্যবহার করা হবে না, তাই ফোনে
+          # "Webpage not available" / ERR_CONNECTION_CLOSED দেখাবে না।
+          test -f .output/public/index.html || { echo "ERROR: .output/public/index.html missing after build"; exit 1; }
           ls -la .output/public/
 
 
@@ -163,6 +85,7 @@ jobs:
         run: |
           mkdir -p release
           cp android/app/build/outputs/apk/debug/app-debug.apk      release/HisabNikash24-debug.apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk      release/HisabNikash24-release.apk
           cp android/app/build/outputs/apk/release/app-release-unsigned.apk release/HisabNikash24-release-unsigned.apk
           cp android/app/build/outputs/bundle/release/app-release.aab      release/HisabNikash24-release.aab
 
@@ -184,6 +107,7 @@ jobs:
             ## 📱 Download Android App
 
             - **HisabNikash24-debug.apk** — সরাসরি ফোনে ইন্সটল করুন (testing)
+            - **HisabNikash24-release.apk** — Settings থেকে এক-ক্লিকে ডাউনলোড করার APK
             - **HisabNikash24-release-unsigned.apk** — sign করে production-এ ব্যবহার করুন
             - **HisabNikash24-release.aab** — Play Store-এ আপলোড করুন
 
@@ -207,6 +131,7 @@ jobs:
             Commit: ${{ github.sha }}
 
             - **HisabNikash24-debug.apk** — সরাসরি ইন্সটলের জন্য
+            - **HisabNikash24-release.apk** — Settings থেকে এক-ক্লিকে ডাউনলোড করার APK
             - **HisabNikash24-release-unsigned.apk** — sign করে production-এ ব্যবহার করুন
             - **HisabNikash24-release.aab** — Play Store-এর জন্য
 
