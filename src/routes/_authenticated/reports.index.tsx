@@ -42,21 +42,21 @@ export const Route = createFileRoute("/_authenticated/reports/")({
 const FREE_SLUGS = new Set(["purchase", "sales", "expenses", "stock-summary"]);
 
 const reportCards = [
-  { slug: "purchase", title: "ক্রয় রিপোর্ট", titleEn: "Purchase Report", description: "সরবরাহকারী ও তারিখ অনুযায়ী ক্রয়ের বিবরণ।", icon: ShoppingCart, color: "text-amber-600", bg: "bg-amber-50" },
-  { slug: "sales", title: "বিক্রয় রিপোর্ট", titleEn: "Sales Report", description: "দৈনিক, সাপ্তাহিক ও মাসিক বিক্রয়ের সংক্ষিপ্ত বিবরণ।", icon: Receipt, color: "text-emerald-600", bg: "bg-emerald-50" },
-  { slug: "products", title: "পণ্যের রিপোর্ট", titleEn: "Products Report", description: "স্টক, ক্যাটাগরি ও মূল্য অনুযায়ী পণ্যের তালিকা।", icon: Package, color: "text-violet-600", bg: "bg-violet-50" },
-  { slug: "customers", title: "কাস্টমার রিপোর্ট", titleEn: "Customer Report", description: "ক্রেতাদের বাকি, বিক্রয় ও পরিশোধের বিবরণ।", icon: Users, color: "text-cyan-600", bg: "bg-cyan-50" },
-  { slug: "dues", title: "বাকির রিপোর্ট", titleEn: "Due Report", description: "পরিশোধযোগ্য ও আদায়যোগ্য বাকির বিস্তারিত তালিকা।", icon: Wallet, color: "text-rose-600", bg: "bg-rose-50" },
-  { slug: "sales-profit", title: "বিক্রয় অনুযায়ী লাভ ক্ষতি", titleEn: "Sales-wise Profit & Loss", description: "প্রতিটি বিক্রয় অনুযায়ী লাভ ও ক্ষতির বিশ্লেষণ।", icon: PieChart, color: "text-green-600", bg: "bg-green-50" },
-  { slug: "profit-loss", title: "লাভ ক্ষতি", titleEn: "Profit & Loss", description: "বিক্রয়, ক্রয় ও খরচের ভিত্তিকে লাভ-ক্ষতির বিস্তারিত বিবরণ।", icon: TrendingUp, color: "text-teal-600", bg: "bg-teal-50" },
-  { slug: "mobile-banking", title: "মোবাইল ব্যাংকিং রিপোর্ট", titleEn: "Mobile Banking Report", description: "বিকাশ, নগদ, রকেট ইত্যাদি মোবাইল ব্যাংকিং লেনদেনের বিবরণ।", icon: Smartphone, color: "text-pink-600", bg: "bg-pink-50" },
-  { slug: "bank", title: "ব্যাংক লেনদেন রিপোর্ট", titleEn: "Bank Transaction Report", description: "ব্যাংক অ্যাকাউন্টের জমা ও উত্তোলনের সম্পূর্ণ বিবরণ।", icon: Landmark, color: "text-blue-600", bg: "bg-blue-50" },
-  { slug: "expenses", title: "খরচ", titleEn: "Expenses", description: "সকল খরচের বিস্তারিত বিবরণ ও বিশ্লেষণ।", icon: CreditCard, color: "text-red-600", bg: "bg-red-50" },
-  { slug: "expense-type", title: "খরচের ধরন", titleEn: "Expense Type", description: "ধরন অনুযায়ী খরচের বিস্তারিত বিশ্লেষণ।", icon: Layers, color: "text-yellow-600", bg: "bg-yellow-50" },
-  { slug: "expense-category", title: "খরচের ক্যাটাগরি", titleEn: "Expense Category", description: "ক্যাটাগরি অনুযায়ী খরচের সংক্ষিপ্ত বিবরণ।", icon: Tags, color: "text-fuchsia-600", bg: "bg-fuchsia-50" },
-  { slug: "stock-summary", title: "স্টক সামারী", titleEn: "Stock Summary", description: "বর্তমান স্টকের সংক্ষিপ্ত বিবরণ ও মূল্যমান।", icon: Boxes, color: "text-indigo-600", bg: "bg-indigo-50" },
-  { slug: "stock-movement", title: "স্টক পরিবর্তনের রিপোর্ট", titleEn: "Stock Movement Report", description: "পণ্যের স্টক বৃদ্ধি ও হ্রাসের বিস্তারিত বিবরণ।", icon: Repeat, color: "text-orange-600", bg: "bg-orange-50" },
-  { slug: "item-detail", title: "আইটেমের বিস্তারিত রিপোর্ট", titleEn: "Item Detail Report", description: "প্রতিটি আইটেমের বিস্তারিত তথ্য ও লেনদেনের বিবরণ।", icon: FileText, color: "text-slate-600", bg: "bg-slate-50" },
+  { slug: "purchase", title: "ক্রয় রিপোর্ট", titleEn: "Purchase Report", description: "সরবরাহকারী ও তারিখ অনুযায়ী ক্রয়ের বিবরণ।", descriptionEn: "Purchase details by supplier and date.", icon: ShoppingCart, color: "text-amber-600", bg: "bg-amber-50" },
+  { slug: "sales", title: "বিক্রয় রিপোর্ট", titleEn: "Sales Report", description: "দৈনিক, সাপ্তাহিক ও মাসিক বিক্রয়ের সংক্ষিপ্ত বিবরণ।", descriptionEn: "Daily, weekly and monthly sales summary.", icon: Receipt, color: "text-emerald-600", bg: "bg-emerald-50" },
+  { slug: "products", title: "পণ্যের রিপোর্ট", titleEn: "Products Report", description: "স্টক, ক্যাটাগরি ও মূল্য অনুযায়ী পণ্যের তালিকা।", descriptionEn: "Product list by stock, category and price.", icon: Package, color: "text-violet-600", bg: "bg-violet-50" },
+  { slug: "customers", title: "কাস্টমার রিপোর্ট", titleEn: "Customer Report", description: "ক্রেতাদের বাকি, বিক্রয় ও পরিশোধের বিবরণ।", descriptionEn: "Customer dues, sales and payment details.", icon: Users, color: "text-cyan-600", bg: "bg-cyan-50" },
+  { slug: "dues", title: "বাকির রিপোর্ট", titleEn: "Due Report", description: "পরিশোধযোগ্য ও আদায়যোগ্য বাকির বিস্তারিত তালিকা।", descriptionEn: "Detailed list of payables and receivables.", icon: Wallet, color: "text-rose-600", bg: "bg-rose-50" },
+  { slug: "sales-profit", title: "বিক্রয় অনুযায়ী লাভ ক্ষতি", titleEn: "Sales-wise Profit & Loss", description: "প্রতিটি বিক্রয় অনুযায়ী লাভ ও ক্ষতির বিশ্লেষণ।", descriptionEn: "Profit and loss analysis per sale.", icon: PieChart, color: "text-green-600", bg: "bg-green-50" },
+  { slug: "profit-loss", title: "লাভ ক্ষতি", titleEn: "Profit & Loss", description: "বিক্রয়, ক্রয় ও খরচের ভিত্তিকে লাভ-ক্ষতির বিস্তারিত বিবরণ।", descriptionEn: "Profit & loss based on sales, purchase and expenses.", icon: TrendingUp, color: "text-teal-600", bg: "bg-teal-50" },
+  { slug: "mobile-banking", title: "মোবাইল ব্যাংকিং রিপোর্ট", titleEn: "Mobile Banking Report", description: "বিকাশ, নগদ, রকেট ইত্যাদি মোবাইল ব্যাংকিং লেনদেনের বিবরণ।", descriptionEn: "bKash, Nagad, Rocket and other mobile banking transactions.", icon: Smartphone, color: "text-pink-600", bg: "bg-pink-50" },
+  { slug: "bank", title: "ব্যাংক লেনদেন রিপোর্ট", titleEn: "Bank Transaction Report", description: "ব্যাংক অ্যাকাউন্টের জমা ও উত্তোলনের সম্পূর্ণ বিবরণ।", descriptionEn: "Full details of bank deposits and withdrawals.", icon: Landmark, color: "text-blue-600", bg: "bg-blue-50" },
+  { slug: "expenses", title: "খরচ", titleEn: "Expenses", description: "সকল খরচের বিস্তারিত বিবরণ ও বিশ্লেষণ।", descriptionEn: "Detailed breakdown and analysis of all expenses.", icon: CreditCard, color: "text-red-600", bg: "bg-red-50" },
+  { slug: "expense-type", title: "খরচের ধরন", titleEn: "Expense Type", description: "ধরন অনুযায়ী খরচের বিস্তারিত বিশ্লেষণ।", descriptionEn: "Expense analysis grouped by type.", icon: Layers, color: "text-yellow-600", bg: "bg-yellow-50" },
+  { slug: "expense-category", title: "খরচের ক্যাটাগরি", titleEn: "Expense Category", description: "ক্যাটাগরি অনুযায়ী খরচের সংক্ষিপ্ত বিবরণ।", descriptionEn: "Expense summary grouped by category.", icon: Tags, color: "text-fuchsia-600", bg: "bg-fuchsia-50" },
+  { slug: "stock-summary", title: "স্টক সামারী", titleEn: "Stock Summary", description: "বর্তমান স্টকের সংক্ষিপ্ত বিবরণ ও মূল্যমান।", descriptionEn: "Current stock summary and valuation.", icon: Boxes, color: "text-indigo-600", bg: "bg-indigo-50" },
+  { slug: "stock-movement", title: "স্টক পরিবর্তনের রিপোর্ট", titleEn: "Stock Movement Report", description: "পণ্যের স্টক বৃদ্ধি ও হ্রাসের বিস্তারিত বিবরণ।", descriptionEn: "Detailed stock increase and decrease history.", icon: Repeat, color: "text-orange-600", bg: "bg-orange-50" },
+  { slug: "item-detail", title: "আইটেমের বিস্তারিত রিপোর্ট", titleEn: "Item Detail Report", description: "প্রতিটি আইটেমের বিস্তারিত তথ্য ও লেনদেনের বিবরণ।", descriptionEn: "Detailed info and transactions per item.", icon: FileText, color: "text-slate-600", bg: "bg-slate-50" },
 ];
 
 function ReportsIndexPage() {
@@ -118,7 +118,7 @@ function ReportsIndexPage() {
         </CardHeader>
         <CardContent className="px-2.5 pb-2.5 pt-0">
           <p className="text-[10px] text-muted-foreground leading-snug">
-            {card.description}
+            {bn ? card.description : card.descriptionEn}
           </p>
         </CardContent>
       </Card>
