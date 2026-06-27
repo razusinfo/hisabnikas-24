@@ -176,7 +176,7 @@ export function ProductFormDialog({
         sell_price: Number(form.sell_price) || 0,
         stock: Number(form.stock) || 0,
         low_stock_threshold: Number(form.low_stock_threshold) || 0,
-        category_id: form.category_id || null,
+        category_id: (form.category_id && form.category_id !== "__new__") ? form.category_id : null,
         image_url: form.image_url || null,
         vat: Number(form.vat) || 0,
         mrp: form.mrp === "" ? null : Number(form.mrp),
