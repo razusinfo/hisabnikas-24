@@ -39,24 +39,30 @@ const BKASH_NUMBER = "01719220690";
 
 type MsgPack = {
   id: string;
-  name: string;
   count: number;
   price: number;
 };
 
 const PACKS: MsgPack[] = [
-  { id: "msg_30", name: "৩০ মেসেজ", count: 30, price: 20 },
-  { id: "msg_50", name: "৫০ মেসেজ", count: 50, price: 31 },
-  { id: "msg_100", name: "১০০ মেসেজ", count: 100, price: 55 },
-  { id: "msg_250", name: "২৫০ মেসেজ", count: 250, price: 125 },
-  { id: "msg_500", name: "৫০০ মেসেজ", count: 500, price: 225 },
-  { id: "msg_1000", name: "১০০০ মেসেজ", count: 1000, price: 400 },
+  { id: "msg_30", count: 30, price: 20 },
+  { id: "msg_50", count: 50, price: 31 },
+  { id: "msg_100", count: 100, price: 55 },
+  { id: "msg_250", count: 250, price: 125 },
+  { id: "msg_500", count: 500, price: 225 },
+  { id: "msg_1000", count: 1000, price: 400 },
 ];
 
-const bn = (n: number) => Number(n).toLocaleString("bn-BD");
+const formatNumber = (n: number, isBn: boolean) => Number(n).toLocaleString(isBn ? "bn-BD" : "en-US");
+const packName = (p: MsgPack, isBn: boolean) => `${formatNumber(p.count, isBn)} ${isBn ? "মেসেজ" : "Messages"}`;
+const statusLabel = (status: string, isBn: boolean) => {
+  if (status === "approved") return isBn ? "অনুমোদিত" : "Approved";
+  if (status === "rejected") return isBn ? "বাতিল" : "Rejected";
+  return isBn ? "প্রক্রিয়াধীন" : "Pending";
+};
 
 function BuyMessagesPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const isBn = lang === "bn";
   const qc = useQueryClient();
   const [selected, setSelected] = useState<MsgPack | null>(null);
   const [senderNumber, setSenderNumber] = useState("");
@@ -95,12 +101,12 @@ function BuyMessagesPage() {
 
   const submit = useMutation({
     mutationFn: async () => {
-      if (!selected) throw new Error("কোনো প্যাকেজ নির্বাচিত হয়নি");
+      if (!selected) throw new Error(isBn ? "কোনো প্যাকেজ নির্বাচিত হয়নি" : "No package selected");
       if (!/^01[0-9]{9}$/.test(senderNumber))
-        throw new Error("সঠিক ১১ ডিজিটের বিকাশ নম্বর দিন");
-      if (trxId.trim().length < 6) throw new Error("সঠিক TrxID দিন");
+        throw new Error(isBn ? "সঠিক ১১ ডিজিটের বিকাশ নম্বর দিন" : "Enter a valid 11-digit bKash number");
+      if (trxId.trim().length < 6) throw new Error(isBn ? "সঠিক TrxID দিন" : "Enter a valid TrxID");
       const { data: u } = await supabase.auth.getUser();
-      if (!u.user) throw new Error("লগইন প্রয়োজন");
+      if (!u.user) throw new Error(isBn ? "লগইন প্রয়োজন" : "Login required");
       const { error } = await (supabase as any).from("payment_requests").insert({
         user_id: u.user.id,
         kind: "messages",
@@ -132,16 +138,16 @@ function BuyMessagesPage() {
   const subBalance = Math.max(0, total - packBalance);
 
   const stats = [
-    { label: "সাবস্ক্রিপশন", value: subBalance, icon: CreditCard },
-    { label: "মেসেজ প্যাক", value: packBalance, icon: Send },
-    { label: "মোট মেসেজ", value: total, icon: Mail },
+    { label: isBn ? "সাবস্ক্রিপশন" : "Subscription", value: subBalance, icon: CreditCard },
+    { label: isBn ? "মেসেজ প্যাক" : "Message Pack", value: packBalance, icon: Send },
+    { label: isBn ? "মোট মেসেজ" : "Total Messages", value: total, icon: Mail },
   ];
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl">
       <PageHeader
         title={t("buyMessages")}
-        subtitle="বিকাশের মাধ্যমে SMS ক্রেডিট কিনুন"
+        subtitle={isBn ? "বিকাশের মাধ্যমে SMS ক্রেডিট কিনুন" : "Buy SMS credits through bKash"}
       />
 
       {/* Stat cards */}
@@ -163,7 +169,7 @@ function BuyMessagesPage() {
                     {profile.isLoading ? (
                       <Loader2 className="h-6 w-6 animate-spin inline" />
                     ) : (
-                      bn(s.value)
+                      formatNumber(s.value, isBn)
                     )}
                   </div>
                 </div>
@@ -174,7 +180,7 @@ function BuyMessagesPage() {
       </div>
 
       <h2 className="font-display font-semibold text-lg mb-3">
-        মেসেজ প্যাক নির্বাচন করুন
+        {isBn ? "মেসেজ প্যাক নির্বাচন করুন" : "Select a message pack"}
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -187,11 +193,11 @@ function BuyMessagesPage() {
             >
               <div className="p-5 pb-4">
                 <div className="font-display font-semibold text-lg">
-                  {p.name}
+                  {packName(p, isBn)}
                 </div>
                 <div className="mt-3 flex items-center justify-between flex-wrap gap-2">
                   <div className="text-sm text-muted-foreground">
-                    ৳ {perMsg} / এসএমএস
+                    ৳ {perMsg} / {isBn ? "এসএমএস" : "SMS"}
                   </div>
                   <div className="text-primary font-bold text-lg">
                     ৳ {p.price.toFixed(2)}
@@ -203,7 +209,7 @@ function BuyMessagesPage() {
                 onClick={() => setSelected(p)}
                 className="mt-auto flex items-center justify-between px-5 py-3 bg-primary/10 hover:bg-primary/15 text-primary font-medium text-sm transition-colors"
               >
-                <span>কিনুন</span>
+                <span>{isBn ? "কিনুন" : "Buy"}</span>
                 <ChevronRight className="h-4 w-4" />
               </button>
             </Card>
@@ -213,7 +219,7 @@ function BuyMessagesPage() {
 
       {(myRequests.data?.length ?? 0) > 0 && (
         <Card className="p-5 mt-6">
-          <div className="font-semibold mb-3">আমার মেসেজ ক্রয় রিকোয়েস্ট</div>
+          <div className="font-semibold mb-3">{isBn ? "আমার মেসেজ ক্রয় রিকোয়েস্ট" : "My message purchase requests"}</div>
           <div className="space-y-2">
             {myRequests.data!.map((r: any) => (
               <div
@@ -222,10 +228,10 @@ function BuyMessagesPage() {
               >
                 <div>
                   <div className="font-medium">
-                    {bn(r.messages_count)} মেসেজ — ৳{bn(Number(r.amount))}
+                    {formatNumber(Number(r.messages_count), isBn)} {isBn ? "মেসেজ" : "Messages"} — ৳{formatNumber(Number(r.amount), isBn)}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    TrxID: {r.trx_id} · {fmtDateTime(r.created_at, "bn")}
+                    TrxID: {r.trx_id} · {fmtDateTime(r.created_at, lang)}
                   </div>
                   {r.note && (
                     <div className="text-xs text-destructive mt-1">{r.note}</div>
@@ -240,11 +246,7 @@ function BuyMessagesPage() {
                         : "secondary"
                   }
                 >
-                  {r.status === "approved"
-                    ? "অনুমোদিত"
-                    : r.status === "rejected"
-                      ? "বাতিল"
-                      : "প্রক্রিয়াধীন"}
+                  {statusLabel(r.status, isBn)}
                 </Badge>
               </div>
             ))}
@@ -255,24 +257,24 @@ function BuyMessagesPage() {
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>বিকাশে পেমেন্ট করুন</DialogTitle>
+            <DialogTitle>{isBn ? "বিকাশে পেমেন্ট করুন" : "Pay with bKash"}</DialogTitle>
             <DialogDescription>
-              {selected?.name} — ৳{selected?.price.toLocaleString("bn-BD")}
+              {selected ? packName(selected, isBn) : ""} — ৳{selected ? formatNumber(selected.price, isBn) : ""}
             </DialogDescription>
           </DialogHeader>
 
           <div className="rounded-lg border bg-muted/40 p-4 space-y-2">
             <div className="text-xs font-semibold text-muted-foreground">
-              পেমেন্ট নির্দেশনা
+              {isBn ? "পেমেন্ট নির্দেশনা" : "Payment instructions"}
             </div>
             <ol className="text-sm space-y-1.5 list-decimal list-inside">
               <li>
-                বিকাশ অ্যাপ/USSD থেকে{" "}
-                <span className="font-mono font-bold">*247#</span> ডায়াল করুন
+                {isBn ? "বিকাশ অ্যাপ/USSD থেকে" : "From the bKash app/USSD, dial"}{" "}
+                <span className="font-mono font-bold">*247#</span>
               </li>
-              <li>"Send Money" সিলেক্ট করুন</li>
+              <li>{isBn ? '"Send Money" সিলেক্ট করুন' : 'Select "Send Money"'}</li>
               <li>
-                নম্বর:{" "}
+                {isBn ? "নম্বর" : "Number"}:{" "}
                 <span className="font-mono font-bold text-base">
                   {BKASH_NUMBER}
                 </span>
@@ -282,25 +284,25 @@ function BuyMessagesPage() {
                   className="h-7 w-7 p-0 ml-1"
                   onClick={() => {
                     navigator.clipboard.writeText(BKASH_NUMBER);
-                    toast.success("নম্বর কপি হয়েছে");
+                    toast.success(isBn ? "নম্বর কপি হয়েছে" : "Number copied");
                   }}
                 >
                   <Copy className="h-3.5 w-3.5" />
                 </Button>
               </li>
               <li>
-                পরিমাণ:{" "}
+                {isBn ? "পরিমাণ" : "Amount"}:{" "}
                 <span className="font-bold">
-                  ৳{selected?.price.toLocaleString("bn-BD")}
+                  ৳{selected ? formatNumber(selected.price, isBn) : ""}
                 </span>
               </li>
-              <li>পেমেন্ট সম্পন্ন হলে নিচের ফর্মে TrxID দিন</li>
+              <li>{isBn ? "পেমেন্ট সম্পন্ন হলে নিচের ফর্মে TrxID দিন" : "After payment, enter the TrxID in the form below"}</li>
             </ol>
           </div>
 
           <div className="space-y-3">
             <div>
-              <Label htmlFor="sender">আপনার বিকাশ নম্বর</Label>
+              <Label htmlFor="sender">{isBn ? "আপনার বিকাশ নম্বর" : "Your bKash number"}</Label>
               <Input
                 id="sender"
                 value={senderNumber}
@@ -318,14 +320,14 @@ function BuyMessagesPage() {
                 id="trx"
                 value={trxId}
                 onChange={(e) => setTrxId(e.target.value.toUpperCase())}
-                placeholder="যেমন: BK7XYZ12AB"
+                placeholder={isBn ? "যেমন: BK7XYZ12AB" : "e.g. BK7XYZ12AB"}
               />
             </div>
           </div>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setSelected(null)}>
-              বাতিল
+              {isBn ? "বাতিল" : "Cancel"}
             </Button>
             <Button
               onClick={() => submit.mutate()}
@@ -336,7 +338,7 @@ function BuyMessagesPage() {
               ) : (
                 <Smartphone className="h-4 w-4 mr-1" />
               )}
-              জমা দিন
+              {isBn ? "জমা দিন" : "Submit"}
             </Button>
           </DialogFooter>
         </DialogContent>

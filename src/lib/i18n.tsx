@@ -4,7 +4,7 @@ type Lang = "en" | "bn";
 
 const dict = {
   en: {
-    appName: "হিসব নিকাশ-২৪",
+    appName: "Hisab Nikash-24",
     tagline: "Inventory & Accounting OS",
     dashboard: "Dashboard",
     sales: "Sales",

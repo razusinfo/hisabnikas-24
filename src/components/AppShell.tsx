@@ -71,7 +71,7 @@ function LangToggle({ compact = false }: { compact?: boolean }) {
         )}
         aria-pressed={lang === "bn"}
       >
-        বাং
+        {lang === "bn" ? "বাং" : "BN"}
       </button>
     </div>
   );
@@ -173,7 +173,7 @@ function SidebarContent({
           className="mt-0.5 md:mt-1 inline-flex items-center gap-1 text-[11px] md:text-xs text-sidebar-foreground/60 hover:text-sidebar-foreground"
         >
           <Pencil className="h-2.5 w-2.5 md:h-3 md:w-3" />
-          edit
+          {t("edit")}
         </Link>
       </div>
 
@@ -322,8 +322,8 @@ function MobileThemeToggle() {
         <button
           type="button"
           className="inline-flex items-center justify-center min-h-10 min-w-10 rounded-md text-white hover:bg-white/15"
-          aria-label="Choose theme"
-          title="Choose theme"
+          aria-label={bn ? "থিম বাছাই করুন" : "Choose theme"}
+          title={bn ? "থিম বাছাই করুন" : "Choose theme"}
         >
           <span className={cn("h-5 w-5 rounded-full ring-2 ring-white/70 shadow-sm", active.swatch)} />
         </button>
@@ -485,7 +485,8 @@ function ProprietorMenu({
 
 export function AppShell({ children }: { children: ReactNode }) {
 
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const bn = lang === "bn";
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -628,11 +629,11 @@ export function AppShell({ children }: { children: ReactNode }) {
                 rel="noopener noreferrer"
                 className="underline hover:text-foreground transition-colors font-medium"
               >
-                ডাউনলোড সফটওয়্যার (v{APP_VERSION})
+                {bn ? "ডাউনলোড সফটওয়্যার" : "Download software"} (v{APP_VERSION})
               </a>
             </div>
             <div>
-              সফটওয়্যার প্রস্তুতকারক:{" "}
+              {bn ? "সফটওয়্যার প্রস্তুতকারক" : "Software developer"}:{" "}
               <a
                 href="https://www.sylhetionlineshop.com"
                 target="_blank"
