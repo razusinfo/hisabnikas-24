@@ -288,33 +288,37 @@ export function ProductFormDialog({
                   <Settings2 className="h-3.5 w-3.5 mr-1" />{t("manageCategories")}
                 </Button>
               </div>
-              <Select value={form.category_id || "none"} onValueChange={(v) => setForm({ ...form, category_id: v === "none" ? "" : v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">{t("selectCategory")}</SelectItem>
-                  {categories.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                  ))}
-                  <SelectItem value="__new__">+ {t("newCategory")}</SelectItem>
-                </SelectContent>
-              </Select>
-              {form.category_id === "__new__" && (
-                <div className="flex gap-2 pt-1">
-                  <Input
-                    value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
-                    placeholder={t("newCategory")}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") { e.preventDefault(); addCategory.mutate(newCategoryName); }
-                    }}
-                  />
-                  <Button type="button" variant="outline" disabled={addCategory.isPending || !newCategoryName.trim()} onClick={() => addCategory.mutate(newCategoryName)}>
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
+              <div className="flex gap-2">
+                <Select value={form.category_id || "none"} onValueChange={(v) => setForm({ ...form, category_id: v === "none" ? "" : v })}>
+                  <SelectTrigger className="flex-1"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t("selectCategory")}</SelectItem>
+                    {categories.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    ))}
+                    <SelectItem value="__new__">+ {t("newCategory")}</SelectItem>
+                  </SelectContent>
+                </Select>
+                {form.category_id === "__new__" && (
+                  <>
+                    <Input
+                      className="flex-1"
+                      value={newCategoryName}
+                      onChange={(e) => setNewCategoryName(e.target.value)}
+                      placeholder={t("newCategory")}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") { e.preventDefault(); addCategory.mutate(newCategoryName); }
+                      }}
+                    />
+                    <Button type="button" variant="outline" disabled={addCategory.isPending || !newCategoryName.trim()} onClick={() => addCategory.mutate(newCategoryName)}>
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
           )}
+
           {(sett.vat || sett.mrpPrice) && (
             <div className="grid grid-cols-2 gap-3">
               {sett.vat && (
