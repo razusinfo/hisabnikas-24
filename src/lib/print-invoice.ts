@@ -36,6 +36,8 @@ export type PrintInvoiceLabels = {
   deliveryCharge?: string;
   tax?: string;
   discount?: string;
+  warranty?: string;
+  serialNo?: string;
 };
 
 export type PrintInvoiceOptions = {
