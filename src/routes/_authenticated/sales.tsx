@@ -1238,6 +1238,29 @@ function SalesPage() {
                           <div className="font-mono font-medium">{fmtMoney(l.qty * l.unit_price, lang)}</div>
                         </div>
                       </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-border/40">
+                        <div>
+                          <div className="text-muted-foreground mb-1">{lang === "bn" ? "ওয়ারেন্টি" : "Warranty"}</div>
+                          <Select value={l.warranty || "none"} onValueChange={(v) => updateLine(idx, { warranty: v === "none" ? "" : v === "custom" ? (l.warranty && !["6 Months","1 Year","2 Years","3 Years"].includes(l.warranty) ? l.warranty : "") : v })}>
+                            <SelectTrigger className="h-8"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">{lang === "bn" ? "নেই" : "No Warranty"}</SelectItem>
+                              <SelectItem value="6 Months">{lang === "bn" ? "৬ মাস" : "6 Months"}</SelectItem>
+                              <SelectItem value="1 Year">{lang === "bn" ? "১ বছর" : "1 Year"}</SelectItem>
+                              <SelectItem value="2 Years">{lang === "bn" ? "২ বছর" : "2 Years"}</SelectItem>
+                              <SelectItem value="3 Years">{lang === "bn" ? "৩ বছর" : "3 Years"}</SelectItem>
+                              <SelectItem value="custom">{lang === "bn" ? "কাস্টম..." : "Custom..."}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          {l.warranty && !["6 Months","1 Year","2 Years","3 Years"].includes(l.warranty) && (
+                            <Input className="h-8 mt-1" placeholder={lang === "bn" ? "যেমন: ৯০ দিন" : "e.g. 90 days"} value={l.warranty} onChange={(e) => updateLine(idx, { warranty: e.target.value })} />
+                          )}
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground mb-1">{lang === "bn" ? "সিরিয়াল / IMEI" : "Serial / IMEI"}</div>
+                          <Input className="h-8" placeholder={lang === "bn" ? "ঐচ্ছিক" : "Optional"} value={l.serial_no} onChange={(e) => updateLine(idx, { serial_no: e.target.value })} />
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
