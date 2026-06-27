@@ -22,6 +22,9 @@ android {
     }
     buildTypes {
         release {
+            // GitHub Actions-এ production keystore না থাকলেও installable release APK বানানোর জন্য।
+            // পরে Play Store keystore দিলে এটিকে production signing config দিয়ে বদলানো যাবে।
+            signingConfig signingConfigs.debug
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

@@ -84,10 +84,9 @@ jobs:
       - name: Rename artifacts
         run: |
           mkdir -p release
-          cp android/app/build/outputs/apk/debug/app-debug.apk      release/HisabNikash24-debug.apk
-          cp android/app/build/outputs/apk/debug/app-debug.apk      release/HisabNikash24-release.apk
-          cp android/app/build/outputs/apk/release/app-release-unsigned.apk release/HisabNikash24-release-unsigned.apk
-          cp android/app/build/outputs/bundle/release/app-release.aab      release/HisabNikash24-release.aab
+          cp android/app/build/outputs/apk/debug/app-debug.apk release/HisabNikash24-debug.apk
+          cp android/app/build/outputs/apk/release/app-release.apk release/HisabNikash24-release.apk
+          cp android/app/build/outputs/bundle/release/app-release.aab release/HisabNikash24-release.aab
 
       - name: Upload artifacts (every build)
         uses: actions/upload-artifact@v4
@@ -107,8 +106,7 @@ jobs:
             ## 📱 Download Android App
 
             - **HisabNikash24-debug.apk** — সরাসরি ফোনে ইন্সটল করুন (testing)
-            - **HisabNikash24-release.apk** — Settings থেকে এক-ক্লিকে ডাউনলোড করার APK
-            - **HisabNikash24-release-unsigned.apk** — sign করে production-এ ব্যবহার করুন
+            - **HisabNikash24-release.apk** — সরাসরি ফোনে ইন্সটল করার release APK
             - **HisabNikash24-release.aab** — Play Store-এ আপলোড করুন
 
             ### ইন্সটল করার নিয়ম
@@ -131,8 +129,7 @@ jobs:
             Commit: ${{ github.sha }}
 
             - **HisabNikash24-debug.apk** — সরাসরি ইন্সটলের জন্য
-            - **HisabNikash24-release.apk** — Settings থেকে এক-ক্লিকে ডাউনলোড করার APK
-            - **HisabNikash24-release-unsigned.apk** — sign করে production-এ ব্যবহার করুন
+            - **HisabNikash24-release.apk** — সরাসরি ফোনে ইন্সটল করার release APK
             - **HisabNikash24-release.aab** — Play Store-এর জন্য
 
       - name: Update "latest" rolling release (main branch push)
