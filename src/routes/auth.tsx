@@ -12,6 +12,7 @@ import { Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useServerFn } from "@tanstack/react-start";
 import { requestPhoneOtp, verifyPhoneOtp } from "@/lib/phone-otp.functions";
+import { isNativePlatform, signInWithGoogleNative } from "@/lib/native-google-auth";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -110,6 +111,17 @@ function AuthPage() {
   };
 
   const onGoogle = async () => {
+    // Capacitor Android — use native Google account picker (no browser).
+    if (isNativePlatform()) {
+      try {
+        const ok = await signInWithGoogleNative();
+        if (ok) navigate({ to: "/dashboard", replace: true });
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Google সাইন-ইন ব্যর্থ");
+      }
+      return;
+    }
+    // Web — Lovable managed OAuth (browser/popup).
     const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/dashboard" });
     if (r.error) toast.error(r.error.message);
     if (!r.redirected && !r.error) navigate({ to: "/dashboard", replace: true });

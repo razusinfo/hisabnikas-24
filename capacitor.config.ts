@@ -15,6 +15,14 @@ const config: CapacitorConfig = {
   plugins: {
     BarcodeScanner: {},
     Camera: {},
+    GoogleAuth: {
+      // Web (server) OAuth Client ID from Google Cloud Console.
+      // Replace at build time via VITE_GOOGLE_WEB_CLIENT_ID; the JS side also
+      // re-initializes with the same env value at runtime.
+      scopes: ["profile", "email"],
+      serverClientId: process.env.VITE_GOOGLE_WEB_CLIENT_ID ?? "",
+      forceCodeForRefreshToken: false,
+    },
   },
 };
 
