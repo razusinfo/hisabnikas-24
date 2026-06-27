@@ -67,6 +67,7 @@ export function ProductFormDialog({
   const qc = useQueryClient();
   const { data: appSettings } = useAppSettings();
   const sett = {
+    sku: appSettings?.sku !== false,
     barcodeScan: appSettings?.barcodeScan !== false,
     itemUnit: appSettings?.itemUnit !== false,
     itemCategory: appSettings?.itemCategory !== false,
@@ -252,12 +253,16 @@ export function ProductFormDialog({
             </div>
           </div>
           <div className="space-y-1.5"><Label>{t("name")}</Label><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5"><Label>{t("sku")}</Label><Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} /></div>
-            {sett.barcodeScan && (
-              <div className="space-y-1.5"><Label>{t("barcode")}</Label><Input value={form.barcode} onChange={(e) => setForm({ ...form, barcode: e.target.value })} /></div>
-            )}
-          </div>
+          {(sett.sku || sett.barcodeScan) && (
+            <div className="grid grid-cols-2 gap-3">
+              {sett.sku && (
+                <div className="space-y-1.5"><Label>{t("sku")}</Label><Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} /></div>
+              )}
+              {sett.barcodeScan && (
+                <div className="space-y-1.5"><Label>{t("barcode")}</Label><Input value={form.barcode} onChange={(e) => setForm({ ...form, barcode: e.target.value })} /></div>
+              )}
+            </div>
+          )}
           <div className="grid grid-cols-3 gap-3">
             {sett.showPurchasePrice && (
               <div className="space-y-1.5"><Label>{t("cost")}</Label><Input type="number" step="0.01" min="0" value={form.cost_price} onChange={(e) => setForm({ ...form, cost_price: e.target.value })} /></div>
