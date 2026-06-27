@@ -111,6 +111,17 @@ function AuthPage() {
   };
 
   const onGoogle = async () => {
+    // Capacitor Android — use native Google account picker (no browser).
+    if (isNativePlatform()) {
+      try {
+        const ok = await signInWithGoogleNative();
+        if (ok) navigate({ to: "/dashboard", replace: true });
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Google সাইন-ইন ব্যর্থ");
+      }
+      return;
+    }
+    // Web — Lovable managed OAuth (browser/popup).
     const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/dashboard" });
     if (r.error) toast.error(r.error.message);
     if (!r.redirected && !r.error) navigate({ to: "/dashboard", replace: true });
