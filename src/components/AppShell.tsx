@@ -590,14 +590,14 @@ export function AppShell({ children }: { children: ReactNode }) {
               className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors", "text-emerald-600 hover:bg-emerald-50")}
             >
               <Receipt className="h-4 w-4" />
-              <span className="hidden lg:inline">{t("newSale")}</span>
+              <span>{t("newSale")}</span>
             </button>
             <button
               onClick={() => navigate({ to: "/products", search: { new: 1 } })}
               className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors", "text-violet-600 hover:bg-violet-50")}
             >
               <Plus className="h-4 w-4" />
-              <span className="hidden lg:inline">{t("addProduct")}</span>
+              <span>{t("addProduct")}</span>
             </button>
             <Link
               to="/help"
