@@ -541,6 +541,8 @@ function SalesPage() {
           qty: l.qty,
           price: l.unit_price,
           total: l.line_total,
+          warranty: l.warranty ?? null,
+          serial_no: l.serial_no ?? null,
         })),
         discount: s.discount,
         tax: s.tax,
