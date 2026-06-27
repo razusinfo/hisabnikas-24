@@ -1170,7 +1170,7 @@ function SalesPage() {
                     </thead>
                     <tbody>
                       {lines.map((l, idx) => (
-                        <>
+                        <Fragment key={idx}>
                           <tr key={idx} className="border-t border-border/40">
                             <td className="p-2">{l.name}</td>
                             <td className="p-2"><Input type="number" min="0" step="0.01" className="h-8 text-right" value={l.qty} onChange={(e) => updateLine(idx, { qty: Number(e.target.value) })} /></td>
