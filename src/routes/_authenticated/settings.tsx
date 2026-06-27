@@ -760,12 +760,21 @@ function ReadyAppDownloadCard() {
       <div className="flex flex-wrap gap-2">
         <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700">
           <a
-            href={`https://hisabnikas24.top/download/?current=${encodeURIComponent(APP_VERSION)}`}
+            href={directApkUrl}
             target="_blank"
             rel="noopener noreferrer"
           >
             <Download className="h-4 w-4 mr-2" />
-            APK ডাউনলোড পেজ
+            সর্বশেষ APK ডাউনলোড
+          </a>
+        </Button>
+        <Button asChild size="sm" variant="outline" className="border-emerald-300">
+          <a
+            href={`https://hisabnikas24.top/download/?current=${encodeURIComponent(APP_VERSION)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            ডাউনলোড পেজ
           </a>
         </Button>
         <Button asChild size="sm" variant="outline" className="border-emerald-300">
