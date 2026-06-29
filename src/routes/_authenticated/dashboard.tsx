@@ -266,7 +266,7 @@ function Dashboard() {
 }
 
 function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> }) {
-  const { lang } = useI18n();
+  const { t, lang } = useI18n();
   const bn = lang === "bn";
   const L = {
     onHand: bn ? "হাতে আছে" : "On hand",
