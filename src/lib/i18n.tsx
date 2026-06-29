@@ -452,7 +452,7 @@ const dict = {
     totalProducts: "পণ্য",
     lowStock: "কম স্টক",
     dueReceivable: "বাকি আদায়যোগ্য",
-    theme: "থিম",
+    theme: "থিম রং পরিবর্তন",
     chooseTheme: "থিম বাছাই করুন",
     recentSales: "সাম্প্রতিক বিক্রয়",
     topProducts: "শীর্ষ বিক্রিত পণ্য",
