@@ -335,11 +335,12 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
     icon: typeof HandCoins;
     border: string;
     iconGrad: string;
+    valueGrad: string;
   }> = [
-    { to: "/customers", label: L.receivable, value: fmtMoney(d.dueReceivable), icon: HandCoins, border: "border-orange-200", iconGrad: "from-orange-400 to-amber-500" },
-    { to: "/customers", label: L.payable, value: fmtMoney(0), icon: Banknote, border: "border-sky-200", iconGrad: "from-sky-400 to-blue-500" },
-    { to: "/products", label: L.products, value: String(d.productCount), icon: PackageOpen, border: "border-teal-200", iconGrad: "from-teal-400 to-emerald-500" },
-    { to: "/customers", label: L.parties, value: String(d.customerCount), icon: UserRound, border: "border-amber-200", iconGrad: "from-amber-400 to-yellow-500" },
+    { to: "/customers", label: L.receivable, value: fmtMoney(d.dueReceivable), icon: HandCoins, border: "border-orange-200", iconGrad: "from-orange-400 to-amber-500", valueGrad: "from-orange-500 to-amber-600" },
+    { to: "/customers", label: L.payable, value: fmtMoney(0), icon: Banknote, border: "border-sky-200", iconGrad: "from-sky-400 to-blue-500", valueGrad: "from-sky-500 to-blue-600" },
+    { to: "/products", label: L.products, value: String(d.productCount), icon: PackageOpen, border: "border-teal-200", iconGrad: "from-teal-400 to-emerald-500", valueGrad: "from-teal-500 to-emerald-600" },
+    { to: "/customers", label: L.parties, value: String(d.customerCount), icon: UserRound, border: "border-amber-200", iconGrad: "from-amber-400 to-yellow-500", valueGrad: "from-amber-500 to-yellow-600" },
   ];
 
   return (
