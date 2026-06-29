@@ -355,7 +355,7 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
             </span>
             <span className="text-[13px] font-medium text-muted-foreground">{t("salesToday")}</span>
           </div>
-          <div className="font-display font-bold text-lg truncate">{fmtMoney(d.salesToday)}</div>
+          <div className="font-display font-extrabold text-2xl truncate bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-cyan-500 tracking-tight">{fmtMoney(d.salesToday)}</div>
         </Link>
         <ThemeCard />
       </div>
