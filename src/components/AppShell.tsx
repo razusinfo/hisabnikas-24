@@ -311,7 +311,7 @@ export function useAppTheme() {
   return { theme, setTheme };
 }
 
-function MobileThemeToggle() {
+export function MobileThemeToggle() {
   const { theme, setTheme } = useAppTheme();
   const { lang } = useI18n();
   const bn = lang === "bn";
