@@ -44,6 +44,8 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
     });
   },
   component: Dashboard,
+  pendingComponent: DashboardSkeleton,
+  pendingMs: 0,
 });
 
 export async function fetchDashboard() {
@@ -333,11 +335,12 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
     icon: typeof HandCoins;
     border: string;
     iconGrad: string;
+    valueGrad: string;
   }> = [
-    { to: "/customers", label: L.receivable, value: fmtMoney(d.dueReceivable), icon: HandCoins, border: "border-orange-200", iconGrad: "from-orange-400 to-amber-500" },
-    { to: "/customers", label: L.payable, value: fmtMoney(0), icon: Banknote, border: "border-sky-200", iconGrad: "from-sky-400 to-blue-500" },
-    { to: "/products", label: L.products, value: String(d.productCount), icon: PackageOpen, border: "border-teal-200", iconGrad: "from-teal-400 to-emerald-500" },
-    { to: "/customers", label: L.parties, value: String(d.customerCount), icon: UserRound, border: "border-amber-200", iconGrad: "from-amber-400 to-yellow-500" },
+    { to: "/customers", label: L.receivable, value: fmtMoney(d.dueReceivable), icon: HandCoins, border: "border-orange-200", iconGrad: "from-orange-400 to-amber-500", valueGrad: "from-orange-500 to-amber-600" },
+    { to: "/customers", label: L.payable, value: fmtMoney(0), icon: Banknote, border: "border-sky-200", iconGrad: "from-sky-400 to-blue-500", valueGrad: "from-sky-500 to-blue-600" },
+    { to: "/products", label: L.products, value: String(d.productCount), icon: PackageOpen, border: "border-teal-200", iconGrad: "from-teal-400 to-emerald-500", valueGrad: "from-teal-500 to-emerald-600" },
+    { to: "/customers", label: L.parties, value: String(d.customerCount), icon: UserRound, border: "border-amber-200", iconGrad: "from-amber-400 to-yellow-500", valueGrad: "from-amber-500 to-yellow-600" },
   ];
 
   return (
@@ -353,7 +356,7 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
             </span>
             <span className="text-[13px] font-medium text-muted-foreground">{t("salesToday")}</span>
           </div>
-          <div className="font-display font-bold text-lg truncate">{fmtMoney(d.salesToday)}</div>
+          <div className="font-display font-extrabold text-2xl truncate bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-cyan-500 tracking-tight">{fmtMoney(d.salesToday)}</div>
         </Link>
         <ThemeCard />
       </div>
@@ -374,8 +377,8 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
                 <span className="truncate">{tile.label}</span>
                 <Info className="h-3 w-3 opacity-60 shrink-0" />
               </div>
-              <div className="mt-1 flex items-center gap-1.5 font-display font-bold text-lg">
-                <span className="truncate">{tile.value}</span>
+              <div className="mt-1 flex items-center gap-1.5 font-display font-extrabold text-xl tracking-tight">
+                <span className={`truncate bg-clip-text text-transparent bg-gradient-to-r ${tile.valueGrad}`}>{tile.value}</span>
                 <ChevronRight className="h-4 w-4 shrink-0" style={{ color: "var(--brand-solid)" }} />
               </div>
             </Link>
@@ -392,10 +395,80 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
         </span>
         <div className="min-w-0 flex-1">
           <div className="text-[13px] font-medium text-muted-foreground truncate">{L.expenses}</div>
-          <div className="font-display font-bold text-lg truncate">{fmtMoney(0)}</div>
+          <div className="font-display font-extrabold text-xl truncate bg-clip-text text-transparent bg-gradient-to-r from-rose-500 to-pink-600 tracking-tight">{fmtMoney(0)}</div>
         </div>
         <ChevronRight className="h-5 w-5 shrink-0" style={{ color: "var(--brand-solid)" }} />
       </Link>
+    </div>
+  );
+}
+
+function SkelBlock({ className = "" }: { className?: string }) {
+  return <div className={cn("animate-pulse rounded-md bg-muted/70", className)} />;
+}
+
+function MobileDashboardSkeleton() {
+  return (
+    <div className="md:hidden -mx-4 -mt-4 mb-4 px-4 pt-5 pb-3" style={{ backgroundImage: "var(--brand-gradient-soft)" }}>
+      <div className="grid grid-cols-2 gap-3 mt-2">
+        {[0, 1].map((i) => (
+          <div key={i} className="min-h-[112px] rounded-3xl bg-card border border-border/60 p-5 shadow-md">
+            <div className="flex items-center gap-2.5 mb-3">
+              <SkelBlock className="h-10 w-10 rounded-2xl" />
+              <SkelBlock className="h-3 w-20" />
+            </div>
+            <SkelBlock className="h-6 w-28" />
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-cols-2 gap-4 mt-8">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="relative min-h-[104px] rounded-3xl bg-card border border-border/60 px-4 pt-8 pb-4 shadow-md">
+            <SkelBlock className="absolute -top-5 left-4 h-11 w-11 rounded-2xl ring-4 ring-background" />
+            <SkelBlock className="h-3 w-20 mb-2" />
+            <SkelBlock className="h-5 w-24" />
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 min-h-[68px] flex items-center gap-3 rounded-3xl bg-card border border-border/60 px-4 py-3.5 shadow-md">
+        <SkelBlock className="h-12 w-12 rounded-2xl" />
+        <div className="min-w-0 flex-1 space-y-2">
+          <SkelBlock className="h-3 w-24" />
+          <SkelBlock className="h-5 w-20" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto">
+      <MobileDashboardSkeleton />
+      <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="rounded-xl border border-border/60 bg-card p-4 shadow-sm">
+            <SkelBlock className="h-3 w-24 mb-3" />
+            <SkelBlock className="h-6 w-32" />
+          </div>
+        ))}
+      </div>
+      <div className="hidden md:grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="rounded-xl border border-border/60 bg-card p-4 shadow-sm">
+            <SkelBlock className="h-3 w-24 mb-3" />
+            <SkelBlock className="h-6 w-20" />
+          </div>
+        ))}
+      </div>
+      <div className="card-premium p-5">
+        <SkelBlock className="h-5 w-40 mb-4" />
+        <div className="space-y-2">
+          {[0, 1, 2, 3].map((i) => (
+            <SkelBlock key={i} className="h-10 w-full" />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
