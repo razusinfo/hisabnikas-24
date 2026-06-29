@@ -284,15 +284,15 @@ function useTheme() {
   return { isDark, toggle };
 }
 
-type ThemeId = "default" | "mint" | "rose";
+export type ThemeId = "default" | "mint" | "rose";
 
-const THEMES: Array<{ id: ThemeId; name: string; nameBn: string; swatch: string; ring: string }> = [
+export const THEMES: Array<{ id: ThemeId; name: string; nameBn: string; swatch: string; ring: string }> = [
   { id: "default", name: "Ocean", nameBn: "ওশান", swatch: "bg-gradient-to-br from-violet-500 to-indigo-600", ring: "ring-violet-300" },
   { id: "mint", name: "Mint", nameBn: "মিন্ট", swatch: "bg-gradient-to-br from-emerald-400 to-teal-500", ring: "ring-emerald-300" },
   { id: "rose", name: "Rose", nameBn: "রোজ", swatch: "bg-gradient-to-br from-rose-400 to-orange-400", ring: "ring-rose-300" },
 ];
 
-function useAppTheme() {
+export function useAppTheme() {
   const [theme, setThemeState] = useState<ThemeId>("default");
   useEffect(() => {
     if (typeof document === "undefined") return;
