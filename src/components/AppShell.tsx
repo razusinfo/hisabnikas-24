@@ -575,7 +575,6 @@ export function AppShell({ children }: { children: ReactNode }) {
               </span>
             </Link>
             <div className="inline-flex items-center gap-0.5">
-              <MobileThemeToggle />
               <LangToggle compact />
               <SearchIconButton className="min-h-10 min-w-10 text-white hover:bg-white/15 hover:text-white" />
             </div>
