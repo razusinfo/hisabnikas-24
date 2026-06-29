@@ -265,6 +265,55 @@ function Dashboard() {
     </div>
   );
 }
+function ThemeCard() {
+  const { theme, setTheme } = useAppTheme();
+  const { t, lang } = useI18n();
+  const bn = lang === "bn";
+  const active = THEMES.find((th) => th.id === theme) ?? THEMES[0];
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button className="w-full text-left rounded-2xl bg-card border border-violet-200 p-4 shadow-sm">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="grid place-items-center h-8 w-8 rounded-lg bg-violet-100 text-violet-600 shrink-0">
+              <Palette className="h-4 w-4" />
+            </span>
+            <span className="text-xs text-muted-foreground">{t("theme")}</span>
+          </div>
+          <div className="font-display font-bold text-lg flex items-center gap-2">
+            <span className={cn("h-4 w-4 rounded-full", active.swatch)} />
+            <span className="truncate">{bn ? active.nameBn : active.name}</span>
+          </div>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="end" sideOffset={8} className="w-56 p-3 rounded-2xl">
+        <div className="text-xs font-semibold text-muted-foreground mb-2 px-1">
+          {t("chooseTheme")}
+        </div>
+        <div className="space-y-1">
+          {THEMES.map((opt) => {
+            const selected = opt.id === theme;
+            return (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => setTheme(opt.id)}
+                className={cn(
+                  "w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm transition-colors",
+                  selected ? "bg-accent text-foreground" : "hover:bg-accent/60 text-foreground/80"
+                )}
+              >
+                <span className={cn("h-7 w-7 rounded-full shadow-sm ring-2", opt.swatch, selected ? opt.ring : "ring-transparent")} />
+                <span className="flex-1 text-left font-medium">{bn ? opt.nameBn : opt.name}</span>
+                {selected && <span className="text-[11px] font-semibold text-primary">{bn ? "চালু" : "Active"}</span>}
+              </button>
+            );
+          })}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> }) {
   const { t, lang } = useI18n();
