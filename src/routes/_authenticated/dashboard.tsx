@@ -20,6 +20,7 @@ import {
   PackageOpen,
   UserRound,
   Banknote,
+  Palette,
 } from "lucide-react";
 
 import {
