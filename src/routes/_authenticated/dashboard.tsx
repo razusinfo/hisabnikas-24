@@ -273,20 +273,20 @@ function ThemeCard() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button className="w-full text-left rounded-2xl bg-card border border-violet-200 p-4 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="grid place-items-center h-8 w-8 rounded-lg bg-violet-100 text-violet-600 shrink-0">
-              <Palette className="h-4 w-4" />
+        <button className="w-full min-h-[112px] text-left rounded-3xl bg-card border border-violet-200 p-5 shadow-md active:scale-[0.98] active:shadow-sm transition-transform touch-manipulation select-none">
+          <div className="flex items-center gap-2.5 mb-2.5">
+            <span className="grid place-items-center h-10 w-10 rounded-2xl bg-gradient-to-br from-violet-400 to-fuchsia-500 text-white shrink-0 shadow-sm">
+              <Palette className="h-5 w-5" />
             </span>
-            <span className="text-xs text-muted-foreground">{t("theme")}</span>
+            <span className="text-[13px] font-medium text-muted-foreground">{t("theme")}</span>
           </div>
           <div className="font-display font-bold text-lg flex items-center gap-2">
-            <span className={cn("h-4 w-4 rounded-full", active.swatch)} />
+            <span className={cn("h-4 w-4 rounded-full ring-2 ring-background shadow", active.swatch)} />
             <span className="truncate">{bn ? active.nameBn : active.name}</span>
           </div>
         </button>
       </PopoverTrigger>
-      <PopoverContent align="end" sideOffset={8} className="w-56 p-3 rounded-2xl">
+      <PopoverContent align="end" sideOffset={8} className="w-64 p-3 rounded-2xl">
         <div className="text-xs font-semibold text-muted-foreground mb-2 px-1">
           {t("chooseTheme")}
         </div>
@@ -299,11 +299,11 @@ function ThemeCard() {
                 type="button"
                 onClick={() => setTheme(opt.id)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm transition-colors",
-                  selected ? "bg-accent text-foreground" : "hover:bg-accent/60 text-foreground/80"
+                  "w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-colors touch-manipulation",
+                  selected ? "bg-accent text-foreground" : "active:bg-accent/60 text-foreground/80"
                 )}
               >
-                <span className={cn("h-7 w-7 rounded-full shadow-sm ring-2", opt.swatch, selected ? opt.ring : "ring-transparent")} />
+                <span className={cn("h-8 w-8 rounded-full shadow-sm ring-2", opt.swatch, selected ? opt.ring : "ring-transparent")} />
                 <span className="flex-1 text-left font-medium">{bn ? opt.nameBn : opt.name}</span>
                 {selected && <span className="text-[11px] font-semibold text-primary">{bn ? "চালু" : "Active"}</span>}
               </button>
@@ -332,46 +332,49 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
     value: string;
     icon: typeof HandCoins;
     border: string;
-    iconBg: string;
+    iconGrad: string;
   }> = [
-    { to: "/customers", label: L.receivable, value: fmtMoney(d.dueReceivable), icon: HandCoins, border: "border-orange-200", iconBg: "bg-orange-400" },
-    { to: "/customers", label: L.payable, value: fmtMoney(0), icon: Banknote, border: "border-sky-200", iconBg: "bg-sky-400" },
-    { to: "/products", label: L.products, value: String(d.productCount), icon: PackageOpen, border: "border-teal-200", iconBg: "bg-teal-500" },
-    { to: "/customers", label: L.parties, value: String(d.customerCount), icon: UserRound, border: "border-amber-200", iconBg: "bg-amber-400" },
+    { to: "/customers", label: L.receivable, value: fmtMoney(d.dueReceivable), icon: HandCoins, border: "border-orange-200", iconGrad: "from-orange-400 to-amber-500" },
+    { to: "/customers", label: L.payable, value: fmtMoney(0), icon: Banknote, border: "border-sky-200", iconGrad: "from-sky-400 to-blue-500" },
+    { to: "/products", label: L.products, value: String(d.productCount), icon: PackageOpen, border: "border-teal-200", iconGrad: "from-teal-400 to-emerald-500" },
+    { to: "/customers", label: L.parties, value: String(d.customerCount), icon: UserRound, border: "border-amber-200", iconGrad: "from-amber-400 to-yellow-500" },
   ];
 
   return (
-    <div className="md:hidden -mx-4 -mt-4 mb-4 px-4 pt-4 pb-2" style={{ backgroundImage: "var(--brand-gradient-soft)" }}>
+    <div className="md:hidden -mx-4 -mt-4 mb-4 px-4 pt-5 pb-3" style={{ backgroundImage: "var(--brand-gradient-soft)" }}>
       <div className="grid grid-cols-2 gap-3 mt-2">
-        <Link to="/sales" className="rounded-2xl bg-card border border-sky-200 p-4 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="grid place-items-center h-8 w-8 rounded-lg bg-sky-100 text-sky-600 shrink-0">
-              <CalendarDays className="h-4 w-4" />
+        <Link
+          to="/sales"
+          className="min-h-[112px] rounded-3xl bg-card border border-sky-200 p-5 shadow-md active:scale-[0.98] active:shadow-sm transition-transform touch-manipulation select-none"
+        >
+          <div className="flex items-center gap-2.5 mb-2.5">
+            <span className="grid place-items-center h-10 w-10 rounded-2xl bg-gradient-to-br from-sky-400 to-cyan-500 text-white shrink-0 shadow-sm">
+              <CalendarDays className="h-5 w-5" />
             </span>
-            <span className="text-xs text-muted-foreground">{t("salesToday")}</span>
+            <span className="text-[13px] font-medium text-muted-foreground">{t("salesToday")}</span>
           </div>
-          <div className="font-display font-bold text-lg">{fmtMoney(d.salesToday)}</div>
+          <div className="font-display font-bold text-lg truncate">{fmtMoney(d.salesToday)}</div>
         </Link>
         <ThemeCard />
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mt-7">
+      <div className="grid grid-cols-2 gap-4 mt-8">
         {tiles.map((tile, i) => {
           const Icon = tile.icon;
           return (
             <Link
               key={i}
               to={tile.to}
-              className={`relative rounded-2xl bg-card border ${tile.border} px-3 pt-7 pb-3 shadow-sm`}
+              className={`relative min-h-[104px] rounded-3xl bg-card border ${tile.border} px-4 pt-8 pb-4 shadow-md active:scale-[0.98] active:shadow-sm transition-transform touch-manipulation select-none`}
             >
-              <span className={`absolute -top-4 left-3 grid place-items-center h-9 w-9 rounded-full ${tile.iconBg} text-white shadow-md ring-4 ring-background`}>
-                <Icon className="h-4 w-4" />
+              <span className={`absolute -top-5 left-4 grid place-items-center h-11 w-11 rounded-2xl bg-gradient-to-br ${tile.iconGrad} text-white shadow-lg ring-4 ring-background`}>
+                <Icon className="h-5 w-5" />
               </span>
-              <div className="flex items-center gap-1 text-[13px] text-muted-foreground">
+              <div className="flex items-center gap-1 text-[13px] font-medium text-muted-foreground">
                 <span className="truncate">{tile.label}</span>
-                <Info className="h-3 w-3 opacity-60" />
+                <Info className="h-3 w-3 opacity-60 shrink-0" />
               </div>
-              <div className="mt-1 flex items-center gap-1.5 font-display font-bold text-base">
+              <div className="mt-1 flex items-center gap-1.5 font-display font-bold text-lg">
                 <span className="truncate">{tile.value}</span>
                 <ChevronRight className="h-4 w-4 shrink-0" style={{ color: "var(--brand-solid)" }} />
               </div>
@@ -382,14 +385,14 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
 
       <Link
         to="/expenses"
-        className="mt-3 flex items-center gap-3 rounded-2xl bg-card border border-border px-3 py-3 shadow-sm"
+        className="mt-4 min-h-[68px] flex items-center gap-3 rounded-3xl bg-card border border-rose-200 px-4 py-3.5 shadow-md active:scale-[0.99] active:shadow-sm transition-transform touch-manipulation select-none"
       >
-        <span className="grid place-items-center h-11 w-11 rounded-xl bg-rose-100 text-rose-500 shrink-0">
-          <Banknote className="h-5 w-5" />
+        <span className="grid place-items-center h-12 w-12 rounded-2xl bg-gradient-to-br from-rose-400 to-pink-500 text-white shrink-0 shadow-sm">
+          <Banknote className="h-6 w-6" />
         </span>
         <div className="min-w-0 flex-1">
-          <div className="text-[13px] text-muted-foreground truncate">{L.expenses}</div>
-          <div className="font-display font-bold text-base truncate">{fmtMoney(0)}</div>
+          <div className="text-[13px] font-medium text-muted-foreground truncate">{L.expenses}</div>
+          <div className="font-display font-bold text-lg truncate">{fmtMoney(0)}</div>
         </div>
         <ChevronRight className="h-5 w-5 shrink-0" style={{ color: "var(--brand-solid)" }} />
       </Link>
