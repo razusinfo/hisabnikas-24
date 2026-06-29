@@ -144,6 +144,8 @@ const dict = {
     totalProducts: "Products",
     lowStock: "Low Stock",
     dueReceivable: "Due Receivable",
+    theme: "Theme",
+    chooseTheme: "Choose theme",
     recentSales: "Recent Sales",
     topProducts: "Top Selling Products",
     addCustomer: "Add Customer",
