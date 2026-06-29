@@ -402,3 +402,73 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
     </div>
   );
 }
+
+function SkelBlock({ className = "" }: { className?: string }) {
+  return <div className={cn("animate-pulse rounded-md bg-muted/70", className)} />;
+}
+
+function MobileDashboardSkeleton() {
+  return (
+    <div className="md:hidden -mx-4 -mt-4 mb-4 px-4 pt-5 pb-3" style={{ backgroundImage: "var(--brand-gradient-soft)" }}>
+      <div className="grid grid-cols-2 gap-3 mt-2">
+        {[0, 1].map((i) => (
+          <div key={i} className="min-h-[112px] rounded-3xl bg-card border border-border/60 p-5 shadow-md">
+            <div className="flex items-center gap-2.5 mb-3">
+              <SkelBlock className="h-10 w-10 rounded-2xl" />
+              <SkelBlock className="h-3 w-20" />
+            </div>
+            <SkelBlock className="h-6 w-28" />
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-cols-2 gap-4 mt-8">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="relative min-h-[104px] rounded-3xl bg-card border border-border/60 px-4 pt-8 pb-4 shadow-md">
+            <SkelBlock className="absolute -top-5 left-4 h-11 w-11 rounded-2xl ring-4 ring-background" />
+            <SkelBlock className="h-3 w-20 mb-2" />
+            <SkelBlock className="h-5 w-24" />
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 min-h-[68px] flex items-center gap-3 rounded-3xl bg-card border border-border/60 px-4 py-3.5 shadow-md">
+        <SkelBlock className="h-12 w-12 rounded-2xl" />
+        <div className="min-w-0 flex-1 space-y-2">
+          <SkelBlock className="h-3 w-24" />
+          <SkelBlock className="h-5 w-20" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto">
+      <MobileDashboardSkeleton />
+      <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="rounded-xl border border-border/60 bg-card p-4 shadow-sm">
+            <SkelBlock className="h-3 w-24 mb-3" />
+            <SkelBlock className="h-6 w-32" />
+          </div>
+        ))}
+      </div>
+      <div className="hidden md:grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="rounded-xl border border-border/60 bg-card p-4 shadow-sm">
+            <SkelBlock className="h-3 w-24 mb-3" />
+            <SkelBlock className="h-6 w-20" />
+          </div>
+        ))}
+      </div>
+      <div className="card-premium p-5">
+        <SkelBlock className="h-5 w-40 mb-4" />
+        <div className="space-y-2">
+          {[0, 1, 2, 3].map((i) => (
+            <SkelBlock key={i} className="h-10 w-full" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
