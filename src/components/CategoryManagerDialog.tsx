@@ -31,6 +31,8 @@ export function CategoryManagerDialog({
     mutationFn: async ({ id, name }: { id: string; name: string }) => {
       const trimmed = name.trim();
       if (!trimmed) throw new Error(t("name"));
+      const dup = categories.find((c) => c.id !== id && c.name.trim().toLowerCase() === trimmed.toLowerCase());
+      if (dup) throw new Error(t("categoryExists"));
       const { error } = await supabase.from("categories").update({ name: trimmed }).eq("id", id);
       if (error) throw error;
     },
