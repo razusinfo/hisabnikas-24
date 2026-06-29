@@ -303,15 +303,7 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
           </div>
           <div className="font-display font-bold text-lg">{fmtMoney(d.salesToday)}</div>
         </Link>
-        <Link to="/customers" className="rounded-2xl bg-card border border-orange-200 p-4 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="grid place-items-center h-8 w-8 rounded-lg bg-orange-100 text-orange-600 shrink-0">
-              <Wallet className="h-4 w-4" />
-            </span>
-            <span className="text-xs text-muted-foreground">{t("dueReceivable")}</span>
-          </div>
-          <div className="font-display font-bold text-lg">{fmtMoney(d.dueReceivable)}</div>
-        </Link>
+        <ThemeCard />
       </div>
 
       <div className="grid grid-cols-2 gap-3 mt-7">
