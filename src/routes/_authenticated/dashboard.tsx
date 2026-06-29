@@ -44,6 +44,8 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
     });
   },
   component: Dashboard,
+  pendingComponent: DashboardSkeleton,
+  pendingMs: 0,
 });
 
 export async function fetchDashboard() {
