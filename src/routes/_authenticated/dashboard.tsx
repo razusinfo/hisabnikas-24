@@ -266,9 +266,6 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
   const { t, lang } = useI18n();
   const bn = lang === "bn";
   const L = {
-    onHand: bn ? "হাতে আছে" : "On hand",
-    cashIn: bn ? "নগদ প্রাপ্তি" : "Cash in",
-    cashOut: bn ? "নগদ প্রদান" : "Cash out",
     receivable: bn ? "মোট পাওনা" : "Total receivable",
     payable: bn ? "মোট দেনা" : "Total payable",
     products: bn ? "পণ্য" : "Products",
