@@ -14,9 +14,6 @@ import {
   CalendarRange,
   CalendarDays,
   Receipt,
-  Eye,
-  ArrowDown,
-  ArrowUp,
   Info,
   ChevronRight,
   HandCoins,
@@ -266,12 +263,9 @@ function Dashboard() {
 }
 
 function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> }) {
-  const { lang } = useI18n();
+  const { t, lang } = useI18n();
   const bn = lang === "bn";
   const L = {
-    onHand: bn ? "হাতে আছে" : "On hand",
-    cashIn: bn ? "নগদ প্রাপ্তি" : "Cash in",
-    cashOut: bn ? "নগদ প্রদান" : "Cash out",
     receivable: bn ? "মোট পাওনা" : "Total receivable",
     payable: bn ? "মোট দেনা" : "Total payable",
     products: bn ? "পণ্য" : "Products",
@@ -295,36 +289,25 @@ function MobileDashboard({ d }: { d: Awaited<ReturnType<typeof fetchDashboard>> 
 
   return (
     <div className="md:hidden -mx-4 -mt-4 mb-4 px-4 pt-4 pb-2" style={{ backgroundImage: "var(--brand-gradient-soft)" }}>
-      <div className="rounded-2xl text-white p-4 shadow-lg" style={{ backgroundImage: "var(--brand-gradient)", boxShadow: "0 10px 25px var(--brand-shadow)" }}>
-        <div className="flex items-start">
-          <div className="flex-1 text-center">
-            <div className="text-sm opacity-90">{L.onHand}</div>
-            <div className="font-display text-2xl font-bold mt-1">{fmtMoney(d.salesToday)}</div>
-          </div>
-          <button aria-label="toggle" className="text-white/90 p-1">
-            <Eye className="h-5 w-5" />
-          </button>
-        </div>
-        <div className="mt-3 rounded-xl bg-white text-foreground grid grid-cols-2 divide-x divide-border/60 overflow-hidden">
-          <div className="flex items-center gap-2 p-3">
-            <span className="grid place-items-center h-8 w-8 rounded-lg bg-emerald-100 text-emerald-600 shrink-0">
-              <ArrowDown className="h-4 w-4" />
+      <div className="grid grid-cols-2 gap-3 mt-2">
+        <Link to="/sales" className="rounded-2xl bg-card border border-sky-200 p-4 shadow-sm">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="grid place-items-center h-8 w-8 rounded-lg bg-sky-100 text-sky-600 shrink-0">
+              <CalendarDays className="h-4 w-4" />
             </span>
-            <div className="min-w-0">
-              <div className="text-[11px] text-muted-foreground truncate">{L.cashIn}</div>
-              <div className="text-sm font-semibold truncate">{fmtMoney(d.salesToday)}</div>
-            </div>
+            <span className="text-xs text-muted-foreground">{t("salesToday")}</span>
           </div>
-          <div className="flex items-center gap-2 p-3">
-            <span className="grid place-items-center h-8 w-8 rounded-lg bg-rose-100 text-rose-500 shrink-0">
-              <ArrowUp className="h-4 w-4" />
+          <div className="font-display font-bold text-lg">{fmtMoney(d.salesToday)}</div>
+        </Link>
+        <Link to="/customers" className="rounded-2xl bg-card border border-orange-200 p-4 shadow-sm">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="grid place-items-center h-8 w-8 rounded-lg bg-orange-100 text-orange-600 shrink-0">
+              <Wallet className="h-4 w-4" />
             </span>
-            <div className="min-w-0">
-              <div className="text-[11px] text-muted-foreground truncate">{L.cashOut}</div>
-              <div className="text-sm font-semibold truncate">{fmtMoney(0)}</div>
-            </div>
+            <span className="text-xs text-muted-foreground">{t("dueReceivable")}</span>
           </div>
-        </div>
+          <div className="font-display font-bold text-lg">{fmtMoney(d.dueReceivable)}</div>
+        </Link>
       </div>
 
       <div className="grid grid-cols-2 gap-3 mt-7">
