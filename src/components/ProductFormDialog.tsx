@@ -147,6 +147,8 @@ export function ProductFormDialog({
     mutationFn: async (name: string) => {
       const trimmed = name.trim();
       if (!trimmed) throw new Error(t("name"));
+      const exists = categories.some((c) => c.name.trim().toLowerCase() === trimmed.toLowerCase());
+      if (exists) throw new Error(t("categoryExists"));
       const { data: u } = await supabase.auth.getUser();
       const { data: row, error } = await supabase
         .from("categories")

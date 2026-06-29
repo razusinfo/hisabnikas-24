@@ -1,0 +1,1 @@
+ALTER TABLE public.categories ADD CONSTRAINT categories_name_owner_id_key UNIQUE (name, owner_id);
